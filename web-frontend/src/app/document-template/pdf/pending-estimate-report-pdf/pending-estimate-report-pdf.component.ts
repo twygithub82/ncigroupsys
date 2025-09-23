@@ -43,6 +43,8 @@ import {
 } from 'ng-apexcharts';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { PDFUtility } from 'app/utilities/pdf-utility';
+import { C } from '@angular/cdk/keycodes';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -283,6 +285,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     REPAIR_IN_DATE: 'COMMON-FORM.REPAIR-IN-DATE',
     PENDING_REPAIR_ESTIMATE: 'COMMON-FORM.PENDING-REPAIR-ESTIMATE',
     S_N: 'COMMON-FORM.S_N',
+    CODE: 'COMMON-FORM.CODE',
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
@@ -787,7 +790,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSz = 7;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -795,7 +799,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CUSTOMER, this.translatedLangText.EIR_NO,
+      this.translatedLangText.CODE, this.translatedLangText.EIR_NO,
       // this.translatedLangText.OWNER, 
       this.translatedLangText.EIR_DATE,
       this.translatedLangText.CLEAN_BEING, this.translatedLangText.CLEAN_END,
@@ -805,14 +809,14 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 27, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
 
     };
 
@@ -834,8 +838,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -848,13 +852,16 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY + 10,8);
 
+     startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, '');
+    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     var repPage = pdf.getNumberOfPages();
     // if(repPage==1)lastTableFinalY=45;
 
     if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
       pdf.addPage();
-      lastTableFinalY = 45 + topMargin;
+      lastTableFinalY =startY;
     }
     else {
       CurrentPage = repPage;
@@ -878,10 +885,10 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       head: headers,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin ,top:topMargin+45},
+      margin: { left: leftMargin ,top:startY},
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
       },
       columnStyles: comStyles,
@@ -898,33 +905,35 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
           }
         }
 
       },
     });
 
+  await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
 
 
+    // const totalPages = pdf.getNumberOfPages();
 
-    const totalPages = pdf.getNumberOfPages();
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color

@@ -29,6 +29,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -894,7 +895,9 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSize = 7;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -922,6 +925,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -933,8 +937,8 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -944,7 +948,11 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY + 10, 8);
+    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY + 10, 8);
+
+    startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, cutoffDate);
+    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
 
@@ -997,10 +1005,12 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, right: rightMargin ,top:startY},
       theme: 'grid',
+      tableWidth:contentWidth,
       styles: {
-        fontSize: fontSize,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -1021,31 +1031,36 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
         if (!pg){
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-             Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 48, 8);
+             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            //  Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 48, 8);
           }
         }
       },
     });
 
-    const totalPages = pdf.getNumberOfPages();
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+
+    // const totalPages = pdf.getNumberOfPages();
 
 
-      for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    //   for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color

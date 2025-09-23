@@ -27,6 +27,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export interface DialogData {
   report_summary_status: report_status[],
@@ -813,7 +814,8 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let fontSize = 7;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
     let bufferTabletWidth=8;
@@ -850,6 +852,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -861,8 +864,8 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -873,7 +876,12 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), startY - 2 , 9);
+    // Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), startY - 2 , 9);
+
+    const subtitlePos=0;
+    startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, repGeneratedDate);
+    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     const yard_no_tank: { key: string; value: number }[] = [];
     var total_tank_no = 0;
@@ -929,15 +937,15 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     autoTable(pdf, {
       head: headers,
       body: data,
-       margin: { left: lMargin ,top:topMargin+45},
+       margin: { left: leftMargin ,top:startY},
       //startY: startY, // Start table at the current startY value
       theme: 'grid',
       styles: {
-        fontSize: fontSize,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
-      tableWidth: tableWidth, // Set the table width
+      tableWidth: contentWidth, // Set the table width
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {
@@ -972,42 +980,19 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-             Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), 48 , 9);
+             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            //  Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), 48 , 9);
           
           }
         }
       },
     });
 
-    const totalPages = pdf.getNumberOfPages();
-
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
-
+       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+    
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;

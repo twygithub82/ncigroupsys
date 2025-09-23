@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -650,7 +651,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let fontSize = 5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     let minHeightBodyCell = 5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -675,6 +677,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -686,22 +689,22 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
    
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 7, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      6: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       //7: { halign: 'left', valign: 'middle', cellWidth: 55, minCellHeight: minHeightBodyCell },
-      7: { halign: 'left', valign: 'middle', cellWidth: 45, overflow: 'ellipsize'},
+      7: { halign: 'left', valign: 'middle', cellWidth: 43, overflow: 'ellipsize'},
       8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
@@ -711,10 +714,15 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       14: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       //16: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      16: { halign: 'left', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'},
+      16: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'},
       17: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
 
     };
+
+    const subtitlePos = 1;
+    let startPosY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,'');
+    startPosY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
     // lastTableFinalY +=8;
     var CurrentPage = 1;
@@ -725,7 +733,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     for (let n = 0; n < this.report_yard_detail.length; n++) {
       // lastTableFinalY += 8;
       if (n > 0) lastTableFinalY += 6; // 2nd table
-      else lastTableFinalY = 47; // First table of the page
+      else lastTableFinalY = startPosY; // First table of the page
 
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -742,25 +750,28 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
       if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + 20 + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 47;
+        lastTableFinalY = startPosY;
       }
       else {
         CurrentPage = repPage;
       }
 
      // lastTableFinalY += 8;
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      lastTableFinalY += 3;
-      let startY = 0;
+      // pdf.setFontSize(10);
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      // lastTableFinalY += 3;
+      Utility.AddTextAtLeftCornerPage(pdf,`${cust.customer}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
+     let  startY=PDFUtility.GapBetweenLeftTitleAndTable();
+     startY+=startPosY;
+     lastTableFinalY+=PDFUtility.GapBetweenLeftTitleAndTable();
       if ((cust.yards?.length || 0) > 0) {
         // lastTableFinalY+=5;
         // pdf.setFontSize(8);
         // var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
         // pdf.text(subTitle, leftMargin, lastTableFinalY);
         // lastTableFinalY+=2;            
-        startY = lastTableFinalY; // Start table 20mm below the customer name
+        // startY = lastTableFinalY; // Start table 20mm below the customer name
         var idx = 0;
         for (let b = 0; b < (cust.yards?.length || 0); b++) {
           var y = cust.yards?.[b]!;
@@ -787,13 +798,14 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
           head: headers,
           body: data,
           // startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin, top:topMargin+43 },
+          margin: { left: leftMargin, top:startY },
           theme: 'grid',
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
+          tableWidth: contentWidth,
           columnStyles: comStyles,
           headStyles: headStyles, // Custom header styles
           bodyStyles: {
@@ -810,7 +822,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+                PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
               }
             }
           },
@@ -818,23 +831,26 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    const totalPages = pdf.getNumberOfPages();
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+    
+    // const totalPages = pdf.getNumberOfPages();
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color

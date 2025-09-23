@@ -597,24 +597,25 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 4;
-    let fontSize = 5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const comStyles: any = {
-      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 9, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 24, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
     };
@@ -624,11 +625,17 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     //  const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
     //  Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
+    let startPosY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, '');
+    startPosY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    // startPosY += PDFUtility.GapBetweenLeftTitleAndTable();  
     var CurrentPage = 1;
     var buffer = 20;
     for (let n = 0; n < this.report_customer_inventory.length; n++) {
+      let startY=0;
       if (n > 0) lastTableFinalY += 5; // 2nd table
-      else lastTableFinalY = 49; // First table of the page
+      else lastTableFinalY = startPosY; // First table of the page
+      
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_customer_inventory[n];
@@ -649,9 +656,9 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-        lastTableFinalY =45;// buffer for 2nd page onward first table's Method
+        lastTableFinalY =startPosY;// buffer for 2nd page onward first table's Method
       }
       else {
         CurrentPage = repPage;
@@ -662,8 +669,10 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       // pdf.setFontSize(8);
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      PDFUtility.addText(pdf, `${this.translatedLangText.CUSTOMER} : ${cust.customer_code ?? "-"}`, lastTableFinalY, leftMargin, 8, false);
-      let startY = 0;
+      // PDFUtility.addText(pdf, `${this.translatedLangText.CUSTOMER} : ${cust.customer_code ?? "-"}`, lastTableFinalY, leftMargin, 8, false);
+      var customer =this.DisplayCustomerName(cust);
+      await Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      
       if ((cust.periodic_test_due?.length || 0) > 0) {
         lastTableFinalY += 3;
         //  pdf.setFontSize(8);
@@ -691,9 +700,9 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
           body: data,
         // startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: {left:leftMargin, top:topMargin+46 },
+          margin: {left:leftMargin, top:startPosY+PDFUtility.GapBetweenLeftTitleAndTable() },
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
@@ -713,7 +722,8 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin  + 45);
+                 PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin  + 45);
                //  lastTableFinalY =45;
               }
             }
@@ -725,24 +735,27 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     }
 
-    const totalPages = pdf.getNumberOfPages();
+     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+
+    // const totalPages = pdf.getNumberOfPages();
 
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
@@ -1420,14 +1433,17 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   DisplayCustomerName(repCustomer: report_periodic_test_due_group_customer) {
+    if (!repCustomer?.customer_name) return '-';
     return `${repCustomer.customer_name}`;
   }
 
   DisplayEIRNo(itm: periodic_test_due_item) {
+     if (!itm?.eir_no) return '-';
     return `${itm?.eir_no}`;
   }
 
   DisplayEIRDate(itm: periodic_test_due_item) {
+    if (!itm?.eir_dt) return '-';
     return `${Utility.convertEpochToDateStr(itm?.eir_dt!)}`;
   }
 

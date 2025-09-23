@@ -890,7 +890,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSize = 5.5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -917,28 +918,43 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-     this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,
-      minHeightBodyCell,fontSize,pagePositions,reportTitle);
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
+    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate, reportTitle, cutoffDate);
+      StartPosY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
+
+
+
+   let afterSumTableY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,StartPosY,
+      minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
       
 
-   pdf.addPage();
+  //  pdf.addPage();
     //await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-    lastTableFinalY=topMargin+45;
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
+    // lastTableFinalY=topMargin+45;
+   
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
-       if (n > 0) lastTableFinalY += 5; // 2nd table
-      else lastTableFinalY = 49; // First table of the page
+       let startY = 0; // Start Y position for the current table
+
+       if (n > 0) 
+        {
+          lastTableFinalY += 6; // 2nd table
+        }
+      else {
+        startY=afterSumTableY + PDFUtility.GapBetweenLeftTitleAndTable();
+        lastTableFinalY = startY; // First table of the page
+      }
 
       const data: any[][] = []; // Explicitly define data as a 2D array
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+     
       let cust = this.repBillingCustomers[n];
 
       // Calculate space required for customer name and table
@@ -949,9 +965,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-        if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+        if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
-          lastTableFinalY = 45 + topMargin;
+          lastTableFinalY = StartPosY;
         }
         else {
           CurrentPage = repPage;
@@ -964,15 +980,18 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       //   pageNumber++;
       //   lastTableFinalY = topMargin; // Reset Y position for the new page
       // }
-
-      PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
+      const customer= `${cust.customer}`;
+        await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+      startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+     // PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
       // pdf.setFontSize(8);
       // //pdf.setFont("helvetica", "bold"); // Make it bold
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
 
 
-      let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+      //  startY = lastTableFinalY + 13; // Start table 20mm below the customer name
 
       for (let b = 0; b < cust.items!.length; b++) {
         var itm = cust.items?.[b]!;
@@ -1009,11 +1028,11 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       autoTable(pdf, {
         head: headers,
         body: data,
-        // startY: startY, // Start table at the current startY value
+        startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: { left: leftMargin ,top:topMargin+45},
+        margin: { left: leftMargin,top:StartPosY },
         styles: {
-          fontSize: fontSize,
+          fontSize: fontSz_body,
           minCellHeight: minHeightHeaderCol
 
         },
@@ -1054,9 +1073,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           { 
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-               
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-                Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
+               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                  PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin);
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+                // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
               }
            }
         },
@@ -1064,25 +1084,25 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     }
 
-
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
    
-    const totalPages = pdf.getNumberOfPages();
+    // const totalPages = pdf.getNumberOfPages();
 
-     for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    //  for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color
     //   pdf.setLineWidth(0.1);
@@ -1110,7 +1130,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   {
       //  pdf.addPage();
 
-       lastTableFinalY=45;
+      //  lastTableFinalY=45;
      //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
        const tableWidthTotal = 10 + 60 + 40;
        const columnStyles:any= {
@@ -1168,7 +1188,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         },
         })
 
-
+        return lastTableFinalY;
   }
   
 
