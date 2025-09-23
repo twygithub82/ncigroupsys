@@ -679,6 +679,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
+  igsImages: any[] = [];
+  ogsImages: any[] = [];
 
   accordionSections = {
     tank_details: "tank_details",
@@ -2310,8 +2312,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  previewImagesDialog(event: Event, index: number) {
+  previewImagesDialog(event: Event, images: any[]) {
     event.preventDefault(); // Prevents the form submission
+    if (!images?.length) return;
 
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
@@ -2324,8 +2327,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       autoFocus: false,
       data: {
         headerText: headerText,
-        previewImages: "",//this.getImages(),
-        focusIndex: index
+        previewImages: images?.map(x => x.url),
+        focusIndex: 0
       },
       direction: tempDirection
     });
@@ -3200,6 +3203,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`igs: `, data)
         this.igs = data[0];
+        if (this.igs?.guid) {
+          this.fileManagerService.getFileUrlByGroupGuid([this.igs?.guid]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                console.log("file_management:", response)
+                this.igsImages = response.filter((f: any) => f.description !== 'IN_GATE_EIR');
+                // this.populateImages(response)
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
+        }
       }
     });
   }
@@ -3218,6 +3239,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`ogs: `, data)
         this.ogs = data[0];
+        if (this.ogs?.guid) {
+          this.fileManagerService.getFileUrlByGroupGuid([this.ogs?.guid]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                console.log("file_management:", response)
+                this.ogsImages = response.filter((f: any) => f.description !== 'IN_GATE_EIR');
+                // this.populateImages(response)
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
+        }
       }
     });
   }
