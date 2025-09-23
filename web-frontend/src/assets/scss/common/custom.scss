@@ -1360,7 +1360,7 @@ $breakpoints: (
 
 .table-striped>tbody>tr:nth-of-type(odd)>* {
   color: #000000 !important;
-  background-color: #8e8e8e09 !important;
+  background-color: lighten(#b3cbff, 10%) !important;
 }
 
 .table-col-1 {

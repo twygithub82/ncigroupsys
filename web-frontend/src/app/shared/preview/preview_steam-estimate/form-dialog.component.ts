@@ -32,7 +32,6 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
@@ -75,7 +74,6 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective,
     MatProgressSpinnerModule,
     MatDividerModule,
     MatCardModule

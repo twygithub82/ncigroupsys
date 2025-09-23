@@ -100,6 +100,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
+import { SteamHeatingFormDialogComponent_View } from '@shared/preview/preview-steam-heating/form-dialog.component';
 
 
 @Component({
@@ -1284,32 +1285,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         repair_guid: repair?.guid,
       },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
-  steamHeatingLogDialog(event: Event, steam: SteamItem) {
-    this.preventDefault(event);
-    let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
-      width: '794px',
-      maxHeight: '80vh',
-      data: {
-        steam_guid: steam?.guid,
-        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
-        estimate_no: steam?.estimate_no,
-        repairEstimatePdf: undefined,
-        retrieveFile: true
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -3175,6 +3150,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 
+  isAllowToViewSteamHeatingLog(row: any) {
+    return this.isAutoApproveSteaming(row) && row?.status_cv === 'COMPLETED';
+  }
+
   stopEventTrigger(event: Event) {
     this.preventDefault(event);
     this.stopPropagation(event);
@@ -3781,6 +3760,52 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         nextTestDesc: this.next_test_desc!,
         lastTestDesc: this.last_test_desc!
       }
+    });
+  }
+
+  steamHeatingLogDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+    let tempDirection: Direction = this.getViewDirection();
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamHeatingFormDialogComponent_View, {
+      width: '75vw',
+      data: {
+        steam_guid: steam?.guid,
+        selectedItem: steam,
+        sotItem: this.sot
+      },
+      direction: tempDirection
+    });
+  }
+
+  steamHeatingLogPDFDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction = this.getViewDirection();
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
+      width: '794px',
+      maxHeight: '80vh',
+      data: {
+        steam_guid: steam?.guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
+        estimate_no: steam?.estimate_no,
+        repairEstimatePdf: undefined,
+        retrieveFile: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 }

@@ -25,26 +25,21 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { ResidueItem } from 'app/data-sources/residue';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { PackageLabourItem } from 'app/data-sources/package-labour';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
-  selectedValue?: number;
-  langText?: any;
-  selectedItem: ResidueItem;
+  selectedItem: SteamItem;
+  sotItem?: StoringOrderTankItem;
   nextTestDesc?: string;
   lastTestDesc?: string;
-
 }
-
-
 
 @Component({
   selector: 'app-tariff-depot-form-dialog',
@@ -77,39 +72,36 @@ export interface DialogData {
     MatCardModule
   ],
 })
-export class ResidueEstimateFormDialogComponent_View {
+export class SteamHeatingFormDialogComponent_View {
   displayedColumns = [
-    //  'select',
-    // 'img',
-    'seq',
-    'desc',
-    'qty',
-    'qty_unit',
-    'unit_price',
-    'approve_part',
-    'cost'
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+    'sno',
+    'time',
+    'thermometer',
+    'top_side',
+    'btm_side',
+    'remarks'
   ];
+  headerColumns = ['sno', 'time', 'temperature', 'remarks'];
+  subHeaderColumns = ['sno_sp', 'time_sp', 'thermometer', 'top_side', 'btm_side', 'remarks_sp'];
 
   action: string;
   index?: number;
   dialogTitle?: string;
-  deList?: any[] = [];
+  steamTempList?: any[] = [];
 
   sotDS: StoringOrderTankDS;
   igDS: InGateDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
+  steamDS: SteamDS;
   sotItem?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   unit_type_control = new UntypedFormControl();
 
-  selectedItem: ResidueItem;
+  selectedItem: SteamItem;
   startDate = new Date();
+  isSteamRepair?: boolean = true;
 
   lastCargoControl = new UntypedFormControl();
   lastTestDesc: string = '';
@@ -128,119 +120,118 @@ export class ResidueEstimateFormDialogComponent_View {
   processStatusCvList: CodeValuesItem[] = []
   clean_statusList: CodeValuesItem[] = [];
   isOwner = false;
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
+  labourHour: number = 1;
+  packageLabourItem?: PackageLabourItem;
+  autosteamCost: string = '';
   translatedLangText: any = {};
   langText = {
-    NEW: 'COMMON-FORM.NEW',
-    EDIT: 'COMMON-FORM.EDIT',
-    HEADER: 'COMMON-FORM.HEADER',
-    CUSTOMER: 'COMMON-FORM.CUSTOMER',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    REMARKS: 'COMMON-FORM.REMARKS',
-    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
-    UPDATE: 'COMMON-FORM.UPDATE',
-    CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    BACK: 'COMMON-FORM.BACK',
-    SAVE: 'COMMON-FORM.SAVE',
-    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
-    ARE_YOU_SURE_UNO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
-    UNDO: 'COMMON-FORM.UNDO',
-    DELETE: 'COMMON-FORM.DELETE',
-    CLOSE: 'COMMON-FORM.CLOSE',
-    INVALID: 'COMMON-FORM.INVALID',
-    EXISTED: 'COMMON-FORM.EXISTED',
-    DUPLICATE: 'COMMON-FORM.DUPLICATE',
-    SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
-    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
-    ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
-    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    CONFIRM: 'COMMON-FORM.CONFIRM',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
-    EXCEEDED: 'COMMON-FORM.EXCEEDED',
-    OWNER: 'COMMON-FORM.OWNER',
-    EIR_NO: 'COMMON-FORM.EIR-NO',
-    EIR_DATE: 'COMMON-FORM.EIR-DATE',
-    LAST_TEST: 'COMMON-FORM.LAST-TEST',
-    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
-    GROUP: 'COMMON-FORM.GROUP',
-    SUBGROUP: 'COMMON-FORM.SUBGROUP',
-    DAMAGE: 'COMMON-FORM.DAMAGE',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    SEARCH: "COMMON-FORM.SEARCH",
+    EIR_NO: "COMMON-FORM.EIR-NO",
+    EIR_DATE: "COMMON-FORM.EIR-DATE",
+    CUSTOMER: "COMMON-FORM.CUSTOMER",
+    OWNER: "COMMON-FORM.OWNER",
+    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
+    DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
+    PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
+    DATE: "COMMON-FORM.DATE",
+    LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
+    LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
+    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    BACK: 'COMMON-FORM.BACK',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    BOTTOM: 'COMMON-FORM.BOTTOM',
+    TOP: 'COMMON-FORM.TOP',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    PREVIEW: 'COMMON-FORM.PREVIEW',
+    DELETE: 'COMMON-FORM.DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    PUBLISH: 'COMMON-FORM.PUBLISH',
+    PHONE: 'COMMON-FORM.PHONE',
+    FAX: 'COMMON-FORM.FAX',
+    EMAIL: 'COMMON-FORM.EMAIL',
+    WEB: 'COMMON-FORM.WEB',
+    TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
+    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
+    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
+    OPERATOR: 'COMMON-FORM.OPERATOR',
+    TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
+    YES: 'COMMON-FORM.YES',
+    NO: 'COMMON-FORM.NO',
+    CRN: 'COMMON-FORM.CRN',
+    EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
+    EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
+    SURVEY_BY: 'COMMON-FORM.SURVEY-BY',
+    REVIEW_BY: 'COMMON-FORM.REVIEW-BY',
+    DISCLAIMER: 'COMMON-FORM.DISCLAIMER',
+    COMPUTER_GENERATED_NOTE: 'COMMON-FORM.COMPUTER-GENERATED-NOTE',
+    DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
+    EXPORT_NEW: 'COMMON-FORM.EXPORT-NEW',
+    PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
+    EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    NO_DOT: 'COMMON-FORM.NO-DOT',
+    ITEM: 'COMMON-FORM.ITEM',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
+    CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
     QTY: 'COMMON-FORM.QTY',
-    HOUR: 'COMMON-FORM.HOUR',
-    PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
-    TEMPLATE: 'COMMON-FORM.TEMPLATE',
-    PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
-    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
-    SUBGROUP_NAME: 'COMMON-FORM.SUBGROUP-NAME',
-    LOCATION: 'COMMON-FORM.LOCATION',
-    PART_NAME: 'COMMON-FORM.PART-NAME',
-    DIMENSION: 'COMMON-FORM.DIMENSION',
-    LENGTH: 'COMMON-FORM.LENGTH',
-    PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
-    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST$',
-    ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
-    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY',
     LABOUR: 'COMMON-FORM.LABOUR',
-    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    MATERIAL: 'COMMON-FORM.MATERIAL',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
+    RATE_PERC: 'COMMON-FORM.RATE-PERC',
+    ESTIMATE_COST: 'COMMON-FORM.ESTIMATE-COST',
+    FOR: 'COMMON-FORM.FOR',
+    NET_COST: 'COMMON-FORM.NET-COST',
     LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
-    NET_COST: 'COMMON-FORM.NET-COST',
-    CONVERTED_TO: 'COMMON-FORM.CONVERTED-TO',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    SURVEYOR_NAME: 'COMMON-FORM.SURVEYOR-NAME',
-    RATE: 'COMMON-FORM.RATE',
-    LESSEE: 'COMMON-FORM.LESSEE',
-    TOTAL: 'COMMON-FORM.TOTAL',
-    PART: 'COMMON-FORM.PART',
-    FILTER: 'COMMON-FORM.FILTER',
-    DEFAULT: 'COMMON-FORM.DEFAULT',
-    COMMENT: 'COMMON-FORM.COMMENT',
-    EXPORT: 'COMMON-FORM.EXPORT',
-    ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
-    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
-    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
-    BILLING_TO: 'COMMON-FORM.BILLING-TO',
-    BILL_TO: 'COMMON-FORM.BILL-TO',
-    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
-    JOB_REFERENCE: 'COMMON-FORM.JOB-REFERENCE',
-    QUANTITY: 'COMMON-FORM.QTY',
-    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
-    COST: 'COMMON-FORM.COST',
-    ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    APPROVE: 'COMMON-FORM.APPROVE',
-    ABORT: 'COMMON-FORM.ABORT',
-    DETAILS: 'COMMON-FORM.DETAILS',
-    TYPE: 'COMMON-FORM.TYPE',
-    RESIDUE_ESTIMATE_DETAILS: 'COMMON-FORM.RESIDUE-ESTIMATE-DETAILS',
+    PAGE: 'COMMON-FORM.PAGE',
+    OF: 'COMMON-FORM.OF',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    QUOATION_NO: 'COMMON-FORM.QUOTATION-NO',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    STEAM_PROGRESS_MONITORING_CHART: 'COMMON-FORM.STEAM-PROGRESS-MONITORING-CHART',
+    TIME: 'COMMON-FORM.TIME',
+    TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
+    THERMOMETER: 'COMMON-FORM.THERMOMETER',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    INITIAL_TEMPERATURE: 'COMMON-FORM.INITIAL-TEMPERATURE',
+    STEAM_BEGIN_ON: 'COMMON-FORM.STEAM-BEGIN-ON',
+    STEAM_COMPLETED_ON: 'COMMON-FORM.STEAM-COMPLETED-ON',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
+    APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
+    LAST_TEST: 'COMMON-FORM.LAST-TEST',
+    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
+    STEAM_DETAILS: 'COMMON-FORM.STEAM-DETAILS'
   };
 
-
   constructor(
-    public dialogRef: MatDialogRef<ResidueEstimateFormDialogComponent_View>,
+    public dialogRef: MatDialogRef<SteamHeatingFormDialogComponent_View>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -249,19 +240,21 @@ export class ResidueEstimateFormDialogComponent_View {
     private modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
-
+    this.steamDS = new SteamDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.loadData();
     this.translateLangText();
     this.selectedItem = data.selectedItem;
-    this.sotItem = this.selectedItem.storing_order_tank;
-    this.deList = this.selectedItem.residue_part;
+    this.sotItem = data.sotItem;
+    this.steamTempList = this.selectedItem.steaming_part?.[0]?.job_order?.steaming_temp;
     this.lastTestDesc = data.lastTestDesc || '';
     this.nextTestDesc = data.nextTestDesc || '';
     this.action = data.action!;
+    this.isSteamRepair = this.steamDS.IsSteamRepair(this.selectedItem);
+    this.labourHour = this.selectedItem?.est_hour || 1;
+    this.loadData();
   }
 
   public loadData() {
@@ -279,7 +272,6 @@ export class ResidueEstimateFormDialogComponent_View {
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
 
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
@@ -311,57 +303,16 @@ export class ResidueEstimateFormDialogComponent_View {
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
-
   }
 
-
-
   GetTitle() {
-    return this.translatedLangText.RESIDUE_ESTIMATE_DETAILS;
+    return this.translatedLangText.STEAM_DETAILS;
   }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
-  }
-
-
-
-
-  handleSaveSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-
-      console.log('valid');
-      this.dialogRef.close(count);
-    }
-  }
-
-  save() {
-    // if (!this.pcForm?.valid) return;
-    // const where: any = {};
-    // if (this.pcForm!.value['name']) {
-    //   where.name = { contains: this.pcForm!.value['name'] };
-    // }
-
-
-  }
-
-  displayLastUpdated(r: TariffDepotItem) {
-    var updatedt = r.update_dt;
-    if (updatedt === null) {
-      updatedt = r.create_dt;
-    }
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();
-
-    // Replace the '/' with '-' to get the required format
-
-
-    return `${day}/${month}/${year}`;
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -374,54 +325,22 @@ export class ResidueEstimateFormDialogComponent_View {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
-  }
-
-  getFooterBackgroundColor(): string {
-    return ''; // 'light-blue';
   }
 
   IsApproved() {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(this.selectedItem?.status_cv!);
-
   }
 
   parse2Decimal(figure: number | string) {
     return Utility.formatNumberDisplay(figure, this.isAllowViewCost())
   }
 
-  calculateResidueItemCost(residuePart: ResiduePartItem): number {
-    let calResCost: number = 0;
-
-    if (this.IsApproved()) {
-      calResCost = residuePart.approve_cost! * residuePart.approve_qty!;
-    }
-    else {
-      calResCost = residuePart.cost! * residuePart.quantity!;
-    }
-
-    return calResCost;
-
-  }
-
-  getTotalCost(): number {
-    return this.roundUpCost(this.deList?.reduce((acc, row) => {
-      if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
-        if (this.IsApproved()) {
-          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
-        }
-        else {
-          return acc + ((row.quantity || 0) * (row.cost || 0));
-        }
-      }
-      return acc; // If row is approved, keep the current accumulator value
-    }, 0));
-  }
-
-  IsApprovePart(rep: ResiduePartItem) {
-    return rep.approve_part;
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 
   getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
@@ -455,19 +374,16 @@ export class ResidueEstimateFormDialogComponent_View {
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+  
+  displayDateTime(input: number | undefined, is12Hr: boolean): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input, is12Hr);
+  }
+
   displayTankPurpose(sot: StoringOrderTankItem) {
     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
   }
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  isAllowViewCost() {
-    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
-  }
-
-  roundUpCost(cost: any) {
-    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

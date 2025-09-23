@@ -1382,7 +1382,7 @@
     "START-DATE": "Start Date",
     "STORAGE-DAY": "Storage Days",
     "STEAM-LOG": "Steam Log",
-    "DISABLE":"Disable",
+    "DISABLE": "Disable",
     "MIN-8-CHARS": "Minimum 8 characters",
     "MUST-ONE-UPPERCASE": "Must have at least one uppercase letter",
     "MUST-ONE-LOWERCASE": "Must have at least one lowercase letter",
@@ -1390,8 +1390,8 @@
     "MUST-ONE-SPECIAL": "Must have at least one special character",
     "PASSSWORD-CHANGED-SUCCEED": "Password changed successfully",
     "T": "T",
-    "W": "W"
-    
+    "W": "W",
+    "STEAM-DETAILS": "Steam Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
