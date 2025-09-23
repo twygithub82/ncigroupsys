@@ -1913,5 +1913,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return BusinessLogicUtil.roundUpCost(cost);
   }
 
-
+  displayApproveUpdateButton() {
+    return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
+  }
 }

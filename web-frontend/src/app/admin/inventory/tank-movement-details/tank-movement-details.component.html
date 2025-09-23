@@ -456,7 +456,6 @@
                         </div>
                         }
 
-
                         <!-- <div class="row justify-content-center">
                           <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                             <div class="row">
@@ -641,6 +640,10 @@
                                     <th>{{ translatedLangText.REMARKS }}:</th>
                                     <td>{{ ig?.remarks || "-" }}</td>
                                   </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.REFERENCE }}:</th>
+                                    <td><span [ngClass]="{'text-decoration-underline cursor-pointer': igsImages.length > 0}" (click)="previewImagesDialog($event, igsImages)">{{ igsImages.length || "-" }}</span></td>
+                                  </tr>
                                 </tbody>
                               </table>
                             </div>
@@ -686,6 +689,10 @@
                                   <tr>
                                     <th>{{ translatedLangText.REMARKS }}:</th>
                                     <td>{{ og?.remarks || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.REFERENCE }}:</th>
+                                    <td><span [ngClass]="{'text-decoration-underline cursor-pointer': ogsImages.length > 0}">{{ ogsImages.length || "-" }}</span></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -912,7 +919,9 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>
-                                            <span class="me-1">{{row.estimate_no}}</span>
+                                            <span>
+                                              {{row.estimate_no}}
+                                            </span>
                                             <!-- @if (isAutoApproveSteaming(row)) {
                                             <mat-icon>whatshot</mat-icon>
                                             }
@@ -929,7 +938,18 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
-                                              class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
+                                              class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>
+                                            @if (isAllowToViewSteamHeatingLog(row)) {
+                                            <span class="text-decoration-underline cursor-pointer"
+                                              (click)="steamHeatingLogDialog($event, row)">
+                                              {{steamDS.getSteamHighestTemp(row) || '-'}}
+                                            </span>
+                                            }
+                                            @else {
+                                            <span>
+                                              {{steamDS.getSteamHighestTemp(row) || '-'}}
+                                            </span>
+                                            }
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_date">

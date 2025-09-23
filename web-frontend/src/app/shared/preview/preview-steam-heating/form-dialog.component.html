@@ -1,0 +1,209 @@
+<div class="addContainer">
+  <div class="modalHeader_left_align">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4 mat-dialog-title>{{GetTitle()}}</h4>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card modal-card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.TANK_DETAILS}}
+            </h2>
+          </div>
+          <div class="body">
+            <mat-card-content>
+              <div class="row">
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                  <div class="row right-align-display">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{sotItem?.tank_no}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{sotItem?.tariff_cleaning?.cargo}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{ccDS.displayName(sotItem?.customer_company)}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{displayTankPurpose(sotItem!)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{lastTestDesc}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 col-xs-3-75 m-b-0">
+                      <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-8-25 m-b-0">
+                      <span class="value-display-info">
+                        {{nextTestDesc}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card modal-card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.STEAM_PROGRESS_MONITORING_CHART}}
+            </h2>
+          </div>
+          <div class="body ps-0 pe-0">
+            @if (sotDS.loadingSubject | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+
+            <div class="row">
+              <div class="responsive_table">
+                <table id="steam-temp-table" class="table table-bordered table-striped curve-table">
+                  <tbody>
+                    <tr>
+                      <td class="td-col-0-5 text-center align-middle steam-temp-header" rowspan="2">
+                        <b>{{translatedLangText.NO_DOT}}</b>
+                      </td>
+                      <td class="td-col-2 text-center align-middle steam-temp-header" rowspan="2">
+                        <b>{{translatedLangText.TIME}}</b>
+                      </td>
+                      <td class="td-col-5-5 text-center align-middle steam-temp-header" colspan="3">
+                        <b>{{translatedLangText.TEMPERATURE}} {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</b>
+                      </td>
+                      <td class="td-col-4 text-center align-middle steam-temp-header" rowspan="2">
+                        <b>{{translatedLangText.REMARKS}}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
+                        <b>{{translatedLangText.THERMOMETER}}</b>
+                      </td>
+                      <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
+                        <b>{{translatedLangText.TOP_SIDE}}</b>
+                      </td>
+                      <td class="td-col-1-5 text-center align-middle steam-temp-subheader">
+                        <b>{{translatedLangText.BOTTOM_SIDE}}</b>
+                      </td>
+                    </tr>
+                    @if (steamTempList?.length) {
+                    @for (steamTemp of steamTempList; track steamTemp; let index = $index) {
+                    <tr>
+                      <td class="td-col-0-5 text-center align-middle">
+                        <b>{{index + 1}}</b>
+                      </td>
+                      <td class="td-col-2 text-center align-middle">
+                        {{displayDateTime(steamTemp.report_dt, false)}}
+                      </td>
+                      <td class="td-col-1-5 text-center align-middle">
+                        {{steamTemp.meter_temp}}
+                      </td>
+                      <td class="td-col-1-5 text-center align-middle">
+                        {{steamTemp.top_temp}}
+                      </td>
+                      <td class="td-col-1-5 text-center align-middle">
+                        {{steamTemp.bottom_temp}}
+                      </td>
+                      <td class="td-col-4">
+                        {{steamTemp.remarks}}
+                      </td>
+                    </tr>
+                    }
+                    }
+                    @else {
+                    <tr>
+                      <td class="text-center" colspan="6">
+                        <b>{{translatedLangText.NO_RESULT}}</b>
+                      </td>
+                    </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div mat-dialog-actions class="pt-2 pb-2 align-right">
+      <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+    </div>
+  </div>
+</div>

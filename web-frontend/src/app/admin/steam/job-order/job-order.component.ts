@@ -806,6 +806,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   canUnassignTeam(row: SteamItem | undefined) {
+    // completed before tank cannot be unassign becoz currently we havent solve the issue where reassign need to continue the time_table
     return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
   }
 

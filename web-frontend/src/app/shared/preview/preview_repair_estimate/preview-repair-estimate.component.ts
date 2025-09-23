@@ -26,7 +26,6 @@ import { Router } from '@angular/router';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -40,7 +39,6 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { UserDS, UserItem } from 'app/data-sources/user';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -84,8 +82,6 @@ export interface DialogData {
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent,
-    PreventNonNumericDirective,
     MatDialogContent,
   ],
   providers: [

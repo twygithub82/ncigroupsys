@@ -1358,9 +1358,14 @@ $breakpoints: (
   }
 }
 
+// .table-striped>tbody>tr:nth-of-type(odd)>* {
+//   color: #000000 !important;
+//   background-color: lighten(#e6eeff, 10%) !important;
+// }
+
 .table-striped>tbody>tr:nth-of-type(odd)>* {
-  color: #000000 !important;
-  background-color: #8e8e8e09 !important;
+  --bs-table-bg-type: initial !important;
+  background-color: #e6eeff !important;
 }
 
 .table-col-1 {

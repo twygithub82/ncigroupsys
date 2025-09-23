@@ -100,6 +100,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
+import { SteamHeatingFormDialogComponent_View } from '@shared/preview/preview-steam-heating/form-dialog.component';
 
 
 @Component({
@@ -678,6 +679,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
+  igsImages: any[] = [];
+  ogsImages: any[] = [];
 
   accordionSections = {
     tank_details: "tank_details",
@@ -1284,32 +1287,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         repair_guid: repair?.guid,
       },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
-  steamHeatingLogDialog(event: Event, steam: SteamItem) {
-    this.preventDefault(event);
-    let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
-      width: '794px',
-      maxHeight: '80vh',
-      data: {
-        steam_guid: steam?.guid,
-        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
-        estimate_no: steam?.estimate_no,
-        repairEstimatePdf: undefined,
-        retrieveFile: true
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -2335,8 +2312,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  previewImagesDialog(event: Event, index: number) {
+  previewImagesDialog(event: Event, images: any[]) {
     event.preventDefault(); // Prevents the form submission
+    if (!images?.length) return;
 
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
@@ -2349,8 +2327,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       autoFocus: false,
       data: {
         headerText: headerText,
-        previewImages: "",//this.getImages(),
-        focusIndex: index
+        previewImages: images?.map(x => x.url),
+        focusIndex: 0
       },
       direction: tempDirection
     });
@@ -3175,6 +3153,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 
+  isAllowToViewSteamHeatingLog(row: any) {
+    return this.isAutoApproveSteaming(row) && row?.status_cv === 'COMPLETED';
+  }
+
   stopEventTrigger(event: Event) {
     this.preventDefault(event);
     this.stopPropagation(event);
@@ -3221,6 +3203,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`igs: `, data)
         this.igs = data[0];
+        if (this.igs?.guid) {
+          this.fileManagerService.getFileUrlByGroupGuid([this.igs?.guid]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                console.log("file_management:", response)
+                this.igsImages = response.filter((f: any) => f.description !== 'IN_GATE_EIR');
+                // this.populateImages(response)
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
+        }
       }
     });
   }
@@ -3239,6 +3239,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`ogs: `, data)
         this.ogs = data[0];
+        if (this.ogs?.guid) {
+          this.fileManagerService.getFileUrlByGroupGuid([this.ogs?.guid]).subscribe({
+            next: (response) => {
+              console.log('Files retrieved successfully:', response);
+              if (response?.length) {
+                console.log("file_management:", response)
+                this.ogsImages = response.filter((f: any) => f.description !== 'IN_GATE_EIR');
+                // this.populateImages(response)
+              }
+            },
+            error: (error) => {
+              console.error('Error retrieving files:', error);
+            },
+            complete: () => {
+              console.log('File retrieval process completed.');
+            }
+          });
+        }
       }
     });
   }
@@ -3781,6 +3799,52 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         nextTestDesc: this.next_test_desc!,
         lastTestDesc: this.last_test_desc!
       }
+    });
+  }
+
+  steamHeatingLogDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+    let tempDirection: Direction = this.getViewDirection();
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamHeatingFormDialogComponent_View, {
+      width: '75vw',
+      data: {
+        steam_guid: steam?.guid,
+        selectedItem: steam,
+        sotItem: this.sot
+      },
+      direction: tempDirection
+    });
+  }
+
+  steamHeatingLogPDFDialog(event: Event, steam: SteamItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction = this.getViewDirection();
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
+      width: '794px',
+      maxHeight: '80vh',
+      data: {
+        steam_guid: steam?.guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
+        estimate_no: steam?.estimate_no,
+        repairEstimatePdf: undefined,
+        retrieveFile: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 }
