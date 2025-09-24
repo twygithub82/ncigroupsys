@@ -1,3 +1,22 @@
 .mat-mdc-card-content:last-child{
     padding: 5px;
 }
+
+::ng-deep .table.table-bordered tbody tr td,
+::ng-deep .table.table-bordered tbody tr th {
+  border: 1px solid #cfcfd4;
+}
+
+.curve-table {
+  th {
+    width: 200px;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

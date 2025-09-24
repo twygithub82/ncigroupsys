@@ -807,7 +807,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-      width: '55vw',
+      width: '50vw',
       disableClose: true,
       data: {
         selectedItem: team.jobOrderItem?.storing_order_tank!,
