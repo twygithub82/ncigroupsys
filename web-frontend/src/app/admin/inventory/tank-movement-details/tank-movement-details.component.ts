@@ -1418,6 +1418,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         billingSot: this.sot?.billing_sot,
         translatedLangText: this.translatedLangText,
         tariffDepotList: this.tariffDepotList,
+        customerCompanyGuid: this.sot?.storing_order?.customer_company_guid,
         populateData: {
           storageCalCvList: this.storageCalCvList,
           yesnoCvList: this.yesnoCvList,
