@@ -869,8 +869,10 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         let tableHeaderHeight = 12;
         let tableRowHeight = 8.5;
         let minHeightBodyCell=5;
-         let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-        let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+        let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+        let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+        //  let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+        // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
 
         const pagePositions: { page: number; x: number; y: number }[] = [];
      //   const progressValue = 100 / cardElements.length;
@@ -917,7 +919,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           fillColor: [211, 211, 211], // Background color
           textColor: 0, // Text color (white)
           fontStyle: "bold", // Valid fontStyle value
-          fontSize:fontSz_body,
+          fontSize:fontSz_hdr,
           halign: 'center', // Centering header text
           valign:'middle',
           lineColor:201,

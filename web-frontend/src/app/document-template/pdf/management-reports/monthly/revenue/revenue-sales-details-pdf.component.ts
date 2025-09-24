@@ -796,7 +796,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
     }
-    startY += 3;
+    // startY += 3;
     var idx = 0;
 
     var grpData = InventoryAnalyzer.groupRevenueMonthlyByDate(this.repData!);

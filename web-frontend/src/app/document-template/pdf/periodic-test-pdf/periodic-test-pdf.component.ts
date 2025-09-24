@@ -603,8 +603,10 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     let lastTableFinalY = 45;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 4;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+    // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    // let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 9, minCellHeight: minHeightBodyCell },
       1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },

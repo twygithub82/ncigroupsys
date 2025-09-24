@@ -1391,7 +1391,8 @@
     "PASSSWORD-CHANGED-SUCCEED": "Password changed successfully",
     "T": "T",
     "W": "W",
-    "STEAM-DETAILS": "Steam Details"
+    "STEAM-DETAILS": "Steam Details",
+    "T_WEIGHT":"T. Weight"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -273,6 +273,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     S_N: 'COMMON-FORM.S_N',
     APPROVAL_REF: 'COMMON-FORM.APPROVAL-REF',
     RELEASE_REF: 'COMMON-FORM.RELEASE-REF',
+    T_WEIGHT:'COMMON-FORM.T_WEIGHT'
   }
 
   type?: string | null;
@@ -544,8 +545,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+    // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
@@ -591,7 +594,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
         { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
         { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
-        { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
+        { content: this.translatedLangText.T_WEIGHT, styles: { valign: vAlign } },
         { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
 
         // Maintenance Details (8 columns)
@@ -623,26 +626,26 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      4: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 26, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      3: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 22, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       7: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', cellWidth: 7, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
-      11: { halign: 'center', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
+      13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
       14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       16: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       17: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       18: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //release ref
-      19: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      20: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      19: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
+      20: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
       21: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'  },
       22: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell }
     };
@@ -653,7 +656,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
-      fontSize:fontSz_body,
+      fontSize:fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -791,7 +794,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           margin: { left: leftMargin , top:topMargin+46},
           theme: 'grid',
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
@@ -896,7 +899,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           theme: 'grid',
           margin: { left: leftMargin , top:topMargin+46},
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },

@@ -651,8 +651,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
     let minHeightBodyCell = 5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -697,14 +697,14 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 7, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Landscape(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      4: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 11, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       //7: { halign: 'left', valign: 'middle', cellWidth: 55, minCellHeight: minHeightBodyCell },
-      7: { halign: 'left', valign: 'middle', cellWidth: 43, overflow: 'ellipsize'},
+      7: { halign: 'left', valign: 'middle',  overflow: 'ellipsize'},
       8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },

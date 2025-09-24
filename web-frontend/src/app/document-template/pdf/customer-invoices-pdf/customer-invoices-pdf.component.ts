@@ -884,8 +884,10 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     const minHeightBodyCell = 5;
     const customerGap = 10;
     const bufferSpace = 30;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape()
+    // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // Define report title
     const reportTitle = this.GetReportTitle(); // Make sure this function exists and returns a string
@@ -915,7 +917,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     // Define column styles
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 22, minCellHeight: minHeightBodyCell },
       3: { halign: 'left', valign: 'middle', cellWidth: 63, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
@@ -1163,8 +1165,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
                 // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-                  PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                  PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin);
+                  PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                  PDFUtility.addReportSubTitle_Landscape(pdf, invDate, pageWidth, leftMargin, rightMargin);
                   // posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
                   // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
               }
