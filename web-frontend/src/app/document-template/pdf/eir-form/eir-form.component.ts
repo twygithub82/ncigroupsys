@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit,AfterViewInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, AfterViewInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -54,7 +54,7 @@ declare const html2canvas: any;
     MatProgressBarModule
   ],
 })
-export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit  {
+export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -285,9 +285,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   generatingPdfProgress = 0;
 
   renderedCells: { highlighted: boolean }[] = [];
-renderedTopBottom: { highlighted: boolean }[] = [];
-renderedMiddle: { highlighted: boolean }[] = [];
-renderedBottom: { highlighted: boolean }[] = [];
+  renderedTopBottom: { highlighted: boolean }[] = [];
+  renderedMiddle: { highlighted: boolean }[] = [];
+  renderedBottom: { highlighted: boolean }[] = [];
 
 
   constructor(
@@ -347,9 +347,9 @@ renderedBottom: { highlighted: boolean }[] = [];
 
       this.cdr.detectChanges();
       this.StartGeneratingPDF();
-    //  this.updateCellValues();
+      //  this.updateCellValues();
 
-     
+
       // if (!this.eirPdf?.length) {
       //   await this.generatePDF();
       // }
@@ -361,23 +361,22 @@ renderedBottom: { highlighted: boolean }[] = [];
     }
   }
 
-  updateCellValues()
-  {
-     this.renderedCells = this.cells.map((_, i) => ({
-    highlighted: this.highlightedCellsTop[i]
-  }));
+  updateCellValues() {
+    this.renderedCells = this.cells.map((_, i) => ({
+      highlighted: this.highlightedCellsTop[i]
+    }));
 
-  this.renderedTopBottom = this.cellsInnerTopBottom.map((_, i) => ({
-    highlighted: this.highlightedCellsWalkwayTop[i]
-  }));
+    this.renderedTopBottom = this.cellsInnerTopBottom.map((_, i) => ({
+      highlighted: this.highlightedCellsWalkwayTop[i]
+    }));
 
-  this.renderedMiddle = this.cellsInnerMiddle.map((_, i) => ({
-    highlighted: this.highlightedCellsWalkwayMiddle[i]
-  }));
+    this.renderedMiddle = this.cellsInnerMiddle.map((_, i) => ({
+      highlighted: this.highlightedCellsWalkwayMiddle[i]
+    }));
 
-  this.renderedBottom = this.cellsInnerTopBottom.map((_, i) => ({
-    highlighted: this.highlightedCellsWalkwayBottom[i]
-  }));
+    this.renderedBottom = this.cellsInnerTopBottom.map((_, i) => ({
+      highlighted: this.highlightedCellsWalkwayBottom[i]
+    }));
   }
   isInGate() {
     return this.type === "in";
@@ -388,54 +387,54 @@ renderedBottom: { highlighted: boolean }[] = [];
   }
 
   //@ViewChild('frameinfosection') captureElement!: ElementRef;
- async showPDF() {
+  async showPDF() {
 
     //  const elements = document.getElementById('capture'); 
     const element = document.getElementById('capture') as HTMLElement;
     if (!element) {
       console.error('Template element not found');
-       return;
+      return;
     }
 
-     const rect = element.getBoundingClientRect();
-  
-  const options = {
-    width: rect.width,
-    height: rect.height,
-    backgroundColor: 'white',
-    quality: 0.65,
-    skipFonts: true,
-    filter: (node: any) => {
-      // Optionally skip heavy parts
-      return !node.classList?.contains('exclude-from-image');
-    },
-    style: {
-      // Only override if necessary
-      fontFamily: 'sans-serif',
-      // boxShadow: 'none',
-      // animation: 'none',
-      // transition: 'none'
-    }
-  };
+    const rect = element.getBoundingClientRect();
 
- var body= await domtoimage.toJpeg(element, options);
-console.log(body);
+    const options = {
+      width: rect.width,
+      height: rect.height,
+      backgroundColor: 'white',
+      quality: 0.65,
+      skipFonts: true,
+      filter: (node: any) => {
+        // Optionally skip heavy parts
+        return !node.classList?.contains('exclude-from-image');
+      },
+      style: {
+        // Only override if necessary
+        fontFamily: 'sans-serif',
+        // boxShadow: 'none',
+        // animation: 'none',
+        // transition: 'none'
+      }
+    };
+
+    var body = await domtoimage.toJpeg(element, options);
+    console.log(body);
     // const element = document.getElementById("capture");
 
-      // html2canvas(element,{ allowTaint: true,
-      //               useCORS: true})
-      // .then((canvas: HTMLCanvasElement) => {
-      //   console.log("Canvas created!");
-      //   document.body.appendChild(canvas); // Optional: display it
-      // })
-      // .catch((err: any) => {
-      //   console.error("Canvas conversion failed:", err);
-      // });
-//    const canvas = await html2canvas(element, {
-//   foreignObjectRendering: true
-// });
+    // html2canvas(element,{ allowTaint: true,
+    //               useCORS: true})
+    // .then((canvas: HTMLCanvasElement) => {
+    //   console.log("Canvas created!");
+    //   document.body.appendChild(canvas); // Optional: display it
+    // })
+    // .catch((err: any) => {
+    //   console.error("Canvas conversion failed:", err);
+    // });
+    //    const canvas = await html2canvas(element, {
+    //   foreignObjectRendering: true
+    // });
 
-// const clippedImgData = canvas.toDataURL('image/png');
+    // const clippedImgData = canvas.toDataURL('image/png');
 
     // html2canvas(this.captureElement.nativeElement).then((canvas) => {
     //   const clippedImgData = canvas.toDataURL('image/png');
@@ -501,10 +500,10 @@ console.log(body);
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-@ViewChild('captureWalkwayElement', { static: false }) captureWalkwayElementRef!: ElementRef;
-@ViewChild('captureMalidElement', { static: false }) captureMalidElementRef!: ElementRef;
-@ViewChild('frameinfosection', { static: false }) captureInfoElementRef!: ElementRef;
-@ViewChild('test1', { static: false }) captureTesterElementRef!: ElementRef;
+  @ViewChild('captureWalkwayElement', { static: false }) captureWalkwayElementRef!: ElementRef;
+  @ViewChild('captureMalidElement', { static: false }) captureMalidElementRef!: ElementRef;
+  @ViewChild('frameinfosection', { static: false }) captureInfoElementRef!: ElementRef;
+  @ViewChild('test1', { static: false }) captureTesterElementRef!: ElementRef;
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -544,10 +543,10 @@ console.log(body);
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
-      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
-      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 45 },
-      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth:45 },
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, maxContentHeight: minHeightBodyCell, cellWidth: 50 },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, maxContentHeight: minHeightBodyCell, cellWidth: 50 },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, maxContentHeight: minHeightBodyCell, cellWidth: 45 },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, maxContentHeight: minHeightBodyCell, cellWidth: 45 },
     };
 
     // Define headStyles with valid fontStyle
@@ -592,8 +591,8 @@ console.log(body);
       `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
       //  { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
-       `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}  ${this.displayDate(this.eirDetails?.dom_dt)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
-      [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight)} KG`,
+      `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}  ${this.displayDate(this.eirDetails?.dom_dt)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
+      [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity, 0)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight, 0)} KG`,
       `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
     ];
 
@@ -606,7 +605,7 @@ console.log(body);
         fontSize: 6.5,
         textColor: [0, 0, 0],
         minCellHeight: minHeightHeaderCol,
-       // overflow:'ellipsize',
+        // overflow:'ellipsize',
         lineWidth: 0.35, // cell border thickness
         lineColor: [0, 0, 0], // black
         cellPadding: 2, // ← Add some padding
@@ -635,22 +634,22 @@ console.log(body);
     });
 
 
-    
+
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
     // Get the element correctly (remove the dot from className)
-   // const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
-   
+    // const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
+
     // if (!elements || elements.length === 0) {
     //   console.error('Element not found');
     //   return;
     // }
 
     // Get the first element with the class
-     //const element = elements[0];
-   // const element =document.getElementById('test1') as HTMLElement;
-   // const styles = window.getComputedStyle(element);
-   // console.log(`Computed styles count: ${styles.length}`);
+    //const element = elements[0];
+    // const element =document.getElementById('test1') as HTMLElement;
+    // const styles = window.getComputedStyle(element);
+    // console.log(`Computed styles count: ${styles.length}`);
     //const contentWidth = pageWidth - leftMargin - rightMargin;
     const chartContentWidth = contentWidth;
 
@@ -661,26 +660,26 @@ console.log(body);
     //  const clonedEl= element.cloneNode(true) as HTMLElement;
     // this.copyComputedStyles(originalEl,clonedEl);
     const element = this.captureInfoElementRef.nativeElement as HTMLElement
-    
-  //   const clonedEl= element.cloneNode(true) as HTMLElement;
-  //  const computedStyle = window.getComputedStyle(element);
-  //   Array.from(computedStyle).forEach(prop => {
-  //     clonedEl.style.setProperty(prop, computedStyle.getPropertyValue(prop), 
-  //       computedStyle.getPropertyPriority(prop));
-  //   });
 
-  //   clonedEl.style.position = 'fixed';
-  //   clonedEl.style.top = '-9999px';
-  //   clonedEl.style.left = '-9999px';
-  //   clonedEl.style.zIndex = '-9999';
-  //   //clonedEl.style.opacity = '0'; // make sure it's invisible
+    //   const clonedEl= element.cloneNode(true) as HTMLElement;
+    //  const computedStyle = window.getComputedStyle(element);
+    //   Array.from(computedStyle).forEach(prop => {
+    //     clonedEl.style.setProperty(prop, computedStyle.getPropertyValue(prop), 
+    //       computedStyle.getPropertyPriority(prop));
+    //   });
 
-  //   // Append to DOM
-  //   document.body.appendChild(clonedEl);
+    //   clonedEl.style.position = 'fixed';
+    //   clonedEl.style.top = '-9999px';
+    //   clonedEl.style.left = '-9999px';
+    //   clonedEl.style.zIndex = '-9999';
+    //   //clonedEl.style.opacity = '0'; // make sure it's invisible
 
-  //   // Wait for layout, fonts, images (especially if any are async)
-  //   await new Promise(resolve => requestAnimationFrame(resolve));
-  //   await new Promise(resolve => setTimeout(resolve, 100)); // give it a moment more
+    //   // Append to DOM
+    //   document.body.appendChild(clonedEl);
+
+    //   // Wait for layout, fonts, images (especially if any are async)
+    //   await new Promise(resolve => requestAnimationFrame(resolve));
+    //   await new Promise(resolve => setTimeout(resolve, 100)); // give it a moment more
 
     // // Append to body temporarily (but off-screen)
     //  clonedEl.style.position = 'absolute';
@@ -689,18 +688,18 @@ console.log(body);
 
     // //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
     // //const imgData = await Utility.convertToImage(originalEl as HTMLElement,"jpeg");
-    
-  //   const imgData = await Utility.convertWithDomToImage(clonedEl as HTMLElement,"jpeg");
-  //   const imgInfo = await Utility.getImageSizeFromBase64(imgData);
-  //   const aspectRatio = imgInfo.width / imgInfo.height;
+
+    //   const imgData = await Utility.convertWithDomToImage(clonedEl as HTMLElement,"jpeg");
+    //   const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+    //   const aspectRatio = imgInfo.width / imgInfo.height;
 
 
-  //   const element1 =document.getElementById('test2') as HTMLElement;
-  //    const styles1 = window.getComputedStyle(element);
-  //   console.log(`Computed styles count: ${styles1.length}`);
+    //   const element1 =document.getElementById('test2') as HTMLElement;
+    //    const styles1 = window.getComputedStyle(element);
+    //   console.log(`Computed styles count: ${styles1.length}`);
 
-  // const MalidEl = this.captureMalidElementRef.nativeElement as HTMLElement;
-  //   // const clonedEl= element.cloneNode(true) as HTMLElement;
+    // const MalidEl = this.captureMalidElementRef.nativeElement as HTMLElement;
+    //   // const clonedEl= element.cloneNode(true) as HTMLElement;
     // this.copyComputedStyles(originalEl,clonedEl);
 
     //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
@@ -709,21 +708,19 @@ console.log(body);
     const perf = window.performance;
     const startTotal = perf.now();
 
-     const startConversion = perf.now();
+    const startConversion = perf.now();
 
     //const imgData = await Utility.convertToImage_domToImage(element as HTMLElement,"jpeg");
-     const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
+    const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement, "jpeg");
     const imgInfo = await Utility.getImageSizeFromBase64(imgData);
     const aspectRatio = imgInfo.width / imgInfo.height;
 
-    
-      const conversionTime = perf.now() - startConversion;
-      console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
+
+    const conversionTime = perf.now() - startConversion;
+    console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
     // Calculate scaled height based on available width
     let imgHeight = contentWidth / aspectRatio;
-
-    
 
     pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
 
@@ -767,46 +764,46 @@ console.log(body);
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
 
     var tempY = bufferLabelY;
-    bufferLabelY = pageHeight-bottomMargin-(6*2);
+    bufferLabelY = pageHeight - bottomMargin - (6 * 2);
 
     var gapLabel = (textWrapWidth / 2);
 
     textContent = `${this.translatedLangText.SURVEY_BY}:`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX, 8);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX, 8);
 
     textContent = `${this.translatedLangText.REVIEW_BY}:`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
 
 
     gapLabel = (textWrapWidth / 3);
 
     textContent = `${this.translatedLangText.HAULIER}:`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX, 8);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX, 8);
 
     textContent = `${this.translatedLangText.VEHICLE_NO}:`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
 
     textContent = `${this.translatedLangText.DRIVER_NAME}:`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
 
     gapLabel = (textWrapWidth / 2);
     bufferLabelY += 4;
 
     textContent = `${this.eirDetails?.create_by}`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX, 8, true);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX, 8, true);
 
     textContent = `${this.publish_by}`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
 
     gapLabel = (textWrapWidth / 3);
     textContent = `${this.getGate()?.tank?.storing_order?.haulier}`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX, 8, true);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX, 8, true);
 
     textContent = `${this.getGate()?.vehicle_no}`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
 
     textContent = `${this.getGate()?.driver_name}`;
-    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
+    PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
 
     //lastTableFinalY = startRectY + bufferLabelY;
     textContent = `${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
@@ -905,7 +902,7 @@ console.log(body);
 
 
   async generatePDF(): Promise<void> {
-   // this.showPDF();
+    // this.showPDF();
     await this.exportToPDF_r1();
     /*  
       const element = document.getElementById('eir-form-body');
@@ -1929,7 +1926,7 @@ console.log(body);
     await Promise.all(promises);
   }
 
- 
+
 
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
     if (!Array.isArray(coordinates)) {
@@ -2169,80 +2166,78 @@ console.log(body);
     return this.isInGate() ? this.getGate()?.tank?.job_no : this.getGate()?.tank?.release_job_no;
   }
 
-   copyComputedStyles(
-  source: HTMLElement,
-  target: HTMLElement,
-  options: {
-    recursive?: boolean;
-    includeProperties?: string[];
-    excludeProperties?: string[];
-  } = {}
-): void {
-  const {
-    recursive = true,
-    includeProperties,
-    excludeProperties = [
-      'width', 'height', 'top', 'left', 'right', 'bottom',
-      'margin', 'padding', 'position', 'display',
-      'content'
-    ]
-  } = options;
+  copyComputedStyles(
+    source: HTMLElement,
+    target: HTMLElement,
+    options: {
+      recursive?: boolean;
+      includeProperties?: string[];
+      excludeProperties?: string[];
+    } = {}
+  ): void {
+    const {
+      recursive = true,
+      includeProperties,
+      excludeProperties = [
+        'width', 'height', 'top', 'left', 'right', 'bottom',
+        'margin', 'padding', 'position', 'display',
+        'content'
+      ]
+    } = options;
 
-  const computedStyle = window.getComputedStyle(source);
-  const allProperties = Array.from(computedStyle);
+    const computedStyle = window.getComputedStyle(source);
+    const allProperties = Array.from(computedStyle);
 
-  const propertiesToCopy = includeProperties
-    ? includeProperties
-    : allProperties.filter(prop => {
+    const propertiesToCopy = includeProperties
+      ? includeProperties
+      : allProperties.filter(prop => {
         const value = computedStyle.getPropertyValue(prop);
         return value &&
-               !excludeProperties.includes(prop) &&
-               !prop.startsWith('webkit') &&
-               !prop.startsWith('moz');
+          !excludeProperties.includes(prop) &&
+          !prop.startsWith('webkit') &&
+          !prop.startsWith('moz');
       });
 
-  propertiesToCopy.forEach(prop => {
-    try {
-      const value = computedStyle.getPropertyValue(prop);
-      if (value) {
-        target.style.setProperty(prop, value);
+    propertiesToCopy.forEach(prop => {
+      try {
+        const value = computedStyle.getPropertyValue(prop);
+        if (value) {
+          target.style.setProperty(prop, value);
+        }
+      } catch (e) {
+        console.warn(`Could not copy property "${prop}":`, e);
       }
-    } catch (e) {
-      console.warn(`Could not copy property "${prop}":`, e);
-    }
-  });
+    });
 
-  // Handle :before and :after pseudo-elements if needed
-  ['before', 'after'].forEach(pseudo => {
-    try {
-      const pseudoStyle = window.getComputedStyle(source, `:${pseudo}`);
-      const content = pseudoStyle.getPropertyValue('content');
-      if (content && content !== 'none') {
-        target.style.setProperty(`--pseudo-${pseudo}-content`, content);
-        // Optionally, you could render this into the DOM
+    // Handle :before and :after pseudo-elements if needed
+    ['before', 'after'].forEach(pseudo => {
+      try {
+        const pseudoStyle = window.getComputedStyle(source, `:${pseudo}`);
+        const content = pseudoStyle.getPropertyValue('content');
+        if (content && content !== 'none') {
+          target.style.setProperty(`--pseudo-${pseudo}-content`, content);
+          // Optionally, you could render this into the DOM
+        }
+      } catch (e) {
+        console.warn(`Could not access pseudo-element ${pseudo}:`, e);
       }
-    } catch (e) {
-      console.warn(`Could not access pseudo-element ${pseudo}:`, e);
-    }
-  });
+    });
 
-  if (recursive) {
-    const sourceChildren = Array.from(source.children);
-    const targetChildren = Array.from(target.children);
+    if (recursive) {
+      const sourceChildren = Array.from(source.children);
+      const targetChildren = Array.from(target.children);
 
-    for (let i = 0; i < sourceChildren.length; i++) {
-      const srcChild = sourceChildren[i] as HTMLElement;
-      const tgtChild = targetChildren[i] as HTMLElement;
-      if (srcChild && tgtChild) {
-        this.copyComputedStyles(srcChild, tgtChild, options);
+      for (let i = 0; i < sourceChildren.length; i++) {
+        const srcChild = sourceChildren[i] as HTMLElement;
+        const tgtChild = targetChildren[i] as HTMLElement;
+        if (srcChild && tgtChild) {
+          this.copyComputedStyles(srcChild, tgtChild, options);
+        }
       }
     }
   }
-}
 
-  displayNumber(value: number) {
-    return Utility.formatNumberDisplay(value);
+  displayNumber(value: number, decimal: number = 2) {
+    return Utility.formatNumberDisplay(value, undefined, undefined, decimal);
   }
-
-
 }

@@ -122,7 +122,7 @@ export class OverwriteResidueApprovalFormDialogComponent {
     this.ccDS = data.ccDS;
     this.cvDS = data.cvDS;
     this.igDS = data.igDS;
-    this.rdList = this.residueItem.residue_part?.map(x => ({ ...x, qty_unit_type: this.cvDS.getCodeObject(x.qty_unit_type_cv, data.populateData.unitTypeCvList) })) ?? [];
+    this.rdList = this.residueItem.residue_part?.map(x => ({ ...x, qty_unit_type: this.cvDS.getCodeObject(x.qty_unit_type_cv, data.populateData.residueUnitTypeCvList) })) ?? [];
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.overwriteForm = this.createForm();
     this.initializeValueChange();

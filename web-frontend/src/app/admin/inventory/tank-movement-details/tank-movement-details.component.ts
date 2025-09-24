@@ -97,7 +97,6 @@ import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-
 import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
 import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
-import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { SteamHeatingFormDialogComponent_View } from '@shared/preview/preview-steam-heating/form-dialog.component';
@@ -615,11 +614,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
   surveyTypeCvList: CodeValuesItem[] = [];
-  unitTypeCvList: CodeValuesItem[] = []
-  groupNameCvList: CodeValuesItem[] = []
-  subgroupNameCvList: CodeValuesItem[] = []
-  damageCodeCvList: CodeValuesItem[] = []
-  repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = [];
+  residueUnitTypeCvList: CodeValuesItem[] = [];
+  groupNameCvList: CodeValuesItem[] = [];
+  subgroupNameCvList: CodeValuesItem[] = [];
+  damageCodeCvList: CodeValuesItem[] = [];
+  repairCodeCvList: CodeValuesItem[] = [];
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
@@ -632,7 +632,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tariffDepotList: TariffDepotItem[] = [];
   packageBufferList?: PackageBufferItem[];
   packageLabourItem?: PackageLabourItem;
-  sotDepotCostDetails: any = []
+  sotDepotCostDetails: any = [];
   billingBranchList: CustomerCompanyItem[] = [];
 
   last_test_desc?: string = "";
@@ -824,6 +824,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'residueUnitTypeCv', codeValType: 'RESIDUE_UNIT' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -936,6 +937,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
+    });
+    this.cvDS.connectAlias('residueUnitTypeCv').subscribe(data => {
+      this.residueUnitTypeCvList = data;
     });
 
     this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
@@ -1175,8 +1179,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input, this.isAllowViewCost());
+  parse2Decimal(input: number | string | undefined, decimal: number = 2) {
+    return Utility.formatNumberDisplay(input, this.isAllowViewCost(), undefined, decimal);
   }
 
   updatePurposeDialog(event: Event, type: string, action: string) {
@@ -1253,43 +1257,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           }
         });
       }
-    });
-  }
-
-  steamTempDialog(event: Event, steam: SteamItem) {
-    this.preventDefault(event);
-    if (steam?.create_by !== "system") { return; } // only auto approved have steam temperature
-
-    let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(SteamTempFormDialogComponent, {
-      disableClose: true,
-      width: '1000px',
-      data: {
-        steamItem: steam,
-        translatedLangText: this.translatedLangText,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
-  repairDialog(event: Event, repair: RepairItem) {
-    this.preventDefault(event);
-    let tempDirection: Direction = this.getViewDirection();
-    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
-      disableClose: true,
-      data: {
-        repair_guid: repair?.guid,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 
@@ -2027,7 +1994,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       height: '80vh',
       data: {
         sot: this.sot,
@@ -2083,7 +2050,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       maxHeight: '90vh',
       data: {
         sot: this.sot,
@@ -2149,7 +2116,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       maxHeight: '90vh',
       data: {
         sot: this.sot,
@@ -2164,7 +2131,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         populateData: {
           packageBufferList: this.packageBufferList,
           billingBranchList: this.billingBranchList,
-          unitTypeCvList: this.unitTypeCvList,
+          residueUnitTypeCvList: this.residueUnitTypeCvList,
           last_test_desc: this.last_test_desc,
           next_test_desc: this.next_test_desc,
           sot_purpose: this.displayTankPurpose(this.sot!)
@@ -2211,7 +2178,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
       disableClose: true,
       autoFocus: false,
-      width: '80vw',
+      width: '80vw', // remain 80% as the content too many
       maxHeight: '90vh',
       data: {
         sot: this.sot,
@@ -2824,7 +2791,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteRepairQC(row: RepairItem) {
-    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
+    const allowOverwriteStatus = ['QC_COMPLETED'];
     return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
@@ -3756,7 +3723,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     r.storing_order_tank = this.sot;
     let tempDirection: Direction = this.getViewDirection();
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-      width: '65vw',
+      width: '55vw',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3767,15 +3734,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  ViewRepairEstimateItem(row: RepairItem) {
+  repairDialog(event: Event, repair: RepairItem) {
+    this.preventDefault(event);
     let tempDirection: Direction = this.getViewDirection();
-    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-      width: '75vw',
+    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
+      width: '55vw',
       data: {
-        action: 'view',
-        langText: this.langText,
-        selectedItem: row
-      }
+        repair_guid: repair?.guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 
@@ -3791,7 +3760,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(SteamEstimateFormDialogComponent_View, {
-      width: '75vw',
+      width: '55vw',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3813,7 +3782,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(SteamHeatingFormDialogComponent_View, {
-      width: '75vw',
+      width: '55vw',
       data: {
         steam_guid: steam?.guid,
         selectedItem: steam,

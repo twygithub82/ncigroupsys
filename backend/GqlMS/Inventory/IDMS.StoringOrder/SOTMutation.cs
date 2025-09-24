@@ -36,7 +36,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> UpdateStoringOrderTank([Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, 
+            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context,
             StoringOrderTankRequest soTank, StoringOrderRequest? storingOrder, string? tankCompGuid = "")
         {
             try
@@ -58,7 +58,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     sot.tank_no = soTank.tank_no;
                 }
                 else
-                {   
+                {
                     sot.tank_note = soTank.tank_note;
                     sot.release_note = soTank.release_note;
                 }
@@ -74,7 +74,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     if (string.IsNullOrEmpty(storingOrder.customer_company_guid) || string.IsNullOrEmpty(storingOrder.guid))
                         throw new GraphQLException(new Error($"SO guid/customer_guid cannot be emptry or null", "ERROR"));
 
-                    if(string.IsNullOrEmpty(tankCompGuid))
+                    if (string.IsNullOrEmpty(tankCompGuid))
                         throw new GraphQLException(new Error($"TankCompGuid cannot be emptry or null", "ERROR"));
 
                     var so = new storing_order() { guid = storingOrder.guid };
@@ -102,12 +102,15 @@ namespace IDMS.StoringOrder.GqlTypes
 
             try
             {
-                
+
                 var sotDB = context.storing_order_tank.Where(s => s.guid == sotGuid)
                                                       .Include(s => s.cleaning.Where(c => c.delete_dt == null || c.delete_dt == 0))
                                                       .Include(s => s.residue.Where(r => r.delete_dt == null || r.delete_dt == 0))
+                                                        .ThenInclude(r => r.residue_part.Where(rp => rp.delete_dt == null || rp.delete_dt == 0))
                                                       .Include(s => s.steaming.Where(st => st.delete_dt == null || st.delete_dt == 0))
-                                                      .Include(s => s.repair.Where(rp => rp.delete_dt == null || rp.delete_dt == 0));
+                                                        .ThenInclude(r => r.steaming_part.Where(sp => sp.delete_dt == null || sp.delete_dt == 0))
+                                                      .Include(s => s.repair.Where(rp => rp.delete_dt == null || rp.delete_dt == 0))
+                                                        .ThenInclude(r => r.repair_part.Where(rpp => rpp.delete_dt == null || rpp.delete_dt == 0));
 
                 //Cleaning handling
                 var cleanings = await sotDB?.SelectMany(s => s.cleaning)?.ToListAsync();
@@ -133,7 +136,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 var residues = await sotDB?.SelectMany(s => s.residue)?.ToListAsync();
                 foreach (var residue in residues)
                 {
-                    if (residue == null) continue;
+                    if (residue == null || residue.residue_part == null) continue;
                     var newEstCost = 0.0;
                     var partList = residue.residue_part.Where(r => !string.IsNullOrEmpty(r.tariff_residue_guid) && r.delete_dt == null);
 
@@ -205,7 +208,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 var repairs = await sotDB?.SelectMany(s => s.repair)?.ToListAsync();
                 foreach (var repair in repairs)
                 {
-                    if (repair == null) continue;
+                    if (repair == null || repair.repair_part == null) continue;
                     var newMaterialCost = 0.0;
                     var partList = repair.repair_part.Where(r => !string.IsNullOrEmpty(r.tariff_repair_guid) && r.delete_dt == null);
 
