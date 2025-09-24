@@ -2791,7 +2791,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteRepairQC(row: RepairItem) {
-    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
+    const allowOverwriteStatus = ['QC_COMPLETED'];
     return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
