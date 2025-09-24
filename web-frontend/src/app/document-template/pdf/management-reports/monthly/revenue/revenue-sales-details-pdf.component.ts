@@ -1122,9 +1122,13 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
 
 
     var catgries = Object.keys(grpData) as string[];
+    var shortCat =catgries.map(date => {
+    // Split by '/' and take the first part (dd)
+    return date.split('/')[0];
+  });
     // var x
     this.lineChartOptions.xaxis = {
-      categories: catgries,
+      categories: shortCat,
       labels: labelStyle
     };
 

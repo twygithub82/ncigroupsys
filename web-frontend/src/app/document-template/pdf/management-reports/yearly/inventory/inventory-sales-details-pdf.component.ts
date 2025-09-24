@@ -1275,10 +1275,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
         startY=PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
         startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-        // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        // startY = topMargin + 50;
-        await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
+        // pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+        // await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
       }
 
 

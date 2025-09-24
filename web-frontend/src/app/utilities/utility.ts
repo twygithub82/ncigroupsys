@@ -855,7 +855,7 @@ export class Utility {
   }
   static ConvertCanvasElementToImage64String(canvas: HTMLCanvasElement): string {
     var retval: string = '';
-    var quality: number = 0.9;
+    var quality: number = 0.95;
     if (canvas) {
       var cvs = this.adjustImageSizeAndBackground(canvas);
       retval = cvs.toDataURL('image/jpeg', quality);
