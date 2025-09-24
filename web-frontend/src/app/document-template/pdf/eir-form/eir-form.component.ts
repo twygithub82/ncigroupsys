@@ -593,7 +593,7 @@ console.log(body);
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
       //  { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
        `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}  ${this.displayDate(this.eirDetails?.dom_dt)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
-      [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight)} KG`,
+      [`${this.translatedLangText.CAPACITY}: ${(this.eirDetails?.capacity)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${(this.eirDetails?.tare_weight)} KG`,
       `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
     ];
 
