@@ -97,7 +97,6 @@ import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-
 import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
 import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
-import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { SteamHeatingFormDialogComponent_View } from '@shared/preview/preview-steam-heating/form-dialog.component';
@@ -1995,7 +1994,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       height: '80vh',
       data: {
         sot: this.sot,
@@ -2051,7 +2050,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       maxHeight: '90vh',
       data: {
         sot: this.sot,
@@ -2117,7 +2116,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '80vw',
+      width: '56vw',
       maxHeight: '90vh',
       data: {
         sot: this.sot,
@@ -2179,7 +2178,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
       disableClose: true,
       autoFocus: false,
-      width: '80vw',
+      width: '80vw', // remain 80% as the content too many
       maxHeight: '90vh',
       data: {
         sot: this.sot,
