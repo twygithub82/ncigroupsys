@@ -19,7 +19,7 @@
                 <mat-label>{{data.translatedLangText.PROFILE_NAME}}</mat-label>
                 <mat-select formControlName="tariff_depot_guid">
                   @for (td of data.tariffDepotList; track td) {
-                  <mat-option [value]="td.guid">{{td.description}}</mat-option>
+                  <mat-option [value]="td.guid">{{td.profile_name}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
