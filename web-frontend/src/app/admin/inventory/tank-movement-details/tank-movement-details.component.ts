@@ -1261,43 +1261,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  steamTempDialog(event: Event, steam: SteamItem) {
-    this.preventDefault(event);
-    if (steam?.create_by !== "system") { return; } // only auto approved have steam temperature
-
-    let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(SteamTempFormDialogComponent, {
-      disableClose: true,
-      width: '1000px',
-      data: {
-        steamItem: steam,
-        translatedLangText: this.translatedLangText,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
-  repairDialog(event: Event, repair: RepairItem) {
-    this.preventDefault(event);
-    let tempDirection: Direction = this.getViewDirection();
-    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
-      disableClose: true,
-      data: {
-        repair_guid: repair?.guid,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
   canEditTankNotes() {
     return this.isAllowEditNotes();
   }
@@ -3761,7 +3724,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     r.storing_order_tank = this.sot;
     let tempDirection: Direction = this.getViewDirection();
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-      width: '65vw',
+      width: '55vw',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3772,15 +3735,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  ViewRepairEstimateItem(row: RepairItem) {
+  repairDialog(event: Event, repair: RepairItem) {
+    this.preventDefault(event);
     let tempDirection: Direction = this.getViewDirection();
-    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-      width: '75vw',
+    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
+      width: '55vw',
       data: {
-        action: 'view',
-        langText: this.langText,
-        selectedItem: row
-      }
+        repair_guid: repair?.guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 
@@ -3796,7 +3761,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(SteamEstimateFormDialogComponent_View, {
-      width: '75vw',
+      width: '55vw',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3818,7 +3783,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(SteamHeatingFormDialogComponent_View, {
-      width: '75vw',
+      width: '55vw',
       data: {
         steam_guid: steam?.guid,
         selectedItem: steam,
