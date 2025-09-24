@@ -1180,8 +1180,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
-  parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input, this.isAllowViewCost());
+  parse2Decimal(input: number | string | undefined, decimal: number = 2) {
+    return Utility.formatNumberDisplay(input, this.isAllowViewCost(), undefined, decimal);
   }
 
   updatePurposeDialog(event: Event, type: string, action: string) {

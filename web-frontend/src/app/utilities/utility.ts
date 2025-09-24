@@ -549,7 +549,7 @@ export class Utility {
     URL.revokeObjectURL(url);
   }
 
-  static formatNumberDisplay(input: number | string | undefined, isNotMask: boolean = true, locale: string = 'en-US'): string {
+  static formatNumberDisplay(input: number | string | undefined, isNotMask: boolean = true, locale: string = 'en-US', decimal: number = 2): string {
     if (!isNotMask) {
       return 'xxx.xx';
     }
@@ -566,8 +566,8 @@ export class Utility {
 
     return new Intl.NumberFormat(locale, {
       style: 'decimal',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: decimal,
+      maximumFractionDigits: decimal,
     }).format(numericValue);
   }
 
