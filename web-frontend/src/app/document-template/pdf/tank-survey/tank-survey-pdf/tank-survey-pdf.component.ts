@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export interface DialogData {
   report_tank_survey: tank_survey_summary_group_by_survey_dt[],
@@ -577,8 +578,10 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let bufferTabletWidth = 2;
+    
     let tableWidth = contentWidth; // Adjusted width for margins
-
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
@@ -596,6 +599,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize:fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -607,8 +611,8 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
@@ -617,7 +621,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
@@ -629,7 +633,12 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     lastTableFinalY += 9;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+    // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+     const subtitlePos=0;
+    let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, invDate,subtitlePos);
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
 
     var CurrentPage = 1;
     var buffer = 20;
@@ -637,6 +646,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     for (let n = 0; n < this.report_tank_summaries.length; n++) {
       // if (n>0) lastTableFinalY+=9;
       if (n > 0) lastTableFinalY += 5; // 2nd table
+      else lastTableFinalY=startPosY;
       //   else lastTableFinalY +=6; //1st Page 1st table
 
       const data: any[][] = []; // Explicitly define data as a 2D array
@@ -648,23 +658,27 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 49; // buffer for 2nd page onward first table's Method
+        lastTableFinalY = startPosY; // buffer for 2nd page onward first table's Method
       }
       else {
         CurrentPage = repPage;
       }
 
+      Utility.AddTextAtLeftCornerPage(pdf,`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
+      lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+      startY= startPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+
       //lastTableFinalY+=gap;
 
-      pdf.setFontSize(9);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      // pdf.setFontSize(9);
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       //  lastTableFinalY+=3;
       if ((cust.tank_survey_summaries?.length || 0) > 0) {
 
-        startY = lastTableFinalY; // Start table 20mm below the customer name
+        // startY = lastTableFinalY; // Start table 20mm below the customer name
 
         for (let b = 0; b < (cust.tank_survey_summaries?.length || 0); b++) {
           var itm = cust.tank_survey_summaries?.[b]!;
@@ -685,9 +699,9 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           body: data,
           // startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin, top: topMargin + 46 },
+          margin: { left: leftMargin, top: startY },
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
@@ -708,8 +722,10 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, topMargin + 44, 9);
+                 PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                 PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+                // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, topMargin + 44, 9);
               }
             }
           },
@@ -717,23 +733,24 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     }
 
-    const totalPages = pdf.getNumberOfPages();
+     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);

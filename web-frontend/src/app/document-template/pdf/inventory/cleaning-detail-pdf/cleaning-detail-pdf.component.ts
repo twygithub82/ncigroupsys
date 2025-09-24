@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -558,7 +559,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     let tableWidth=pageWidth-leftMargin-rightMargin-bufferTableWidth;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSz = 5.5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -575,7 +577,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -589,6 +591,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -600,8 +603,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -612,34 +615,45 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
+     const subtitlePos=0;
+    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, cutoffDate,subtitlePos);
+    startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
+    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
     var buffer = 25;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
-      if (n > 0) lastTableFinalY += 5; // 2nd table
-      else lastTableFinalY +=13; //1st Page 1st table
-     
-      let cust = this.report_inventory_cln_dtl[n];
+      let startY=0;
 
+      if (n > 0) lastTableFinalY += 5; // 2nd table
+      else {
+        lastTableFinalY =startPostY ; //1st Page 1st table
+        
+      }
+     
+      
+      let cust = this.report_inventory_cln_dtl[n];
+      const data: any[][] = []; // Explicitly define data as a 2D array
 
       var repPage = pdf.getNumberOfPages();
       //if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = topMargin+49; // buffer for 2nd page onward first table's Method
+        lastTableFinalY = startPostY; /// buffer for 2nd page onward first table's Method
 
       }
       else {
         CurrentPage = repPage;
       }
      // lastTableFinalY += 7;
-      startY = lastTableFinalY + 8;
-      pdf.setFontSize(8);
-      pdf.setTextColor(0, 0, 0); // Black text
+    //  startY = lastTableFinalY + 8;
+      // pdf.setFontSize(8);
+      // pdf.setTextColor(0, 0, 0); // Black text
       //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      const data: any[][] = []; // Explicitly define data as a 2D array
+      
       var unNo;
       var process;
       for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
@@ -652,24 +666,30 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         process = this.DisplayCleanMethod(itm!);
       }
    //   pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
-      pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
-      pdf.setDrawColor(0, 0, 0); // red line color
-
-      pdf.setLineWidth(0.1);
-     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      // pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
+      // pdf.setDrawColor(0, 0, 0); // red line color
+      
+      var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
+      
+      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+      startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
+      // /pdf.setLineWidth(0.1);
+    //  pdf.setLineDashPattern([0.01, 0.01], 0.1);
       // Add table using autoTable plugin
       autoTable(pdf, {
         head: headers,
         body: data,
         //startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: { top:topMargin+50 },
-        tableWidth: tableWidth,
+        margin: { top:startY, horizontal: leftMargin},
+        tableWidth: contentWidth,
         styles: {
-          fontSize: fontSz,
+          fontSize: fontSz_body,
           minCellHeight: minHeightHeaderCol
 
         },
+        
         columnStyles: comStyles,
         headStyles: headStyles, // Custom header styles
         bodyStyles: {
@@ -687,31 +707,36 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
             pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
             if (pageCount > 1) {
               // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
-              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-              Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+              // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+              // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
             }
           }
         },
       });
     }
-    const totalPages = pdf.getNumberOfPages();
+
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
 
     
-          for (const { page, x, y } of pagePositions) {
-            pdf.setDrawColor(0, 0, 0); // black line color
-            pdf.setLineWidth(0.1);
-            pdf.setLineDashPattern([0.01, 0.01], 0.1);
-            pdf.setFontSize(8);
-            pdf.setPage(page);
+    //       for (const { page, x, y } of pagePositions) {
+    //         pdf.setDrawColor(0, 0, 0); // black line color
+    //         pdf.setLineWidth(0.1);
+    //         pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //         pdf.setFontSize(8);
+    //         pdf.setPage(page);
     
-            const lineBuffer = 13;
-            pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-            pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //         const lineBuffer = 13;
+    //         pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //         pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
     
-            if (page > 1) {
-              await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-            }
-          }// Add Second Page, Add For Loop
+    //         if (page > 1) {
+    //           await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //         }
+    //       }// Add Second Page, Add For Loop
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color
     //   pdf.setLineWidth(0.1);

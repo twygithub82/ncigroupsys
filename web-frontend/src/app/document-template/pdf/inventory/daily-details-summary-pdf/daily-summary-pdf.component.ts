@@ -45,6 +45,7 @@ import {
 } from 'ng-apexcharts';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts'
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -833,7 +834,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSz = 7;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -858,6 +860,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize:fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -869,8 +872,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -880,7 +883,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //  pdf.setTextColor(0, 0, 0); // Black text
 
     const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
+    // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
+     const subtitlePos=0;
+    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, invDate,subtitlePos);
+    startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     if (this.report_inventory.length > 0) {
       if ((this.report_inventory[0].opening_balance?.length || 0) > 0) {
@@ -912,15 +919,15 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         }
         subData.push([this.translatedLangText.TOTAL, "", this.displayOpeningBalance(), this.displayTotalInGate(),
         this.displayTotalOutGate(), this.displayClosingBalance()]);
-
+        startY=startPostY+PDFUtility.GapBetweenLeftTitleAndTable();  
         autoTable(pdf, {
           head: subHeaders,
           body: subData,
-          startY: startY - 5, // Start table at the current startY value
+          startY: startY , // Start table at the current startY value
 
           theme: 'grid',
           styles: {
-            fontSize: fontSz,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
           },
           columnStyles: subComStyles,
@@ -955,7 +962,9 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+                 PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin,subtitlePos);
               }
             }
           },
@@ -982,7 +991,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       startY: startY, // Start table at the current startY value
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
       },
       columnStyles: comStyles,
@@ -1029,19 +1038,22 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     await this.AddOverviewSummary(pdf, topMargin, pageNumber, pageWidth, pageHeight, rightMargin, leftMargin, minHeightBodyCell, minHeightHeaderCol, bottomMargin, pagePositions);
 
-    const totalPages = pdf.getNumberOfPages();
+     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+
+    // const totalPages = pdf.getNumberOfPages();
 
 
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
-    });
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -1058,7 +1070,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     minHeightBodyCell: number, minHeightHeaderCol: number,
     bottomMargin: number, pagePositions: any[]) {
     const tablewidth = 10;
-    const fontSz = 6;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const bufferContent = 8;
     const contentWidth = pageWidth - leftMargin - rightMargin - bufferContent;
     const chartContentWidth = contentWidth;
@@ -1074,6 +1087,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize:fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -1084,8 +1098,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let scale = this.scale;
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
 
 
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
@@ -1097,12 +1111,18 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
     const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + (bufferContent / 2), lastTableFinalY + 8, 8)
+    // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + (bufferContent / 2), lastTableFinalY + 8, 8)
+    // const subtitlePos=0;
+    // let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    // this.translate, reportTitle, invDate,subtitlePos);
+    // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    const subtitlePos=0;
+    PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+   let startY= PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
-
-
-    let startY = lastTableFinalY + 10;
-    let startX = pageWidth - rightMargin - tablewidth;
+    // let startY = lastTableFinalY + 10;
+    // let startX = pageWidth - rightMargin - tablewidth;
 
 
     //Add table using autoTable plugin
@@ -1132,10 +1152,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       //margin: { left: leftMargin },
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth:contentWidth,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

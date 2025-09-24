@@ -1089,7 +1089,7 @@ export class PDFUtility {
     topMargin -=1.5;
     var fontSize =9;
     var startY = topMargin;
-     var textColor = '#666666';
+     var textColor = '#000000';
     var maxWidth=95;
     var bufferY_CompanyName =  fontSize;
     posY = topMargin;
@@ -1212,7 +1212,7 @@ export class PDFUtility {
     topMargin -=1.5;
     var fontSize =9;
     var startY = topMargin;
-     var textColor = '#666666';
+     var textColor = '#000000';
     var maxWidth=95;
     var bufferY_CompanyName =  fontSize;
     posY = topMargin;
@@ -1452,6 +1452,11 @@ export class PDFUtility {
   static  TankNo_ColWidth_Portrait()
   {
     return 28;
+  }
+
+  static  TankNo_ColWidth_Landscape()
+  {
+    return 18;
   }
 
   static  GapBetweenLeftTitleAndTable()
