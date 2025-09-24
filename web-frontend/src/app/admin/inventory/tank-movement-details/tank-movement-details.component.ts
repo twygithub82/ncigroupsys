@@ -615,11 +615,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
   surveyTypeCvList: CodeValuesItem[] = [];
-  unitTypeCvList: CodeValuesItem[] = []
-  groupNameCvList: CodeValuesItem[] = []
-  subgroupNameCvList: CodeValuesItem[] = []
-  damageCodeCvList: CodeValuesItem[] = []
-  repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = [];
+  residueUnitTypeCvList: CodeValuesItem[] = [];
+  groupNameCvList: CodeValuesItem[] = [];
+  subgroupNameCvList: CodeValuesItem[] = [];
+  damageCodeCvList: CodeValuesItem[] = [];
+  repairCodeCvList: CodeValuesItem[] = [];
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
@@ -632,7 +633,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tariffDepotList: TariffDepotItem[] = [];
   packageBufferList?: PackageBufferItem[];
   packageLabourItem?: PackageLabourItem;
-  sotDepotCostDetails: any = []
+  sotDepotCostDetails: any = [];
   billingBranchList: CustomerCompanyItem[] = [];
 
   last_test_desc?: string = "";
@@ -824,6 +825,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'residueUnitTypeCv', codeValType: 'RESIDUE_UNIT' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -936,6 +938,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
+    });
+    this.cvDS.connectAlias('residueUnitTypeCv').subscribe(data => {
+      this.residueUnitTypeCvList = data;
     });
 
     this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
@@ -2164,7 +2169,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         populateData: {
           packageBufferList: this.packageBufferList,
           billingBranchList: this.billingBranchList,
-          unitTypeCvList: this.unitTypeCvList,
+          residueUnitTypeCvList: this.residueUnitTypeCvList,
           last_test_desc: this.last_test_desc,
           next_test_desc: this.next_test_desc,
           sot_purpose: this.displayTankPurpose(this.sot!)

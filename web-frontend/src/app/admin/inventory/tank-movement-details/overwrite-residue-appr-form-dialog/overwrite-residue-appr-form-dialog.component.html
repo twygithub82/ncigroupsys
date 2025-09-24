@@ -236,7 +236,7 @@
                           [matAutocomplete]="unitCode1">
                         <mat-autocomplete #unitCode1="matAutocomplete" [displayWith]="displayUnitTypeFn"
                           (optionSelected)="updateAction(row);">
-                          @for (cc of data.populateData.unitTypeCvList; track cc) {
+                          @for (cc of data.populateData.residueUnitTypeCvList; track cc) {
                           <mat-option [value]="cc">
                             {{cc.description}}
                           </mat-option>
