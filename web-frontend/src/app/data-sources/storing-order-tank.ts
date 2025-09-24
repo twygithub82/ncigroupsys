@@ -2766,6 +2766,10 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
               update_dt
             }
           }
+          tariff_depot {
+            description
+            profile_name
+          }
         }
       }
       pageInfo {

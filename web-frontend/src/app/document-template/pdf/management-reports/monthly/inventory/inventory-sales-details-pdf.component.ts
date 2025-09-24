@@ -376,7 +376,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         pointStyle: 'circle',
         pointRadius: 3,
         pointBorderColor: 'transparent',
-        pointBackgroundColor: '#222222',
+        pointBackgroundColor: '#000000',
       },
       {
         label: 'Electronics',
@@ -408,19 +408,19 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         title: {
           display: true,
           text: '', // <- your label here
-          color: '#9aa0ac',
+          color: '#000000',
           font: {
             size: 14,
           },
         },
         position: 'left',
         ticks: {
-          color: '#9aa0ac', // Font Color
+          color: '#000000', // Font Color
         },
       },
       x: {
         ticks: {
-          color: '#9aa0ac', // Font Color
+          color: '#000000', // Font Color
         },
       },
     },
@@ -1184,7 +1184,10 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
     var catgries = Object.keys(grpData) as string[];
 
-
+    var shortCat =catgries.map(date => {
+    // Split by '/' and take the first part (dd)
+    return date.split('/')[0];
+  });
 
 
     {
@@ -1296,7 +1299,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
       }
       this.lineChartData.datasets = ds;
-      this.lineChartData.labels = catgries;
+      this.lineChartData.labels = shortCat;
       this.chart?.data != this.lineChartData;
       this.chart?.update();
     }
@@ -1307,6 +1310,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
       startY = lastTableFinalY + 10;
       let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      chartContentWidth =chartContentWidth*0.75;
 
       if (this.chartLine?.nativeElement) {
         pdf.addPage();
@@ -1322,7 +1326,8 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         const aspectRatio = imgInfo.width / imgInfo.height;
         let imgHeight1 = chartContentWidth / aspectRatio;
         // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-        await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
+         await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
+        
 
       }
 

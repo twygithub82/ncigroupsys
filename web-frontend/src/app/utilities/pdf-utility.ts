@@ -1319,10 +1319,17 @@ export class PDFUtility {
   static TableHeaderFontSize_Landscape(): number {
     return 8;
   }
+   static TableHeaderFontSizeXS_Landscape(): number {
+    return 6.5;
+  }
+
   static ContentFontSize_Landscape(): number {
     return 7;
   }
 
+   static TableContentFontSizeXS_Landscape(): number {
+    return 5.5;
+  }
   static TitleFontSize(): number {
     return 14
   }

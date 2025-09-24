@@ -16,17 +16,21 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
+import { Apollo } from 'apollo-angular';
 import { BillingSOTItem } from 'app/data-sources/billing';
+import { PackageDepotDS } from 'app/data-sources/package-depot';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 
 export interface DialogData {
   action?: string;
   translatedLangText?: any;
   billingSot?: BillingSOTItem;
+  customerCompanyGuid?: string;
   tariffDepotList?: TariffDepotItem[];
   populateData?: any;
 }
@@ -61,6 +65,7 @@ export interface DialogData {
   ],
 })
 export class OverwriteDepotCostFormDialogComponent {
+  pdDS: PackageDepotDS;
   billingSot: BillingSOTItem;
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
@@ -74,12 +79,15 @@ export class OverwriteDepotCostFormDialogComponent {
     public dialogRef: MatDialogRef<OverwriteDepotCostFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
+    private apollo: Apollo,
 
   ) {
     // Set the defaults
     this.dialogTitle = data.translatedLangText?.DEPOT_COST;
+    this.pdDS = new PackageDepotDS(this.apollo)
     this.billingSot = data.billingSot!;
     this.overwriteForm = this.createForm();
+    this.initValueChanges();
   }
 
   createForm(): UntypedFormGroup {
@@ -108,6 +116,30 @@ export class OverwriteDepotCostFormDialogComponent {
       depot_cost_remarks: [{ value: '', disabled: !this.canEdit() }],
     });
     return formGroup;
+  }
+
+  initValueChanges() {
+    this.overwriteForm?.get('tariff_depot_guid')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.pdDS.getCustomerPackage(this.data.customerCompanyGuid!, value).subscribe(data => {
+            if (data?.length) {
+              const pd = data[0]
+              this.overwriteForm?.get('preinspection_cost')?.setValue(pd.preinspection_cost);
+              this.overwriteForm?.get('lift_on_cost')?.setValue(pd.lolo_cost);
+              this.overwriteForm?.get('lift_off_cost')?.setValue(pd.lolo_cost);
+              this.overwriteForm?.get('gate_in_cost')?.setValue(pd.gate_in_cost);
+              this.overwriteForm?.get('gate_out_cost')?.setValue(pd.gate_out_cost);
+              this.overwriteForm?.get('storage_cal_cv')?.setValue(pd.storage_cal_cv);
+              this.overwriteForm?.get('storage_cost')?.setValue(pd.storage_cost);
+              this.overwriteForm?.get('free_storage')?.setValue(pd.free_storage);
+            }
+          });
+        }
+      })
+    ).subscribe();
   }
 
   submit() {
