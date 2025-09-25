@@ -1462,13 +1462,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.sot.billing_sot.storage_cost = result.storage_cost;
           this.sot.billing_sot.free_storage = result.free_storage;
           this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
-          this.loadSotDepotCost();
         }
 
         console.log(newSot)
         this.billDS.updateBillingSot(newSot).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateBillingSOT);
+          this.loadDataHandling_sot(this.sot_guid!)
         });
       }
     });
