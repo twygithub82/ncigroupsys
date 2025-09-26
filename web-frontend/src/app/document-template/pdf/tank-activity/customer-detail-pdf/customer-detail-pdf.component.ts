@@ -273,7 +273,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     S_N: 'COMMON-FORM.S_N',
     APPROVAL_REF: 'COMMON-FORM.APPROVAL-REF',
     RELEASE_REF: 'COMMON-FORM.RELEASE-REF',
-    T_WEIGHT:'COMMON-FORM.T_WEIGHT'
+    T_WEIGHT: 'COMMON-FORM.T_WEIGHT'
   }
 
   type?: string | null;
@@ -545,8 +545,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
-    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape() - 1;
+    let fontSz_body = PDFUtility.TableContentFontSizeXS_Landscape() - 1;
     // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
     // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -626,8 +626,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape_xs(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
@@ -636,7 +636,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       8: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
-      11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
       14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
@@ -646,8 +646,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       18: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //release ref
       19: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
       20: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      21: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'  },
-      22: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell }
+      21: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      22: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell }
     };
 
 
@@ -656,7 +656,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
-      fontSize:fontSz_hdr,
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -681,16 +681,16 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
     // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
-     let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
-      startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-      lastTableFinalY=startY;
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    lastTableFinalY = startY;
     var buffer = 30;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
-     // if (n > 0) lastTableFinalY += 8;
+      // if (n > 0) lastTableFinalY += 8;
 
-    
+
 
 
 
@@ -704,7 +704,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
 
-     
+
 
 
       if (this.customerName === '') {
@@ -715,25 +715,25 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
-          
-          if (n > 0) lastTableFinalY += 6; // 2nd table
-          else lastTableFinalY = 49; // First table of the page
 
-           var repPage = pdf.getNumberOfPages();
-      //if(repPage==1)lastTableFinalY=45;
+        if (n > 0) lastTableFinalY += 6; // 2nd table
+        else lastTableFinalY = 49; // First table of the page
 
-          if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-            pdf.addPage();
-            // lastTableFinalY = 5 + topMargin;
-            lastTableFinalY =45 + topMargin;// buffer for 2nd page onward first table's Method
-          }
-          else {
-            CurrentPage = repPage;
-          }
+        var repPage = pdf.getNumberOfPages();
+        //if(repPage==1)lastTableFinalY=45;
+
+        if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+          pdf.addPage();
+          // lastTableFinalY = 5 + topMargin;
+          lastTableFinalY = 45 + topMargin;// buffer for 2nd page onward first table's Method
+        }
+        else {
+          CurrentPage = repPage;
+        }
 
         // lastTableFinalY += 5;
         // pdf.setFontSize(8);
-        var subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
+        var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
         Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
@@ -780,7 +780,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
-      
+
         }
         pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -790,8 +790,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         autoTable(pdf, {
           head: headers,
           body: data,
-        //  startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin , top:topMargin+46},
+          //  startY: startY, // Start table at the current startY value
+          margin: { left: leftMargin, top: topMargin + 46 },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -816,7 +816,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
                 // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-                PDFUtility.addReportTitle_Landscape(pdf,reportTitle,pageWidth,leftMargin,rightMargin);
+                PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
               }
             }
           },
@@ -838,15 +838,15 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           CurrentPage = repPage;
         }
 
-     
 
-         lastTableFinalY += 6;
+
+        lastTableFinalY += 6;
         //pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
-       Utility.AddTextAtRightCornerPage(pdf,subTitle,pageWidth,leftMargin,rightMargin,lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         const repData: any[][] = [];
-       // lastTableFinalY += 3;
+        // lastTableFinalY += 3;
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
           var itm = cust.released_storing_order_tank?.[b]!;
 
@@ -890,14 +890,14 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
           startY = lastTableFinalY; // Start table 20mm below the customer name
 
-     
+
         }
         autoTable(pdf, {
           head: headers,
           body: repData,
-         // startY: startY, // Start table at the current startY value
+          // startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin , top:topMargin+46},
+          margin: { left: leftMargin, top: topMargin + 46 },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
@@ -920,10 +920,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
                 // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-                 PDFUtility.addReportTitle_Landscape(pdf,reportTitle,pageWidth,leftMargin,rightMargin);
+                PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
               }
             }
-         
+
           },
         });
       }
