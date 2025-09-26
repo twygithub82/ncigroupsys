@@ -398,20 +398,17 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '1000px',
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [...row],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        allowRemarks: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
-        const reList = result.item.map((item: any) => {
+        const reList = [...row].map((item: any) => {
           const SteamEstimateRequestInput = {
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
