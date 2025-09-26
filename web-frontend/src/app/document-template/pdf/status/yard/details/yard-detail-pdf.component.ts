@@ -652,7 +652,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
-    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape() - 0.5;
     let minHeightBodyCell = 5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];

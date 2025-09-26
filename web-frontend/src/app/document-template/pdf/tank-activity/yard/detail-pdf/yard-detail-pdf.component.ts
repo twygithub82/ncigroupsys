@@ -869,8 +869,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         let tableHeaderHeight = 12;
         let tableRowHeight = 8.5;
         let minHeightBodyCell=5;
-        let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
-        let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
+        let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape() - 1;
+        let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape() - 0.5;
         //  let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
         // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
 
@@ -893,12 +893,12 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       
         const comStyles : any={ 
           0: { halign: 'center' ,valign:'middle',cellWidth:7 , minCellHeight:minHeightBodyCell},
-          1: { halign: 'left'   ,valign:'middle',cellWidth: PDFUtility.TankNo_ColWidth_Landscape(), minCellHeight:minHeightBodyCell },
+          1: { halign: 'left'   ,valign:'middle',cellWidth: PDFUtility.TankNo_ColWidth_Landscape_xs(), minCellHeight:minHeightBodyCell },
           2: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
           3: { halign: 'center' ,valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize' },
-          4: { halign: 'center' ,valign:'middle',cellWidth: 11 , minCellHeight:minHeightBodyCell },
-          5: { halign: 'center' ,valign:'middle',cellWidth: 10 , minCellHeight:minHeightBodyCell},
-          6: { halign: 'left'   ,valign:'middle',cellWidth: 36 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize' },
+          4: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell },
+          5: { halign: 'center' ,valign:'middle',cellWidth: 11 , minCellHeight:minHeightBodyCell},
+          6: { halign: 'left'   ,valign:'middle',cellWidth: 35 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize' },
           7: { halign: 'center' ,valign:'middle',cellWidth: 13 , minCellHeight:minHeightBodyCell},
           8: { halign: 'center' ,valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
           9: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
@@ -908,7 +908,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           13: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell}, //Last-Test
           14: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell}, //Release Date
           15: { halign: 'center',valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize'}, //Release-Reference
-          16: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
+          16: { halign: 'center',valign:'middle',cellWidth: 17 , minCellHeight:minHeightBodyCell},
           17: { halign: 'left'  ,valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize'},
           18: { halign: 'left'  ,valign:'middle',cellWidth: 13 , minCellHeight:minHeightBodyCell},
           };
