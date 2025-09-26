@@ -1743,6 +1743,32 @@ export class Utility {
 
     return purposes.join('; ');
   }
+
+  static getPurposeLegend(): string {
+    let purposes: any[] = [];
+    purposes.push("S: Storage");
+    purposes.push("C: Cleaning");
+    purposes.push("SE: Steam");
+    purposes.push("R: Repair");
+    return purposes.join(' / ');
+    
+  }
+
+  static getTankStatusLegend(): string {
+    let purposes: any[] = [];
+    purposes.push("SO: SO Generated");
+    purposes.push("IG: In Gate");
+    purposes.push("IS: In Survey");
+    purposes.push("SE: Steam");
+    purposes.push("RE: Residue");
+    purposes.push("C: Cleaning");
+    purposes.push("R: Repair");
+    purposes.push("S: Storage");
+    purposes.push("RO: RO Generated");
+    purposes.push("OG: Out Gate");
+    purposes.push("OS: Out Survey");
+    return purposes.join(' / ');
+  }
   static displayTankStatus_InShort(status_codevalue: string): string {
     let sRetval: string = "";
 
