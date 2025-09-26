@@ -581,7 +581,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
       // 2: { halign: 'left', valign: 'middle', cellWidth: 22 },
       2: { halign: 'center', valign: 'middle', cellWidth: 25 },
       3: { halign: 'center', valign: 'middle' },
-      4: { halign: 'center', valign: 'middle', cellWidth: 25 },
+      4: { halign: 'center', valign: 'middle', cellWidth: 25, overflow: 'ellipsize'},
       5: { halign: 'center', valign: 'middle' , cellWidth: 20},
       6: { halign: 'center', valign: 'middle' , cellWidth: 20},
       7: { halign: 'center', valign: 'middle' , cellWidth: 20},
