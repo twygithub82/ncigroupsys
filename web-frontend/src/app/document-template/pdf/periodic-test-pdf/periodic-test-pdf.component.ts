@@ -609,13 +609,13 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     // let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 9, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait() - 8, minCellHeight: minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 24, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
