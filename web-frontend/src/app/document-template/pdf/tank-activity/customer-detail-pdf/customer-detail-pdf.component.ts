@@ -627,12 +627,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
       6: { halign: 'left', cellWidth: 22, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      7: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
@@ -640,13 +640,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
       14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      15: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      16: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       17: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //release ref
-      19: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
+      18: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //release ref
+      19: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
       20: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      21: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'  },
+      21: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'  },
       22: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell }
     };
 
