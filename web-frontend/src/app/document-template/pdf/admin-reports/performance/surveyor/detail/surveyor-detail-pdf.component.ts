@@ -684,7 +684,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
             //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
             if (d.row.index == totalRowIndex) {
               d.cell.styles.fontStyle = 'bold';
-              d.cell.styles.fillColor = [231, 231, 231];
+              // d.cell.styles.fillColor = [231, 231, 231];
               d.cell.styles.valign = 'middle'; // Center text vertically
               if (d.column.index === 0) {
                 d.cell.colSpan = colSpan;  // Merge 4 columns into one

@@ -885,7 +885,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     const customerGap = 10;
     const bufferSpace = 30;
     let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
-    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape()
+    let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape();
     // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
     // let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -1071,7 +1071,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       var buffer = 20;
      for (let n = 0; n < this.repBillingCustomers.length; n++) {
      
-       if (n>0) lastTableFinalY+=6;
+       if (n>0) lastTableFinalY+=5;
         else lastTableFinalY=StartPosY;
 
       let startY = 0;
