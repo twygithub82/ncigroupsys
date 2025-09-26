@@ -944,7 +944,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
         let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate, reportTitle, invDate);
-      startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+      // startPosY += PDFUtility.GapBetweenLeftTitleAndTable()-3;
       // lastTableFinalY=startPosY;
         // Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,48,8);
   
@@ -954,7 +954,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         var CurrentPage=1;
         var buffer=25;
         for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
-            if (n>0) lastTableFinalY+=6;
+            if (n>0) lastTableFinalY+=5;
             else lastTableFinalY=startPosY;
             const data: any[][] = []; // Explicitly define data as a 2D array
             //let startY = lastTableFinalY + 15; // Start Y position for the current table

@@ -732,7 +732,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
     for (let n = 0; n < this.report_yard_detail.length; n++) {
       // lastTableFinalY += 8;
-      if (n > 0) lastTableFinalY += 6; // 2nd table
+      if (n > 0) lastTableFinalY += 5; // 2nd table
       else lastTableFinalY = startPosY; // First table of the page
 
       const data: any[][] = []; // Explicitly define data as a 2D array
