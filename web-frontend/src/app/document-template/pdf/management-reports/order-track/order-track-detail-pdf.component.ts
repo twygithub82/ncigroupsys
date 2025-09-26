@@ -536,16 +536,16 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell,  overflow: 'ellipsize' },
       3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 65, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      6: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle', cellWidth: 58, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      6: { halign: 'left', valign: 'middle', cellWidth: 36, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      7: { halign: 'center', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      11: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
