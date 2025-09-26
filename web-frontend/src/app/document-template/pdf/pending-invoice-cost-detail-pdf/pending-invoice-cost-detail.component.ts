@@ -324,8 +324,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
 
-    this.onDownloadClick();
+   
   }
+
 
   removeEstimateWithZeroTotal(cust: report_billing_customer[]): report_billing_customer[] {
     let retval: report_billing_customer[] = cust.map(c => {
@@ -340,7 +341,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
+    await this.onDownloadClick();
   }
 
   async generatePDF(): Promise<void> {
@@ -890,8 +891,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_body= PDFUtility.TableHeaderFontSizeXS_Landscape()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -933,7 +934,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
    let afterSumTableY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,StartPosY,
       minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
-      
+      afterSumTableY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
   //  pdf.addPage();
     //await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
@@ -983,7 +984,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       const customer= `${cust.customer}`;
         await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-      startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+
+      startY=StartPosY+PDFUtility.GapBetweenLeftTitleAndTable();
+      // startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
      // PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
       // pdf.setFontSize(8);
       // //pdf.setFont("helvetica", "bold"); // Make it bold
@@ -1028,32 +1031,33 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       autoTable(pdf, {
         head: headers,
         body: data,
-        startY: startY, // Start table at the current startY value
+        startY: lastTableFinalY, // Start table at the current startY value
         theme: 'grid',
-        margin: { left: leftMargin,top:StartPosY },
+        margin: { left: leftMargin , top:StartPosY },
         styles: {
           fontSize: fontSz_body,
           minCellHeight: minHeightHeaderCol
 
         },
+        tableWidth:contentWidth,
         columnStyles: {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle', cellWidth: 20,minCellHeight: minHeightBodyCell },
+          0: { halign: 'center', valign: 'middle', cellWidth: 10,minCellHeight: minHeightBodyCell },
+          1: { halign: 'center', valign: 'middle', cellWidth: 23,minCellHeight: minHeightBodyCell },
           2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
-          3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-          4: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-          5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          3: { halign: 'left', valign: 'middle', cellWidth: 32,minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+          4: { halign: 'center', valign: 'middle',cellWidth: 14,  minCellHeight: minHeightBodyCell },
+          5: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
+          6: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
+          7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          8: { halign: 'center', valign: 'middle',cellWidth: 23, minCellHeight: minHeightBodyCell },
+          9: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          10: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          11: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          12: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          13: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          14: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          15: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
           16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         },
         headStyles: headStyles, // Custom header styles

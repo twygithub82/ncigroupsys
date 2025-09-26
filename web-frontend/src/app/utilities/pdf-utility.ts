@@ -412,11 +412,14 @@ export class PDFUtility {
     return startY;
   }
 
-  static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
-    leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number; x: number; y: number; }[]) {
-    var fontSize = 8
-    var totalPages = pdf.getNumberOfPages();
-    for (const { page, x, y } of pagePositions) {
+   static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number, 
+    leftMargin: number, rightMargin: number,  translateService: TranslateService, pagePositions: { page: number; x: number; y: number; }[], 
+    showPurposeLegend:boolean=false,showTankStatusLegend:boolean=false): Promise<void>{ 
+     var fontSize =PDFUtility.RightSubTitleFontSize();
+     var totalPages=pdf.getNumberOfPages();
+     var Purposelegend = Utility.getPurposeLegend();
+     var Statuslegend = Utility.getTankStatusLegend();
+     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -429,6 +432,17 @@ export class PDFUtility {
 
       if (page > 1) {
         await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+      }
+      if(showPurposeLegend){
+
+        //  pdf.text(`${Purposelegend}`, leftMargin + 1, pdf.internal.pageSize.height - 8, { align: 'left' });
+      }
+      if(showTankStatusLegend){
+        var posY : number =pdf.internal.pageSize.height - 8;
+        // if(showPurposeLegend){
+        //   posY+=fontSize/2;
+        // }
+        pdf.text(`${Statuslegend}`, leftMargin + 1, posY, { align: 'left' });
       }
     }// Add Second Page, Add For Loop
   }
