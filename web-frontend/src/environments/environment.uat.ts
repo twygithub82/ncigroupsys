@@ -17,7 +17,7 @@ export const testTypeMapping: any = {
 
 export const customerInfo = {
   companyName: 'NCI GLOBAL PTE LTD',
-  companyAbb: 'NIC Global',
+  companyAbb: 'NCI Global',
   companyAddress: '10G Enterprise Road, Enterprise 10, Singapore 629833',
   companyPhone: '+65 6517 9848',
   companyFax: '+65 6517 9848',

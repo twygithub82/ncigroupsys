@@ -3,10 +3,10 @@ export const environment = {
   title: 'Home',
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
-  apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
-  graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://https://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
+  apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
+  fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
+  graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
+  graphqlWsUrl: 'wss://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
   topicSubscribe: '/idms/all/*'
 };
 
