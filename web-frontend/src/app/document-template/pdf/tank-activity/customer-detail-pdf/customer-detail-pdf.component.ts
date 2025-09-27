@@ -704,9 +704,6 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
 
-
-
-
       if (this.customerName === '') {
         lastTableFinalY += PDFUtility.SubTitleFontSize_Landscape();
         pdf.setFontSize(PDFUtility.RightSubTitleFontSize());
