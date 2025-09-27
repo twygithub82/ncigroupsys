@@ -712,7 +712,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       12: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       14: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      15: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
       //16: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       16: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'},
       17: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
