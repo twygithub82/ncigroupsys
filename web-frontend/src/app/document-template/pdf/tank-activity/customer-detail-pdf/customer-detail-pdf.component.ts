@@ -634,9 +634,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       6: { halign: 'left', cellWidth: 22, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       7: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
-      11: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
       14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
@@ -716,7 +716,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
 
-        if (n > 0) lastTableFinalY += 6; // 2nd table
+        if (n > 0) lastTableFinalY += 5; // 2nd table
         else lastTableFinalY = 49; // First table of the page
 
         var repPage = pdf.getNumberOfPages();
@@ -840,7 +840,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
 
-        lastTableFinalY += 6;
+        lastTableFinalY += 5;
         //pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
         Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());

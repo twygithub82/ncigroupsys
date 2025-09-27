@@ -351,7 +351,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     await this.getCodeValuesData();
     this.report_tank_summaries = this.data.report_tank_survey;
     this.date = this.data.date;
-    this.onDownloadClick();
+   await this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -542,7 +542,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   async onDownloadClick() {
-    this.exportToPDF_r1();
+   await this.exportToPDF_r1();
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -625,9 +625,8 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       3: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      
     };
 
     lastTableFinalY += 9;
@@ -705,7 +704,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
             minCellHeight: minHeightHeaderCol
 
           },
-          tableWidth: tableWidth, // Set the table width
+          tableWidth: contentWidth, // Set the table width
           columnStyles: comStyles,
           headStyles: headStyles, // Custom header styles
           bodyStyles: {

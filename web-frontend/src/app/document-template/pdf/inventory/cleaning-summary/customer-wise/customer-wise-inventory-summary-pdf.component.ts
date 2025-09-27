@@ -871,9 +871,10 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     const clnDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     // pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     // Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 4, startY - 3, 8);
+    var buffer=4;
      const subtitlePos=0;
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
-    this.translate, reportTitle, clnDate,subtitlePos);
+    this.translate, reportTitle, clnDate,subtitlePos,buffer);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     var idx = 0;

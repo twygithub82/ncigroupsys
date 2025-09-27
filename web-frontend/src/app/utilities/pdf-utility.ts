@@ -177,7 +177,8 @@ export class PDFUtility {
     translateService: TranslateService, // Inject TranslateService
     title: string,
     subTitle: string,
-    subtitlePos: number = 0
+    subtitlePos: number = 0,
+    bufferSubtitle: number=0
   ): Promise<number> {
     var startY = topMargin;
     await this.addHeaderWithCompanyLogo_Portriat_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
@@ -186,7 +187,7 @@ export class PDFUtility {
     }
 
     if (subTitle != null && subTitle != '') {
-      startY = this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin, rightMargin, subtitlePos);
+      startY = this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin+bufferSubtitle, rightMargin+bufferSubtitle, subtitlePos);
     }
 
     return startY;
