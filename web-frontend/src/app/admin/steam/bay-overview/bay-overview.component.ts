@@ -143,8 +143,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     DETAILS: 'COMMON-FORM.DETAILS',
     STEAM: 'MENUITEMS.STEAM.TEXT',
-    YARD:'COMMON-FORM.YARD',
-    CLEAN_STATUS:'COMMON-FORM.CLEAN-STATUS',
+    YARD: 'COMMON-FORM.YARD',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
     BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION'
   }
 
@@ -206,6 +206,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
 
   private jobOrderSubscriptions: Subscription[] = [];
 
+  isMobile = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -239,9 +241,18 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeValueChanges();
     this.QueryBays();
     //this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   triggerRefresh() {
@@ -797,7 +808,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
 
     });
   }
-  
+
   showTankInfo(event: Event, team: any) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -807,7 +818,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-      width: '45vw',
+      width: this.isMobile ? '90vw' : '45vw',
       disableClose: true,
       data: {
         selectedItem: team.jobOrderItem?.storing_order_tank!,
