@@ -626,7 +626,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape_xs(), minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: PDFUtility.TankNo_ColWidth_Landscape_xs() - 1, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
@@ -634,7 +634,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       6: { halign: 'left', cellWidth: 22, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       7: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
       11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
