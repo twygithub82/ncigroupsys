@@ -594,7 +594,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
         { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
         { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
-        { content: this.translatedLangText.T_WEIGHT, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
         { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
 
         // Maintenance Details (8 columns)
@@ -734,7 +734,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         // lastTableFinalY += 5;
         // pdf.setFontSize(8);
         var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
-        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -843,7 +845,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         lastTableFinalY += 5;
         //pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
-        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         const repData: any[][] = [];
         // lastTableFinalY += 3;
@@ -1126,7 +1129,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   GetReportTitle(): string {
     var repTitle = `${this.translatedLangText.TANK_ACTIVITY}`;
     if (this.customerName) {
-      repTitle += ` - ${this.customerName}`;
+      repTitle += ` : ${this.customerName}`;
     }
     return repTitle;
   }
