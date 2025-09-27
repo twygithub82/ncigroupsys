@@ -1749,7 +1749,8 @@ export class Utility {
     purposes.push("S: Storage");
     purposes.push("C: Cleaning");
     purposes.push("SE: Steam");
-    purposes.push("R: Repair");
+    purposes.push("R|I: Repair");
+    purposes.push("O: Offhire");
     return purposes.join(' / ');
     
   }
@@ -1762,7 +1763,7 @@ export class Utility {
     purposes.push("SE: Steam");
     purposes.push("RE: Residue");
     purposes.push("C: Cleaning");
-    purposes.push("R: Repair");
+    purposes.push("R|I: Repair");
     purposes.push("S: Storage");
     purposes.push("RO: RO Generated");
     purposes.push("OG: Out Gate");

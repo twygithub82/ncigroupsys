@@ -664,12 +664,14 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
     const dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    let startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin, this.translate, reportTitle, dtstr);
-    startY +=PDFUtility.SubTitleFontSize_Portrait()/2;
     const approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
-    Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
-    startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
+    let startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, approvalDt);
+    startY +=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    //  startY +=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    
+    // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
+    // startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);

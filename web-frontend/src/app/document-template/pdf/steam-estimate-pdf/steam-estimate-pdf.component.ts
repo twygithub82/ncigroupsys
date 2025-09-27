@@ -608,21 +608,15 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = 37; // Start table 20mm below the customer name
 
-    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-
-
+    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, this.pdfTitle, '');
+    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2);
+    //await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    
     //pdf.setLineWidth(0.1);
-    // pdf.setFontSize(8);
-    // pdf.setTextColor(0, 0, 0); // Black text
+    //pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
-    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-    //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
-    // const data: any[][] = [];
+
+    
     var item = this.steamItem;
     var data: any[][] = [
       [
@@ -692,9 +686,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       },
     });
 
-    startY = lastTableFinalY + 4;
-    PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 8);
-    startY += 4;
+    // startY = lastTableFinalY + 4;
+    // PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 8);
+    // startY += 4;
     this.createSteamEstimateDetail(pdf, startY, leftMargin, rightMargin, pageWidth);
     // PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,9);
     // startY+=3;
@@ -941,12 +935,16 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     var item = this.steamItem;
     this.flashPoint = `${item.storing_order_tank?.tariff_cleaning?.flash_point} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`;
     var cc = item.storing_order_tank?.storing_order?.customer_company;
-    await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
 
-    startY = 43;
-    PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 12, false, 1
-      , '#000000', false);
-    startY += 8;
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+       this.translate, this.pdfTitle, '');
+    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+    // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
+
+    // startY = 43;
+    // PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 12, false, 1
+    //   , '#000000', false);
+    // startY += 8;
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
@@ -978,7 +976,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       body: data,
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin , top:topMargin+45},
+      margin: { left: leftMargin , top:startY},
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1037,7 +1035,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     //   // 
     pdf.line(leftMargin, yPos, (pageWidth + 2 - rightMargin), yPos);
     startY = yPos + 4;
-    await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
+    // await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
 
     //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
     this.downloadFile(pdf.output('blob'), this.getReportTitle())

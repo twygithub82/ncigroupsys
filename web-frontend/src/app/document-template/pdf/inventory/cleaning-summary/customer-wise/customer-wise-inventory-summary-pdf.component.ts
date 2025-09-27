@@ -874,7 +874,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     var buffer=4;
      const subtitlePos=0;
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
-    this.translate, reportTitle, clnDate,subtitlePos,buffer);
+    this.translate, reportTitle, clnDate,subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     var idx = 0;
@@ -892,13 +892,14 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
       head: headers,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { top: startY},
+      margin: { left:leftMargin, top: startPostY},
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth:contentWidth,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

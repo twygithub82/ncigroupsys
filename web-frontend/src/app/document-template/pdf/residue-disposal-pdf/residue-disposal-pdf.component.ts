@@ -814,12 +814,16 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     let startY = 0; // Start table 20mm below the customer name
     var item = this.residueItem;
     var cc = item.storing_order_tank?.storing_order?.customer_company;
-    await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
 
-    startY = 43;
-    PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY - 2, 12, false, 1
-      , '#000000', false);
-    startY += 8;
+     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+       this.translate, this.pdfTitle, '');
+    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+    // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
+
+    // startY = 43;
+    // PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY - 2, 12, false, 1
+    //   , '#000000', false);
+    // startY += 8;
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
@@ -851,7 +855,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       body: data,
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin, top:topMargin+45 },
+      margin: { left: leftMargin, top:startY },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -898,7 +902,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var yPos = startY;
     pdf.line(leftMargin, yPos, (pageWidth + 2 - rightMargin), yPos);
     startY = yPos + 4;
-    await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
+    // await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
     this.downloadFile(pdf.output('blob'), this.getPdfFileName())
     this.dialogRef.close();
   }

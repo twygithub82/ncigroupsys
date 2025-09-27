@@ -722,7 +722,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     const subtitlePos = 1;
     let startPosY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin,this.translate,reportTitle,'');
-    startPosY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    startPosY+= (PDFUtility.GapBetweenSubTitleAndTable_Landscape()*2);
 
     // lastTableFinalY +=8;
     var CurrentPage = 1;
@@ -832,7 +832,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     }
 
     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin, this.translate,pagePositions);
+    rightMargin, this.translate,pagePositions,true);
     
     // const totalPages = pdf.getNumberOfPages();
 
@@ -1133,7 +1133,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.DETAIL_REPORT}`
+    return `${this.translatedLangText.YARD_DETAIL_REPORT}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

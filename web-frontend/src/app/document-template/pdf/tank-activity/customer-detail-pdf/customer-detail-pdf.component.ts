@@ -356,7 +356,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.report_customer_tank_activity = this.data.report_customer_tank_activity;
     this.invType = this.data.type;
     this.customerName = this.data.customerName;
-    this.onDownloadClick();
+    await this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -505,7 +505,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   async onDownloadClick() {
     //this.exportToPDF();
-    this.exportToPDF_r1();
+   await this.exportToPDF_r1();
     //this.exportToPDF_r2();
   }
 
@@ -734,7 +734,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         // lastTableFinalY += 5;
         // pdf.setFontSize(8);
         var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
-        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+       // Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -843,8 +844,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         lastTableFinalY += 5;
         //pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
-        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-
+       // Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+         Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
         const repData: any[][] = [];
         // lastTableFinalY += 3;
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {

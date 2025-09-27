@@ -10,8 +10,8 @@ import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
     bold: boolean = false, fontFamily: string = 'helvetica', wrap: boolean = false, maxWidth: number = 0,
-    underline: boolean = false, textColor: string = '#000000') {
-
+    underline: boolean = false, textColor: string = '#000000'):number {
+    var crtY=topPos;
     pdf.saveGraphicsState();
     const fontStyle = bold ? 'bold' : 'normal';
     pdf.setTextColor(textColor);
@@ -39,6 +39,7 @@ export class PDFUtility {
     // pdf.setFontSize(fontSize); // Title font size 
     // pdf.text(content, leftPost, topPos); // Position it at the top
     pdf.restoreGraphicsState();
+    return crtY + fontSize * 0.3528; // return next Y (bottom of printed text)
   }
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
@@ -91,8 +92,8 @@ export class PDFUtility {
   static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-
+    var titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    titleX+=1;
     pdf.text(text, titleX, topPosition); // Position it at the top
 
     // pdf.setLineDashPattern([0, 0], 0);
@@ -216,9 +217,12 @@ export class PDFUtility {
   }
 
   static async addFooterWithPageNumberAndCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
-    leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[]) {
+    leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[],
+  showPurposeLegend:boolean=false,showTankStatusLegend:boolean=false) {
     var fontSize = 8
     var totalPages = pdf.getNumberOfPages();
+    var Statuslegend=Utility.getTankStatusLegend();
+    var Purposelegend=Utility.getPurposeLegend();
     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
@@ -229,6 +233,20 @@ export class PDFUtility {
       const lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+       if(showPurposeLegend){
+
+          pdf.text(`${Purposelegend}`, leftMargin + 1, pdf.internal.pageSize.height - 8, { align: 'left' });
+      }
+
+      if(showTankStatusLegend){
+        var posY : number =pdf.internal.pageSize.height - 8;
+        if(showPurposeLegend){
+          posY+=fontSize/2;
+        }
+        pdf.text(`${Statuslegend}`, leftMargin + 1, posY, { align: 'left' });
+      }
+
 
       if (page > 1) {
         await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
@@ -1353,7 +1371,8 @@ export class PDFUtility {
   }
 
   static TitlePositionY_Portrait(): number {
-    return 38
+    var bufferGap=0;
+    return (38-bufferGap);
   }
 
   static SubTitlePositionY_Landscape(): number {
@@ -1361,7 +1380,8 @@ export class PDFUtility {
   }
 
   static SubTitlePositionY_Portrait(): number {
-    return (this.TitlePositionY_Portrait() + 11)
+    var buffer =10;
+    return (this.TitlePositionY_Portrait() + buffer)
   }
 
   static SubTitleFontSize_Landscape(): number {
@@ -1487,6 +1507,6 @@ export class PDFUtility {
   }
 
   static GapBetweenSubTitleAndTable_Landscape() {
-    return ((this.SubTitleFontSize_Landscape() / 2) + 1);;
+    return ((this.SubTitleFontSize_Landscape() / 2)+1 );;
   }
 }

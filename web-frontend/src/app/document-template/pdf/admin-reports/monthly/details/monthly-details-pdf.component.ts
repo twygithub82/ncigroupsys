@@ -736,13 +736,13 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     ,reportTitle,repGeneratedDate,subtitlePos);
 
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
-       startY += PDFUtility.SubTitleFontSize_Portrait() / 2;
+       startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
     if (this.customer) {
      
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       const customer =`${this.customer}`
       Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
-       startY += PDFUtility.SubTitleFontSize_Portrait() / 2;
+       startY += PDFUtility.GapBetweenLeftTitleAndTable();
       //Utility.addText(pdf, customer, startY, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
     }
     var idx = 0;

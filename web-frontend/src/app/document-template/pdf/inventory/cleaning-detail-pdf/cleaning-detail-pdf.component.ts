@@ -616,8 +616,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     const cutoffDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     
      const subtitlePos=0;
-    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, 
-    leftMargin+(bufferTableWidth), rightMargin+(bufferTableWidth), this.translate, reportTitle, cutoffDate,subtitlePos);
+    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, cutoffDate,subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);

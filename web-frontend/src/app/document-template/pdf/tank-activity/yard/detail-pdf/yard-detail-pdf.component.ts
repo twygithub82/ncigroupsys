@@ -359,7 +359,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     await this.getCodeValuesData();
-    this.onDownloadClick();
+    await this.onDownloadClick();
   }
 
   async generatePDF(): Promise<void> {
@@ -778,7 +778,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
   async onDownloadClick() {
     //this.exportToPDF();
-    this.exportToPDF_r1();
+    await this.exportToPDF_r1();
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -944,6 +944,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
         let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate, reportTitle, invDate);
+      startPosY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
       // startPosY += PDFUtility.GapBetweenLeftTitleAndTable()-3;
       // lastTableFinalY=startPosY;
         // Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,48,8);

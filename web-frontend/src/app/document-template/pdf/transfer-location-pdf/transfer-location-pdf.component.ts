@@ -646,7 +646,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     
     for (let n = 0; n < this.report_transfer_location.length; n++) {
       //if (n > 0) lastTableFinalY += 9;
-        if (n>0) lastTableFinalY+=6;
+        if (n>0) lastTableFinalY+=5;
         else lastTableFinalY=StartPosY;
 
       let startY = 0;
