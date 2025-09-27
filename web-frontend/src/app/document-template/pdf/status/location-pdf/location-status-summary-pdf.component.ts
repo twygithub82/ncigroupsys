@@ -875,7 +875,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
+    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.DATE, this.GeneratedDate()); // Replace with your actual cutoff date
     // Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), startY - 2 , 9);
 
     const subtitlePos=0;
