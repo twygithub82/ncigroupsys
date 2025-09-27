@@ -225,6 +225,7 @@
                   {{this.getTariffCleaningRemarks()}} </mat-label>
               </div>
             </div>
+            @if (!isMobile) {
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 p-l-25 p-r-25">
                 <div class="row">
@@ -357,6 +358,7 @@
                 </div>
               </div>
             </div>
+            }
           </div>
         </div>
       </div>
@@ -371,7 +373,7 @@
           <span>{{translatedLangText.ROLLBACK}}</span>
         </button>
         }
-        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" class="me-1">
           @if(canEdit()){
           {{translatedLangText.CANCEL}}
           }

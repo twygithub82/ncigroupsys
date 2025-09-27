@@ -613,7 +613,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
+    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
     
      const subtitlePos=0;
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
@@ -630,7 +630,6 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       if (n > 0) lastTableFinalY += 5; // 2nd table
       else {
         lastTableFinalY =startPostY ; //1st Page 1st table
-        
       }
      
       
@@ -643,7 +642,6 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
         lastTableFinalY = startPostY; /// buffer for 2nd page onward first table's Method
-
       }
       else {
         CurrentPage = repPage;

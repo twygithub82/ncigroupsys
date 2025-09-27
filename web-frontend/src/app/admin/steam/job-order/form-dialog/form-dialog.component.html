@@ -190,6 +190,7 @@
                 <mat-label>{{translatedLangText.REMARKS}} : {{this.getTariffCleaningRemarks()}}</mat-label>
               </div>
             </div>
+            @if (!isMobile) {
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 p-l-25 p-r-25">
                 <div class="row">
@@ -204,20 +205,17 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row summary-view-gutter">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   {{translatedLangText.APPROVAL}}
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   {{translatedLangText.JOB_ALLOCATION}}
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   {{translatedLangText.JOB_COMPLETION}}
                                 </div>
@@ -244,27 +242,23 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row summary-view-gutter">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.pcForm.get('update_by')?.value?ConvertSystemToPascalCase(this.pcForm.get('update_by')?.value):'-'}}</span>
                                   <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.create_by?ConvertSystemToPascalCase(this.selectedItem?.job_order?.create_by):"-"}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.complete_dt?ConvertSystemToPascalCase(this.selectedItem?.job_order?.update_by):"-"}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>-</span>
                                 </div>
@@ -286,26 +280,22 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row summary-view-gutter">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDateFromEpoch(this.pcForm.get('update_on')?.value):'-'}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.create_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.create_dt):"-"}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.displayDateFromEpoch(this.selectedItem?.job_order?.complete_dt):"-"}}</span>
                                 </div>
                               </div>
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2  text-center border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2  text-center border">
                                 <div class="table-label">
                                   <span></span><span>-</span>
                                 </div>
@@ -319,6 +309,7 @@
                 </div>
               </div>
             </div>
+            }
           </div>
         </div>
       </div>

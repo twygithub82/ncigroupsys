@@ -40,14 +40,12 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-
-// import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
-// import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 
 @Component({
   selector: 'app-estimate',
@@ -79,6 +77,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    TlxCardListComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -199,6 +198,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   copiedResidueEst?: ResidueItem;
 
+  isMobile = false;
+
   pageStateType = 'ResidueDisposalEstimateApproval'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -209,6 +210,12 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor: any;
+
+  pagedResidueDataFull: { [guid: string]: any[][] } = {};
+  pagedResidueData: { [guid: string]: any[] } = {};
+  currentResidueIndex: { [guid: string]: number } = {};
+  currentIndex = 0;
+  touchStartX = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -240,9 +247,21 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
+    this.displayedColumns = this.isMobile
+      ? ['estimate_no', 'status_cv', 'actions']
+      : ['estimate_no', 'net_cost', 'status_cv', 'remarks', 'actions'];
   }
 
   refresh() {
@@ -344,7 +363,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
   }
 
-
   rollbackRow(row: ResidueItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
@@ -352,7 +370,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       // this.toggleRow(row);
       selectedList.push(row);
     }
-    this.rollbackSelectedRows(selectedList)
+    this.rollbackSelectedRows(selectedList);
   }
 
   rollbackSelectedRows(row: ResidueItem[]) {
@@ -362,24 +380,21 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [...row],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        allowRemarks: true,
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
+        const reList = [...row].map((item: any) => {
           const ResidueEstimateRequestInput = {
-            customer_guid: item.customer_company_guid,
+            customer_guid: item?.storing_order_tank?.storing_order?.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
-            remarks: item.remarks,
+            remarks: result?.remarks,
             sot_guid: item.sot_guid,
             is_approved: item?.status_cv == "APPROVED"
           }
@@ -393,7 +408,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       }
     });
   }
-
 
   copyResidueEst(residueEst: ResidueItem) {
     this.copiedResidueEst = residueEst;
@@ -623,37 +637,66 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        var residueStatusFilter = this.searchForm!.value['est_status_cv'];
-        this.sotList = data.map(sot => {
-          sot.residue = (sot.residue || []).map(res => {
-            if (residueStatusFilter.length) {
-              if (residueStatusFilter.includes(res.status_cv)) {
-                var res_part = [...res.residue_part!];
-                res.residue_part = res_part?.filter(data => !data.delete_dt);
-                return { ...res, net_cost: this.calculateNetCost(res) }
-              } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
-                return { ...res, net_cost: this.calculateNetCost(res) };
+        if (data) {
+          var residueStatusFilter = this.searchForm!.value['est_status_cv'];
+          this.sotList = data.map(sot => {
+            sot.residue = (sot.residue || []).map(res => {
+              if (residueStatusFilter.length) {
+                if (residueStatusFilter.includes(res.status_cv)) {
+                  var res_part = [...res.residue_part!];
+                  res.residue_part = res_part?.filter(data => !data.delete_dt);
+                  return { ...res, net_cost: this.calculateNetCost(res) }
+                } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                  return { ...res, net_cost: this.calculateNetCost(res) };
+                }
+                return {};
               }
-              return {};
-            }
-            else {
-              if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
-                var res_part = [...res.residue_part!];
-                res.residue_part = res_part?.filter(data => !data.delete_dt);
-                return { ...res, net_cost: this.calculateNetCost(res) }
-              } else {
-                return []
+              else {
+                if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                  var res_part = [...res.residue_part!];
+                  res.residue_part = res_part?.filter(data => !data.delete_dt);
+                  return { ...res, net_cost: this.calculateNetCost(res) }
+                } else {
+                  return []
+                }
               }
-            }
-          })
+            })
 
-          this.sotList = this.sotList.map(sot => {
-            sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
+            this.sotList = this.sotList.map(sot => {
+              sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
+              return sot;
+            });
+
             return sot;
           });
 
-          return sot;
-        });
+          if (this.isMobile) {
+            const chunkSize = 1;
+            this.pagedResidueDataFull = {};
+            this.pagedResidueData = {};
+            this.currentResidueIndex = {};
+
+            this.sotList.forEach((sot: any) => {
+              const residue = sot.residue || [];
+              const chunks: any[][] = [];
+
+              for (let i = 0; i < residue.length; i += chunkSize) {
+                chunks.push(residue.slice(i, i + chunkSize));
+              }
+
+              this.pagedResidueDataFull[sot.guid] = chunks;
+              this.currentResidueIndex[sot.guid] = 0;
+              this.pagedResidueData[sot.guid] = chunks[0] || [];
+            });
+          } else {
+            // Reset if not in mobile view
+            this.pagedResidueDataFull = {};
+            this.pagedResidueData = {};
+            this.currentResidueIndex = {};
+          }
+          this.cardListComponent?.resetExpanded();
+        }
+
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -1002,5 +1045,51 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
+  }
+
+  @ViewChild(TlxCardListComponent) cardListComponent!: TlxCardListComponent;
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent, item: any): void {
+    const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+    const threshold = 50;
+
+    if (deltaX > threshold) {
+      this.goToPrevPage(item);
+    } else if (deltaX < -threshold) {
+      this.goToNextPage(item);
+    }
+  }
+
+  goToPage(item: any, index: number): void {
+    const guid = item.guid;
+    const allPages = this.pagedResidueDataFull[guid] || [];
+    const total = allPages.length;
+
+    if (index >= 0 && index < total) {
+      this.currentResidueIndex[guid] = index;
+      this.pagedResidueData[guid] = allPages[index];
+    }
+  }
+
+  goToNextPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentResidueIndex[guid];
+    const max = this.pagedResidueDataFull[guid]?.length || 0;
+
+    if (current < max - 1) {
+      this.goToPage(item, current + 1);
+    }
+  }
+
+  goToPrevPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentResidueIndex[guid];
+
+    if (current > 0) {
+      this.goToPage(item, current - 1);
+    }
   }
 }

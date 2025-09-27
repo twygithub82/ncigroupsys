@@ -129,6 +129,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   totalCost_depot: number = 0;
   totalCost_customer: number = 0;
 
+  isMobile = false;
 
   translatedLangText: any = {};
   langText = {
@@ -156,11 +157,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
     JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
     OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
@@ -245,7 +242,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   };
 
   constructor(
-
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -270,9 +266,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   ngOnInit() {
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.loadData();
     if (this.AllowChangingCost()) this.initializeValueChanges();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   createCleaningChargesItem() {

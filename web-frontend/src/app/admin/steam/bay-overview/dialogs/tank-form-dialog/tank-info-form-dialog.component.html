@@ -12,7 +12,7 @@
   <div mat-dialog-content>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card modal-card">
+        <div class="card modal-card mb-0">
           <div class="header">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
@@ -20,8 +20,7 @@
           </div>
           <div class="body">
             <mat-card-content>
-              <div class="row">
-                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -89,59 +88,59 @@
                   </div>
                 </div> -->
 
-                <div class="table-responsive">
-                  <table class="table table-bordered table-striped curve-table">
-                    <tbody>
-                      <!-- Tank No -->
-                      <tr>
-                        <th>{{translatedLangText.TANK_NO}}:</th>
-                        <td>
-                          {{sotItem?.tank_no}}
-                          @if (tiItem?.previous_tank_no) {
-                          (<span class="previous-label">{{tiItem?.previous_tank_no}}</span>)
-                          }
-                        </td>
-                      </tr>
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped curve-table">
+                  <tbody>
+                    <!-- Tank No -->
+                    <tr>
+                      <th>{{translatedLangText.TANK_NO}}:</th>
+                      <td>
+                        {{sotItem?.tank_no}}
+                        @if (tiItem?.previous_tank_no) {
+                        (<span class="previous-label">{{tiItem?.previous_tank_no}}</span>)
+                        }
+                      </td>
+                    </tr>
 
-                      <!-- Customer -->
-                      <tr>
-                        <th>{{translatedLangText.CUSTOMER}}:</th>
-                        <td>
-                          {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                        </td>
-                      </tr>
+                    <!-- Customer -->
+                    <tr>
+                      <th>{{translatedLangText.CUSTOMER}}:</th>
+                      <td>
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                      </td>
+                    </tr>
 
-                      <!-- Purpose -->
-                      <tr>
-                        <th>{{translatedLangText.PURPOSE}}:</th>
-                        <td>{{displayTankPurpose(sotItem!)}}</td>
-                      </tr>
+                    <!-- Purpose -->
+                    <tr>
+                      <th>{{translatedLangText.PURPOSE}}:</th>
+                      <td>{{displayTankPurpose(sotItem!)}}</td>
+                    </tr>
 
-                      <!-- EIR Date -->
-                      <tr>
-                        <th>{{translatedLangText.EIR_DATE}}:</th>
-                        <td>
-                          {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt) || "-"}}
-                        </td>
-                      </tr>
+                    <!-- EIR Date -->
+                    <tr>
+                      <th>{{translatedLangText.EIR_DATE}}:</th>
+                      <td>
+                        {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt) || "-"}}
+                      </td>
+                    </tr>
 
-                      <!-- Last Cargo -->
-                      <tr>
-                        <th>{{translatedLangText.LAST_CARGO}}:</th>
-                        <td>{{sotItem?.tariff_cleaning?.cargo}}</td>
-                      </tr>
+                    <!-- Last Cargo -->
+                    <tr>
+                      <th>{{translatedLangText.LAST_CARGO}}:</th>
+                      <td>{{sotItem?.tariff_cleaning?.cargo}}</td>
+                    </tr>
 
-                      <!-- Cleaning Method -->
-                      <tr>
-                        <th>{{translatedLangText.CLEANING_METHOD}}:</th>
-                        <td>{{sotItem!.tariff_cleaning?.cleaning_method?.name}}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                    <!-- Cleaning Method -->
+                    <tr>
+                      <th>{{translatedLangText.CLEANING_METHOD}}:</th>
+                      <td>{{sotItem!.tariff_cleaning?.cleaning_method?.name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
 
-                <!-- <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
+              <!-- <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -183,7 +182,6 @@
                     </div>
                   </div>
                 </div> -->
-              </div>
             </mat-card-content>
           </div>
         </div>

@@ -252,7 +252,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     EXISTED: 'COMMON-FORM.EXISTED',
     SAVE_AND_PUBLISH: 'COMMON-FORM.SAVE-AND-PUBLISH',
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
-    CONFIRM_RESET:'COMMON-FORM.RESET',
+    CONFIRM_RESET: 'COMMON-FORM.RESET',
   }
   private destroy$ = new Subject<void>();
 
@@ -310,6 +310,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
+
+  isMobile = false;
 
   // Stepper
   isLinear = false;
@@ -398,6 +400,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.isImageLoading$ = this.fileManagerService.loading$;
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
@@ -413,6 +420,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   override ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   initForm() {
@@ -1492,7 +1503,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onFormSubmit(toPublish: boolean) {
-    // TODO :: Need save and publish
+    // Need save and publish
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
@@ -1605,7 +1616,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const record = result.data.record
           if (record?.affected) {
             this.uploadImages(record.guid[0], true);
-            this.onDownload(record.guid[0], record.residue_guid);
+            if (!this.isMobile) {
+              // If mobile, do not download
+              this.onDownload(record.guid[0], record.residue_guid);
+            }
           }
         });
       }
@@ -1697,14 +1711,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         console.log(result)
         const record = result.data?.publishIngateSurvey
         this.handleSaveSuccess(record?.affected);
-        this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
+        if (!this.isMobile) {
+          this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
+        }
       });
     }
   }
 
   onDownload(igs_guid?: string, residue_guid?: string) {
     let tempDirection: Direction;
-
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {

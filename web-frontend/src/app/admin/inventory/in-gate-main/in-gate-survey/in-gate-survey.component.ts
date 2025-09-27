@@ -140,6 +140,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   hasNextPage = false;
   hasPreviousPage = false;
 
+  isMobile = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -166,10 +168,36 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initSearchForm();
     this.initializeValueChanges();
     this.searchStateService.clearOtherPagesKeys([this.pageStateType, 'InGate']);
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
+    this.displayedColumns = this.isMobile
+      ?
+      [
+        'tank_no',
+        'customer',
+        'last_cargo',
+      ]
+      :
+      [
+        'tank_no',
+        'customer',
+        'eir_no',
+        'eir_dt',
+        'last_cargo',
+        'purpose',
+        'eir_status_cv'
+      ];
   }
 
   initSearchForm() {

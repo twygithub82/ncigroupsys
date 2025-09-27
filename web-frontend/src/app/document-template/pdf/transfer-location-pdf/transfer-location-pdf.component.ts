@@ -634,7 +634,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     lastTableFinalY += 8;
     //pdf.setFontSize(8);
-    const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
+    const invDate = PDFUtility.FormatColon(this.translatedLangText.TRANSFER_PERIOD, this.date);;
  //   Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY, 8);
     
     let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 

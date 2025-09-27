@@ -1,5 +1,5 @@
-.mat-mdc-card-content:last-child{
-    padding: 5px;
+.mat-mdc-card-content:last-child {
+  padding: 5px;
 }
 
 ::ng-deep .table.table-bordered tbody tr td,
@@ -8,15 +8,27 @@
 }
 
 .curve-table {
+  width: 100%;
+
   th {
     width: 200px;
     white-space: nowrap;
     text-align: left;
+    vertical-align: top;
+
+    @media (max-width: 767px) {
+      word-wrap: break-word;
+      white-space: normal;
+    }
   }
 
   td {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-wrap: break-word;
   }
+}
+
+.card .header {
+  border-bottom: unset;
 }

@@ -53,4 +53,8 @@ export class TlxCardListComponent {
     isExpanded(itemId: number): boolean {
         return this.expandedItems.has(itemId);
     }
+
+    resetExpanded() {
+        this.expandedItems.clear();
+    }
 }
