@@ -143,7 +143,7 @@
                   </mat-card-actions>
                 </mat-card>
                 }
-                @for(row of sotList; track row){
+                <!-- @for(row of sotList; track row){
                 <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
                   <mat-accordion>
                     <mat-expansion-panel [ngClass]="{}" class="alternate-panel" [expanded]="false">
@@ -236,7 +236,7 @@
                                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
 
                                 @if(residueRow.status_cv !== 'JOB_IN_PROGRESS' && IsEnable3Dots(residueRow)){
-                                <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)" >
+                                <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                                   <mat-icon>more_vert</mat-icon>
                                 </button>
                                 }
@@ -285,7 +285,199 @@
                     </mat-expansion-panel>
                   </mat-accordion>
                 </mat-card>
-                }
+                } -->
+
+                <tlx-card-list [items]="sotList">
+                  <ng-template #cardTemplate let-item>
+                    <div class="d-flex align-items-center ms-3">
+                      <div class="flex-grow-1">
+                        <div class="row align-items-center">
+                          <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 col-xs-6 m-b-0">
+                            <span class="header-label font-bold">{{ item.tank_no }}</span>
+                          </div>
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                            <span class="header-label font-bold">{{ translatedLangText.CUSTOMER }}:</span>
+                            <span class="value-label">{{ item.storing_order?.customer_company?.name }}</span>
+                          </div>
+                          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                            <span class="header-label font-bold">{{ translatedLangText.EIR_DATE }}:</span>
+                            <span class="value-label">{{ displayDate(igDS.getInGateItem(item.in_gate)?.eir_dt) }}</span>
+                          </div>
+                          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                            <span class="header-label font-bold">{{ translatedLangText.JOB_NO }}:</span>
+                            <span class="value-label">{{ item.job_no }}</span>
+                          </div>
+                          <div class="col m-b-0 d-none d-md-block">
+                            <span class="header-label font-bold">{{ translatedLangText.STATUS }}:</span>
+                            <span class="value-label">{{ getTankStatusDescription(item.tank_status_cv) }}</span>
+                          </div>
+                          <div
+                            class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-6 m-b-0 d-flex d-md-none justify-content-center">
+                            <span class="header-label font-bold">{{ item.storing_order?.customer_company?.code }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ms-2 flex-shrink-0">
+                        <div class="d-flex justify-content-end">
+                          @if (copiedResidueEst) {
+                          <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                            (click)="pasteResidueEstimate($event, item, copiedResidueEst)">
+                            <mat-icon class="col-white">content_paste</mat-icon>
+                          </button>
+                          }
+                          @else {
+                          <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
+                            (click)="addResidueEstimate($event, item)">
+                            <mat-icon class="col-white">add</mat-icon>
+                          </button>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #expandedTemplate let-item>
+                    <div class="responsive_table">
+                      <div class="table-wrapper" (touchstart)="onTouchStart($event)"
+                        (touchend)="onTouchEnd($event, item)">
+                        <table mat-table [dataSource]="isMobile ? pagedResidueData[item.guid] : item.residue || []"
+                          matSort class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                          <ng-container matColumnDef="id">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let residueRow">{{residueRow.guid}}</mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="estimate_no">
+                            <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                              {{translatedLangText.ESTIMATE_NO}}
+                            </mat-header-cell>
+                            <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                              <span
+                                class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="net_cost">
+                            <mat-header-cell *matHeaderCellDef>
+                              {{translatedLangText.COST}}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let residueRow">
+                              <span class="mobile-label">{{translatedLangText.COST}}:</span>
+                              <span>{{residueRow.net_cost}}</span>
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="status_cv">
+                            <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                              {{translatedLangText.STATUS}}
+                            </mat-header-cell>
+                            <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                              <span
+                                class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="remarks">
+                            <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                              {{translatedLangText.REMARKS}}
+                            </mat-header-cell>
+                            <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                              <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="actions">
+                            <mat-header-cell
+                              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                              *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let residueRow; let i=index;"
+                              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                              @if (isMobile) {
+                              @if (residueDS.canApprove(residueRow)) {
+                              <button mat-icon-button (click)="approveRow($event,residueRow)"
+                                (click)="stopEventTrigger($event)" [matTooltip]="translatedLangText.APPROVE">
+                                <mat-icon>check</mat-icon>
+                              </button>
+                              }
+                              @if (residueDS.canCopy(residueRow)) {
+                              <button mat-icon-button (click)="copyResidueEst(residueRow)"
+                                (click)="stopEventTrigger($event)" [matTooltip]="translatedLangText.COPY">
+                                <mat-icon>content_copy</mat-icon>
+                              </button>
+                              }
+                              @if (residueDS.canRollback(residueRow)) {
+                              <button mat-icon-button (click)="rollbackRow(residueRow)"
+                                (click)="stopEventTrigger($event)" [matTooltip]="translatedLangText.ROLLBACK">
+                                <mat-icon>undo</mat-icon>
+                              </button>
+                              }
+                              @if (residueDS.canCancel(residueRow)) {
+                              <button mat-icon-button (click)="cancelRow(residueRow)" (click)="stopEventTrigger($event)"
+                                [matTooltip]="translatedLangText.DELETE">
+                                <mat-icon>delete_forever</mat-icon>
+                              </button>
+                              }
+                              @if (residueDS.canNoAction(residueRow)) {
+                              <button mat-icon-button (click)="onNoAction($event,residueRow)"
+                                (click)="stopEventTrigger($event)" [matTooltip]="translatedLangText.NO_ACTION">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                              } @else if(IsEnable3Dots(residueRow)) {
+                              <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                <mat-icon>more_vert</mat-icon>
+                              </button>
+
+                              <mat-menu #menu="matMenu">
+                                @if (residueDS.canApprove(residueRow)) {
+                                <button mat-menu-item (click)="approveRow($event,residueRow)">
+                                  <mat-icon>check</mat-icon>
+                                  <span>{{translatedLangText.APPROVE}}</span>
+                                </button>
+                                }
+                                @if (residueDS.canCopy(residueRow)) {
+                                <button mat-menu-item (click)="copyResidueEst(residueRow)">
+                                  <mat-icon>content_copy</mat-icon>
+                                  <span>{{translatedLangText.COPY}}</span>
+                                </button>
+                                }
+                                @if (residueDS.canRollback(residueRow)) {
+                                <button mat-menu-item (click)="rollbackRow(residueRow)">
+                                  <mat-icon>undo</mat-icon>
+                                  <span>{{translatedLangText.ROLLBACK}}</span>
+                                </button>
+                                }
+                                @if (residueDS.canCancel(residueRow)) {
+                                <button mat-menu-item (click)="cancelRow(residueRow)">
+                                  <mat-icon>delete_forever</mat-icon>
+                                  <span>{{translatedLangText.DELETE}}</span>
+                                </button>
+                                }
+                                @if (residueDS.canNoAction(residueRow)) {
+                                <button mat-menu-item (click)="onNoAction($event,residueRow)">
+                                  <mat-icon>close</mat-icon>
+                                  <span>{{translatedLangText.NO_ACTION}}</span>
+                                </button>
+                                }
+                              </mat-menu>
+                              }
+                            </mat-cell>
+                          </ng-container>
+                          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                          <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                            matRipple (click)="updateResidueEstimate($event, item, residueRow)">
+                          </mat-row>
+                        </table>
+
+                        @if (isMobile && pagedResidueDataFull[item.guid].length > 1) {
+                        <div class="pagination-indicator text-center">
+                          @for (page of pagedResidueDataFull[item.guid]; track page; let i = $index) {
+                          <span class="dot-shape" [class.active]="i === currentResidueIndex[item.guid]"
+                            (click)="goToPage(item, i)">
+                          </span>
+                          }
+                        </div>
+                        }
+                      </div>
+                    </div>
+                  </ng-template>
+                </tlx-card-list>
                 <!-- No result -->
                 @if (!(sotDS.loading$ | async) && !sotList.length) {
                 <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
