@@ -44,15 +44,9 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageDepotItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
-
-
 
 @Component({
   selector: 'app-package-depot-form-dialog',
@@ -237,7 +231,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ARE_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
   };
 
-
   selectedItems: any;
   selectedItem: any;
   igCleanDS: InGateCleaningDS;
@@ -245,8 +238,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   igCleanItems: any = [];
   totalCost_depot: number = 0;
   totalCost_customer: number = 0;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
+
+  isMobile = false;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -259,6 +252,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
     this.igCleanDS = new InGateCleaningDS(this.apollo);
@@ -271,6 +269,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   createCleaningChargesItem() {

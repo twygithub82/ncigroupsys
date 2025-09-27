@@ -120,6 +120,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   cleaningTotalHours: number = 3;
 
+  isMobile = false;
+
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -236,7 +238,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ARE_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE'
   };
 
-
   selectedItems: any;
   selectedItem: any;
   steamDs: SteamDS;
@@ -256,6 +257,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
     this.steamDs = new SteamDS(this.apollo);
@@ -267,7 +273,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+  }
 
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   createCleaningChargesItem() {
@@ -812,7 +821,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       return numA - numB;
     });
   }
-  
+
   getTariffCleaningRemarks() {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "-";
   }
@@ -878,13 +887,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
-   ConvertSystemToPascalCase(str?: string):string {
-    
-    var retval =str||'-';
-    if(retval.toUpperCase()==="SYSTEM")
-    {
-      retval =  Utility.toPascalCase(retval);
+  ConvertSystemToPascalCase(str?: string): string {
+
+    var retval = str || '-';
+    if (retval.toUpperCase() === "SYSTEM") {
+      retval = Utility.toPascalCase(retval);
     }
-    return retval;  
+    return retval;
   }
 }
