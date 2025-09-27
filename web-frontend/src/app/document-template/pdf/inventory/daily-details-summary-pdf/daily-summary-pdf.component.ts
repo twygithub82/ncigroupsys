@@ -848,8 +848,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
@@ -882,9 +882,9 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
 
-    const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
+    const invDate = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date); // Replace with your actual cutoff date
     // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
-     const subtitlePos=0;
+    const subtitlePos=0;
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, invDate,subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
@@ -900,7 +900,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
         const subComStyles: any = {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center', cellWidth: 100, minCellHeight: minHeightBodyCell },
+          0: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
           1: { halign: 'center', minCellHeight: minHeightBodyCell },
           2: { halign: 'center', cellWidth: 30, minCellHeight: minHeightBodyCell },
           3: { halign: 'center', cellWidth: 30, minCellHeight: minHeightBodyCell },
