@@ -915,7 +915,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     const data: any[][] = []; // Explicitly define data as a 2D array
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const repGeneratedDate = `${this.translatedLangText.DATE} : ${this.GeneratedDate()}`; // Replace with your actual cutoff date
+    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.DATE, this.GeneratedDate()); // Replace with your actual cutoff date
     // Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5,  48, 9);
     const subtitlePos=0;
     startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
