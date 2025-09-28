@@ -3787,7 +3787,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         steam_guid: steam?.guid,
         selectedItem: steam,
-        sotItem: this.sot
+        sotItem: this.sot,
+        lastTestDesc: this.last_test_desc || '',
+        nextTestDesc: this.next_test_desc || ''
       },
       direction: tempDirection
     });
