@@ -88,18 +88,6 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ],
-  animations: [
-    trigger('swipeAnimation', [
-      transition(':increment', [
-        style({ transform: 'translateX(100%)', opacity: 0 }),
-        animate('300ms ease-out', style({ transform: 'translateX(0)', opacity: 1 })),
-      ]),
-      transition(':decrement', [
-        style({ transform: 'translateX(-100%)', opacity: 0 }),
-        animate('300ms ease-out', style({ transform: 'translateX(0)', opacity: 1 })),
-      ]),
-    ]),
-  ],
 })
 export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [

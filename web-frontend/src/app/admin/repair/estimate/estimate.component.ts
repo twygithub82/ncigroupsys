@@ -47,6 +47,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 
 @Component({
   selector: 'app-estimate',
@@ -79,6 +80,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    TlxCardListComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -215,6 +217,14 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     status_cv: this.availableProcessStatus
   }
 
+  isMobile = false;
+
+  pagedRepairDataFull: { [guid: string]: any[][] } = {};
+  pagedRepairData: { [guid: string]: any[] } = {};
+  currentRepairIndex: { [guid: string]: number } = {};
+  currentIndex = 0;
+  touchStartX = 0;
+
   constructor(
     private route: ActivatedRoute,
     public httpClient: HttpClient,
@@ -245,9 +255,21 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
+    this.displayedColumns = this.isMobile
+      ? ['estimate_no', 'status_cv', 'actions']
+      : ['estimate_no', 'estimate_date', 'job_no', 'net_cost', 'status_cv', 'remarks', 'actions'];
   }
 
   refresh() {
@@ -658,23 +680,52 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data.map(sot => {
-          sot.repair = sot.repair
-            ?.filter(rep => {
-              let shouldInclude = true;
-              if (this.filterRECheck.est_dt_start && this.filterRECheck.est_dt_end) {
-                shouldInclude = shouldInclude && (rep.create_dt || 0) >= this.filterRECheck.est_dt_start && (rep.create_dt || 0) <= this.filterRECheck.est_dt_end;
+        if (data) {
+          this.sotList = data.map(sot => {
+            sot.repair = sot.repair
+              ?.filter(rep => {
+                let shouldInclude = true;
+                if (this.filterRECheck.est_dt_start && this.filterRECheck.est_dt_end) {
+                  shouldInclude = shouldInclude && (rep.create_dt || 0) >= this.filterRECheck.est_dt_start && (rep.create_dt || 0) <= this.filterRECheck.est_dt_end;
+                }
+                if (this.filterRECheck.status_cv.length) {
+                  shouldInclude = shouldInclude && this.filterRECheck.status_cv.includes(rep.status_cv || '');
+                }
+                return shouldInclude;
+              })
+              ?.map(rep => {
+                return { ...rep, net_cost: this.calculateNetCost(rep) }
+              })
+            return sot;
+          });
+
+          if (this.isMobile) {
+            const chunkSize = 1;
+            this.pagedRepairDataFull = {};
+            this.pagedRepairData = {};
+            this.currentRepairIndex = {};
+
+            this.sotList.forEach((sot: any) => {
+              const repair = sot.repair || [];
+              const chunks: any[][] = [];
+
+              for (let i = 0; i < repair.length; i += chunkSize) {
+                chunks.push(repair.slice(i, i + chunkSize));
               }
-              if (this.filterRECheck.status_cv.length) {
-                shouldInclude = shouldInclude && this.filterRECheck.status_cv.includes(rep.status_cv || '');
-              }
-              return shouldInclude;
-            })
-            ?.map(rep => {
-              return { ...rep, net_cost: this.calculateNetCost(rep) }
-            })
-          return sot;
-        });
+
+              this.pagedRepairDataFull[sot.guid] = chunks;
+              this.currentRepairIndex[sot.guid] = 0;
+              this.pagedRepairData[sot.guid] = chunks[0] || [];
+            });
+          } else {
+            // Reset if not in mobile view
+            this.pagedRepairDataFull = {};
+            this.pagedRepairData = {};
+            this.currentRepairIndex = {};
+          }
+          this.cardListComponent?.resetExpanded();
+        }
+
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -919,5 +970,51 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
+  }
+
+  @ViewChild(TlxCardListComponent) cardListComponent!: TlxCardListComponent;
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent, item: any): void {
+    const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+    const threshold = 50;
+
+    if (deltaX > threshold) {
+      this.goToPrevPage(item);
+    } else if (deltaX < -threshold) {
+      this.goToNextPage(item);
+    }
+  }
+
+  goToPage(item: any, index: number): void {
+    const guid = item.guid;
+    const allPages = this.pagedRepairDataFull[guid] || [];
+    const total = allPages.length;
+
+    if (index >= 0 && index < total) {
+      this.currentRepairIndex[guid] = index;
+      this.pagedRepairData[guid] = allPages[index];
+    }
+  }
+
+  goToNextPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentRepairIndex[guid];
+    const max = this.pagedRepairDataFull[guid]?.length || 0;
+
+    if (current < max - 1) {
+      this.goToPage(item, current + 1);
+    }
+  }
+
+  goToPrevPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentRepairIndex[guid];
+
+    if (current > 0) {
+      this.goToPage(item, current - 1);
+    }
   }
 }
