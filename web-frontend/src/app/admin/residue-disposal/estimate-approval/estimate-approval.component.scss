@@ -10,3 +10,50 @@
     display: block;
     padding: 0 10px;
 }
+
+.table-wrapper {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pagination-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+
+    .dot-shape {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #ccc;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        cursor: pointer;
+        transform: scale(1);
+
+        &.active {
+            background-color: #3f51b5;
+        }
+    }
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.table-slide-track {
+    display: flex;
+    width: 300%;
+    /* 3 items */
+    transition: transform 0.3s ease-in-out;
+}
+
+.table-slide-item {
+    flex: 0 0 100%;
+    width: 100vw;
+    /* Critical: limits to viewport width */
+    box-sizing: border-box;
+}

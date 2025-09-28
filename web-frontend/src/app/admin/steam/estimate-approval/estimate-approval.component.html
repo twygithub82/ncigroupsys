@@ -478,7 +478,7 @@
                           </mat-row>
                         </table>
 
-                        @if (isMobile && pagedSteamDataFull[item.guid].length > 1) {
+                        @if (isMobile && pagedSteamDataFull[item.guid].length > 0) {
                         <div class="pagination-indicator text-center">
                           @for (page of pagedSteamDataFull[item.guid]; track page; let i = $index) {
                           <span class="dot-shape" [class.active]="i === currentSteamIndex[item.guid]"

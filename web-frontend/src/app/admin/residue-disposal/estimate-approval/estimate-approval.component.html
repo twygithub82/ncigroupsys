@@ -465,7 +465,7 @@
                           </mat-row>
                         </table>
 
-                        @if (isMobile && pagedResidueDataFull[item.guid].length > 1) {
+                        @if (isMobile && pagedResidueDataFull[item.guid].length > 0) {
                         <div class="pagination-indicator text-center">
                           @for (page of pagedResidueDataFull[item.guid]; track page; let i = $index) {
                           <span class="dot-shape" [class.active]="i === currentResidueIndex[item.guid]"

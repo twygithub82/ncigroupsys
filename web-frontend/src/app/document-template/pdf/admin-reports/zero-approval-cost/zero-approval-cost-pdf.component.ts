@@ -1097,7 +1097,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
   GetReportTitle(): string {
     var title: string = '';
-    title = `${this.repType} - ${this.translatedLangText.ZERO_APPROVAL_COST}`
+    title = `${this.repType} : ${this.translatedLangText.ZERO_APPROVAL_COST}`
     return `${title}`
   }
 
