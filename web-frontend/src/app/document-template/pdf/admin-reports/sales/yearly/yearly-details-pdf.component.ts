@@ -832,7 +832,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     {
       //const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
       const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
       //Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }

@@ -903,7 +903,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin: { top: startY ,left:leftMargin},
+      margin: { top: startPostY ,left:leftMargin},
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,

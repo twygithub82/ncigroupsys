@@ -536,11 +536,12 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     this.sotList.map(s => {
 
       if (s) {
-        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.customer_guid === s.storing_order?.customer_company?.guid) || new report_customer_tank_activity();
         let newCust = false;
-        if (!repCust.code) {
+        if (!repCust.customer_guid) {
           repCust.code = s.storing_order?.customer_company?.code;
           repCust.customer = s.storing_order?.customer_company?.name;
+          repCust.customer_guid = s.storing_order?.customer_company?.guid;
           newCust = true;
         }
         repCust.number_tank ??= 0;

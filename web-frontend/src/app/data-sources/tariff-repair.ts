@@ -78,6 +78,59 @@ export interface TariffLabourResult {
   totalCount: number;
 }
 
+export class TariffRepairSubGroup {
+  subgroup_name_cv: string;
+  items: TariffRepairItem[];
+
+  constructor(subgroupName: string, items: TariffRepairItem[]) {
+    this.subgroup_name_cv = subgroupName;
+    this.items = items;
+  }
+}
+
+export class TariffRepairGroup {
+  group_name_cv: string;
+  subgroups: TariffRepairSubGroup[];
+
+  constructor(groupName: string, subgroups: TariffRepairSubGroup[]) {
+    this.group_name_cv = groupName;
+    this.subgroups = subgroups;
+  }
+}
+
+export class TariffRepairGrouper {
+  static groupItems(items: TariffRepairItem[]): TariffRepairGroup[] {
+    const grouped: { [groupName: string]: { [subGroupName: string]: TariffRepairItem[] } } = {};
+
+    for (const item of items) {
+      const groupName = item.group_name_cv || '-';
+      const subGroupName = item.subgroup_name_cv || '-';
+
+      if (!grouped[groupName]) {
+        grouped[groupName] = {};
+      }
+      if (!grouped[groupName][subGroupName]) {
+        grouped[groupName][subGroupName] = [];
+      }
+
+      grouped[groupName][subGroupName].push(item);
+    }
+
+    // Convert object into classes
+    return Object.keys(grouped).map(
+      (groupName) =>
+        new TariffRepairGroup(
+          groupName,
+          Object.keys(grouped[groupName]).map(
+            (subGroupName) =>
+              new TariffRepairSubGroup(subGroupName, grouped[groupName][subGroupName])
+          )
+        )
+    );
+  }
+}
+
+
 export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffRepairResult : queryTariffRepair(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
@@ -505,4 +558,52 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     }
     return `${row?.alias}`;
   }
+
+  SearchAllTariffRepairs(where?: any, order?: any): Observable<TariffRepairItem[]> {
+  const pageSize = 100; // adjust based on your backend’s max allowed page size
+  let allResults: TariffRepairItem[] = [];
+  let hasNextPage = true;
+  let afterCursor: string | null = null;
+
+  return new Observable<TariffRepairItem[]>((observer) => {
+    const fetchPage = () => {
+      this.apollo
+        .query<any>({
+          query: GET_TARIFF_REPAIR_QUERY,
+          variables: {
+            where,
+            order,
+            first: pageSize,
+            after: afterCursor,
+          },
+          fetchPolicy: 'no-cache',
+        })
+        .pipe(
+          map((result) => result.data?.tariffRepairResult || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            observer.error(error);
+            return of({ nodes: [], pageInfo: { hasNextPage: false } });
+          })
+        )
+        .subscribe((tariffRepairResult) => {
+          allResults = [...allResults, ...tariffRepairResult.nodes];
+          this.totalCount = tariffRepairResult.totalCount;
+          this.pageInfo = tariffRepairResult.pageInfo;
+
+          hasNextPage = tariffRepairResult.pageInfo?.hasNextPage;
+          afterCursor = tariffRepairResult.pageInfo?.endCursor;
+
+          if (hasNextPage && afterCursor) {
+            fetchPage(); // fetch next page
+          } else {
+            observer.next(allResults);
+            observer.complete();
+          }
+        });
+    };
+
+    fetchPage();
+  });
+ }
 }

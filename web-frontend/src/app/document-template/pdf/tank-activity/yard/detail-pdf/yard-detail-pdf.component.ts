@@ -961,24 +961,13 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
             //let startY = lastTableFinalY + 15; // Start Y position for the current table
             let cust = this.report_customer_tank_activity[n];
       
-              // Calculate space required for customer name and table
-            // var subTitleHeight = 20; // Height required for customer name
-            // var tableHeight = ((cust.storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
-        
-            // // Check if there is enough space on the current page
-            // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-            //   // Add a new page if there isn't enough space
-            //   pdf.addPage();
-            //   pageNumber++;
-            //   lastTableFinalY = topMargin; // Reset Y position for the new page
-            //   if (n>0) lastTableFinalY+=8;
-            // }
+         
 
             
           var repPage = pdf.getNumberOfPages();
           //if(repPage==1)lastTableFinalY=45;
           
-          if((pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
+          if((pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin+bottomMargin))
           {
             pdf.addPage();
             lastTableFinalY=startPosY;

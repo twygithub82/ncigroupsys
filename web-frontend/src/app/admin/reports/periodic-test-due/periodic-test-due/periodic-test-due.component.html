@@ -72,6 +72,11 @@
               </div> -->
         </div>
       </form>
+       @if (!(sotDS.loading$ | async) && this.noCond) {
+      <div class="pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+        <h5 class="m-b-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
+      </div>
+      }
     </mat-expansion-panel>
   </mat-accordion>
 </div>

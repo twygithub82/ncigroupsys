@@ -928,6 +928,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate, reportTitle, cutoffDate);
       StartPosY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+      StartPosY+=PDFUtility.GapBetweenLeftTitleAndTable();
     // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
 
 
@@ -950,7 +951,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           lastTableFinalY += 6; // 2nd table
         }
       else {
-        startY=afterSumTableY + PDFUtility.GapBetweenLeftTitleAndTable();
+         startY=afterSumTableY ;
         lastTableFinalY = startY; // First table of the page
       }
 
@@ -968,7 +969,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
         if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
-          lastTableFinalY = StartPosY;
+          lastTableFinalY = StartPosY -PDFUtility.GapBetweenLeftTitleAndTable();
         }
         else {
           CurrentPage = repPage;
@@ -1031,7 +1032,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       autoTable(pdf, {
         head: headers,
         body: data,
-        startY: lastTableFinalY, // Start table at the current startY value
+        // startY: lastTableFinalY, // Start table at the current startY value
         theme: 'grid',
         margin: { left: leftMargin , top:StartPosY },
         styles: {
@@ -1050,7 +1051,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           5: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
           6: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          8: { halign: 'center', valign: 'middle',cellWidth: 23, minCellHeight: minHeightBodyCell },
+          8: { halign: 'center', valign: 'middle',cellWidth: 20, minCellHeight: minHeightBodyCell },
           9: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
           10: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
           11: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },

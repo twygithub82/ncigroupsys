@@ -610,16 +610,16 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 9, minCellHeight: minHeightBodyCell },
       1: { halign: 'left', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait() - 8, minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      2: { halign: 'left', valign: 'middle', cellWidth: 21, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
     };
 
     //  lastTableFinalY +=8;
@@ -700,6 +700,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
         autoTable(pdf, {
           head: headers,
           body: data,
+          tableWidth: contentWidth,
         // startY: startY, // Start table at the current startY value
           theme: 'grid',
           margin: {left:leftMargin, top:startPosY+PDFUtility.GapBetweenLeftTitleAndTable() },

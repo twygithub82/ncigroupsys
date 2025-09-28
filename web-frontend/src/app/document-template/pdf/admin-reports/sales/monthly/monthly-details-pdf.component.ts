@@ -675,7 +675,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape()-0.5;
     let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -728,6 +728,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     ]];
 
 
+    var costCellWidth=15;
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -735,21 +736,21 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle',cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: costCellWidth,minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle',cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', valign: 'middle',cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      14: { halign: 'center', valign: 'middle',cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      16: { halign: 'center', valign: 'middle',cellWidth: costCellWidth, minCellHeight: minHeightBodyCell },
       17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      18: { halign: 'center', valign: 'middle', cellWidth: costCellWidth,minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle

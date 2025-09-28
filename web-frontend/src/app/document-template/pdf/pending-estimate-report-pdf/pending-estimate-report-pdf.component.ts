@@ -854,7 +854,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
      startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
        rightMargin, this.translate, reportTitle, '');
-    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    startY +=  (PDFUtility.GapBetweenSubTitleAndTable_Portrait());
+    startY +=  (PDFUtility.GapBetweenLeftTitleAndTable());
 
     var repPage = pdf.getNumberOfPages();
     // if(repPage==1)lastTableFinalY=45;
