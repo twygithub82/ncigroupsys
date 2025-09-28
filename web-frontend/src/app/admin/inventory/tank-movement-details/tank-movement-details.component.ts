@@ -2813,13 +2813,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
       data: {
         action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: "",//`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -2863,14 +2863,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '500px',
       data: {
         action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: "",//`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -2910,14 +2909,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '500px',
       data: {
         action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: "",//this.translatedLangText.CLEANING,
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -2953,14 +2951,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '500px',
       data: {
         action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: "",//this.translatedLangText.CLEANING,
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -3013,14 +3010,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '500px',
       data: {
         action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        messageText: "", //`${this.translatedLangText.ESTIMATE_NO}: ${row.estimate_no}`,
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
