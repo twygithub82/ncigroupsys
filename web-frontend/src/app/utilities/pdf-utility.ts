@@ -78,7 +78,8 @@ export class PDFUtility {
     fontSize: number, textColor: string = '#000000') {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.setTextColor(textColor);
-    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    var titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    titleWidth+=0.5;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
@@ -1371,7 +1372,7 @@ export class PDFUtility {
   }
 
   static TitlePositionY_Portrait(): number {
-    var bufferGap=0;
+    var bufferGap=2;
     return (38-bufferGap);
   }
 

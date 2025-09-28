@@ -59,6 +59,8 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
   `;
 }
 
+
+
 export function addDefaultSelectOption(list: CodeValuesItem[] | undefined, desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
   // Check if the list already contains the default value
   list = list ?? [];
@@ -91,6 +93,28 @@ export const GET_ALL_CLASS_NO = gql`
   }
 }
 `;
+
+const SEARCH_CODE_VALUES_QUERY = gql`
+ query querycodevalues($where: code_valuesFilterInput, $order: [code_valuesSortInput!], $first: Int) {
+    codeValues: queryCodeValues(where: $where, order: $order, first: $first) {
+      totalCount
+      nodes {
+        child_code
+        code_val
+        code_val_type
+        create_by
+        create_dt
+        delete_dt
+        description
+        guid
+        sequence
+        update_by
+        update_dt
+      }
+    }
+ }
+`;
+
 
 export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
@@ -264,5 +288,25 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
       return cv[0];
     }
     return undefined;
+  }
+
+  getAllCodeValues(
+    where: any = {},
+    order: any[] = [{ sequence: { asc: true } }],
+    first: number = 100
+  ): Observable<CodeValuesItem[]> {
+    return this.apollo
+      .watchQuery<any>({
+        query: SEARCH_CODE_VALUES_QUERY,
+        variables: { where, order, first },
+        fetchPolicy: 'network-only'
+      })
+      .valueChanges.pipe(
+        map((result) =>
+          result.data.codeValues.nodes.map(
+            (node: any) => new CodeValuesItem(node)
+          )
+        )
+      );
   }
 }

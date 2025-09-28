@@ -36,7 +36,7 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
-import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairGrouper, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
@@ -1126,5 +1126,30 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   refreshPartNameList() {
     const existingValue = this.partNameControl?.value;
     this.partNameControl?.setValue(existingValue);
+  }
+  export_report()
+  {
+    var order={};
+    var where={};
+    this.subs.sink = this.trfRepairDS.SearchAllTariffRepairs(where, order).subscribe(data => {
+      this.trfRepairItems = data;
+      var groupedRepair = TariffRepairGrouper.groupItems(this.trfRepairItems);
+      // Extract group and subgroup names
+      const groupnames = data
+        .filter(a => a.group_name_cv && a.group_name_cv !== "")
+        .map(a => a.group_name_cv);
+
+      const subgroupnames = data
+        .filter(a => a.subgroup_name_cv && a.subgroup_name_cv !== "")
+        .map(a => a.subgroup_name_cv);
+
+      // Merge and distinct
+      const allNames = [...groupnames, ...subgroupnames];
+      const distinctNames = Array.from(new Set(allNames));
+      this.cvDS.getAllCodeValues(distinctNames).subscribe(cvdata => {
+        const cvList = cvdata;
+      });
+
+    });
   }
 }

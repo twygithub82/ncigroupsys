@@ -684,32 +684,33 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
     var repRec = this.repData?.[0];
-
+       var zerovalue="0.00"
     for (let n = 0; n < (repRec?.monthly_summary?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = repRec?.monthly_summary?.[n];
       // const repairCost = itm?.repair_cost || 0;
       // totalRepairCost += repairCost; // Add to the total
+     
       for (let i = 0; i < (itm?.surveyorList?.length || 0); i++) {
         let mnth = (i == 0) ? itm?.month : '';
         let subItm = itm?.surveyorList?.[i];
         data.push([
-          mnth || "", subItm?.surveyor_name || "", subItm?.est_count || "", Utility.formatNumberDisplay(subItm?.est_cost) || '',
-          Utility.formatNumberDisplay(subItm?.appv_cost) || '', Utility.formatNumberDisplay(subItm?.diff_cost) || '',
-          Utility.formatNumberDisplay(subItm?.average), subItm?.rejected || ''
+          mnth || "", subItm?.surveyor_name || "", subItm?.est_count || "0", Utility.formatNumberDisplay(subItm?.est_cost) || zerovalue,
+          Utility.formatNumberDisplay(subItm?.appv_cost) || zerovalue, Utility.formatNumberDisplay(subItm?.diff_cost) || zerovalue,
+          Utility.formatNumberDisplay(subItm?.average)||zerovalue, Utility.formatNumberDisplay((subItm?.rejected||0)*100) || zerovalue
         ]);
       }
       data.push([
-        this.translatedLangText.MONTH_TOTAL, "", itm?.monthly_total_est_count, Utility.formatNumberDisplay(itm?.monthly_total_est_cost) || '',
-        Utility.formatNumberDisplay(itm?.monthly_total_appv_cost) || '', Utility.formatNumberDisplay(itm?.monthly_total_diff_cost) || '',
-        Utility.formatNumberDisplay(itm?.monthly_total_average) || '', Utility.formatNumberDisplay(itm?.monthly_total_rejected) || '',
+        this.translatedLangText.MONTH_TOTAL, "", itm?.monthly_total_est_count, Utility.formatNumberDisplay(itm?.monthly_total_est_cost) || zerovalue,
+        Utility.formatNumberDisplay(itm?.monthly_total_appv_cost) || zerovalue, Utility.formatNumberDisplay(itm?.monthly_total_diff_cost) || zerovalue,
+        Utility.formatNumberDisplay(itm?.monthly_total_average) || zerovalue, Utility.formatNumberDisplay((itm?.monthly_total_rejected||0)*100) || zerovalue,
       ]);
     }
     data.push([
-      this.translatedLangText.GRAND_TOTAL, "", repRec?.grand_total_est_count, Utility.formatNumberDisplay(repRec?.grand_total_est_cost) || '',
-      Utility.formatNumberDisplay(repRec?.grand_total_appv_cost) || '', Utility.formatNumberDisplay(repRec?.grand_total_diff_cost) || '',
-      Utility.formatNumberDisplay(repRec?.grand_total_average) || '', Utility.formatNumberDisplay(repRec?.grand_total_rejected) || '',
+      this.translatedLangText.GRAND_TOTAL, "", repRec?.grand_total_est_count, Utility.formatNumberDisplay(repRec?.grand_total_est_cost) || zerovalue,
+      Utility.formatNumberDisplay(repRec?.grand_total_appv_cost) || zerovalue, Utility.formatNumberDisplay(repRec?.grand_total_diff_cost) || zerovalue,
+      Utility.formatNumberDisplay(repRec?.grand_total_average) || zerovalue, Utility.formatNumberDisplay((repRec?.grand_total_rejected||0)*100) || zerovalue,
     ])
 
     //data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(totalRepairCost)]);

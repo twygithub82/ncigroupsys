@@ -919,12 +919,12 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         }
         subData.push([this.translatedLangText.TOTAL, "", this.displayOpeningBalance(), this.displayTotalInGate(),
         this.displayTotalOutGate(), this.displayClosingBalance()]);
-        startY=startPostY+PDFUtility.GapBetweenLeftTitleAndTable();  
+        startY=startPostY;  
         autoTable(pdf, {
           head: subHeaders,
           body: subData,
           startY: startY , // Start table at the current startY value
-
+          margin: { left: leftMargin, right: rightMargin },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -989,11 +989,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       head: headers,
       body: data,
       startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
       },
+      tableWidth:contentWidth,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {
@@ -1073,7 +1075,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
     let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const bufferContent = 8;
-    const contentWidth = pageWidth - leftMargin - rightMargin - bufferContent;
+    const contentWidth = pageWidth - leftMargin - rightMargin ;
     const chartContentWidth = contentWidth;
     const reportTitle = this.GetReportTitle();
     // const headers = [[
@@ -1149,7 +1151,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       head: headers,
       body: data,
       startY: startY, // Start table at the current startY value
-      //margin: { left: leftMargin },
+      margin: { left: leftMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,
@@ -1187,7 +1189,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       const canvas = await html2canvas(card, { scale: 1.5 });
       let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPG', leftMargin + bufferX, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'JPG', leftMargin , startY, chartContentWidth, imgHeight);
     }
 
 
@@ -2031,6 +2033,16 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
         decimalsInFloat: 0
       }
+      this.barChartOptions.plotOptions = {
+        bar: {
+          columnWidth: '40%',   // narrower bars → more gap
+          barHeight: '70%',     // only applies if horizontal
+          distributed: false,   // keep consistent width
+          dataLabels: {
+          position: 'top',    // labels on top
+          }
+        }
+      };
       // if(series.length==1)
       //    if(series[0].data.length==1)
       //    {

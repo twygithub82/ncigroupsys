@@ -1169,6 +1169,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
           // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
           PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
           startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+          startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
           pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
           // startY = topMargin + 50;
         }

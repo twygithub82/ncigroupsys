@@ -157,7 +157,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     DUE_TYPE: 'COMMON-FORM.DUE-TYPE',
     NEXT_TEST_DUE: 'COMMON-FORM.NEXT-TEST-TYPE-DUE',
     NOT_DUE: 'COMMON-FORM.NOT-DUE',
-    DUE: 'COMMON-FORM.DUE'
+    DUE: 'COMMON-FORM.DUE',
+     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
   }
 
   invForm?: UntypedFormGroup;
@@ -501,7 +502,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       if (s) {
         var repTransaction: report_periodic_test_due_group_customer = report_records.find(r => r.customer_code === s.customer_code) || new report_periodic_test_due_group_customer();
         let newTnx = false;
-        if (!repTransaction.customer_code) {
+        if ((repTransaction.periodic_test_due?.length||0)===0) {
           repTransaction.customer_code = s.customer_code;
           repTransaction.customer_name = s.customer_name;
           newTnx = true;

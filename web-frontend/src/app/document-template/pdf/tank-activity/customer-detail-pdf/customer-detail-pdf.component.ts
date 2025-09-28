@@ -681,10 +681,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
     // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
-    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+    let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
-    startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-    lastTableFinalY = startY;
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape()*2;
+    lastTableFinalY = startPosY;
     var buffer = 30;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
@@ -714,15 +714,15 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
 
         if (n > 0) lastTableFinalY += 5; // 2nd table
-        else lastTableFinalY = 49; // First table of the page
+        else lastTableFinalY = startPosY; // First table of the page
 
         var repPage = pdf.getNumberOfPages();
         //if(repPage==1)lastTableFinalY=45;
 
-        if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+        if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
           // lastTableFinalY = 5 + topMargin;
-          lastTableFinalY = 45 + topMargin;// buffer for 2nd page onward first table's Method
+          lastTableFinalY = startPosY;// buffer for 2nd page onward first table's Method
         }
         else {
           CurrentPage = repPage;
@@ -735,7 +735,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
-        lastTableFinalY += 2;
+        lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
         startY = lastTableFinalY; // Start table 20mm below the customer name
         var fontSz = 6;
         for (let b = 0; b < (cust.in_yard_storing_order_tank?.length || 0); b++) {
@@ -790,7 +790,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           head: headers,
           body: data,
           //  startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin, top: topMargin + 46 },
+          margin: { left: leftMargin, top: lastTableFinalY },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,

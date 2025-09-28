@@ -2042,7 +2042,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         lineWidth: lineWidth // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin, top: 50,bottom:bottomMargin, right: rightMargin  },
+      margin: { left: leftMargin, top: 46,bottom:bottomMargin, right: rightMargin  },
       headStyles: {
         fillColor: lineColor,
         textColor: 0,

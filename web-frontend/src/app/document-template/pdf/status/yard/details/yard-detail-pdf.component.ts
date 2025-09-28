@@ -651,7 +651,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
+    let fontSz_hdr = PDFUtility.TableContentFontSizeXS_Landscape()-0.5;
     let fontSz_body= PDFUtility.TableContentFontSizeXS_Landscape() - 0.5;
     let minHeightBodyCell = 5;
 
@@ -748,7 +748,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + 20 + topMargin)) {
+      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + 25 + topMargin+bottomMargin)) {
         pdf.addPage();
         lastTableFinalY = startPosY;
       }

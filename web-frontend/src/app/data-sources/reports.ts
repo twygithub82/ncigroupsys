@@ -43,6 +43,7 @@ export class report_customer_tank_activity{
   guid?:string;
   code?:string;
   customer?:string;
+  customer_guid?:string;
   number_tank?:number=0;
   in_yard_storing_order_tank?:StoringOrderTankItem[];
   released_storing_order_tank?:StoringOrderTankItem[];
@@ -53,6 +54,7 @@ export class report_customer_tank_activity{
     if (!this.guid) this.guid = '';
     
     this.customer=item.customer;
+    this.customer_guid=item.customer_guid;
     this.code=item.code;
     this.number_tank=item.number_tank;
     this.in_yard_storing_order_tank=item.in_yard_storing_order_tank;
@@ -186,11 +188,13 @@ export class daily_inventory_summary{
 export class report_periodic_test_due_group_customer{
   customer_code?:string;
   customer_name?:string;
+  // customer_guid?:string;
   periodic_test_due?:periodic_test_due_item[];
 
   constructor(item: Partial<report_periodic_test_due_group_customer> = {}) {
     this.customer_code=item.customer_code;
     this.customer_name=item.customer_name;
+    // this.customer_guid=item.customer_guid;
     this.periodic_test_due=item.periodic_test_due;
   }
 }
