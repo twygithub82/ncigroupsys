@@ -451,6 +451,12 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
       cond_counter++;
     }
 
+    if (this.searchForm!.get('cargo')?.value) {
+      // if(!where.storing_order_tank) where.storing_order_tank={};
+      where.last_cargo = `${this.searchForm!.get('cargo')?.value?.cargo}`;
+      cond_counter++;
+    }
+
     if (this.searchForm!.get('eir_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
