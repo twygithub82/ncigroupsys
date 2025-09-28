@@ -636,7 +636,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle', cellWidth: 59, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      3: { halign: 'left', valign: 'middle', cellWidth: 57, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
