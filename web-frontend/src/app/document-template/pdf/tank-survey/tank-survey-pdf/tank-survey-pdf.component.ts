@@ -620,11 +620,11 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     let fontSize = 7;
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 43, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
       
     };
