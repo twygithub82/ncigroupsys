@@ -1506,7 +1506,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
   }
   GetReportTitle(): string {
     var title: string = '';
-    title = `${this.translatedLangText.YEARLY_REVENUE_REPORT} - ${this.repType}`;
+    title = `${this.translatedLangText.YEARLY_REVENUE_REPORT} : ${this.repType}`;
     return `${title}`
   }
 

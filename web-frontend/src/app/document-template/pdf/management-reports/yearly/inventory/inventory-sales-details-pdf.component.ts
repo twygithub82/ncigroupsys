@@ -1438,7 +1438,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   }
   GetReportTitle(): string {
     var title: string = '';
-    title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} - ${this.repType}`;
+    title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} : ${this.repType}`;
     return `${title}`
   }
 
