@@ -575,7 +575,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 11, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
