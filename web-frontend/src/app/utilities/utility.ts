@@ -796,15 +796,29 @@ export class Utility {
     return textHeight;
   }
 
-  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
-    pdf.setFontSize(fontSize); // Title font size 
-    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+  static AddTextAtCenterPage( pdf: jsPDF,  text: string,  pageWidth: number,  leftMargin: number,
+  rightMargin: number,  topPosition: number,  fontSize: number,  underline: boolean = false
+) {
+  pdf.setFontSize(fontSize);
 
-    pdf.text(text, titleX, topPosition); // Position it at the top
+  // Measure text width
+  const textWidth =
+    (pdf.getStringUnitWidth(text) * pdf.getFontSize()) /
+    pdf.internal.scaleFactor;
 
+  const textX = (pageWidth - textWidth) / 2; // Centered X
 
+  // Draw the text
+  pdf.text(text, textX, topPosition);
+
+  // Draw underline (slightly below baseline)
+  if (underline) {
+    const underlineY = topPosition + 1; // adjust offset as needed
+    pdf.setLineWidth(0.2); // thin line
+    pdf.line(textX, underlineY, textX + textWidth, underlineY);
   }
+}
+
 
 
 

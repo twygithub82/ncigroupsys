@@ -1184,6 +1184,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
           width: reportPreviewWindowDimension.portrait_width_rate,
           maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
           maxHeight: reportPreviewWindowDimension.report_maxHeight,
+          
           data: {
             repData: repData
           },
@@ -1192,10 +1193,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
           direction: tempDirection
         });
     
-        // dialogRef.updatePosition({
-        //   top: '-999px',  // Move far above the screen
-        //   left: '0px'  // Move far to the left of the screen
-        // });
+          dialogRef.updatePosition({
+          top: '-90vh',  // Move far above the screen
+          left: '0px'  // Move far to the left of the screen
+        });
     
         this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
           this.isGeneratingReport = false;
