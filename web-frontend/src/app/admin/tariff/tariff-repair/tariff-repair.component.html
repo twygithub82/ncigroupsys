@@ -16,19 +16,19 @@
                     </mat-panel-title>
                     <mat-panel-description>
                       <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                        <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                        <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
                           <mat-icon>search</mat-icon>
                         </button>
                       </div>
                       <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                        <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                        <button mat-mini-fab color="accent" (click)="resetDialog($event)" [disabled]="isGeneratingReport"
                           (click)="$event.stopPropagation()">
                           <mat-icon>clear_all</mat-icon>
                         </button>
                       </div>
                       @if (isAllowAdd()) {
                       <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                        <button mat-mini-fab class="primary-light" (click)="addCall()"
+                        <button mat-mini-fab class="primary-light" (click)="addCall()" [disabled]="isGeneratingReport"
                           (click)="$event.stopPropagation()">
                           <mat-icon class="col-white">add</mat-icon>
                         </button>
@@ -36,7 +36,7 @@
                       }
                       @if (isAllowEdit()) {
                       <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
-                        <button mat-mini-fab class="accent-light" (click)="editCallSelection()"
+                        <button mat-mini-fab class="accent-light" (click)="editCallSelection()" [disabled]="isGeneratingReport"
                           (click)="$event.stopPropagation()">
                           <mat-icon class="">edit</mat-icon>
                         </button>
@@ -44,14 +44,14 @@
                       }
                       @if (isAllowEdit()) {
                       <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                        <button mat-mini-fab class="orange-button" (click)="adjustCost()"
+                        <button mat-mini-fab class="orange-button" (click)="adjustCost()" [disabled]="isGeneratingReport"
                           (click)="$event.stopPropagation()">
                           <mat-icon class="material-symbols-outlined col-white">percent</mat-icon>
                         </button>
                       </div>
                       }
-                      <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <button mat-mini-fab [class.orange-button]=true (click)="export_report()"
+                      <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" >
+                      <button mat-mini-fab [class.orange-button]=true (click)="export_report()" [disabled]="isGeneratingReport"
                         (click)="$event.stopPropagation()" >
                         <mat-icon>insert_drive_file</mat-icon>
                       </button>

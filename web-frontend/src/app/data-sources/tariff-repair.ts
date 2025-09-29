@@ -57,6 +57,17 @@ export class TariffRepairItem {
   }
 }
 
+export class TariffRepairItemWithDesc extends TariffRepairItem {
+  public group_name_desc?: string;
+  public subgroup_name_desc?: string;
+
+  constructor(item: TariffRepairItem, groupDesc?: string, subGroupDesc?: string) {
+    super(item); // call parent constructor to copy all TariffRepairItem fields
+    this.group_name_desc = groupDesc;
+    this.subgroup_name_desc = subGroupDesc;
+  }
+}
+
 export class TariffRepairLengthItem {
   public length?: number;
   public length_unit_cv?: string;
@@ -80,55 +91,79 @@ export interface TariffLabourResult {
 
 export class TariffRepairSubGroup {
   subgroup_name_cv: string;
+  subgroup_name_desc?: string;
   items: TariffRepairItem[];
 
-  constructor(subgroupName: string, items: TariffRepairItem[]) {
+  constructor(subgroupName: string, subgroup_name_desc:string, items: TariffRepairItem[]) {
     this.subgroup_name_cv = subgroupName;
+    this.subgroup_name_desc=subgroup_name_desc;
     this.items = items;
   }
 }
 
 export class TariffRepairGroup {
   group_name_cv: string;
+  group_name_desc?: string;
   subgroups: TariffRepairSubGroup[];
 
-  constructor(groupName: string, subgroups: TariffRepairSubGroup[]) {
+  constructor(groupName: string,group_name_desc:string, subgroups: TariffRepairSubGroup[]) {
     this.group_name_cv = groupName;
+    this.group_name_desc=group_name_desc;
     this.subgroups = subgroups;
   }
 }
 
 export class TariffRepairGrouper {
-  static groupItems(items: TariffRepairItem[]): TariffRepairGroup[] {
-    const grouped: { [groupName: string]: { [subGroupName: string]: TariffRepairItem[] } } = {};
+  static groupItems(items: TariffRepairItemWithDesc[]): TariffRepairGroup[] {
+    const grouped: {
+      [groupName: string]: {
+        description?: string;
+        subGroups: { [subGroupName: string]: { description?: string; items: TariffRepairItemWithDesc[] } };
+      };
+    } = {};
 
     for (const item of items) {
       const groupName = item.group_name_cv || '-';
       const subGroupName = item.subgroup_name_cv || '-';
 
+      // Initialize group
       if (!grouped[groupName]) {
-        grouped[groupName] = {};
-      }
-      if (!grouped[groupName][subGroupName]) {
-        grouped[groupName][subGroupName] = [];
+        grouped[groupName] = {
+          description: item.group_name_desc,
+          subGroups: {}
+        };
       }
 
-      grouped[groupName][subGroupName].push(item);
+      // Initialize subGroup
+      if (!grouped[groupName].subGroups[subGroupName]) {
+        grouped[groupName].subGroups[subGroupName] = {
+          description: item.subgroup_name_desc,
+          items: []
+        };
+      }
+
+      grouped[groupName].subGroups[subGroupName].items.push(item);
     }
 
-    // Convert object into classes
+    // Convert to TariffRepairGroup and TariffRepairSubGroup instances
     return Object.keys(grouped).map(
       (groupName) =>
         new TariffRepairGroup(
           groupName,
-          Object.keys(grouped[groupName]).map(
+          grouped[groupName].description!,
+          Object.keys(grouped[groupName].subGroups).map(
             (subGroupName) =>
-              new TariffRepairSubGroup(subGroupName, grouped[groupName][subGroupName])
+              new TariffRepairSubGroup(
+                subGroupName,
+                grouped[groupName].subGroups[subGroupName].description!,
+                grouped[groupName].subGroups[subGroupName].items
+              )
           )
         )
     );
   }
 }
+
 
 
 export const GET_TARIFF_REPAIR_QUERY = gql`

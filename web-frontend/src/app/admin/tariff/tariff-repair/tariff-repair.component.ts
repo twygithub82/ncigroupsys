@@ -36,7 +36,7 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
-import { TariffRepairDS, TariffRepairGrouper, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairGrouper, TariffRepairItem, TariffRepairItemWithDesc, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
@@ -47,6 +47,8 @@ import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/u
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { TariffRepairCostPdfComponent } from 'app/document-template/pdf/tariff/repair/tariff-repair-cost-pdf.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-tariff-repair',
@@ -246,7 +248,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.SELECTED',
+    EXPORT:'COMMON-FORM.EXPORT',
   }
+
+  isGeneratingReport = false;
 
   @ViewChild('partInput', { static: true }) partInput?: ElementRef<HTMLInputElement>;
 
@@ -1129,11 +1134,13 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
   export_report()
   {
+    this.isGeneratingReport=true;
     var order={};
     var where={};
     this.subs.sink = this.trfRepairDS.SearchAllTariffRepairs(where, order).subscribe(data => {
-      this.trfRepairItems = data;
-      var groupedRepair = TariffRepairGrouper.groupItems(this.trfRepairItems);
+      var Items = data;
+
+      
       // Extract group and subgroup names
       const groupnames = data
         .filter(a => a.group_name_cv && a.group_name_cv !== "")
@@ -1146,10 +1153,86 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       // Merge and distinct
       const allNames = [...groupnames, ...subgroupnames];
       const distinctNames = Array.from(new Set(allNames));
-      this.cvDS.getAllCodeValues(distinctNames).subscribe(cvdata => {
+      const where :any={
+        code_val : { in: distinctNames }
+      }
+      const order: any = { description:  "ASC" } ;
+      this.cvDS.getAllCodeValues(where,order).subscribe(cvdata => {
         const cvList = cvdata;
+        var trfRepairItemsWithDesc = this.mapTariffRepairWithDescriptions(Items, cvList);
+        var groupedRepair = TariffRepairGrouper.groupItems(trfRepairItemsWithDesc);
+        this.ShowReport(groupedRepair);
       });
 
+    });
+  }
+
+  ShowReport(repData:any) {
+    
+       //this.preventDefault(event);
+        let cut_off_dt = new Date();
+    
+    
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+    
+        const dialogRef = this.dialog.open(TariffRepairCostPdfComponent, {
+          width: reportPreviewWindowDimension.portrait_width_rate,
+          maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+          maxHeight: reportPreviewWindowDimension.report_maxHeight,
+          data: {
+            repData: repData
+          },
+    
+          // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+          direction: tempDirection
+        });
+    
+        // dialogRef.updatePosition({
+        //   top: '-999px',  // Move far above the screen
+        //   left: '0px'  // Move far to the left of the screen
+        // });
+    
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          this.isGeneratingReport = false;
+        });
+
+  }
+   mapTariffRepairWithDescriptions(
+  items: TariffRepairItem[],
+  codeValues: CodeValuesItem[]
+  ): TariffRepairItemWithDesc[] {
+    const cvMap = new Map<string, string>();
+
+    // Build lookup map (key = type:value)
+     for (const cv of codeValues) {
+    if (cv.code_val_type && cv.code_val && cv.description) {
+      let typeKey = cv.code_val_type.toUpperCase();
+
+      // Normalize subgroup_name1, subgroup_name2 → SUBGROUP_NAME
+      if (typeKey.startsWith("SUBGROUP_NAME")) {
+        typeKey = "SUBGROUP_NAME";
+      }
+
+      cvMap.set(`${typeKey}:${cv.code_val}`, cv.description);
+    }
+  }
+
+    // Wrap items with descriptions
+    return items.map((item) => {
+      const groupDesc = item.group_name_cv
+        ? cvMap.get(`GROUP_NAME:${item.group_name_cv}`) || ''
+        : '';
+
+      const subGroupDesc = item.subgroup_name_cv
+        ? cvMap.get(`SUBGROUP_NAME:${item.subgroup_name_cv}`) || ''
+        : '';
+
+      return new TariffRepairItemWithDesc(item, groupDesc, subGroupDesc);
     });
   }
 }
