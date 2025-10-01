@@ -10,8 +10,8 @@ import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
     bold: boolean = false, fontFamily: string = 'helvetica', wrap: boolean = false, maxWidth: number = 0,
-    underline: boolean = false, textColor: string = '#000000'):number {
-    var crtY=topPos;
+    underline: boolean = false, textColor: string = '#000000'): number {
+    var crtY = topPos;
     pdf.saveGraphicsState();
     const fontStyle = bold ? 'bold' : 'normal';
     pdf.setTextColor(textColor);
@@ -74,12 +74,45 @@ export class PDFUtility {
     }
   }
 
+  static addReportTitle2(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
+    topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0,
+    textColor: string = '#000000', restrictPos: boolean = true): number {
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor(textColor);
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    let titleX = (pageWidth - titleWidth) / 2;
+
+    if (restrictPos) {
+      if (topPosition <= 10) {
+        topPosition = 11;
+      }
+      else if (topPosition >= 40 && topPosition <= 50) {
+        topPosition = 40;
+      }
+    }
+
+    titleX += additionalBufferX;
+    pdf.text(title, titleX, topPosition);
+
+    if (underline) {
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.line(titleX, topPosition + 1, titleX + titleWidth + 1, topPosition + 1);
+    }
+
+    const textHeight = fontSize * 0.75;
+    const underlineHeight = underline ? 1 : 0;
+    const totalHeight = textHeight + underlineHeight;
+
+    return totalHeight;
+  }
+
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number,
     fontSize: number, textColor: string = '#000000') {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.setTextColor(textColor);
     var titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    titleWidth+=0.5;
+    titleWidth += 0.5;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
@@ -94,7 +127,7 @@ export class PDFUtility {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     var titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    titleX+=1;
+    titleX += 1;
     pdf.text(text, titleX, topPosition); // Position it at the top
 
     // pdf.setLineDashPattern([0, 0], 0);
@@ -180,7 +213,7 @@ export class PDFUtility {
     title: string,
     subTitle: string,
     subtitlePos: number = 0,
-    bufferSubtitle: number=0
+    bufferSubtitle: number = 0
   ): Promise<number> {
     var startY = topMargin;
     await this.addHeaderWithCompanyLogo_Portriat_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
@@ -189,7 +222,7 @@ export class PDFUtility {
     }
 
     if (subTitle != null && subTitle != '') {
-      startY = this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin+bufferSubtitle, rightMargin+bufferSubtitle, subtitlePos);
+      startY = this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin + bufferSubtitle, rightMargin + bufferSubtitle, subtitlePos);
     }
 
     return startY;
@@ -219,11 +252,11 @@ export class PDFUtility {
 
   static async addFooterWithPageNumberAndCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
     leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[],
-  showPurposeLegend:boolean=false,showTankStatusLegend:boolean=false) {
+    showPurposeLegend: boolean = false, showTankStatusLegend: boolean = false) {
     var fontSize = 8
     var totalPages = pdf.getNumberOfPages();
-    var Statuslegend=Utility.getTankStatusLegend();
-    var Purposelegend=Utility.getPurposeLegend();
+    var Statuslegend = Utility.getTankStatusLegend();
+    var Purposelegend = Utility.getPurposeLegend();
     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
@@ -235,15 +268,15 @@ export class PDFUtility {
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-       if(showPurposeLegend){
+      if (showPurposeLegend) {
 
-          pdf.text(`${Purposelegend}`, leftMargin + 1, pdf.internal.pageSize.height - 8, { align: 'left' });
+        pdf.text(`${Purposelegend}`, leftMargin + 1, pdf.internal.pageSize.height - 8, { align: 'left' });
       }
 
-      if(showTankStatusLegend){
-        var posY : number =pdf.internal.pageSize.height - 8;
-        if(showPurposeLegend){
-          posY+=fontSize/2;
+      if (showTankStatusLegend) {
+        var posY: number = pdf.internal.pageSize.height - 8;
+        if (showPurposeLegend) {
+          posY += fontSize / 2;
         }
         pdf.text(`${Statuslegend}`, leftMargin + 1, posY, { align: 'left' });
       }
@@ -377,6 +410,91 @@ export class PDFUtility {
 
   }
 
+  static async addHeaderWithCompanyLogo_Portriat2(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService
+  ): Promise<number> {
+
+    const translatedLangText: any = {};
+    const langText = {
+      PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+    };
+
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key];
+      }
+    }
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
+
+    const heightHeader: number = 28;
+
+    pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
+
+    pdf.setFontSize(12);
+    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    let posX = leftMargin + 36.5;
+    let posY = topMargin + 8;
+    pdf.text(customerInfo.companyName, posX, posY);
+
+    pdf.setFontSize(10);
+    posX -= 20.5;
+    posY += 10;
+    pdf.text(customerInfo.companyAddress, posX, posY);
+
+    let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    posX += 8;
+    posY += 5;
+    pdf.text(nextLine, posX, posY);
+    nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    pdf.text(nextLine, posX + 42, posY);
+
+    posX += 20;
+    posY = topMargin + 8 + 5;
+    nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    pdf.text(nextLine, posX, posY);
+
+    const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
+
+    const posX1_img = pageWidth / 1.5;
+    const posY1_img = topMargin + 6;
+    const maxWidth = 60.5;
+    const maxHeight = 17;
+    const aspectRatio = height / width;
+
+    let finalWidth = maxWidth;
+    let finalHeight = maxWidth * aspectRatio;
+
+    if (finalHeight > maxHeight) {
+      finalHeight = maxHeight;
+      finalWidth = maxHeight / aspectRatio;
+    }
+
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, finalWidth, finalHeight);
+
+    const imageBottom = posY1_img + finalHeight - topMargin;
+    const textBottom = 23; // topMargin + 8 + 10 + 5 - topMargin
+    const totalHeight = Math.max(heightHeader, imageBottom, textBottom);
+
+    return totalHeight;
+  }
+
 
   static async addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(
     pdf: jsPDF,
@@ -432,14 +550,14 @@ export class PDFUtility {
     return startY;
   }
 
-   static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number, 
-    leftMargin: number, rightMargin: number,  translateService: TranslateService, pagePositions: { page: number; x: number; y: number; }[], 
-    showPurposeLegend:boolean=false,showTankStatusLegend:boolean=false): Promise<void>{ 
-     var fontSize =PDFUtility.RightSubTitleFontSize();
-     var totalPages=pdf.getNumberOfPages();
-     var Purposelegend = Utility.getPurposeLegend();
-     var Statuslegend = Utility.getTankStatusLegend();
-     for (const { page, x, y } of pagePositions) {
+  static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
+    leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number; x: number; y: number; }[],
+    showPurposeLegend: boolean = false, showTankStatusLegend: boolean = false): Promise<void> {
+    var fontSize = PDFUtility.RightSubTitleFontSize();
+    var totalPages = pdf.getNumberOfPages();
+    var Purposelegend = Utility.getPurposeLegend();
+    var Statuslegend = Utility.getTankStatusLegend();
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -453,12 +571,12 @@ export class PDFUtility {
       if (page > 1) {
         await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
       }
-      if(showPurposeLegend){
+      if (showPurposeLegend) {
 
         //  pdf.text(`${Purposelegend}`, leftMargin + 1, pdf.internal.pageSize.height - 8, { align: 'left' });
       }
-      if(showTankStatusLegend){
-        var posY : number =pdf.internal.pageSize.height - 8;
+      if (showTankStatusLegend) {
+        var posY: number = pdf.internal.pageSize.height - 8;
         // if(showPurposeLegend){
         //   posY+=fontSize/2;
         // }
@@ -1372,8 +1490,8 @@ export class PDFUtility {
   }
 
   static TitlePositionY_Portrait(): number {
-    var bufferGap=2;
-    return (38-bufferGap);
+    var bufferGap = 2;
+    return (38 - bufferGap);
   }
 
   static SubTitlePositionY_Landscape(): number {
@@ -1381,7 +1499,7 @@ export class PDFUtility {
   }
 
   static SubTitlePositionY_Portrait(): number {
-    var buffer =10;
+    var buffer = 10;
     return (this.TitlePositionY_Portrait() + buffer)
   }
 
@@ -1498,7 +1616,7 @@ export class PDFUtility {
   static TankNo_ColWidth_Landscape_xs() {
     return 17;
   }
-  
+
   static GapBetweenLeftTitleAndTable() {
     return 2;
   }
@@ -1508,6 +1626,6 @@ export class PDFUtility {
   }
 
   static GapBetweenSubTitleAndTable_Landscape() {
-    return ((this.SubTitleFontSize_Landscape() / 2)+1 );;
+    return ((this.SubTitleFontSize_Landscape() / 2) + 1);;
   }
 }
