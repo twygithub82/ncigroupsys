@@ -337,6 +337,10 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
             update_by
             update_dt
           }
+          tank {
+            guid
+            unit_type
+          }
         }
         so_count
         sot_count

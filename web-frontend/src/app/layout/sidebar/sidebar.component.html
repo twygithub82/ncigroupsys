@@ -42,7 +42,7 @@
             @if (!sidebarItem.groupTitle;) {
             <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
               [queryParams]="sidebarItem.queryParams || {}" [ngClass]="[sidebarItem.class]"
-              (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top">
+              (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top" matRipple>
               @if (sidebarItem.iconType == 'feather') {
               <i-feather [name]="sidebarItem.icon" class="sidebarIcon"></i-feather>
               }
@@ -69,7 +69,8 @@
               <li [routerLinkActive]="sidebarSubItem1.submenu.length > 0 ? '' : 'active'">
                 <a [routerLink]="sidebarSubItem1.submenu.length > 0 ? null : [sidebarSubItem1.path]"
                   [queryParams]="sidebarSubItem1.queryParams || {}"
-                  (click)="callToggleMenu($event, sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]">
+                  (click)="callToggleMenu($event, sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]"
+                  matRipple>
                   {{sidebarSubItem1.title | translate}}
                 </a>
                 <!-- Second level menu -->
@@ -80,7 +81,7 @@
                     <a [routerLink]="sidebarSubItem2.submenu.length > 0 ? null : [sidebarSubItem2.path]"
                       [queryParams]="sidebarSubItem2.queryParams || {}"
                       (click)="callToggleMenu($event, sidebarSubItem2.submenu.length)"
-                      [ngClass]="[sidebarSubItem2.class]">
+                      [ngClass]="[sidebarSubItem2.class]" matRipple>
                       {{sidebarSubItem2.title | translate}}
                     </a>
                     <!-- Third level menu -->
@@ -110,14 +111,14 @@
           }
           <mat-divider></mat-divider>
           <li [routerLinkActive]="'active'">
-            <a [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)" class="menu-top">
+            <a [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)" class="menu-top" matRipple>
               <mat-icon class="sidebarIcon font-20">{{'account_circle'}}</mat-icon>
               <span class="hide-menu">{{ translatedLangText.ACCOUNT }}
               </span>
             </a>
             <ul class="ml-menu">
               <li [routerLinkActive]="''">
-                <a (click)="logoutDialog($event)" [ngClass]="['ml-menu']">
+                <a (click)="logoutDialog($event)" [ngClass]="['ml-menu']" matRipple>
                   {{ translatedLangText.LOGOUT }}
                 </a>
               </li>
