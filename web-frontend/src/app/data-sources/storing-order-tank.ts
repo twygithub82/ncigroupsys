@@ -1670,17 +1670,16 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
               delete_dt
             }
             customer_company {
-                code
-                currency_guid
-                def_tank_guid
-                def_template_guid
-                delete_dt
-                effective_dt
-                guid
-                main_customer_guid
-                name
-                remarks
-                type_cv
+              code
+              currency_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
             }
           }
           storing_order_tank {

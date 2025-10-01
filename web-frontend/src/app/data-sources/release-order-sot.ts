@@ -1,14 +1,10 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, delay, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
-import { CustomerCompanyItem } from './customer-company';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { PageInfo } from '@core/models/pageInfo';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { SchedulingItem, SchedulingUpdateItem } from './scheduling';
 import { ReleaseOrderItem } from './release-order';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class ReleaseOrderSotGO {
   public guid?: string;
@@ -123,7 +119,6 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
             create_by
             create_dt
             currency_guid
-            def_tank_guid
             def_template_guid
             delete_dt
             effective_dt

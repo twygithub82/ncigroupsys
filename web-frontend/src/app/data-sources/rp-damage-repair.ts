@@ -1,10 +1,10 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { SchedulingItem } from './scheduling';
 import { RepairPartItem } from './repair-part';
+import { SchedulingItem } from './scheduling';
 
 export class RPDamageRepairGO {
   public guid?: string;

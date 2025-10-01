@@ -688,22 +688,22 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             guid
             owner_billing_guid
              storing_order_tank {
-                estimate_cv
-                eta_dt
-                etr_dt
+              estimate_cv
+              eta_dt
+              etr_dt
+              guid
+              job_no
+              tank_no
+              tariff_cleaning { cargo}
+              in_gate(where: { delete_dt: { eq: null } }) {
+                delete_dt
+                driver_name
+                eir_dt
+                eir_no
+                eir_status_cv
                 guid
-                job_no
-                tank_no
-                tariff_cleaning { cargo}
-                in_gate(where: { delete_dt: { eq: null } }) {
-                  delete_dt
-                  driver_name
-                  eir_dt
-                  eir_no
-                  eir_status_cv
-                  guid
-                }
               }
+            }
             steaming_part {
               approve_cost
               approve_labour
@@ -732,17 +732,16 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
@@ -1022,17 +1021,16 @@ const SEARCH_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
@@ -1073,17 +1071,16 @@ const SEARCH_STEAM_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
@@ -1123,17 +1120,16 @@ const SEARCH_RESIDUE_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
@@ -1178,23 +1174,21 @@ const SEARCH_REPAIR_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
   }
 `;
-
 
 const SEARCH_STORAGE_BILLING_QUERY = gql`
   query queryBilling($where: billingFilterInput, $order: [billingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -1239,17 +1233,16 @@ const SEARCH_STORAGE_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }
@@ -1290,17 +1283,16 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
           delete_dt
         }
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            def_template_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
+          code
+          currency_guid
+          def_template_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
       }
     }

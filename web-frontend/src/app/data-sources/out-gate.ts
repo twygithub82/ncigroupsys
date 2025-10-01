@@ -271,7 +271,6 @@ export const GET_OUT_GATE_BY_ID = gql`
                 create_by
                 create_dt
                 currency_guid
-                def_tank_guid
                 def_template_guid
                 delete_dt
                 effective_dt

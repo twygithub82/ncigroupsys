@@ -1,11 +1,7 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { UserItem } from './user';
 import { RoleItem } from './role';
+import { UserItem } from './user';
 
 export class UserRoleGO {
   public id?: string;

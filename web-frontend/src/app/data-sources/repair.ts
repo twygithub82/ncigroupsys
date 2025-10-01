@@ -1,16 +1,14 @@
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { RepairPartItem } from './repair-part';
-import { UserItem } from './user';
 import { ApolloError } from '@apollo/client/errors';
-import { BillingItem } from './billing';
+import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { BaseDataSource } from './base-ds';
+import { BillingItem } from './billing';
+import { RepairPartItem } from './repair-part';
+import { StoringOrderTankItem } from './storing-order-tank';
+import { UserItem } from './user';
 
 export class RepairGO {
   public guid?: string;
@@ -226,17 +224,16 @@ export const GET_REPAIR_BILLING = gql`
             delete_dt
           }
           customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
-              delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
+            code
+            currency_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
           }
         }
         owner_billing_guid
@@ -255,17 +252,16 @@ export const GET_REPAIR_BILLING = gql`
             delete_dt
           }
           customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
-              delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
+            code
+            currency_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
           }
         }
         storing_order_tank {

@@ -337,6 +337,10 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
             update_by
             update_dt
           }
+          tank {
+            guid
+            unit_type
+          }
         }
         so_count
         sot_count
@@ -378,7 +382,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
-    where = { ...where, type_cv: { in: [...(where?.type_cv?.in || []), "BRANCH", "OWNER"] } };
+    where = { ...where, type_cv: { in: [...(where?.type_cv?.in || []), "LEESSEE", "BRANCH", "OWNER"] } };
     where = this.addDeleteDtCriteria(where)
     return this.apollo
       .query<any>({

@@ -2348,6 +2348,12 @@ mat-card-content.tank-card-content {
   color: white !important;
 }
 
+.blue-button {
+  background-color: lighten(#66aaf7, 10%) !important;
+  /* Material green */
+  color: white !important;
+}
+
 .relative-menu {
   position: absolute;
   top: -15px;

@@ -7,7 +7,7 @@ import { BaseDataSource } from './base-ds';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { RepairPartItem } from './repair-part';
 import { ResiduePartItem } from './residue-part';
-import { SteamGO, SteamTemp } from './steam';
+import { SteamTemp } from './steam';
 import { SteamPartItem } from './steam-part';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { TeamItem } from './teams';

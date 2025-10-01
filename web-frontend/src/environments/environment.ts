@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  title: 'Home',
+  title: 'IDMS',
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',

@@ -1,10 +1,9 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { BaseDataSource } from './base-ds';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { BaseDataSource } from './base-ds';
 import { StoringOrderTank } from './storing-order-tank';
 
 export class TankItem {

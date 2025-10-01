@@ -1,13 +1,9 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CurrencyItem } from './currency';
-import { ContactPersonItem } from './contact-person';
 
 export class TeamGO {
   public guid?: string;

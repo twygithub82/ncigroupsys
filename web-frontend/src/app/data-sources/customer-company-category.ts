@@ -1,13 +1,11 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category'
-import { CustomerCompanyItem } from 'app/data-sources/customer-company'
 export class CustomerCompanyCleaningCategoryGO {
   public guid?: string;
   public customer_company_guid?: string;
