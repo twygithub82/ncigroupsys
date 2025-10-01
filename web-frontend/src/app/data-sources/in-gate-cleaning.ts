@@ -123,17 +123,15 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
         approve_dt
         bill_to_guid
         customer_company {
-            code
-            currency_guid
-            def_tank_guid
-            delete_dt
-            effective_dt
-            guid
-            main_customer_guid
-            name
-            remarks
-            type_cv
-          
+          code
+          currency_guid
+          delete_dt
+          effective_dt
+          guid
+          main_customer_guid
+          name
+          remarks
+          type_cv
         }
         buffer_cost
         cleaning_cost
@@ -169,17 +167,16 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
             delete_dt
           }
           customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
-              delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
+            code
+            currency_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
           }
         }
         storing_order_tank {
@@ -196,18 +193,16 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
             }
           }
           customer_company {
-              code
-              currency_guid
-              def_tank_guid
-              def_template_guid
-              delete_dt
-              effective_dt
-              guid
-              main_customer_guid
-              name
-              remarks
-              type_cv
-              
+            code
+            currency_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
           }
           tariff_cleaning {
             alias
@@ -369,7 +364,6 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             customer_company {
               code
               currency_guid
-              def_tank_guid
               def_template_guid
               delete_dt
               effective_dt
@@ -402,7 +396,6 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             create_by
             create_dt
             currency_guid
-            def_tank_guid
             def_template_guid
             delete_dt
             effective_dt

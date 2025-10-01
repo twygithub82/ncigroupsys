@@ -1,17 +1,9 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning-category';
-import { CleaningMethodItem } from './cleaning-method';
-import { TankItem } from './tank';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
-import { PageInfo } from '@core/models/pageInfo';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { lab } from 'd3';
 import { CustomerCompanyItem } from './customer-company';
 import { TariffRepairItem } from './tariff-repair';
 export class MasterTemplateGo {

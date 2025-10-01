@@ -7,7 +7,6 @@ import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { TariffDepotItem } from './tariff-depot';
-//import { ExclusiveSteamComponent } from 'app/admin/package/exclusive-steam/exclusive-steam.component';
 import { Utility } from 'app/utilities/utility';
 
 export class PackageDepotGO {

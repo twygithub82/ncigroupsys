@@ -432,24 +432,12 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    // if (this.searchForm!.get('customer_code')?.value) {
-    //   const soSearch: any = {};
-    //   if (this.searchForm!.get('customer_code')?.value) {
-    //     soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
-    //   }
-    //   where.storing_order = soSearch;
-    // }
-
     if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value || this.searchForm!.get('yard_cv')?.value) {
       const igSearch: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
       }
-
-      // if (this.searchForm!.get('eir_status_cv')?.value) {
-      //   igSearch.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
-      // }
-
+      
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
         igSearch.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
       }
@@ -459,56 +447,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       }
       where.in_gate = { some: igSearch };
     }
-
-    // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
-    //   const sotSearch: any = {};
-
-    //   if (this.searchForm!.get('tank_no')?.value) {
-    //     sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('tank_status_cv')?.value) {
-    //     sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-    //   }
-
-    //   if (this.searchForm!.get('purpose')?.value) {
-    //     const purposes = this.searchForm!.get('purpose')?.value;
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSearch.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSearch.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSearch.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSearch.purpose_repair_cv = { in: repairPurposes };
-    //     }
-    //   }
-
-    //   if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-    //     const soSearch: any = {};
-
-    //     if (this.searchForm!.get('so_no')?.value) {
-    //       soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
-    //     }
-
-    //     if (this.searchForm!.get('customer_code')?.value) {
-    //       soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    //     }
-    //     sotSearch.storing_order = soSearch;
-    //   }
-    //   where.tank = sotSearch;
-    // }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
   }

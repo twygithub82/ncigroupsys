@@ -1,14 +1,10 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
+import { JobOrderItem } from './job-order';
 import { RepairItem } from './repair';
 import { RPDamageRepairItem } from './rp-damage-repair';
-import { JobOrderItem } from './job-order';
+import { TariffRepairItem } from './tariff-repair';
 
 export class RepairPartGO {
   public guid?: string;

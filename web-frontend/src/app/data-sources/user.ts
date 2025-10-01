@@ -1,13 +1,12 @@
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
-import gql from 'graphql-tag';
-import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { UserRoleItem, UserRoleLinkage } from './userrole';
-import { TeamUserLinkage } from './teams';
 import { ApolloError } from '@apollo/client/core';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { BaseDataSource } from './base-ds';
 import { Functions } from './role';
+import { TeamUserLinkage } from './teams';
+import { UserRoleItem, UserRoleLinkage } from './userrole';
 
 
 export class UserGO {
