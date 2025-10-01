@@ -50,6 +50,7 @@ import {
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font-weight';
 
 
 export interface DialogData {
@@ -362,7 +363,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   ]
   // date:string='';
   // invType:string='';
-
+lineChartOptions:any;
   lineChartData: ChartConfiguration['data'] = {
     datasets: [
       {
@@ -395,12 +396,13 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   };
 
-  lineChartOptions: ChartConfiguration['options'] = {
+  lineChartOpts: any = {
     responsive: true,
+    //  maintainAspectRatio: false, // This allows the chart to use container height
     animation: false, // 👈 disables all animations
     elements: {
       line: {
-        tension: 0.5,
+        tension: 0.1,
       },
     },
     scales: {
@@ -408,25 +410,55 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         title: {
           display: true,
           text: '', // <- your label here
-          color: '#000000',
+          color: '#9aa0ac',
           font: {
             size: 14,
+
           },
         },
         position: 'left',
         ticks: {
           color: '#000000', // Font Color
         },
+         grid: {
+          display: false
+        }
       },
       x: {
         ticks: {
           color: '#000000', // Font Color
         },
+         grid: {
+          display: false
+        }
       },
     },
 
     plugins: {
-      legend: { display: true },
+      legend: {
+        display: true,
+        // position: 'top',
+         labels: {
+           color: '#000000', // Legend text color
+           font: {
+             size: 13,
+              fontWeight: 'bold',        //     // Optional: make it bold
+           },
+        //   usePointStyle: true, // Optional: use points instead of rectangles
+           padding: 20 // Optional: adjust spacing
+         }
+        // 👇 Customize legend appearance
+        // labels: {
+        //   font: {
+        //     size: 10, // Font size (default: 10)
+        //     family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
+        //   },
+        //   padding: 10, // Space between legend items (default: 10)
+        //   boxWidth: 12, // Width of the color box (default: 12)
+        //   boxHeight: 12, // Height of the color box (default: 12)
+        // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+        // },
+      },
     },
   };
 
@@ -1176,6 +1208,683 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     var labelStyle = {
       style: {
         fontSize: '8px',     // Adjust font size here (e.g., '12px', '14px')
+        colors: '#000000',
+      }
+    };
+
+
+ var catgries = Object.keys(grpData) as string[];
+
+    var shortCat =catgries.map(date => {
+    // Split by '/' and take the first part (dd)
+    return date.split('/')[0];
+  });
+
+
+    {
+       this.lineChartOptions.xaxis = {
+      categories: shortCat,
+      labels: labelStyle
+    };
+
+
+      this.lineChartOptions.series = series;
+    this.lineChartOptions.colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
+
+      var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+        "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
+
+      this.lineChartData.datasets = [];
+      this.lineChartData.labels = [];
+      var ds = [];
+      var cats = [];
+      var indx = 0;
+      var backgroundcolor="white"
+      if (!showGateSurcharge) {
+        var lbls = ["Gate In", "Gate Out", "Lift On", "Lift Off"];
+
+        lbls.forEach(lbl => {
+           this.lineChartOptions.series= this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+          // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+          // ds.push({
+          //   label: lbl,
+          //   data: s[0].data,
+          //   backgroundColor: backgroundcolor,
+          //   borderColor: colors[indx],
+          //   borderWidth: 2,
+          //   fill: false,
+          //   tension: 0.5,
+          //   pointStyle: 'circle',
+          //   pointRadius: 3,
+          //   pointBorderColor: 'transparent',
+          //   pointBackgroundColor: colors[indx++],
+          // });
+
+        });
+
+      }
+      if (!showSteamSurcharge) {
+        var lbl = "Steam";
+         this.lineChartOptions.series= this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: backgroundcolor,
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
+
+      }
+
+      if (!showCleanSurcharge) {
+        var lbl = "Cleaning";
+         this.lineChartOptions.series= this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: backgroundcolor,
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
+
+      }
+      if (!showRepairSurcharge) {
+         var lbl = "Repair";
+          this.lineChartOptions.series= this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: backgroundcolor,
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
+
+      }
+
+      if (!showResidueSurcharge) {
+        var lbl = "Residue";
+        this.lineChartOptions.series= this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: backgroundcolor,
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
+
+      }
+      // this.lineChartData.datasets = ds;
+      // this.lineChartData.labels = shortCat;
+      // this.chart?.data != this.lineChartData;
+      // this.chart?.update();
+    }
+
+
+    setTimeout(async () => {
+
+      startY = lastTableFinalY + 10;
+      let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      chartContentWidth =chartContentWidth*0.85;
+
+      
+      // if (this.chartLine?.nativeElement) {
+      //   pdf.addPage();
+      //   //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+      //   PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      //  startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+      //  startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+      //   pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      //   // startY = topMargin + 42;
+      //   const canvas = this.chartLine.nativeElement;
+        
+      //   //const base64Image = canvas.toDataURL('image/jpeg');
+      //    const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+      //   const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
+      //   const aspectRatio = imgInfo.width / imgInfo.height;
+      //   let imgHeight1 = chartContentWidth / aspectRatio;
+        
+      //     await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
+        
+
+      // }
+
+       const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      for (var i = 0; i < cardElements.length; i++) {
+        {
+          pdf.addPage();
+          // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+          PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+          startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+          pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+          // startY = topMargin + 50;
+        }
+        const card1 = cardElements[i];
+        await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        // const canvas1 = await html2canvas(card1, { scale: scale });
+        // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
+
+      }
+      
+
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+      // const totalPages = pdf.getNumberOfPages();
+
+      // for (const { page, x, y } of pagePositions) {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
+
+      //   const lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      //   if (page > 1) {
+      //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      //   }
+      // }// Add Second Page, Add For Loop
+
+      // pagePositions.forEach(({ page, x, y }) => {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
+      //   var lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      // });
+      this.generatingPdfLoadingSubject.next(false);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      this.dialogRef.close();
+
+    }, 100);
+
+    // this.dialogRef.close();
+  }
+  async exportToPDF_r1_o(fileName: string = 'document.pdf') {
+    const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
+    const leftMargin = 5;
+    const rightMargin = 5;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+
+
+    //let reportTitleCompanyLogo = 32;
+    //let tableHeaderHeight = 12;
+    //let tableRowHeight = 8.5;
+    let minHeightBodyCell = 5;
+    let minHeightHeaderCol = 3;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+
+    // let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
+    // let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
+    // let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
+    let showGateSurcharge: boolean = false;
+    let showResidueSurcharge: boolean = this.invTypes?.includes("RESIDUE")!;
+    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
+    const vAlign = "bottom";
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.DAY, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      // ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
+      //...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
+      //...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),
+      ...(showGateSurcharge ? [
+        { content: this.translatedLangText.GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      ] : []),
+      ...(showCleanSurcharge ? [{ content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showRepairSurcharge ? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      ...(showSteamSurcharge ? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showResidueSurcharge ? [{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }] : []),
+
+      // { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+
+    ],
+    [
+      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+      // ...(showPreinspectSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
+      // ...(showLoloSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
+      // ...(showStorageSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for storage
+      ...(showGateSurcharge ? [
+        this.translatedLangText.GATE_IN, this.translatedLangText.GATE_OUT,
+        this.translatedLangText.LIFT_ON, this.translatedLangText.LIFT_OFF
+      ] : []), // Sub-headers for GATE_SURCHARGE
+      ...(showCleanSurcharge ? [this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT] : []), // Sub-headers for RESIDUE
+      ...(showRepairSurcharge ? [this.translatedLangText.APPROVED_HOUR, this.translatedLangText.COMPLETED_HOUR] : []), // Sub-headers for CLEANING
+      ...(showSteamSurcharge ? [this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT] : []), // Sub-headers for STEAM
+      ...(showResidueSurcharge ? [this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT] : []), // Sub-headers for residue
+
+      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+    ]];
+
+
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 40;
+
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    //Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
+    const subtitlePos = 1;
+    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,repGeneratedDate,subtitlePos);
+    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+
+    if (this.customer) {
+      // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+      // Utility.addText(pdf, customer, startY, leftMargin, PDFUtility.RightSubTitleFontSize());
+       const customer=`${this.customer}`;
+      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      startY += PDFUtility.GapBetweenLeftTitleAndTable();
+
+    }
+    var idx = 0;
+
+    var grpData = InventoryAnalyzer.groupInventoryMonthlyByDate(this.repData!);
+
+
+    var series: SeriesItem[] = [];
+    var index: number = 1;
+    var prcss: string[] = [
+      //...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
+      //...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
+      // ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
+      ...(showGateSurcharge ? [
+        this.translatedLangText.GATE_IN,
+        this.translatedLangText.GATE_OUT,
+        this.translatedLangText.LIFT_ON,
+        this.translatedLangText.LIFT_OFF,
+      ] : []),
+      ...(showCleanSurcharge ? [this.translatedLangText.CLEANING] : []),
+      ...(showRepairSurcharge ? [this.translatedLangText.REPAIR] : []),
+      ...(showSteamSurcharge ? [this.translatedLangText.STEAM] : []),
+      ...(showResidueSurcharge ? [this.translatedLangText.RESIDUE] : []),
+
+    ]
+    var prcsValues: number[] = []
+    var total_all_cost: number = 0;
+    var average_counter = 0;
+    var clnAppCount = 0, clnCmpCount = 0;
+    var stmAppCount = 0, stmCmpCount = 0;
+    var repAppHour = 0, repCmpHour = 0;
+    var gateInCount = 0, gateOutCount = 0;
+    var liftOnCount = 0, liftOffCount = 0;
+    var residueAppCount = 0, residueCmpCount = 0;
+
+    for (const date in grpData) {
+
+      const entry = grpData[date];
+      data.push([
+        (++idx).toString(), date, entry.day,
+        //   ...(showPreinspectSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),
+        //  ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
+        //  ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
+
+        ...(showGateSurcharge ? [
+          Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_in_count), Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_out_count),
+          Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count), Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
+        ] : []),
+        ...(showCleanSurcharge ? [Utility.formatNumberDisplay(entry.cleaning?.approved_count), Utility.formatNumberDisplay(entry.cleaning?.completed_count)] : []),
+        ...(showRepairSurcharge ? [Utility.formatNumberDisplay(entry.repair?.approved_hour), Utility.formatNumberDisplay(entry.repair?.completed_hour)] : []),
+        ...(showSteamSurcharge ? [Utility.formatNumberDisplay(entry.steaming?.approved_count), Utility.formatNumberDisplay(entry.steaming?.completed_count)] : []),
+        ...(showResidueSurcharge ? [Utility.formatNumberDisplay(entry.residue?.approved_count), Utility.formatNumberDisplay(entry.residue?.completed_count)] : []),
+
+        // Utility.formatNumberDisplay(total)
+      ]);
+
+      clnAppCount += (entry.cleaning?.approved_count || 0);
+      clnCmpCount += (entry.cleaning?.completed_count || 0)
+      stmAppCount += (entry.steaming?.approved_count || 0);
+      stmCmpCount += (entry.steaming?.completed_count || 0)
+      repAppHour += (entry.repair?.approved_hour || 0);
+      repCmpHour += (entry.repair?.completed_hour || 0);
+      gateInCount += (entry.gateInOut?.gate?.gate_in_count || 0);
+      gateOutCount += (entry.gateInOut?.gate?.gate_out_count || 0)
+      liftOnCount += (entry.gateInOut?.lolo?.lift_on_count || 0);
+      liftOffCount += (entry.gateInOut?.lolo?.lift_off_count || 0)
+      residueAppCount += (entry.residue?.approved_count || 0);
+      residueCmpCount += (entry.residue?.completed_count || 0)
+
+      prcss.forEach(p => {
+        var s = series.find(s => s.name == p);
+        var bInsert = false;
+        if (!s) {
+          s = {
+            name: p,
+            data: [] // initialize with an empty array or default values
+          };
+          bInsert = true;
+        }
+        switch (p) {
+          // case this.translatedLangText.PREINSPECTION:
+          //  if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
+          // break;
+          // case this.translatedLangText.LOLO:
+          //   if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
+          // break;
+          // case this.translatedLangText.STORAGE:
+          //   if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
+          // break;
+          case this.translatedLangText.STEAM:
+            if (showSteamSurcharge) s.data.push(entry.steaming?.completed_count || 0);
+            break;
+          case this.translatedLangText.CLEANING:
+            if (showCleanSurcharge) s.data.push(entry.cleaning?.completed_count || 0);
+            break;
+          case this.translatedLangText.REPAIR:
+            if (showRepairSurcharge) s.data.push(entry.repair?.completed_hour || 0);
+            break;
+          case this.translatedLangText.RESIDUE:
+            if (showResidueSurcharge) s.data.push(entry.residue?.completed_count || 0);
+            break;
+          case this.translatedLangText.GATE_IN:
+            if (showGateSurcharge) {
+              s.data.push(entry.gateInOut?.gate.gate_in_count || 0);
+              // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
+              // s.data.push(entry.gateInOut?.gate.lift_on_count||0);
+              // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
+            }
+            break;
+          case this.translatedLangText.GATE_OUT:
+            if (showGateSurcharge) {
+              //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
+              s.data.push(entry.gateInOut?.gate.gate_out_count || 0);
+              // s.data.push(entry.gateInOut?.gate.lift_on_count||0);
+              // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
+            }
+            break;
+          case this.translatedLangText.LIFT_ON:
+            if (showGateSurcharge) {
+              //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
+              // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
+              s.data.push(entry.gateInOut?.gate.lift_on_count || 0);
+              // s.data.push(entry.gateInOut?.gate.lift_off_count||0);
+            }
+            break;
+          case this.translatedLangText.LIFT_OFF:
+            if (showGateSurcharge) {
+              //s.data.push(entry.gateInOut?.gate.gate_in_count||0);
+              // s.data.push(entry.gateInOut?.gate.gate_out_count||0);
+              //s.data.push(entry.gateInOut?.gate.lift_on_count||0);
+              s.data.push(entry.gateInOut?.gate.lift_off_count || 0);
+            }
+            break;
+        }
+        if (bInsert) {
+          series.push(s);
+        }
+      });
+    }
+    data.push([
+      this.translatedLangText.TOTAL, "", "",
+      // ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
+      // ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
+      // ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
+      ...(showGateSurcharge ? [
+        Utility.formatNumberDisplay(gateInCount), Utility.formatNumberDisplay(gateOutCount),
+        Utility.formatNumberDisplay(liftOnCount), Utility.formatNumberDisplay(liftOffCount),
+      ] : []),
+      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(clnAppCount), Utility.formatNumberDisplay(clnCmpCount)] : []),
+      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(repAppHour), Utility.formatNumberDisplay(repCmpHour)] : []),
+      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(stmAppCount), Utility.formatNumberDisplay(stmCmpCount)] : []),
+      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(residueAppCount), Utility.formatNumberDisplay(residueCmpCount)] : []),
+
+      //Utility.formatNumberDisplay(total_all_cost)
+    ]);
+
+    data.push([
+      this.translatedLangText.DIFFERENCE, "", "",
+      // ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
+      // ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
+      // ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
+      ...(showGateSurcharge ? [
+        (gateInCount - gateOutCount), '',
+        (liftOnCount - liftOffCount), '',
+      ] : []),
+      ...(showCleanSurcharge ? [(clnAppCount - clnCmpCount), ''] : []),
+      ...(showRepairSurcharge ? [(repAppHour - repCmpHour), ''] : []),
+      ...(showSteamSurcharge ? [(stmAppCount - stmCmpCount), ''] : []),
+      ...(showResidueSurcharge ? [(residueAppCount - residueCmpCount), ''] : []),
+
+      //Utility.formatNumberDisplay((total_all_cost/average_counter))
+    ]);
+
+
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    // Add table using autoTable plugin
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, right: rightMargin, top: startY},
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz_body,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      tableWidth: pageWidth - leftMargin - rightMargin,
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+        let colSpan = 3;
+        let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        // let lastColumnIndex = data.table.columns.length-1;
+        // let depotCell=[6,7];
+        // if(!showGateSurcharge) depotCell=[];
+        if (data.section == "body" && ((data.column.index % 2) == 0)) {
+          var key = `${data.row.raw[1]}`;
+
+          var matched = 0;
+          var prop = "";
+          switch (data.column.index) {
+            case 2:
+              // if(showPreinspectSurcharge) prop="preinspection";
+              //    if(showGateSurcharge) prop="gate";
+              //   else if(showSteamSurcharge) prop="steaming";
+              //   else if(showCleanSurcharge) prop="cleaning";
+              //   else if(showRepairSurcharge) prop="repair";
+              //   else if(showResidueSurcharge) prop="residue";
+              //    break;
+              //  case 6:
+              //   if(showSteamSurcharge) prop="steaming";
+              //   break;
+              //  case 8:
+              //   if(showCleanSurcharge) prop="cleaning";
+              //   break;
+              // case 10:
+              //   if(showRepairSurcharge)var prop="repair";
+              //    break;
+              // if(showGateSurcharge) prop="gate";
+              if (showCleanSurcharge) prop = "cleaning";
+              else if (showRepairSurcharge) prop = "repair";
+              else if (showSteamSurcharge) prop = "steaming";
+              else if (showResidueSurcharge) prop = "residue";
+              break;
+            case 6:
+              if (showRepairSurcharge) prop = "repair";
+              break;
+            case 8:
+              if (showSteamSurcharge) prop = "steaming";
+              break;
+            case 10:
+              if (showResidueSurcharge) var prop = "residue";
+              break;
+
+          }
+          if (prop) {
+            var textColor = "";
+
+          }
+        }
+
+        if ((data.row.index == averageRowIndex || data.row.index == totalRowIndex)) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [231, 231, 231];
+          data.cell.styles.valign = 'middle'; // Center text vertically
+          data.cell.fontSize = 8;
+          colSpan = 1;
+          if (data.column.index > 0 && data.row.index == averageRowIndex) colSpan = 2;
+          else if (data.column.index == 0) colSpan = 3
+          if (((data.column.index % 2 == 1 && data.column.index != 1) || data.column.index == 0)) {
+            data.cell.colSpan = colSpan;  // Merge 4 columns into one
+            if (data.row.index == averageRowIndex && data.column.index != 1 && data.column.index % 2 == 1) {
+              var cellValue = Number(data.cell.text);
+              var negValue: boolean = cellValue < 0;
+
+              data.cell.text = Utility.formatNumberDisplay(Math.abs(cellValue));
+              if (negValue) {
+                data.cell.text = `(${data.cell.text})`;
+                data.cell.styles.textColor = [250, 60, 60];
+
+              }
+
+            }
+            if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+
+          }
+
+        }
+        else if (data.section == "body" && data.row.raw[2] == "Sunday") {
+          data.cell.styles.fillColor = [221, 221, 221];
+        }
+
+
+        if (((data.row.index == averageRowIndex)) && (data.column.index % 2 == 0) && (data.column.index > 0)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+        ) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+             PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
+          }
+        }
+
+      },
+    });
+
+    var labelStyle = {
+      style: {
+        fontSize: '8px',     // Adjust font size here (e.g., '12px', '14px')
         colors: '#9aa0ac',
       }
     };
@@ -1185,9 +1894,14 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     var catgries = Object.keys(grpData) as string[];
 
     var shortCat =catgries.map(date => {
-    // Split by '/' and take the first part (dd)
-    return date.split('/')[0];
+      return date.split('/')[0];
   });
+
+  
+
+  this.lineChartOptions.series = series;
+    this.lineChartOptions.colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
 
     {
@@ -1199,109 +1913,118 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
       this.lineChartData.datasets = [];
       this.lineChartData.labels = [];
-      var ds = [];
+      // var ds = [];
       var cats = [];
       var indx = 0;
-      if (showGateSurcharge) {
-        var lbls = ["Gate In", "Gate Out", "Lift On", "Lift Off"];
+      this.lineChartOptions.series=series;
+      if (!showGateSurcharge) {
+         var lbls = ["Gate In", "Gate Out", "Lift On", "Lift Off"];
 
-        lbls.forEach(lbl => {
-          var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-          ds.push({
-            label: lbl,
-            data: s[0].data,
-            backgroundColor: 'transparent',
-            borderColor: colors[indx],
-            borderWidth: 2,
-            fill: false,
-            tension: 0.5,
-            pointStyle: 'circle',
-            pointRadius: 3,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: colors[indx++],
-          });
+         lbls.forEach(lbl => {
+           this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+          //  this.lineChartOptions.series=s;
+        //   ds.push({
+        //     label: lbl,
+        //     data: s[0].data,
+        //     backgroundColor: 'transparent',
+        //     borderColor: colors[indx],
+        //     borderWidth: 2,
+        //     fill: false,
+        //     tension: 0.5,
+        //     pointStyle: 'circle',
+        //     pointRadius: 3,
+        //     pointBorderColor: 'transparent',
+        //     pointBackgroundColor: colors[indx++],
+        //   });
 
-        });
+         });
 
       }
-      if (showSteamSurcharge) {
+      if (!showSteamSurcharge) {
         var lbl = "Steam";
-        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-        ds.push({
-          label: lbl,
-          data: s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
+         this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        //  this.lineChartOptions.series=s;
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: 'transparent',
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+       //  });
 
       }
 
-      if (showCleanSurcharge) {
+      if (!showCleanSurcharge) {
         var lbl = "Cleaning";
-        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-        ds.push({
-          label: lbl,
-          data: s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
+         this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        //  var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        //  this.lineChartOptions.series=s;
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: 'transparent',
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        //});
 
       }
-      if (showRepairSurcharge) {
+      if (!showRepairSurcharge) {
         var lbl = "Repair";
-        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-        ds.push({
-          label: lbl,
-          data: s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
+         this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        //  var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        //  this.lineChartOptions.series=s;
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: 'transparent',
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
 
       }
 
-      if (showResidueSurcharge) {
+      if (!showResidueSurcharge) {
         var lbl = "Residue";
-        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-        ds.push({
-          label: lbl,
-          data: s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
+         this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+        //  var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        //  this.lineChartOptions.series=s;
+        // ds.push({
+        //   label: lbl,
+        //   data: s[0].data,
+        //   backgroundColor: 'transparent',
+        //   borderColor: colors[indx],
+        //   borderWidth: 2,
+        //   fill: false,
+        //   tension: 0.5,
+        //   pointStyle: 'circle',
+        //   pointRadius: 3,
+        //   pointBorderColor: 'transparent',
+        //   pointBackgroundColor: colors[indx++],
+        // });
 
       }
-      this.lineChartData.datasets = ds;
-      this.lineChartData.labels = shortCat;
-      this.chart?.data != this.lineChartData;
-      this.chart?.update();
+      // this.lineChartData.datasets = ds;
+      // this.lineChartData.labels = shortCat;
+      // this.chart?.data != this.lineChartData;
+      // this.chart?.update();
     }
 
 
@@ -1312,24 +2035,41 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       let chartContentWidth = pageWidth - leftMargin - rightMargin;
       chartContentWidth =chartContentWidth*0.75;
 
-      if (this.chartLine?.nativeElement) {
-        pdf.addPage();
-        //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-        PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-       startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-       startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        // startY = topMargin + 42;
-        const canvas = this.chartLine.nativeElement;
-        const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
-        const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
-        const aspectRatio = imgInfo.width / imgInfo.height;
-        let imgHeight1 = chartContentWidth / aspectRatio;
-        // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-         await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
-        
+       const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      for (var i = 0; i < cardElements.length; i++) {
+        {
+          pdf.addPage();
+          // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+          PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+          startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+          pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+          // startY = topMargin + 50;
+        }
+        const card1 = cardElements[i];
+        await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        // const canvas1 = await html2canvas(card1, { scale: scale });
+        // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
 
       }
+      // if (this.chartLine?.nativeElement) {
+      //   pdf.addPage();
+      //   //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+      //   PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      //  startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+      //  startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+      //   pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      //   // startY = topMargin + 42;
+      //   const canvas = this.chartLine.nativeElement;
+      //   const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+      //   const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
+      //   const aspectRatio = imgInfo.width / imgInfo.height;
+      //   let imgHeight1 = chartContentWidth / aspectRatio;
+      //   // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      //    await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
+        
+
+      // }
 
       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate,pagePositions);
@@ -1517,134 +2257,98 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
   }
 
   InitChartValues() {
-    // this.pieChartOptions = {
-    //   colors: this.colors,
-    //   title: {
-    //     text: this.translatedLangText.SUMMARY_OF_INVENTORY,
-    //     align: 'center',
-    //   },
-    //   chart: {
-    //     height: 450,
-    //     type: 'pie',
-    //     foreColor: '#9aa0ac',
-    //     toolbar: {
-    //       show: false,
-    //     },
-    //     animations: {
-    //       enabled: false, // <-- disables all animations
-    //     },
-    //   },
-    //   labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-    //   series2: [44, 55, 13, 43, 22],
-    //   legend:{
-    //     fontSize:'14px',
-    //     // position: "bottom",
-    //     // horizontalAlign: "center",
-    //     // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
-    //     labels: {
-    //       colors: "#333", // Set label text color
-    //       useSeriesColors: false, // Use the color of the series for labels
-    //   //    padding: 10, // Adjust space between marker and label
-    //     },
+    this.lineChartOptions = {
 
-    //   },
+      chart: {
+        height: 350,
+        type: 'line',
+        toolbar: {
+          show: false,
+        },
+        animations: {
+          enabled: false, // <-- disables all animations
+        },
+        foreColor: '#9aa0ac',
+      },
+      colors: ['#77B6EA', '#545454'],
+      dataLabels: {
+        enabled: true,
+      },
+      stroke: {
+        curve: 'smooth',
+      },
+      series: [
+        {
+          name: 'High - 2013',
+          data: [28, 29, 33, 36, 32, 32, 33],
+        },
+        {
+          name: 'Low - 2013',
+          data: [12, 11, 14, 18, 17, 13, 13],
+        },
+      ],
+      title: {
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      markers: {
+        size: 6,
+        radius: 12,       // 0 = square, 50% or high value = circle
+        shape: "rect",  // optional custom shape (circle/square/rect)
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        labels: {
+          style: {
+            colors: '#9aa0ac',
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: 'Temperature',
+        },
+        labels: {
+          style: {
+            colors: ['#9aa0ac'],
+          },
+        },
+        min: 5,
+        max: 40,
+      },
+      legend: {
+        fontSize: '14px',
+        position: "top",
+        horizontalAlign: "center",
+        itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+        labels: {
+          colors: "#333", // Set label text color
+          useSeriesColors: false, // Use the color of the series for labels
+          //    padding: 10, // Adjust space between marker and label
+        },
 
-    // };
-
-
-    // this.lineChartOptions = {
-    //   colors:this.colors,
-    //   chart: {
-    //     height: 350,
-    //     type: 'line',
-    //     toolbar: {
-    //       show: false,
-    //     },
-    //     animations: {
-    //       enabled: false, // <-- disables all animations
-    //     },
-    //     foreColor: '#9aa0ac',
-    //   },
-    //   dataLabels: {
-    //     enabled: true,
-    //   },
-    //   stroke: {
-    //     curve: 'smooth',
-    //     width:1
-    //   },
-    //   series: [
-    //     {
-    //       name: 'High - 2013',
-    //       data: [28, 29, 33, 36, 32, 32, 33],
-    //     },
-    //     {
-    //       name: 'Low - 2013',
-    //       data: [12, 11, 14, 18, 17, 13, 13],
-    //     },
-    //   ],
-    //   title: {
-    //   },
-    //   grid: {
-    //     show: true,
-    //     borderColor: '#9aa0ac',
-    //     strokeDashArray: 1,
-    //   },
-    //   markers: {
-    //     size: 6,
-
-    //   },
-    //   xaxis: {
-    //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    //     labels: {
-    //       style: {
-    //         fontSize: '16px',     // Adjust font size here (e.g., '12px', '14px')
-    //         fontWeight: 600,      // Boldness (400 = normal, 700 = bold)
-    //         colors: '#FF0000',    // Single color for all labels (or array for per-label colors)
-    //         fontFamily: 'Arial'   // Optional: Change font type
-    //       }
-    //     }
-    //   },
-    //   yaxis: {
-    //     title: {
-    //       text: 'Temperature',
-    //     },
-    //     labels: {
-    //       style: {
-    //         colors: ['#9aa0ac'],
-    //       },
-    //     },
-    //     min: 5,
-    //     max: 40,
-    //   },
-    //   legend:{
-    //     fontSize:'14px',
-    //     position: "bottom",
-    //     horizontalAlign: "center",
-    //     itemMargin: { horizontal: 10, vertical: 5 }, // Adjusts spacing between items
-    //     labels: {
-    //       colors: "#333", // Set label text color
-    //       useSeriesColors: false, // Use the color of the series for labels
-    //   //    padding: 10, // Adjust space between marker and label
-    //     },
-
-    //   },
-    //   // legend: {
-    //   //   position: 'top',
-    //   //   horizontalAlign: 'right',
-    //   //   floating: true,
-    //   //   offsetY: -25,
-    //   //   offsetX: -5,
-    //   // },
-    //   tooltip: {
-    //     theme: 'dark',
-    //     marker: {
-    //       show: true,
-    //     },
-    //     x: {
-    //       show: true,
-    //     },
-    //   },
-    // };
+      },
+      // legend: {
+      //   position: 'top',
+      //   horizontalAlign: 'right',
+      //   floating: true,
+      //   offsetY: -25,
+      //   offsetX: -5,
+      // },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    };
+  
   }
 
 }

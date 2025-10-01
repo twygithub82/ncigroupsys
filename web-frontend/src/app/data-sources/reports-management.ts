@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
+import { CleanerPerformance } from './reports';
 
 
 
@@ -400,6 +401,13 @@ export class GroupedByDate {
     repair?: any;
     steaming?: any;
   };
+}
+
+export interface CleanerSummary {
+  cleaner_name: string;
+  total_cost: number;
+  jobs: CleanerPerformance[]; // optional if you want details
+   
 }
 
 export class InventoryAnalyzer {
@@ -878,6 +886,29 @@ export class InventoryAnalyzer {
   }
 
 
+   static convertToCleanerSummary(data: CleanerPerformance[]): CleanerSummary[] {
+        const grouped: { [key: string]: CleanerSummary } = {};
+  
+        data.forEach(item => {
+          const cleaner = item.cleaner_name;
+          const cost = item.cost ?? 0; // default to 0 if undefined
+  
+          if (!cleaner) return; // skip items without cleaner name
+  
+          if (!grouped[cleaner]) {
+            grouped[cleaner] = {
+              cleaner_name: cleaner,
+              total_cost: 0,
+              jobs: []
+            };
+          }
+  
+          grouped[cleaner]!.total_cost += cost;
+          grouped[cleaner]!.jobs.push(item);
+        });
+  
+        return Object.values(grouped);
+      }
   
 }
 

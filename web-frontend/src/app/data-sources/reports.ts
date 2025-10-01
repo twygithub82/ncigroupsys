@@ -604,6 +604,22 @@ export class SurveyorDetail
      }
   }
 
+ 
+
+export interface CleanerSummary {
+  cleaner_name: string;
+  total_cost: number;
+  jobs: CleanerPerformance[]; // optional if you want details
+    //  constructor(item: Partial<CleanerSummary> = {}) {
+
+    //   this.cleaner_name=item.cleaner_name;
+    //   this.total_cost=item.total_cost;
+    //   this.jobs=item.jobs;
+      
+    //  }
+
+}
+
   export class CleanerPerformance{
     bay?:string;
     cleaner_name?:string;
@@ -1308,6 +1324,32 @@ export class InventoryAnalyzer {
     
       return grouped;
     }
+
+  static convertToCleanerSummary(data: CleanerPerformance[]): CleanerSummary[] {
+      const grouped: { [key: string]: CleanerSummary } = {};
+
+      data.forEach(item => {
+        const cleaner = item.cleaner_name;
+        const cost = item.cost ?? 0; // default to 0 if undefined
+
+        if (!cleaner) return; // skip items without cleaner name
+
+        if (!grouped[cleaner]) {
+          grouped[cleaner] = {
+            cleaner_name: cleaner,
+            total_cost: 0,
+            jobs: []
+          };
+        }
+
+        grouped[cleaner]!.total_cost += cost;
+        grouped[cleaner]!.jobs.push(item);
+      });
+
+      return Object.values(grouped);
+    }
+
+
 }
 
 export const GET_CLEANING_INVENTORY_REPORT = gql`

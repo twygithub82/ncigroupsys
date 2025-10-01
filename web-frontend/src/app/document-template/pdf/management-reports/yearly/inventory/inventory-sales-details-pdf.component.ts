@@ -348,7 +348,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   // date:string='';
   // invType:string='';
 
-
+ 
   lineChartData: ChartConfiguration['data'] = {
     datasets: [
       {
@@ -401,12 +401,12 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         },
         position: 'left',
         ticks: {
-          color: '#9aa0ac', // Font Color
+          color: '#000000', // Font Color
         },
       },
       x: {
         ticks: {
-          color: '#9aa0ac', // Font Color
+          color: '#000000', // Font Color
         },
       },
     },
@@ -1095,14 +1095,20 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
     });
 
-    var catgries = grpData.monthlyData.map((mData: { key?: string }) => mData.key || "") as string[];
+     var catgries = grpData.monthlyData.map((mData: { key?: string }) => mData.key || "") as string[];
     // var x
     this.lineChartOptions.xaxis = {
       categories: catgries,
     };
 
+    //  this.lineChartOptions.xaxis = {
+    //   categories: catgries,
+    //   labels: labelStyle
+    // };
 
     this.lineChartOptions.series = series;
+     this.lineChartOptions.colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
 
 
@@ -1121,109 +1127,106 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       var lbls = ["In Gate", "Out Gate"];
 
       lbls.forEach(lbl => {
-        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-        ds.push({
-          label: lbl,
-          data: s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
+         this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+      //   var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      //   ds.push({
+      //     label: lbl,
+      //     data: s[0].data,
+      //     backgroundColor: 'transparent',
+      //     borderColor: colors[indx],
+      //     borderWidth: 2,
+      //     fill: false,
+      //     tension: 0.5,
+      //     pointStyle: 'circle',
+      //     pointRadius: 3,
+      //     pointBorderColor: 'transparent',
+      //     pointBackgroundColor: colors[indx++],
+      //   });
 
       });
     }
-    if (showSteamSurcharge) {
+    if (!showSteamSurcharge) {
       var lbl = "Steam";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
+       this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+      // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      // ds.push({
+      //   label: lbl,
+      //   data: s[0].data,
+      //   backgroundColor: 'transparent',
+      //   borderColor: colors[indx],
+      //   borderWidth: 2,
+      //   fill: false,
+      //   tension: 0.5,
+      //   pointStyle: 'circle',
+      //   pointRadius: 3,
+      //   pointBorderColor: 'transparent',
+      //   pointBackgroundColor: colors[indx++],
+      // });
 
     }
 
 
-    if (showCleanSurcharge) {
+    if (!showCleanSurcharge) {
       var lbl = "Cleaning";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
+       this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+      // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      // ds.push({
+      //   label: lbl,
+      //   data: s[0].data,
+      //   backgroundColor: 'transparent',
+      //   borderColor: colors[indx],
+      //   borderWidth: 2,
+      //   fill: false,
+      //   tension: 0.5,
+      //   pointStyle: 'circle',
+      //   pointRadius: 3,
+      //   pointBorderColor: 'transparent',
+      //   pointBackgroundColor: colors[indx++],
+      // });
 
     }
-    if (showRepairSurcharge) {
+    if (!showRepairSurcharge) {
       var lbl = "Repair";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
+       this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+      // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      // ds.push({
+      //   label: lbl,
+      //   data: s[0].data,
+      //   backgroundColor: 'transparent',
+      //   borderColor: colors[indx],
+      //   borderWidth: 2,
+      //   fill: false,
+      //   tension: 0.5,
+      //   pointStyle: 'circle',
+      //   pointRadius: 3,
+      //   pointBorderColor: 'transparent',
+      //   pointBackgroundColor: colors[indx++],
+      // });
     }
-    if (showResidueSurcharge) {
+    if (!showResidueSurcharge) {
       var lbl = "Residue";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
+       this.lineChartOptions.series = this.lineChartOptions.series.filter((s: { name: string }) => ![lbl].includes(s.name));
+      // var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      // ds.push({
+      //   label: lbl,
+      //   data: s[0].data,
+      //   backgroundColor: 'transparent',
+      //   borderColor: colors[indx],
+      //   borderWidth: 2,
+      //   fill: false,
+      //   tension: 0.5,
+      //   pointStyle: 'circle',
+      //   pointRadius: 3,
+      //   pointBorderColor: 'transparent',
+      //   pointBackgroundColor: colors[indx++],
+      // });
 
     }
-    this.lineChartData.datasets = ds;
-    this.lineChartData.labels = catgries;
-    this.chart?.data != this.lineChartData;
-    this.chart?.update();
+    // this.lineChartData.datasets = ds;
+    // this.lineChartData.labels = catgries;
+    // this.chart?.data != this.lineChartData;
+    // this.chart?.update();
 
-    // if(!showGateSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
-    // if(!showSteamSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
-    // if(!showCleanSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    // if(!showRepairSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
 
     this.pieChartOptions.labels = prcss;
     this.pieChartOptions.series2 = prcsValues;
@@ -1246,29 +1249,51 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     setTimeout(async () => {
 
+      
       startY = lastTableFinalY + 10;
       let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      chartContentWidth =chartContentWidth*0.95;
+      
+
+        {
+          pdf.addPage();
+          // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+          PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+          startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+          pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+          // startY = topMargin + 50;
+        }
+
+        const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      for (var i = 0; i < cardElements.length; i++) {
+      
+        const card1 = cardElements[i];
+       startY= await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        startY += 20;
+      }
+
       // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
       // var base64img = await Utility.convertToImage(this.pdfTable.nativeElement,"jpeg");
 
-      if (this.chartLine?.nativeElement) {
-        pdf.addPage();
-        PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-        startY=PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
-        startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-        // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        // startY = topMargin + 50;
-        const canvas = this.chartLine.nativeElement;
-        const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
-        const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
-        const aspectRatio = imgInfo.width / imgInfo.height;
-        let imgHeight1 = chartContentWidth / aspectRatio;
-        // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-        await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
+      // if (this.chartLine?.nativeElement) {
+      //   pdf.addPage();
+      //   PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+      //   startY=PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+      //   startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+      //   // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+      //   pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      //   // startY = topMargin + 50;
+      //   const canvas = this.chartLine.nativeElement;
+      //   const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+      //   const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
+      //   const aspectRatio = imgInfo.width / imgInfo.height;
+      //   let imgHeight1 = chartContentWidth / aspectRatio;
+      //   // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      //   await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
 
-      }
+      // }
 
       // if (this.chartPie?.nativeElement) {
       //   pdf.addPage();
@@ -1556,7 +1581,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       // },
     };
 
-    this.lineChartOptions = {
+   this.lineChartOptions = {
 
       chart: {
         height: 350,
@@ -1595,6 +1620,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
       markers: {
         size: 6,
+        // radius: 12,       // 0 = square, 50% or high value = circle
+        // shape: "rect",  // optional custom shape (circle/square/rect)
       },
       xaxis: {
         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
@@ -1618,7 +1645,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
       legend: {
         fontSize: '14px',
-        position: "bottom",
+        position: "top",
         horizontalAlign: "center",
         itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {

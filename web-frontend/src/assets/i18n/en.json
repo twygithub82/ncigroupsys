@@ -1392,7 +1392,13 @@
     "T": "T",
     "W": "W",
     "STEAM-DETAILS": "Steam Details",
-    "T_WEIGHT":"T. Weight"
+    "T_WEIGHT":"T. Weight",
+    "TOTAL-ESTIMATE-AMOUNT": "Total Estimate Amount",
+    "TOTAL-APPROVED-AMOUNT": "Total Approved Amount",
+    "PER-TANK": "Per Tank",
+    "PER-HOUR": "Per Hour",
+    "MANHOUR": "Manhour",
+    "UNIT": "Unit"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

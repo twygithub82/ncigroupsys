@@ -47,11 +47,12 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffRepairGroup[],
+  repData: CleaningPriceList[],
   date: string
 }
 
@@ -94,9 +95,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-tariff-repair-costreport-pdf',
-  templateUrl: './tariff-repair-cost-pdf.component.html',
-  styleUrls: ['./tariff-repair-cost-pdf.component.scss'],
+  selector: 'app-tariff-cleaning-cost-report-pdf',
+  templateUrl: './tariff-cleaning-cost-pdf.component.html',
+  styleUrls: ['./tariff-cleaning-cost-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -110,7 +111,7 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -315,6 +316,10 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     LABOUR_HOUR:'COMMON-FORM.LABOUR-HOUR',
     LENGTH:'COMMON-FORM.LENGTH',
     MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
+    PER_TANK:'COMMON-FORM.PER-TANK',
+    PER_HOUR:'COMMON-FORM.PER-HOUR',
+    UNIT:"COMMON-FORM.UNIT",
+    MANHOUR:"COMMON-FORM.MANHOUR",
 
   }
 
@@ -365,7 +370,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: TariffRepairGroup[];
+  repData?: CleaningPriceList[];
   date?: string;
   repType?: string;
   customer?: string;
@@ -376,7 +381,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffRepairCostPdfComponent>,
+    public dialogRef: MatDialogRef<TariffCleaningCostPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -871,7 +876,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
 
- async export(groups: TariffRepairGroup[]) {
+ async export(items: CleaningPriceList[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -886,7 +891,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     let fontSize = 12;
     doc.setFontSize(fontSize);
-    doc.text("Repair Tariff", 105, 15, { align: "center" });
+    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
 
     let lastTableFinalY = 25;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -894,53 +899,43 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     const startX = leftMargin;
     let index = 1;
 
-    for (const group of groups) {
-        // Add Group Title (centered)
-        const groupName = group.group_name_desc || group.group_name_cv;
-        fontSize = 11;
-        Utility.AddTextAtCenterPage(doc, groupName, pageWidth, leftMargin, rightMargin, lastTableFinalY, fontSize, true);
-        lastTableFinalY += 7;
-
-        // Loop through subgroups
-        for (const sub of group.subgroups) {
-            // Map items for the subgroup
-            const data: any[][] = sub.items.map((item) => {
+    const data: any[][] = items.map((item) => {
                 const row = [
                     index++, // increment index for each item
-                    item.alias,
-                    `${item.length || ""} ${item.length_unit_cv || ""}`,
-                    item.labour_hour?.toFixed(2) ?? "0.00",
-                    item.material_cost?.toFixed(2) ?? "0.00",
+                    item.Descripton,
+                    `${item.Unit || "-"}`,
+                    item.ManHour|| "-" ,
+                    item.Material||"-",
                 ];
                 return row;
             });
-
-            lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-
-            autoTable(doc, {
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+     autoTable(doc, {
                 startY: lastTableFinalY,
                 head: [[
                     this.translatedLangText.S_N,
-                    this.translatedLangText.PART_NAME,
-                    this.translatedLangText.LENGTH,
-                    this.translatedLangText.LABOUR_HOUR,
-                    this.translatedLangText.MATERIAL_COST
+                    this.translatedLangText.DESCRIPTION,
+                    this.translatedLangText.UNIT,
+                    this.translatedLangText.MANHOUR,
+                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
                 ]],
                 body: data,
                 theme: "grid",
                 margin: { left: leftMargin, right: rightMargin },
                 styles: { fontSize: table_body_fontsize, cellPadding: 2 },
                 headStyles: {
-                    fillColor: [220, 220, 220],
-                    textColor: [0, 0, 0],
-                    fontStyle: 'bold'
+                  fillColor: [220, 220, 220],
+                  textColor: [0, 0, 0],
+                  fontStyle: 'bold',
+                  halign: 'center',   // ✅ centers header text
+                  valign: 'middle'
                 },
                 columnStyles: {
-                    0: { cellWidth: 12 },    // "No."
-                    1: { cellWidth: 108 },   // "Part Name"
-                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Length"
-                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Labour Hour"
-                    4: { cellWidth: 25, valign: 'middle', halign: 'center' }   // "Material Cost"
+                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
+                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
+                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
+                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
                 },
                 didDrawPage: (d: any) => {
                     lastTableFinalY = d.cursor.y + 8;
@@ -954,8 +949,8 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
                     }
                 }
             });
-        }
-    }
+
+    
 
     const totalPages = doc.getNumberOfPages();
 
@@ -966,7 +961,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
     }
 
-    doc.save("RepairTariff.pdf");
+    doc.save("CleaningTariff.pdf");
     this.dialogRef.close();
 }
 

@@ -32,7 +32,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem, addDefaultCategoryOption } from 'app/data-sources/cleaning-category';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { CleaningMethodDS, CleaningMethodItem, CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
@@ -43,8 +43,11 @@ import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {TariffLabourDS} from "app/data-sources/tariff-labour";
+import { TariffCleaningCostPdfComponent } from 'app/document-template/pdf/tariff/cleaning/tariff-cleaning-cost-pdf.component';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -137,6 +140,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     DELETE: 'COMMON-FORM.DELETE',
     SEARCH: "COMMON-FORM.SEARCH",
     CARGO_SELECTED: 'COMMON-FORM.SELECTED',
+    PER_TANK: 'COMMON-FORM.PER-TANK',
+    PER_HOUR: 'COMMON-FORM.PER-HOUR',
   }
 
   @ViewChild('custInput', { static: true })
@@ -152,6 +157,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   cCategoryDS: CleaningCategoryDS;
   cMethodDS: CleaningMethodDS;
   sotDS: StoringOrderTankDS;
+  tLabourDS: TariffLabourDS;
 
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -186,6 +192,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   previous_endCursor: string | undefined = undefined;
 
   selectedCargo: any[] = [];
+  isGeneratingReport: boolean=false;
 
 
   constructor(
@@ -208,6 +215,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.cCategoryDS = new CleaningCategoryDS(this.apollo);
     this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.tLabourDS=new TariffLabourDS(this.apollo);
   }
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -880,4 +888,76 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.search();
     }
   }
+
+   export_report()
+    {
+      this.isGeneratingReport=true;
+      var order={};
+      var where={};
+      this.subs.sink = this.cMethodDS.searchAllCleaningMethods(where, order).subscribe(data => {
+        var Items = data;
+  
+        var prcList:CleaningPriceList[]=[];
+        Items.forEach((item)=>{
+          var prc:CleaningPriceList=new CleaningPriceList();
+          prc.Descripton=item.description||'';
+          prc.Unit=this.translatedLangText.PER_TANK;
+          prc.Material=Utility.formatNumberDisplay(item.cleaning_category?.cost);
+          prcList.push(prc);
+        });
+
+        this.subs.sink =this.tLabourDS.SearchTariffLabour(where,order).subscribe(data=>{
+          var lbrItem=data;
+          if(lbrItem.length>0){
+          var prc:CleaningPriceList=new CleaningPriceList();
+          var item=lbrItem[0];
+          prc.Descripton=item.description||'';
+          prc.Unit=this.translatedLangText.PER_HOUR;
+          prc.Material=Utility.formatNumberDisplay(item.cost||0);
+          prcList.push(prc);
+          }
+          this.ShowReport(prcList);
+
+        })
+
+  
+      });
+    }
+
+   ShowReport(repData:any) {
+      
+         //this.preventDefault(event);
+          let cut_off_dt = new Date();
+      
+      
+          let tempDirection: Direction;
+          if (localStorage.getItem('isRtl') === 'true') {
+            tempDirection = 'rtl';
+          } else {
+            tempDirection = 'ltr';
+          }
+      
+          const dialogRef = this.dialog.open(TariffCleaningCostPdfComponent, {
+            width: reportPreviewWindowDimension.portrait_width_rate,
+            maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+            maxHeight: reportPreviewWindowDimension.report_maxHeight,
+            
+            data: {
+              repData: repData
+            },
+      
+            // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+            direction: tempDirection
+          });
+      
+            dialogRef.updatePosition({
+            top: '-90vh',  // Move far above the screen
+            left: '0px'  // Move far to the left of the screen
+          });
+      
+          this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+            this.isGeneratingReport = false;
+          });
+  
+    }
 }

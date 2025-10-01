@@ -9,7 +9,20 @@
       <div class="row clearfix">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     
-          <div class="card1">
+           <div class="card">
+            <div class="body">
+              <div  style="display: flex; justify-content: center;">
+                <div style="width: 40vw">
+                  <apx-chart #chartLine [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!" [colors]="lineChartOptions.colors!"
+                  [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!"
+                  [markers]="lineChartOptions.markers!"  [stroke]="lineChartOptions.stroke!">
+                  </apx-chart>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- <div class="card1">
             <div >
               <div class="chart-wrapper">
                 <div class="y-axis-label">{{getYAxisLabel()}}</div>
@@ -28,7 +41,7 @@
               </div>
             </div>
             </div>
-          </div>
+          </div> -->
           <div class="card">
             <div class="body">
               <div  style="display: flex; justify-content: center;">

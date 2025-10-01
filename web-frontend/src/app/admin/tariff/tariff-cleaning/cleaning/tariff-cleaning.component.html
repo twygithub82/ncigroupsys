@@ -7,23 +7,29 @@
           </mat-panel-title>
           <mat-panel-description>
             <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
                 <mat-icon>search</mat-icon>
               </button>
             </div>
             <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
             @if (isAllowAdd()) {
             <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-              <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
+              <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']" [disabled]="isGeneratingReport">
                 <mat-icon>add</mat-icon>
               </button>
             </div>
 
             }
+             <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" >
+                      <button mat-mini-fab [class.orange-button]=true (click)="export_report()" [disabled]="isGeneratingReport"
+                        (click)="$event.stopPropagation()" >
+                        <mat-icon>insert_drive_file</mat-icon>
+                      </button>
+                    </div>
             <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                   (click)="$event.stopPropagation()">

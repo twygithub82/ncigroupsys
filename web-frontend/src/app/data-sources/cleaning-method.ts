@@ -76,6 +76,7 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
           description
           guid
           name
+          cost
           sequence
           update_by
           update_dt
@@ -143,6 +144,13 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
 //       this.cleaning_formula=item.cleaning_formula;
 //   }
 // }
+
+export class CleaningPriceList{
+  Descripton:string="";
+  Unit:string="";
+  ManHour:string="-" ;
+  Material:string="";
+}
 
 export class CleaningMethodItem {
   public guid?: string;
@@ -283,6 +291,42 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
         })
       );
   }
+
+  searchAllCleaningMethods(where?: any, order?: any): Observable<CleaningMethodItem[]> {
+  this.loadingSubject.next(true);
+
+  const fetchPage = (after?: string, accumulated: CleaningMethodItem[] = []): Observable<CleaningMethodItem[]> => {
+    return this.apollo.query<any>({
+      query: SEARCH_CLEANING_METHOD_QUERY,
+      variables: { where, order, first: 100, after }, // fetch 100 per page
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => result.data.queryCleaningMethod || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
+      switchMap(rst => {
+        const newAccumulated = [...accumulated, ...rst.nodes];
+        this.totalCount = rst.totalCount;
+
+        if (rst.pageInfo?.hasNextPage && rst.pageInfo.endCursor) {
+          // recursively fetch next page
+          return fetchPage(rst.pageInfo.endCursor, newAccumulated);
+        } else {
+          // done, push into subject and return all
+          this.itemsSubjects.next(newAccumulated);
+          this.pageInfo = rst.pageInfo;
+          return of(newAccumulated);
+        }
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([] as CleaningMethodItem[]);
+      })
+    );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => this.loadingSubject.next(false))
+  );
+}
 
   addCleaningMethod(cc: any): Observable<any> {
     return this.apollo.mutate({

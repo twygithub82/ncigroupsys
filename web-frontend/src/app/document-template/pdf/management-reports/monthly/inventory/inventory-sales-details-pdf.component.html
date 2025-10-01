@@ -9,13 +9,26 @@
       <div class="row clearfix">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     
-          <div class="card">
+           <!-- <div class="card">
             <div >
-              <div class="chart-wrapper">
+              <div class="width: 40vw heigh:40vh">
                 <div class="y-axis-label">{{getYAxisLabel()}}</div>
-                <canvas #chartLine baseChart  [data]="lineChartData" [options]="lineChartOptions"
+                <canvas #chartLine baseChart  [data]="lineChartData" [options]="lineChartOpts"
                   type="line"></canvas>
               </div>
+            </div>
+          </div> -->
+           <div class="card">
+            <div class="body">
+              <div  style="display: flex; justify-content: center;">
+              <div style="width: 40vw">
+               
+                <apx-chart #chartLine [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!" [colors]="lineChartOptions.colors!"
+                [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!"
+                [markers]="lineChartOptions.markers!"  [stroke]="lineChartOptions.stroke!">
+              </apx-chart>
+              </div>
+            </div>
             </div>
           </div>
           <!-- <div class="card1">

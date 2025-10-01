@@ -2,8 +2,8 @@ import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angu
 
 export const tempRangeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const formGroup = control as FormGroup;
-  const minTemp = formGroup.get('min_temp')?.value;
-  const maxTemp = formGroup.get('max_temp')?.value;
+  const minTemp = Number( formGroup.get('min_temp')?.value);
+  const maxTemp = Number(formGroup.get('max_temp')?.value);
 
   if (minTemp == null || maxTemp == null) return null;
 

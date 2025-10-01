@@ -869,14 +869,61 @@ export class Utility {
   }
   static ConvertCanvasElementToImage64String(canvas: HTMLCanvasElement): string {
     var retval: string = '';
-    var quality: number = 0.95;
+    var quality: number =1;
     if (canvas) {
-      var cvs = this.adjustImageSizeAndBackground(canvas);
+      // var cvs = this.adjustImageSizeAndBackground(canvas);
+       var cvs = this.adjustImageSizeAndBackground_r1(canvas);
       retval = cvs.toDataURL('image/jpeg', quality);
       // retval =this.getPureBase64(retval);
     }
     return retval;
   }
+
+
+  static adjustImageSizeAndBackground_r1(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  const scale = 4; // Increase to 2x, 3x, etc.
+
+  const newCanvas = document.createElement("canvas");
+  newCanvas.width = canvas.width * scale;
+  newCanvas.height = canvas.height * scale;
+
+  const ctx = newCanvas.getContext("2d");
+ if (!ctx) {
+      throw new Error("Failed to get 2D context");
+    }
+  // Fill background if needed
+  ctx.fillStyle = "#ffffff"; // white background
+  ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+
+  // Draw scaled-up version of the original
+  ctx.scale(scale, scale);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(canvas, 0, 0);
+
+  // return newCanvas;
+   return this.applySharpening(newCanvas);
+}
+
+static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas;
+
+  // Simple sharpening using image data
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  // Light sharpening kernel
+  for (let i = 0; i < data.length; i += 4) {
+    // Simple contrast enhancement for sharpness
+    data[i] = Math.min(255, data[i] * 1.05);     // Red
+    data[i + 1] = Math.min(255, data[i + 1] * 1.05); // Green
+    data[i + 2] = Math.min(255, data[i + 2] * 1.05); // Blue
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
+}
 
   /**
    * Adjusts image size while maintaining aspect ratio and adds white background
@@ -942,7 +989,7 @@ export class Utility {
   }
 
   static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
-    rightMargin: number, topPosition: number, maxChartWidth: number) {
+    rightMargin: number, topPosition: number, maxChartWidth: number) : Promise<number> {
     let chartContentWidth = maxChartWidth;
     let bottomMargin = 10;
     let startY: number = topPosition;
@@ -963,10 +1010,12 @@ export class Utility {
 
     // Add the image to the PDF
     pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+
+    return imgHeight1+topPosition;
   }
 
   static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number,
-    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
+    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number): Promise<number> {
     let chartContentWidth = maxChartWidth;
 
     let startY: number = topPosition;
@@ -974,7 +1023,8 @@ export class Utility {
     // card.style.boxShadow = 'none';
     // card.style.transition = 'none';
     const imgData1 = await this.convertToImage(card, "jpeg");
-    await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+   var retval= await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+   return retval;
 
   }
 
@@ -1434,7 +1484,7 @@ export class Utility {
   }
 
   static async convertToImage_html2canvas(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-    var imgScale = 4;
+    var imgScale = 3;
     var imgQty = 1;
     if (!element) throw new Error('Invalid element');
 
@@ -1487,7 +1537,8 @@ export class Utility {
     // }
 
     // 4. Fallback to dom-to-image with proper sizing
-    return await this.convertWithDomToImage(clone, type);
+    // return await this.convertWithDomToImage(clone, type);
+    return await this.convertToImage_html2canvas(clone, type);
   }
 
   private static async waitForResources(): Promise<void> {
@@ -1642,7 +1693,7 @@ export class Utility {
     const options = {
       width: element.scrollWidth,
       height: element.scrollHeight,
-      quality: 0.95,
+      quality: 1,
       bgcolor: '#ffffff',
       style: {
 
