@@ -807,6 +807,7 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
           etr_dt
           required_temp
           tariff_cleaning {
+            cargo
             flash_point
           }
           storing_order {
