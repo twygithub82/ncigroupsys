@@ -66,8 +66,8 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                <input matInput #maxInput formControlName="max_temp" type="text" appNumericText step="1"
-                  inputmode="numeric" (focus)="maxInput.select()" required>
+                <input matInput #maxInput formControlName="max_temp" type="text" appNumericText
+                  (focus)="maxInput.select()" required>
               </mat-form-field>
             </div>
           </div>
@@ -109,20 +109,20 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if(canEdit()) {
-          @if (isAdd()) {
-          <button mat-flat-button color="primary" class="me-1" (click)="save()">
-            <mat-icon>
-              save
-            </mat-icon>
-            {{translatedLangText.SAVE_AND_SUBMIT}}</button>
-          }
-          @else {
-          <button mat-flat-button color="primary" class="me-1" (click)="update()">
-            <mat-icon>
-              save
-            </mat-icon>
-            {{translatedLangText.UPDATE}}</button>
-          }
+        @if (isAdd()) {
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        @else {
+        <button mat-flat-button color="primary" class="me-1" (click)="update()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{translatedLangText.UPDATE}}</button>
+        }
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
