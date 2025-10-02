@@ -2773,7 +2773,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return this.isAllowSteamReinstate() && (this.sot?.tank_status_cv === 'STEAM' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
+    return this.isAllowSteamReinstate() && (this.sot?.tank_status_cv === 'STEAM' || this.sot?.tank_status_cv === 'STORAGE') && this.isSteamingCompleted(row);
   }
 
   canOverwriteCleaningApproval() {
@@ -3119,6 +3119,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   isAllowToViewSteamHeatingLog(row: any) {
     return this.isAutoApproveSteaming(row) && row?.status_cv === 'COMPLETED';
+  }
+
+  getSteamingBeginDate(row: any) {
+    return this.steamDS?.getBeginDate(row);
+  }
+
+  isSteamingCompleted(row: any) {
+    return row?.status_cv === 'COMPLETED';
   }
 
   stopEventTrigger(event: Event) {
@@ -3793,6 +3801,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   steamHeatingLogPDFDialog(event: Event, steam: SteamItem) {
     this.preventDefault(event);
+    this.stopPropagation(event);
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3805,10 +3814,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       maxHeight: '80vh',
       data: {
         steam_guid: steam?.guid,
-        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
-        estimate_no: steam?.estimate_no,
-        repairEstimatePdf: undefined,
-        retrieveFile: true
       },
       direction: tempDirection
     });

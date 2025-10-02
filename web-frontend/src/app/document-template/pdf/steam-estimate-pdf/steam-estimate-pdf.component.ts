@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -7,12 +7,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-// import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -22,15 +20,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
-import { ResidueDS } from 'app/data-sources/residue';
-import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import autoTable, { RowInput, Styles } from 'jspdf-autotable';
-import { PDFUtility } from 'app/utilities/pdf-utility';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS, SteamPartItem } from 'app/data-sources/steam-part';
-import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, ESTIMATE_APPROVED_STATUS, Utility } from 'app/utilities/utility';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { PDFUtility } from 'app/utilities/pdf-utility';
+import { ESTIMATE_APPROVED_STATUS, Utility } from 'app/utilities/utility';
+import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -608,15 +604,15 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = 37; // Start table 20mm below the customer name
 
-    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, this.pdfTitle, '');
-    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2);
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, this.pdfTitle, '');
+    startY += (PDFUtility.GapBetweenSubTitleAndTable_Portrait() * 2);
     //await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    
+
     //pdf.setLineWidth(0.1);
     //pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
 
-    
+
     var item = this.steamItem;
     var data: any[][] = [
       [
@@ -937,8 +933,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     var cc = item.storing_order_tank?.storing_order?.customer_company;
 
     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
-       this.translate, this.pdfTitle, '');
-    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+      this.translate, this.pdfTitle, '');
+    startY += (PDFUtility.GapBetweenSubTitleAndTable_Portrait() * 2) - PDFUtility.GapBetweenLeftTitleAndTable();
     // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
 
     // startY = 43;
@@ -976,7 +972,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       body: data,
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin , top:startY},
+      margin: { left: leftMargin, top: startY },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1007,7 +1003,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
           }
         }
       },
@@ -1041,7 +1037,6 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.downloadFile(pdf.output('blob'), this.getReportTitle())
     this.dialogRef.close();
   }
-
 
   createSteamEstimateDetail_repair_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
     var rightPadding_cost = 4;
@@ -1139,7 +1134,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       head: headers,
       body: repData,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin , top:50},
+      margin: { left: leftMargin, top: 50 },
       tableWidth: tableWidth,
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
@@ -1353,15 +1348,15 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           content: this.parse2Decimal(cost),
           styles: {
             fontSize: fontSz, halign: 'right', valign: 'middle',
-            cellPadding: { top:2,right: rightPadding_cost }
+            cellPadding: { top: 2, right: rightPadding_cost }
           }
         },
         {
           content: this.parse2Decimal(totalCost),
           styles: {
-            
+
             fontSize: fontSz, halign: 'right', valign: 'middle',
-            cellPadding: { top: 2,right: rightPadding_cost }
+            cellPadding: { top: 2, right: rightPadding_cost }
           }
         },
         app

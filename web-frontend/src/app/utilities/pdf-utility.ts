@@ -16,7 +16,6 @@ export class PDFUtility {
     const fontStyle = bold ? 'bold' : 'normal';
     pdf.setTextColor(textColor);
     if (wrap) {
-
       pdf.setFont(fontFamily, fontStyle);
       pdf.setFontSize(fontSize); // Title font size 
       pdf.text(content, leftPost, topPos, { maxWidth: maxWidth });
@@ -280,7 +279,6 @@ export class PDFUtility {
         }
         pdf.text(`${Statuslegend}`, leftMargin + 1, posY, { align: 'left' });
       }
-
 
       if (page > 1) {
         await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
@@ -1131,15 +1129,9 @@ export class PDFUtility {
 
     let posX = leftMargin;
     let posY = topMargin;
-
-
-
-
     var buffer = 40
     var textColor = '#666666';
     var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
-
-
   }
 
   static async addHeaderWithCompanyLogo_Portriat_r2(
@@ -1170,7 +1162,6 @@ export class PDFUtility {
       }
     }
 
-
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     // const bufferX = 135;
@@ -1195,8 +1186,6 @@ export class PDFUtility {
     let posY = topMargin + 10;
 
     await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
-
-
   }
 
   static async ReportHeader_CompanyInfo_Portrait_r2(pdf: jsPDF,
@@ -1217,8 +1206,6 @@ export class PDFUtility {
       CRN: 'COMMON-FORM.CRN',
       T: 'COMMON-FORM.T',
       W: 'COMMON-FORM.W',
-
-
     };
     // Translate each key in langText
     for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
@@ -1230,9 +1217,6 @@ export class PDFUtility {
       }
     }
 
-
-
-
     topMargin -= 1.5;
     var fontSize = 9;
     var startY = topMargin;
@@ -1240,8 +1224,6 @@ export class PDFUtility {
     var maxWidth = 95;
     var bufferY_CompanyName = fontSize;
     posY = topMargin;
-
-
 
     this.addText(pdf, customerInfo.companyName, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
 
@@ -1262,10 +1244,6 @@ export class PDFUtility {
     nextLine += `${translatedLangText.W}: ${customerInfo.companyWebsite}`;
     posY += bufferGap;
     this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-
-
-
-
   }
 
   static async addHeaderWithCompanyLogo_Landscape_r2(

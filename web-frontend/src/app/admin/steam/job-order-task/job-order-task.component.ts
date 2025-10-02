@@ -775,10 +775,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       this.router.navigate(['/admin/steam/job-order/task', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
     }
     else {
-
       this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
     }
-
   }
 
   onTabFocused() {

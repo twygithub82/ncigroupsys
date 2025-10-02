@@ -1,31 +1,32 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateService } from '@ngx-translate/core';
-import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
-import { Apollo } from 'apollo-angular';
-import { CodeValuesDS } from 'app/data-sources/code-values';
-import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { BehaviorSubject, Observable } from 'rxjs';
-// import { saveAs } from 'file-saver';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
+import { TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-// import { fileSave } from 'browser-fs-access';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { PDFUtility } from 'app/utilities/pdf-utility';
+import { Utility } from 'app/utilities/utility';
+import { customerInfo } from 'environments/environment';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import autoTable, { Styles } from 'jspdf-autotable';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface DialogData {
   steam_guid: string;
@@ -157,6 +158,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
     PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
     APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
+    SIGNATURE: 'COMMON-FORM.SIGNATURE',
   }
 
   type?: string | null;
@@ -209,9 +211,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.steam_guid = data.steam_guid;
-    this.customer_company_guid = data.customer_company_guid;
-    this.estimate_no = data.estimate_no;
-    this.existingPdf = data.existingPdf;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -220,13 +219,13 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   async ngOnInit() {
     this.pdfTitle = this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART;
-    
+
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
       this.getSteamData(),
       this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
     ]);
-    
+
     if (data?.length > 0) {
       this.steamItem = data[0];
       await this.getCodeValuesData();
@@ -234,11 +233,8 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       this.updateData(this.steamItem?.steaming_part?.[0]?.job_order?.steaming_temp);
 
       this.cdr.detectChanges();
-
-      this.existingPdf = pdfData ?? this.existingPdf;
-      if (!this.existingPdf?.length) {
-        this.generatePDF();
-      }
+      // this.generatePDF();
+      this.exportToPDF();
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -372,6 +368,240 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       return imgHeight; // Return header height
     }
     return 0;
+  }
+
+  async exportToPDF(fileName: string = 'document.pdf') {
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 10;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const minHeightHeaderCol = 3;
+    const minHeightBodyCell = 7;
+    const fontSz = 8.5;
+    const fontFamily = 'helvetica';
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const reportTitle = this.pdfTitle;
+
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211],
+      textColor: 0,
+      fontStyle: "bold",
+      halign: 'center',
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    var item = this.steamItem;
+
+    let startY = 0;
+    const headerHeight = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(
+      pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+      this.translate, reportTitle, ''
+    );
+
+    startY += headerHeight;
+    startY += 7;
+
+    var tankData: any[][] = [
+      [
+        { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tank_no}` },
+        { content: `${this.translatedLangText.ESTIMATE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.steamItem?.estimate_no}` }
+      ],
+      [
+        { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+        { content: `${this.translatedLangText.FLASH_POINT}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tariff_cleaning?.flash_point} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` }
+      ],
+      [
+        { content: `${this.translatedLangText.INITIAL_TEMPERATURE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.steamTempList?.[0]?.meter_temp} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` },
+        { content: `${this.translatedLangText.REQUIRED_TEMP}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.required_temp} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` }
+      ],
+      [
+        { content: `${this.translatedLangText.STEAM_BEGIN_ON}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDateTime(this.steamTempList?.[0]?.report_dt, false)}` },
+        { content: `${this.translatedLangText.STEAM_COMPLETED_ON}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDateTime(item?.complete_dt, false)}` }
+      ]
+    ];
+
+    autoTable(pdf, {
+      body: tankData,
+      theme: 'grid',
+      margin: { left: leftMargin, top: startY },
+      styles: {
+        cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol,
+        lineWidth: 0.15,
+        lineColor: [0, 0, 0],
+      },
+      tableWidth: contentWidth,
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 61 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 59 }
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left',
+        valign: 'middle',
+      },
+      didDrawPage: (data: any) => {
+        pagePositions.push({
+          page: pdf.getNumberOfPages(),
+          x: pdf.internal.pageSize.width - 20,
+          y: pdf.internal.pageSize.height - 10
+        });
+        startY = data.cursor.y;
+      },
+    });
+
+    var temperatureHeaders: any[][] = [
+      [
+        { content: `${this.translatedLangText.NO}`, rowSpan: 2, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.TIME}`, rowSpan: 2, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.TEMPERATURE} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 3, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.REMARKS}`, rowSpan: 2, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+      ],
+      [
+        { content: `${this.translatedLangText.THERMOMETER}`, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.TOP_SIDE}`, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.BOTTOM_SIDE}`, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } }
+      ]
+    ];
+
+    var temperatureRows: any[][] = [];
+    for (let i = 0; i < this.steamTempList!.length; i++) {
+      temperatureRows.push([
+        `${i + 1}`,
+        `${this.displayDateTime(this.steamTempList?.[i]?.report_dt, false)}`,
+        `${this.steamTempList?.[i]?.top_temp}`,
+        `${this.steamTempList?.[i]?.meter_temp}`,
+        `${this.steamTempList?.[i]?.bottom_temp}`,
+        `${this.steamTempList?.[i]?.remarks || ''}`,
+      ]);
+    }
+
+    let isFirstTemperatureTable = true;
+    const tempTableTopMargin = headerHeight;
+
+    autoTable(pdf, {
+      head: temperatureHeaders,
+      body: temperatureRows,
+      theme: 'grid',
+      startY: startY + 5,
+      margin: {
+        left: leftMargin,
+        right: rightMargin,
+        top: tempTableTopMargin - 5,
+        bottom: bottomMargin
+      },
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol,
+      },
+      tableWidth: contentWidth,
+      headStyles: headStyles,
+      columnStyles: {
+        0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.04 },
+        1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.18 },
+        2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.15 },
+        3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.15 },
+        4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.15 },
+        5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: contentWidth * 0.33 },
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left',
+        valign: 'middle',
+      },
+      didDrawPage: (data: any) => {
+        isFirstTemperatureTable = false;
+
+        pagePositions.push({
+          page: pdf.getNumberOfPages(),
+          x: pdf.internal.pageSize.width - 20,
+          y: pdf.internal.pageSize.height - 10
+        });
+      }
+    });
+
+    const lastPage = pdf.getNumberOfPages();
+    pdf.setPage(lastPage);
+
+    // Get the final Y position after the last table
+    const finalY = (pdf as any).lastAutoTable.finalY || startY;
+
+    // Calculate available space for signature
+    const footerLineY = pageHeight - 13; // Footer line position
+    const requiredSignatureSpace = 30; // Signature box height + padding
+    const availableSpace = footerLineY - finalY - 5; // 5mm padding
+
+    let signatureY: number;
+
+    // Check if there's enough space on current page
+    if (availableSpace >= requiredSignatureSpace) {
+      // Enough space - add signature on current page
+      signatureY = finalY + 10;
+    } else {
+      // Not enough space - add new page
+      pdf.addPage();
+      signatureY = headerHeight;
+
+      // Update pagePositions for the new page
+      pagePositions.push({
+        page: pdf.getNumberOfPages(),
+        x: pdf.internal.pageSize.width - 20,
+        y: pdf.internal.pageSize.height - 10
+      });
+    }
+
+    const totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList!);
+    signatureY = PDFUtility.addText(pdf, `${this.translatedLangText.TOTAL_DURATION} ${totalDuration} h`, signatureY, leftMargin + 10, fontSz, true, fontFamily, false, undefined, false, '#000000');
+
+    const signatureBoxHeight = 25;
+    const signatureBoxWidth = 60;
+    const leftSignatureX = leftMargin;
+    const rightSignatureX = pageWidth - rightMargin - signatureBoxWidth;
+
+    pdf.setLineWidth(0.15);
+
+    // Left signature box
+    pdf.rect(leftSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
+    PDFUtility.addText(pdf, `${this.translatedLangText.PREPARED_BY}:`, signatureY + 5, leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    pdf.line(leftSignatureX + 2, signatureY + signatureBoxHeight - 10, leftSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
+    PDFUtility.addText(pdf, `${this.translatedLangText.SIGNATURE}:`, signatureY + signatureBoxHeight - 6, leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+
+    // Right signature box
+    pdf.rect(rightSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
+    PDFUtility.addText(pdf, `${this.translatedLangText.APPROVED_BY}:`, signatureY + 5, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    pdf.line(rightSignatureX + 2, signatureY + signatureBoxHeight - 10, rightSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
+    PDFUtility.addText(pdf, `${this.translatedLangText.SIGNATURE}:`, signatureY + signatureBoxHeight - 6, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(
+      pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+      this.translate, pagePositions
+    );
+
+    this.downloadFile(pdf.output('blob'), this.getReportTitle());
+    this.dialogRef.close();
   }
 
   async addFooter(pdf: jsPDF, pageWidth: number, pageHeight: number, leftRightMargin: number, bottomMargin: number, currentPage: number, totalPages: number): Promise<number> {
@@ -609,5 +839,9 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const a = headerElement.innerHTML
     return '';
+  }
+
+  getReportTitle() {
+    return `${this.steamItem?.estimate_no} ${this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART}`;
   }
 }

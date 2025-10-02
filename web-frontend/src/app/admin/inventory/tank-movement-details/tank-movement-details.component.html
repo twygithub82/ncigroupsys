@@ -642,7 +642,10 @@
                                   </tr>
                                   <tr>
                                     <th>{{ translatedLangText.REFERENCE }}:</th>
-                                    <td><span [ngClass]="{'text-decoration-underline cursor-pointer': igsImages.length > 0}" (click)="previewImagesDialog($event, igsImages)">{{ igsImages.length || "-" }}</span></td>
+                                    <td><span
+                                        [ngClass]="{'text-decoration-underline cursor-pointer': igsImages.length > 0}"
+                                        (click)="previewImagesDialog($event, igsImages)">{{ igsImages.length || "-"
+                                        }}</span></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -692,7 +695,9 @@
                                   </tr>
                                   <tr>
                                     <th>{{ translatedLangText.REFERENCE }}:</th>
-                                    <td><span [ngClass]="{'text-decoration-underline cursor-pointer': ogsImages.length > 0}">{{ ogsImages.length || "-" }}</span></td>
+                                    <td><span
+                                        [ngClass]="{'text-decoration-underline cursor-pointer': ogsImages.length > 0}">{{
+                                        ogsImages.length || "-" }}</span></td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -941,7 +946,7 @@
                                               class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>
                                             @if (isAllowToViewSteamHeatingLog(row)) {
                                             <span class="text-decoration-underline cursor-pointer"
-                                              (click)="steamHeatingLogDialog($event, row)">
+                                              (click)="steamHeatingLogPDFDialog($event, row)">
                                               {{steamDS.getSteamHighestTemp(row) || '-'}}
                                             </span>
                                             }
@@ -983,7 +988,9 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.BEGIN_DATE}}:</span>
-                                            <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                            <span>
+                                              {{displayDate(getSteamingBeginDate(row)) ?? "-"}}
+                                            </span>
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="complete_dt">
@@ -994,7 +1001,14 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.COMPLETE_DATE}}:</span>
-                                            <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
+                                            <span>
+                                              @if (isSteamingCompleted(row)) {
+                                              {{displayDate(row.complete_dt) ?? "-"}}
+                                              }
+                                              @else {
+                                              {{"-"}}
+                                              }
+                                            </span>
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="status_cv">

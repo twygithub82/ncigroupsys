@@ -408,7 +408,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }));
       this.updateData(existContact!);
     }
-    
+
     if (!this.canEdit()) {
       this.customerCodeControl.disable()
       this.ccForm?.get('branch_code')?.disable();
