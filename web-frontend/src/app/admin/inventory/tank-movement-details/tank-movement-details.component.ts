@@ -3810,6 +3810,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
+      position: { top: '-1999px', left: '-1999px' },
       width: '794px',
       maxHeight: '80vh',
       data: {
