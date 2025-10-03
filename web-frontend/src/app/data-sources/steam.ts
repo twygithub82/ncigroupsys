@@ -753,6 +753,10 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
               remarks
               delete_dt
             }
+            time_table(where: { delete_dt: { eq: null } }) {
+              start_time
+              stop_time
+            }
           }
         }
       }
@@ -1377,6 +1381,37 @@ export class SteamDS extends BaseDataSource<SteamItem> {
         const earliestReportDt = found?.job_order?.steaming_temp?.reduce((earliest, item) => {
           if (!!item?.report_dt) {
             return earliest === undefined || item.report_dt < earliest ? item.report_dt : earliest;
+          }
+          return earliest;
+        }, undefined as number | undefined);
+        return earliestReportDt;
+      }
+    }
+    return undefined;
+  }
+
+  getBeginDate(steam: SteamItem | undefined) {
+    if (!steam) {
+      return undefined;
+    }
+    
+    if (BusinessLogicUtil.isAutoApproveSteaming(steam)) {
+      const found = steam.steaming_part?.find(x => x.job_order?.steaming_temp?.length)
+      if (found) {
+        const earliestReportDt = found?.job_order?.steaming_temp?.reduce((earliest, item) => {
+          if (!!item?.report_dt) {
+            return earliest === undefined || item.report_dt < earliest ? item.report_dt : earliest;
+          }
+          return earliest;
+        }, undefined as number | undefined);
+        return earliestReportDt;
+      }
+    } else {
+      const found = steam.steaming_part?.find(x => x.job_order?.time_table?.length)
+      if (found) {
+        const earliestReportDt = found?.job_order?.time_table?.reduce((earliest, item) => {
+          if (!!item?.start_time) {
+            return earliest === undefined || item.start_time < earliest ? item.start_time : earliest;
           }
           return earliest;
         }, undefined as number | undefined);

@@ -1770,7 +1770,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canApprove() {
-    return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
+    return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !BusinessLogicUtil.isAutoApproveSteaming(this.steamItem);
   }
 
   onNoAction(event: Event) {
