@@ -8,7 +8,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment';
+import { customerInfo, systemCurrencyCode } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
@@ -26,6 +26,7 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -225,6 +226,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     OF: 'COMMON-FORM.OF',
     REPAIR_ESTIMATE: 'COMMON-FORM.REPAIR-ESTIMATE',
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
+    ESTIMATE_TOTAL:'COMMON-FORM.ESTIMATE-TOTAL',
+    APPROVED_TOTAL:'COMMON-FORM.APPROVED-TOTAL',
+    MATERIAL_COST$:'COMMON-FORM.MATERIAL-COST$',
+    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TOTAL:'COMMON-FORM.TOTAL',
+    LESSEE:'COMMON-FORM.LESSEE',
+    
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
 
@@ -321,249 +330,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
-  // async generatePDF(): Promise<void> {
-  //   const repTableElement = document.getElementById('repair-part-table');
-  //   if (!repTableElement) {
-  //     console.error('Template element not found');
-  //     return;
-  //   }
-
-  //   try {
-  //     this.generatingPdfLoadingSubject.next(true);
-  //     const rows = repTableElement.querySelectorAll('tr');
-  //     const canvas = await html2canvas(element, {
-  //       scale: this.scale, // Increase resolution
-  //     });
-
-  //     const pdf = new jsPDF('p', 'mm', 'a4');
-  //     const pageWidth = pdf.internal.pageSize.width; // A4 page width
-  //     const pageHeight = pdf.internal.pageSize.height; // A4 page height
-  //     const leftRightMargin = 5; // Fixed left and right margins
-  //     const topMargin = 5; // Reduced top margin
-  //     const bottomMargin = 5; // Reduced bottom margin
-  //     const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
-
-  //     // Calculate natural dimensions for the body content
-  //     const imgWidth = canvas.width * 0.264583; // Convert px to mm
-  //     const imgHeight = canvas.height * 0.264583;
-  //     const aspectRatio = imgWidth / imgHeight;
-
-  //     // Calculate scaled width and height to fit the page without stretching
-  //     const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
-  //     const scaledHeight = scaledWidth / aspectRatio;
-
-  //     let yOffset = 0;
-  //     let currentPage = 1;
-  //     const totalPages = Math.ceil(imgHeight / usableHeight);
-
-  //     while (yOffset < imgHeight) {
-  //       if (yOffset > 0) pdf.addPage();
-
-  //       // Add Header and get its height
-  //       const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-
-  //       // Adjust usable height by subtracting header height
-  //       const adjustedUsableHeight = usableHeight - headerHeight;
-
-  //       // Add Body Content
-  //       const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
-  //       const canvasChunk = document.createElement('canvas');
-  //       const context = canvasChunk.getContext('2d');
-
-  //       // Create a new canvas for the current chunk
-  //       canvasChunk.width = canvas.width;
-  //       canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
-
-  //       if (context) {
-  //         context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
-  //       }
-
-  //       const chunkImgData = canvasChunk.toDataURL('image/png');
-  //       pdf.addImage(chunkImgData, 'PNG', leftRightMargin, (topMargin) + headerHeight, scaledWidth, scaledHeight);
-
-  //       // Add Footer
-  //       await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-  //       yOffset += chunkHeight;
-  //       currentPage++;
-  //     }
-  //     pdf.save(`ESTIMATE-${this.repairItem?.estimate_no}.pdf`);
-  //     // this.generatedPDF = pdf.output('blob');
-  //     // this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
-  //     this.generatingPdfLoadingSubject.next(false);
-  //   } catch (error) {
-  //     console.error('Error generating PDF:', error);
-  //   }
-  //   return;
-  // }
+  
 
   async generatePDF(): Promise<void> {
     await this.exportToPDF_r2();
-    // const repTableElement = document.getElementById('repair-part-table');
-    // const remarksElement = document.getElementById('repair-remarks');
-    // const summaryElement = document.getElementById('summary-content');
-
-    // if (!repTableElement || !remarksElement || !summaryElement) {
-    //   console.error('Template element not found');
-    //   return;
-    // }
-
-    // try {
-    //   console.log('Start generate', new Date());
-    //   this.generatingPdfLoadingSubject.next(true);
-    //   this.generatingPdfProgress = 0;
-
-    //   const rows = Array.from(repTableElement.querySelectorAll('tr'));
-    //   const pdf = new jsPDF('p', 'mm', 'a4');
-    //   const pageWidth = pdf.internal.pageSize.width; // A4 page width
-    //   const pageHeight = pdf.internal.pageSize.height; // A4 page height
-    //   const leftRightMargin = 5; // Fixed left and right margins
-    //   const leftRightMarginBody = 7.5; // Fixed left and right margins for body
-    //   const topMargin = 5; // Top margin
-    //   const bottomMargin = 5; // Bottom margin
-
-    //   // Add Header for the first page
-    //   const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //   const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1); // Placeholder footer height calculation
-    //   const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
-
-    //   console.log('Header Height:', headerHeight);
-    //   console.log('Footer Height:', footerHeight);
-    //   console.log('Usable Height:', usableHeight);
-
-    //   let yOffset = topMargin + headerHeight; // Tracks vertical position on the page
-    //   let currentPage = 1; // Current page number
-    //   // Pre-render remarks and summary to get their heights
-    //   const remarksCanvas = await html2canvas(remarksElement, { scale: this.scale });
-    //   const remarksHeight = (remarksCanvas.height * (pageWidth - leftRightMarginBody * 2)) / remarksCanvas.width;
-    //   this.generatingPdfProgress += 10;
-
-    //   const summaryCanvas = await html2canvas(summaryElement, { scale: this.scale });
-    //   const summaryHeight = (summaryCanvas.height * (pageWidth - leftRightMarginBody * 2)) / summaryCanvas.width;
-    //   this.generatingPdfProgress += 10;
-
-    //   // Calculate total height of rows
-    //   const totalRowHeight = rows.reduce((total, row) => {
-    //     const rowCanvas = document.createElement('canvas');
-    //     rowCanvas.width = row.offsetWidth;
-    //     rowCanvas.height = row.offsetHeight;
-    //     const rowHeight = (row.offsetHeight * (pageWidth - leftRightMarginBody * 2)) / row.offsetWidth;
-    //     return total + rowHeight;
-    //   }, 0);
-
-    //   // Calculate the total required height
-    //   const totalContentHeight = totalRowHeight + remarksHeight + summaryHeight;
-
-    //   // Calculate total pages
-    //   const totalPages = Math.ceil(totalContentHeight / (usableHeight));
-    //   console.log('Total Pages:', totalPages);
-
-    //   let rowsCount = rows.length;
-    //   let currentRowCount = 0;
-    //   const rowProgressWeight = 0.7;
-    //   for (const row of rows) {
-    //     // Render each row to canvas
-    //     const rowCanvas = await html2canvas(row as HTMLElement, { scale: this.scale });
-    //     const rowImg = rowCanvas.toDataURL('image/jpeg', this.imageQuality);
-    //     const rowHeight = (rowCanvas.height * (pageWidth - leftRightMarginBody * 2)) / rowCanvas.width;
-    //     currentRowCount++;
-
-    //     // Check if row fits on the current page
-    //     if (yOffset + rowHeight > usableHeight) {
-    //       console.log('Starting new page...');
-    //       // Add Footer to the current page
-    //       await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-    //       // Start a new page
-    //       pdf.addPage();
-    //       currentPage++;
-    //       yOffset = topMargin;
-
-    //       // Add Header to the new page
-    //       const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //       yOffset += newHeaderHeight;
-    //     }
-
-    //     // Add row to the current page
-    //     pdf.addImage(rowImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, rowHeight);
-    //     yOffset += rowHeight;
-    //     const rowProgress = (rowProgressWeight / rowsCount) * 100;
-    //     this.generatingPdfProgress += rowProgress;
-    //     console.log('generatingPdfProgress', this.generatingPdfProgress);
-    //   }
-
-    //   // Add remarks section
-    //   const remarksImg = remarksCanvas.toDataURL('image/jpeg', this.imageQuality);
-
-    //   console.log('Remarks Height:', remarksHeight);
-
-    //   // Check if remarks fit on the current page
-    //   if (yOffset + remarksHeight > usableHeight) {
-    //     console.log('Adding new page for remarks...');
-    //     // Add Footer to the current page
-    //     await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-    //     // Start a new page
-    //     pdf.addPage();
-    //     currentPage++;
-    //     yOffset = topMargin;
-
-    //     // Add Header to the new page
-    //     const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //     yOffset += newHeaderHeight;
-    //   }
-
-    //   // Add remarks to the current page
-    //   pdf.addImage(remarksImg, 'PNG', leftRightMarginBody, yOffset, pageWidth - leftRightMarginBody * 2, remarksHeight);
-    //   yOffset += remarksHeight;
-
-    //   // Add summary content
-    //   const summaryImg = summaryCanvas.toDataURL('image/jpeg', this.imageQuality);
-
-    //   // Calculate remaining space for summary content
-    //   const remainingSpace = pageHeight - yOffset - footerHeight - bottomMargin;
-
-    //   if (summaryHeight > remainingSpace) {
-    //     console.log('Adding new page for summary...');
-    //     // Add Footer to the current page
-    //     await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-    //     // Start a new page
-    //     pdf.addPage();
-    //     currentPage++;
-    //     yOffset = topMargin;
-
-    //     // Add Header to the new page
-    //     const newHeaderHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //     yOffset += newHeaderHeight;
-
-    //     // Align summary content to the bottom of the page
-    //     const newRemainingSpace = pageHeight - footerHeight - bottomMargin;
-    //     yOffset = newRemainingSpace - summaryHeight;
-    //   } else {
-    //     // Align summary content to the bottom of the current page
-    //     yOffset = pageHeight - footerHeight - bottomMargin - summaryHeight;
-    //   }
-
-    //   pdf.addImage(summaryImg, 'PNG', leftRightMargin, yOffset, pageWidth - leftRightMargin * 2, summaryHeight);
-
-    //   // Update yOffset after adding summary
-    //   yOffset += summaryHeight;
-
-    //   // Add Footer to the last page
-    //   await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-    //   this.generatingPdfProgress = 100;
-
-    //   // Save PDF
-    //   // pdf.save(`ESTIMATE-${this.estimate_no}.pdf`);
-    //   this.generatedPDF = pdf.output('blob');
-    //   this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
-    //   this.generatingPdfLoadingSubject.next(false);
-    //   console.log('End generate', new Date());
-    // } catch (error) {
-    //   console.error('Error generating PDF:', error);
-    //   this.generatingPdfLoadingSubject.next(false);
-    // }
+   
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
@@ -1563,17 +1334,29 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     //   this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
     startY = lastTableFinalY + 2;
     var offhireCodeHeight=65;
-    this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,(offhireCodeHeight+bottomMargin),pagePositions);
+    var totalCostTableHeight=45;
+    var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,(offhireCodeHeight+bottomMargin),pagePositions);
     
+    var TotalCostStartY=topMargin+bottomMargin+repairDetailLastRowY+offhireCodeHeight+totalCostTableHeight;
 
-    startY = pageHeight - offhireCodeHeight;//gap between chunked tables and Estimate List
-    //startY=lastTableFinalY+15;
-    // this.createOffhireEstimate_r1(pdf, startY, leftMargin, rightMargin, pageWidth);
+    var buffer=0;
+    if((TotalCostStartY+buffer)>=pageHeight)
+    {
+      pdf
+       const pageCount = pdf.getNumberOfPages();
+
+       pagePositions.push({ page: pageCount, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    }
+    // startY = pageHeight - offhireCodeHeight;//gap between chunked tables and Estimate List
+    // //startY=lastTableFinalY+15;
+    // // this.createOffhireEstimate_r1(pdf, startY, leftMargin, rightMargin, pageWidth);
     
-    // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
-    // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
+    // // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
+    // // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
 
-     startY = pageHeight - (bottomMargin*2);
+    //  startY = pageHeight - (bottomMargin*2);
+
+
      await this.addFooterCompanyLogo_Portrait(pdf,pageWidth,pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions);
     // pdf.setLineWidth(0.1);
 
@@ -1767,6 +1550,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var fontSize = 8
       var totalPages = pdf.getNumberOfPages();
        var offhireCodeHeight=65;
+       var totalCostTableHeight=45;
        var  dmgCodeRprCodePosY = pageHeight - offhireCodeHeight;
        pdf.setDrawColor(0, 0, 0); // black line color
         pdf.setLineWidth(0.1);
@@ -1789,6 +1573,16 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
            await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
            this.translate, this.pdfTitle, '');
 
+        }
+        if(page==totalPages){
+          if(this.repairItem.owner_enable)
+          {
+            this.createRepairEstimateTotalTable_r2(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight)), leftMargin, rightMargin, pageWidth);
+          }
+          else
+          {
+            this.createRepairEstimateTotalTable_r1(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight)), leftMargin, rightMargin, pageWidth);
+          }
         }
       }// Add Second Page, Add For Loop
     }
@@ -2112,4 +1906,316 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
     return startY;
   }
+
+   createRepairEstimateTotalTable_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
+    {
+
+      const minHeightBodyCell = 6;
+        const vAlign = "bottom";
+        const headers:RowInput[] = [[
+     { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.LABOUR,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.TOTAL,  styles: { halign: 'center', valign: vAlign } }
+    ]];
+
+    
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      
+    };
+        
+    const rows: any[][] = [];
+    rows.push([
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+
+    var buffer=pageWidth-rightMargin-75-38;
+    autoTable(pdf, {
+        head: headers,
+        body: rows,
+        startY: startY,
+        styles: {
+          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+          fontSize: 7,
+          lineWidth: 0.05, // enable grid borders
+          lineColor: [0, 0, 0] // black lines
+        },
+        theme: 'grid',
+        margin: { left: buffer},
+        headStyles: {
+          fillColor: [240, 240, 240],
+          textColor: 0,
+          fontStyle: 'bold',
+          lineWidth: 0.2 // slightly thicker border for header
+        },
+        columnStyles: comStyles,
+      });
+
+    }
+
+  createRepairEstimateTotalTable_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
+    {
+
+      const minHeightBodyCell = 6;
+        const vAlign = "bottom";
+
+     
+      const headers: RowInput[] = [[
+      { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.LESSEE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.LABOUR,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.TOTAL,  styles: { halign: 'center', valign: vAlign } }
+    ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      
+    };
+        
+    const rows: any[][] = [];
+    rows.push([
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getOwnerLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getOwnerLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getLesseeLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getOwnerTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: 'bold' } },
+     { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getOwnerTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
+     { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getOwnerLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
+     { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getOwnerMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+     rows.push([
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+       { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getLesseeNetCost(), styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+    ]);
+
+    var buffer=pageWidth-rightMargin-90-74;
+    autoTable(pdf, {
+        head: headers,
+        body: rows,
+        startY: startY,
+        styles: {
+          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+          fontSize: 7,
+          lineWidth: 0.05, // enable grid borders
+          lineColor: [0, 0, 0] // black lines
+        },
+        theme: 'grid',
+        margin: { left: buffer},
+        headStyles: {
+          fillColor: [240, 240, 240],
+          textColor: 0,
+          fontStyle: 'bold',
+          lineWidth: 0.2 // slightly thicker border for header
+        },
+        columnStyles: comStyles,
+      });
+
+    }
+
+    getLabourCost(): string{
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairItem?.labour_cost));
+    }
+
+     getTotalLabourHour(): string{
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_hour_table));
+    }
+     getTotalLabourCost(): string{
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
+    }
+
+     getLabourDiscount(): string{
+      return this.repairItem?.labour_cost_discount;
+    }
+
+    getMaterialDiscount(): string{
+      return this.repairItem?.material_cost_discount;
+    }
+
+    getNetCost(): string{
+      var netCost = Number(this.getTotalCost().replace(",",""))+Number(this.getMaterialDiscountCost().replace(",",""))+Number(this.getLabourDiscountCost().replace(",",""));
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+    }
+
+    getMaterialDiscountCost(): string{
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_cost))}` ;
+    }
+
+     getLabourDiscountCost(): string{
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_cost))}` ;
+    }
+
+    getTotalMaterialCost(): string{
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
+    }
+
+    getTotalCost(): string{
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
+    }
+
+    getOwnerLabourCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+    }
+
+    getOwnerLabourHour()
+    {
+      var labourHour = Number(this.getTotalLabourHour().replace(",",""))-Number(this.repairCost?.total_lessee_hour);
+      return Utility.formatNumberDisplay(labourHour);
+    }
+
+    getLesseeLabourCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+    }
+     
+    getLesseeLabourHour()
+    {
+      return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
+    }
+    getLesseeTotalCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+    }
+    getLesseeTotalMaterialCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
+    }
+
+    getLesseeMaterialDiscountCost()
+    {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
+    }
+    getLesseeLabourDiscountCost()
+    {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
+    }
+
+    getOwnerMaterialDiscountCost()
+    {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
+    }
+
+    getOwnerLabourDiscountCost()
+    {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
+    }
+     getOwnerTotalCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
+    }
+    getOwnerTotalMaterialCost()
+    {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
+    }
+
+    getOwnerNetCost()
+    {
+      var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+    }
+   
+    getLesseeNetCost()
+    {
+       var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+    }
+    
+    // getRepairCost(){
+    //     this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
+    // }
 }

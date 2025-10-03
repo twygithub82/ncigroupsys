@@ -1398,7 +1398,9 @@
     "PER-TANK": "Per Tank",
     "PER-HOUR": "Per Hour",
     "MANHOUR": "Manhour",
-    "UNIT": "Unit"
+    "UNIT": "Unit",
+    "ESTIMATE-TOTAL":"Estimate Total",
+    "APPROVED-TOTAL":"Approved Total"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
