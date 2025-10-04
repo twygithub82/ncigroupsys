@@ -253,21 +253,21 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
             this.populateInGateForm(this.storingOrderTankItem!);
           });
 
-          this.fileManagerService.getFileUrlByGroupGuid([this.storingOrderTankItem?.tariff_cleaning?.guid!]).subscribe({
-            next: (response) => {
-              console.log('Files retrieved successfully:', response);
-              if (response?.length) {
-                this.sdsPdf = response[0];
-                this.getSDSPdfName();
-              }
-            },
-            error: (error) => {
-              console.error('Error retrieving files:', error);
-            },
-            complete: () => {
-              console.log('File retrieval process completed.');
-            }
-          });
+          // this.fileManagerService.getFileUrlByGroupGuid([this.storingOrderTankItem?.tariff_cleaning?.guid!]).subscribe({
+          //   next: (response) => {
+          //     console.log('Files retrieved successfully:', response);
+          //     if (response?.length) {
+          //       this.sdsPdf = response[0];
+          //       this.getSDSPdfName();
+          //     }
+          //   },
+          //   error: (error) => {
+          //     console.error('Error retrieving files:', error);
+          //   },
+          //   complete: () => {
+          //     console.log('File retrieval process completed.');
+          //   }
+          // });
         }
       });
     } else {
