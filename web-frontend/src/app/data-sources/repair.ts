@@ -9,6 +9,7 @@ import { BillingItem } from './billing';
 import { RepairPartItem } from './repair-part';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { UserItem } from './user';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export class RepairGO {
   public guid?: string;
@@ -1324,6 +1325,11 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
         update_dt
         repair_part(where: { delete_dt: { eq: null } }) {
           action
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          complete_dt
           create_by
           create_dt
           delete_dt
@@ -2113,6 +2119,102 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     const days = Math.ceil(timeTakenMs / (3600 * 24));
 
     return `${days}`;
+  }
+
+   calculateCostWithRoundUp(repair: RepairItem, repList: RepairPartItem[], packageLabourCost?: number) {
+    const costResult = new RepairCostTableItem();
+    const ownerList = repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const lesseeList = repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const labourDiscount = repair.labour_cost_discount;
+    const matDiscount = repair.material_cost_discount;
+
+    let total_hour = 0;
+    let total_labour_cost = 0;
+    let total_mat_cost = 0;
+    let total_cost = 0;
+    let discount_labour_cost = 0;
+    let discount_mat_cost = 0;
+    let net_cost = 0;
+    costResult.labour_cost_discount = labourDiscount;
+    costResult.material_cost_discount = matDiscount;
+
+    const totalOwner = this.getTotal(ownerList);
+    const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
+    const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.getTotalLabourCost(total_owner_hour,  repair.labour_cost ?? packageLabourCost));
+    const total_owner_mat_cost = BusinessLogicUtil.roundUpCost(totalOwner.total_mat_cost);
+    const total_owner_cost = BusinessLogicUtil.roundUpCost(this.getTotalCost(total_owner_labour_cost, total_owner_mat_cost));
+    const discount_labour_owner_cost = BusinessLogicUtil.roundUpCost(this.getDiscountCost(labourDiscount, total_owner_labour_cost));
+    const discount_mat_owner_cost = BusinessLogicUtil.roundUpCost(this.getDiscountCost(matDiscount, total_owner_mat_cost));
+    const net_owner_cost = BusinessLogicUtil.roundUpCost(this.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost));
+
+    // const totalOwner = this.getTotal(ownerList);
+    // const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
+    // const total_owner_labour_cost = this.getTotalLabourCost(total_owner_hour, repair.labour_cost ?? packageLabourCost);
+    // const total_owner_mat_cost = totalOwner.total_mat_cost;
+    // const total_owner_cost = this.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
+    // const discount_labour_owner_cost = this.getDiscountCost(labourDiscount, total_owner_labour_cost);
+    // const discount_mat_owner_cost = this.getDiscountCost(matDiscount, total_owner_mat_cost);
+    // const net_owner_cost = this.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+
+    costResult.total_owner_cost = total_owner_hour.toFixed(2);
+    costResult.total_owner_labour_cost = total_owner_labour_cost.toFixed(2);
+    costResult.total_owner_mat_cost = total_owner_mat_cost.toFixed(2);
+    costResult.total_owner_cost = total_owner_cost.toFixed(2);
+    costResult.discount_labour_owner_cost = discount_labour_owner_cost.toFixed(2);
+    costResult.discount_mat_owner_cost = discount_mat_owner_cost.toFixed(2);
+    costResult.net_owner_cost = net_owner_cost.toFixed(2);
+
+    total_hour += total_owner_hour;
+    total_labour_cost += total_owner_labour_cost;
+    total_mat_cost += total_owner_mat_cost;
+    total_cost += total_owner_cost;
+    discount_labour_cost += discount_labour_owner_cost;
+    discount_mat_cost += discount_mat_owner_cost;
+    net_cost += net_owner_cost;
+
+    const totalLessee = this.getTotal(lesseeList);
+    const total_lessee_hour = BusinessLogicUtil.roundUpHour(totalLessee.hour);
+    const total_lessee_labour_cost = BusinessLogicUtil.roundUpCost(this.getTotalLabourCost(total_lessee_hour,  repair.labour_cost ?? packageLabourCost));
+    const total_lessee_mat_cost = BusinessLogicUtil.roundUpCost(totalLessee.total_mat_cost);
+    const total_lessee_cost = BusinessLogicUtil.roundUpCost(this.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost));
+    const discount_labour_lessee_cost = BusinessLogicUtil.roundUpCost(this.getDiscountCost(labourDiscount, total_lessee_labour_cost));
+    const discount_mat_lessee_cost = BusinessLogicUtil.roundUpCost(this.getDiscountCost(matDiscount, total_lessee_mat_cost));
+    const net_lessee_cost = BusinessLogicUtil.roundUpCost(this.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost));
+
+    // const totalLessee = this.getTotal(lesseeList);
+    // const total_lessee_hour = totalLessee.hour;
+    // const total_lessee_labour_cost = this.getTotalLabourCost(total_lessee_hour, repair.labour_cost ?? packageLabourCost);
+    // const total_lessee_mat_cost = totalLessee.total_mat_cost;
+    // const total_lessee_cost = this.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
+    // const discount_labour_lessee_cost = this.getDiscountCost(labourDiscount, total_lessee_labour_cost);
+    // const discount_mat_lessee_cost = this.getDiscountCost(matDiscount, total_lessee_mat_cost);
+    // const net_lessee_cost = this.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+
+    costResult.total_lessee_hour = total_lessee_hour.toFixed(2);
+    costResult.total_lessee_labour_cost = total_lessee_labour_cost.toFixed(2);
+    costResult.total_lessee_mat_cost = total_lessee_mat_cost.toFixed(2);
+    costResult.total_lessee_cost = total_lessee_cost.toFixed(2);
+    costResult.discount_labour_lessee_cost = discount_labour_lessee_cost.toFixed(2);
+    costResult.discount_mat_lessee_cost = discount_mat_lessee_cost.toFixed(2);
+    costResult.net_lessee_cost = net_lessee_cost.toFixed(2);
+
+    total_hour += total_lessee_hour;
+    total_labour_cost += total_lessee_labour_cost;
+    total_mat_cost += total_lessee_mat_cost;
+    total_cost += total_lessee_cost;
+    discount_labour_cost += discount_labour_lessee_cost;
+    discount_mat_cost += discount_mat_lessee_cost;
+    net_cost += net_lessee_cost;
+
+    costResult.total_hour_table = total_hour.toFixed(2);
+    costResult.total_labour_cost = total_labour_cost;
+    costResult.total_mat_cost = total_mat_cost.toFixed(2);
+    costResult.total_cost_table = total_cost.toFixed(2);
+    costResult.discount_labour_cost = discount_labour_cost.toFixed(2);
+    costResult.discount_mat_cost = discount_mat_cost.toFixed(2);
+    costResult.net_cost = net_cost.toFixed(2);
+
+    return costResult;
   }
 
   calculateCost(repair: RepairItem, repList: RepairPartItem[], packageLabourCost?: number) {

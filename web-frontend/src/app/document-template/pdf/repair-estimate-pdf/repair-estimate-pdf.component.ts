@@ -513,11 +513,15 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
+        approve_qty: this.displayApproveQty(row),
+        approve_hour: this.displayApproveHour(row),
+        approve_cost: this.displayApproveCost(row),
         tariff_repair: {
           ...row.tariff_repair,
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
         }
       }));
+
 
       console.log('Before sort', newData);
       newData = this.repairPartDS.sortAndGroupByGroupName(newData);
@@ -529,6 +533,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         index: index
       }));
       console.log(this.repList);
+      this.repairItem.repair_part = this.repList;
       this.calculateCost();
     } else {
       this.repList = [];
@@ -628,7 +633,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   calculateCost() {
-    this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
+   // this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
+    this.repairCost = this.repairDS.calculateCostWithRoundUp(this.repairItem, this.repairItem?.repair_part);
     console.log(this.repairCost)
   }
 
@@ -1901,7 +1907,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
     var remarksValue = `${this.repairItem?.remarks}`;
     startY += 6 + bufferY;
     PDFUtility.addText(pdf, remarks, startY, leftMargin, fontSz, false, undefined, undefined, 0, true);
-    startY += 8;
+    startY += 5;
     PDFUtility.addText(pdf, remarksValue, startY, leftMargin, fontSz);
 
     return startY;
@@ -1923,13 +1929,16 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
       
     };
-        
+    
+     var totalCellWidth = Object.values(comStyles)
+  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
     const rows: any[][] = [];
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
@@ -1968,7 +1977,20 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
     ]);
 
-    var buffer=pageWidth-rightMargin-75-38;
+     if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
+      var netCost = Number(this.getNetCost().replace(",",""));
+      var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
+      var foreignNetCost = netCost * rate;
+      rows.push([
+        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold' } }
+      ]);
+      startY-=3;
+    }
+
+    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
     autoTable(pdf, {
         head: headers,
         body: rows,
@@ -2010,17 +2032,20 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
       
     };
-        
+
+    var totalCellWidth = Object.values(comStyles)
+  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+   
     const rows: any[][] = [];
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
@@ -2083,7 +2108,28 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
     ]);
 
-    var buffer=pageWidth-rightMargin-90-74;
+    if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
+      var netCost = Number(this.getNetCost().replace(",",""));
+      var ownerNetCost = Number(this.getOwnerNetCost().replace(",",""));
+      var lesseeNetCost = Number(this.getLesseeNetCost().replace(",",""));
+      var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
+      var foreignNetCost = netCost * rate;
+      var foreignOwnerNetCost = ownerNetCost * rate;
+      var foreignLesseeNetCost = lesseeNetCost * rate;
+      rows.push([
+        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content:Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold' } }
+      ]);
+      startY-=3;
+    }
+
+    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
     autoTable(pdf, {
         head: headers,
         body: rows,
@@ -2215,6 +2261,28 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
     }
     
+    displayApproveQty(rep: RepairPartItem) {
+        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+          return 0;
+        }
+        return rep.approve_part === true ? rep.approve_qty : rep.quantity;
+      }
+    
+      displayApproveHour(rep: RepairPartItem) {
+        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+          return 0;
+        }
+        return rep.approve_part === true ? rep.approve_hour : rep.hour;
+      }
+    
+      displayApproveCost(rep: RepairPartItem) {
+        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+          return Utility.convertNumber(0, 2);
+        }
+        
+        const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
+        return Utility.convertNumber(cost, 2);
+      }
     // getRepairCost(){
     //     this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
     // }
