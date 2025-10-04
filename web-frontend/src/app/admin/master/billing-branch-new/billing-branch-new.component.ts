@@ -49,6 +49,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -266,6 +267,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   satulationCvList: CodeValuesItem[] = [];
 
   tankItemList?: TankItem[] = [];
+  depotProfileList?: TariffDepotItem[] = [];
   customerTypeControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
 
@@ -273,6 +275,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
+  tfDepotDS:TariffDepotDS;
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -304,6 +307,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
+    this.tfDepotDS= new TariffDepotDS(this.apollo);
 
     this.countryCodes = Utility.getCountryCodes();
     this.countryCodesFiltered = this.countryCodes;
@@ -455,7 +459,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       this.branch_guid = undefined;
     }
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
+    this.subs.sink = this.ccDS.loadAllItems({}, { code: 'ASC' }).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
         if (!this.isFromBranch) // data from Customer company
@@ -496,6 +500,15 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         })
       }
     })
+
+     this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
+      this.depotProfileList=data;
+      if (this.selectedBillingBranch) {
+        this.ccForm?.patchValue({
+          default_profile: this.getDefaultTank(this.selectedBillingBranch?.def_tank_guid!),
+        })
+      }
+    });
 
     const queries = [
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
@@ -846,7 +859,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     cust.postal = this.ccForm?.get("postal_code")?.value;
     cust.main_customer_guid = '';
     if (this.ccForm?.get("default_profile")?.value) {
-      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
       cust.def_tank_guid = defTank.guid;
     }
     if (this.ccForm?.get("currency")?.value) {
@@ -943,7 +957,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       cust.postal = this.ccForm?.get("postal_code")?.value;
       cust.country_code = this.ccForm?.get("country_code")?.value?.code;
       if (this.ccForm?.get("default_profile")?.value) {
-        let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+        // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+        let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
         cust.def_tank_guid = defTank.guid;
       }
       if (this.ccForm?.get("currency")?.value) {
@@ -1070,7 +1085,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.ccForm?.get("default_profile")?.value) {
-      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
       cust.def_tank_guid = defTank.guid;
     }
     if (this.ccForm?.get("currency")?.value) {
@@ -1308,7 +1324,21 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     ).subscribe();
   }
 
-  getDefaultTank(guid: string): TankItem | undefined {
+
+   getDefaultTank(guid: string): TankItem | undefined {
+    if (this.depotProfileList?.length! > 0) {
+      const tnkItm = this.depotProfileList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;
+      });
+      if (tnkItm?.length! > 0)
+        return tnkItm![0];
+      else
+        return undefined;
+    }
+    return undefined;
+  }
+
+  getDefaultTank_old(guid: string): TankItem | undefined {
     if (this.tankItemList?.length! > 0) {
       const tnkItm = this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
         return item;

@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { ContactPersonItem } from './contact-person';
 import { CurrencyItem } from './currency';
@@ -176,10 +176,6 @@ export const SEARCH_COMPANY_QUERY = gql`
           update_by
           update_dt
         }
-        tank {
-          guid
-          unit_type
-        }
       }
       pageInfo {
         endCursor
@@ -337,6 +333,7 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
             update_by
             update_dt
           }
+         
         }
         so_count
         sot_count
@@ -404,6 +401,54 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         })
       );
   }
+
+  loadAllItems(where?: any, order?: any): Observable<CustomerCompanyItem[]> {
+  this.loadingSubject.next(true);
+
+  where = {
+    ...where,
+    type_cv: { in: [...(where?.type_cv?.in || []), "LEESSEE", "BRANCH", "OWNER"] },
+  };
+  where = this.addDeleteDtCriteria(where);
+
+  const allNodes: CustomerCompanyItem[] = [];
+  const pageSize = 100; // adjust to match your API limit
+
+  const fetchPage = (after?: string): Observable<CustomerCompanyItem[]> => {
+    return this.apollo
+      .query<any>({
+        query: SEARCH_COMPANY_QUERY,
+        variables: { where, order, first: pageSize, after },
+        fetchPolicy: "no-cache",
+      })
+      .pipe(
+        map((result) => result.data.companyList),
+        switchMap((companyList) => {
+          allNodes.push(...companyList.nodes);
+          if (companyList.pageInfo?.hasNextPage) {
+            // recursively fetch next page
+            return fetchPage(companyList.pageInfo.endCursor);
+          } else {
+            return of(allNodes);
+          }
+        })
+      );
+  };
+
+  return fetchPage().pipe(
+    catchError((error: ApolloError) => {
+      console.error("GraphQL Error:", error);
+      return of([] as CustomerCompanyItem[]);
+    }),
+    finalize(() => this.loadingSubject.next(false)),
+    map((nodes) => {
+      this.dataSubject.next(nodes);
+      this.totalCount = nodes.length;
+      return nodes;
+    })
+  );
+}
+
 
   getBranchSearch(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);

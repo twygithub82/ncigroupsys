@@ -37,6 +37,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -201,6 +202,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
   tankDS: TankDS;
+  tfDepotDS: TariffDepotDS;
 
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
@@ -208,7 +210,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
-
+  depotProfileList : TariffDepotItem[] = [];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   all_customer_companyList: CustomerCompanyItem[] = [];
@@ -255,6 +257,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.branchCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
+    this.tfDepotDS=new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -274,7 +277,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
+      // default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
+      default_profile: [this.depotProfileList.find(u => u.profile_name! === 'All' || null)],
       branch_code: [''],
       phone: [''],
       fax_no: [''],
@@ -392,10 +396,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
-      const tankSearch: any = {};
-      tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      // const tankSearch: any = {};
+      // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.tank = tankSearch;
+      where.customer_company.def_tank_guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      // const tankSearch: any = {};
+      // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      // if (where.customer_company == null) where.customer_company = {};
+      // where.customer_company.tank = tankSearch;
     }
 
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
@@ -571,6 +579,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
+
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
+      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
+
+    });
+
+
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
       //this.unit_typeList = data;
@@ -787,6 +802,17 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
+  }
+   getDepotProfileName(guid:String):String{
+    var retval:String="-";
+
+    if (this.depotProfileList && this.depotProfileList.length > 0) {
+      var depotProfile = this.depotProfileList.find(x => x.guid == guid);
+      if (depotProfile) {
+        retval = depotProfile.profile_name??"-";
+      }
+    }
+    return retval;
   }
 }
 
