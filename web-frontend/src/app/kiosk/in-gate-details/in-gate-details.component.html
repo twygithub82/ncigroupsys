@@ -40,40 +40,60 @@
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
-                      <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
-                            <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
-                            <span class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
+                      <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                           </div>
-                          <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                            <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{storingOrderTankItem?.tank_no}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
-                            <span class="contact-detail-label">{{translatedLangText.PURPOSE}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}</span>
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                           </div>
-                          <!-- <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 m-b-5">
-                            <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}
-                            </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{displayTankPurpose(storingOrderTankItem!)}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <!-- <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                        <!-- <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-7 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}
+                              </span>
+                            </div>
                           </div>
                         </div> -->
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
-                            <span
-                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-7 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}"
+                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">
+                                {{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
