@@ -67,9 +67,12 @@
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
                     <mat-select formControlName="default_profile" [compareWith]="compareObjects"
                       (selectionChange)="AutoSearch()">
-                      @for (option of unit_typeList; track option) {
-                      <mat-option [value]="option">{{option.unit_type}}</mat-option>
+                       @for (option of depotProfileList; track option) {
+                      <mat-option [value]="option">{{option.profile_name}}</mat-option>
                       }
+                      <!-- @for (option of unit_typeList; track option) {
+                      <mat-option [value]="option">{{option.unit_type}}</mat-option>
+                      } -->
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -138,7 +141,9 @@
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-3_5-xl justify-content-center'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
-                {{row.customer_company?.tank?.unit_type}}</mat-cell>
+                {{getDepotProfileName(row.customer_company?.def_tank_guid)}}
+                <!-- {{row.customer_company?.tank?.unit_type}} -->
+              </mat-cell>
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell

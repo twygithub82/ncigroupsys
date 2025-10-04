@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { TankItem } from './tank';
 export class TariffDepotGO {
@@ -195,6 +195,46 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
         })
       );
   }
+
+  SearchTariffDepotAll(where?: any, order?: any): Observable<TariffDepotItem[]> {
+  this.loadingSubject.next(true);
+
+  const allNodes: TariffDepotItem[] = [];
+  const pageSize = 100; // adjust as needed
+
+  const fetchPage = (after?: string): Observable<TariffDepotItem[]> => {
+    return this.apollo.query<any>({
+      query: GET_TARIFF_DEPOT_QUERY_WITH_TANK,
+      variables: { where, order, first: pageSize, after },
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => result.data.tariffDepotResult),
+      switchMap(result => {
+        allNodes.push(...result.nodes);
+        if (result.pageInfo.hasNextPage) {
+          return fetchPage(result.pageInfo.endCursor); // recursive call
+        } else {
+          return of(allNodes);
+        }
+      })
+    );
+  };
+
+  return fetchPage().pipe(
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      return of([] as TariffDepotItem[]);
+    }),
+    finalize(() => this.loadingSubject.next(false)),
+    map(nodes => {
+      this.dataSubject.next(nodes);
+      this.pageInfo = { hasNextPage: false, hasPreviousPage: false };
+      this.totalCount = nodes.length;
+      return nodes;
+    })
+  );
+}
+
 
   SearchTariffDepotWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
     this.loadingSubject.next(true);

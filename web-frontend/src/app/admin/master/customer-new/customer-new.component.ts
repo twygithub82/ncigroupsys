@@ -47,6 +47,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 
 @Component({
   selector: 'app-customer-new',
@@ -215,6 +216,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   satulationCvList: CodeValuesItem[] = [];
 
   tankItemList?: TankItem[] = [];
+  depotProfileList?: TariffDepotItem[] = [];
   customerTypeControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
 
@@ -222,6 +224,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
+  tfDepotDS: TariffDepotDS;
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -260,6 +263,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
+    this.tfDepotDS= new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -481,6 +485,21 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         })
       }
     })
+
+     this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
+      this.depotProfileList=data;
+      if (this.historyState.customerCompany) {
+        var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
+        this.ccForm?.patchValue({
+          default_profile: this.getDefaultTank(cust.def_tank_guid!),
+        })
+      } else if (this.selectedCustomerCmp) {
+        this.ccForm?.patchValue({
+          default_profile: this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
+        })
+      }
+    });
+
 
     const queries = [
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
@@ -706,7 +725,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.phone = this.ccForm?.get("phone")?.value;
     cust.postal = this.ccForm?.get("postal_code")?.value;
     if (this.ccForm?.get("default_profile")?.value) {
-      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
       cust.def_tank_guid = defTank.guid;
     }
     if (this.ccForm?.get("currency")?.value) {
@@ -795,7 +815,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
 
       if (this.ccForm?.get("default_profile")?.value) {
-        let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+        // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+        let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
         selectedCusCmp.def_tank_guid = defTank.guid;
       }
 
@@ -1077,7 +1098,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.phone = this.ccForm?.get("phone")?.value;
     cust.postal = this.ccForm?.get("postal_code")?.value;
     if (this.ccForm?.get("default_profile")?.value) {
-      let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+      // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
+       let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
       cust.def_tank_guid = defTank.guid;
     }
     if (this.ccForm?.get("currency")?.value) {
@@ -1139,6 +1161,20 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   getDefaultTank(guid: string): TankItem | undefined {
+    if (this.depotProfileList?.length! > 0) {
+      const tnkItm = this.depotProfileList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;
+      });
+      if (tnkItm?.length! > 0)
+        return tnkItm![0];
+      else
+        return undefined;
+    }
+    return undefined;
+  }
+
+
+  getDefaultTank_old(guid: string): TankItem | undefined {
     if (this.tankItemList?.length! > 0) {
       const tnkItm = this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
         return item;

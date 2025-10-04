@@ -140,11 +140,16 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
                     <mat-select formControlName="default_profile" required>
-                      <mat-option *ngFor="let t of this.tankItemList" [value]="t">
+                      <mat-option *ngFor="let t of this.depotProfileList" [value]="t">
+                        <ng-container *ngIf="t !== null">
+                          {{ t.profile_name }}
+                        </ng-container>
+                      </mat-option>
+                      <!-- <mat-option *ngFor="let t of this.tankItemList" [value]="t">
                         <ng-container *ngIf="t !== null">
                           {{ t.unit_type }}
                         </ng-container>
-                      </mat-option>
+                      </mat-option> -->
                     </mat-select>
                     <!-- @if (ccForm?.get('default_profile')?.hasError('required')) {
                     <mat-error>

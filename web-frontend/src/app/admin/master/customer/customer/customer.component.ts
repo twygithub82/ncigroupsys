@@ -36,6 +36,7 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -202,9 +203,11 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   custCompDS: CustomerCompanyDS;
   sotDS: StoringOrderTankDS;
   tankDS: TankDS;
+  tfDepotDS: TariffDepotDS;
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
+  depotProfileList: TariffDepotItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyFilterList: CustomerCompanyItem[] = [];
@@ -229,6 +232,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   id?: number;
   pcForm?: UntypedFormGroup;
+ 
 
   constructor(
     private router: Router,
@@ -248,6 +252,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
+     this.tfDepotDS= new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -306,7 +311,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
+      // default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
+      default_profile: [this.depotProfileList.find(u => u.profile_name! === 'All' || null)],
       phone: [''],
       fax_no: [''],
       email: [''],
@@ -444,10 +450,15 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
-      const tankSearch: any = {};
+       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
+      const customer_company: any = { def_tank_guid:  { eq: this.pcForm!.get("default_profile")?.value?.guid } }
       where.and.push({ customer_company: customer_company })
+
+      // const tankSearch: any = {};
+      // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      // const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
+      // where.and.push({ customer_company: customer_company })
     }
 
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
@@ -576,6 +587,14 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
+
+    
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
+      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
+
+    });
+      
+    
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
       // this.unit_typeList = [...data]
@@ -821,6 +840,18 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_DELETE']);
+  }
+
+  getDepotProfileName(guid:String):String{
+    var retval:String="-";
+
+    if (this.depotProfileList && this.depotProfileList.length > 0) {
+      var depotProfile = this.depotProfileList.find(x => x.guid == guid);
+      if (depotProfile) {
+        retval = depotProfile.profile_name??"-";
+      }
+    }
+    return retval;
   }
 }
 
