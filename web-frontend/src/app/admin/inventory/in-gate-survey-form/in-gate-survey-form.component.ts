@@ -62,6 +62,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
+import { EmailApiService } from '@core/service/email-api.service';
 
 @Component({
   selector: 'app-in-gate',
@@ -372,7 +373,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
-    private modulePackageService: ModulePackageService
+    private modulePackageService: ModulePackageService,
+    private emailApiService: EmailApiService,
   ) {
     super();
     this.translateLangText();
@@ -1616,10 +1618,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const record = result.data.record
           if (record?.affected) {
             this.uploadImages(record.guid[0], true);
-            if (!this.isMobile) {
-              // If mobile, do not download
-              this.onDownload(record.guid[0], record.residue_guid);
-            }
+            // if (!this.isMobile) {
+            //   // If mobile, do not download
+            //   this.onDownload(record.guid[0], record.residue_guid);
+            // }
+            this.onDownload(record.guid[0], record.residue_guid);
           }
         });
       }
@@ -1711,9 +1714,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         console.log(result)
         const record = result.data?.publishIngateSurvey
         this.handleSaveSuccess(record?.affected);
-        if (!this.isMobile) {
-          this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
-        }
+        // if (!this.isMobile) {
+        //   this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
+        // }
+        this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
       });
     }
   }
@@ -1736,17 +1740,31 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         eir_no: this.in_gate?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS,
+        toDownload: !this.isMobile ? true : false,  // if mobile, do not download
+        toUpload: true // in gate survey, to upload for email
       },
       direction: tempDirection
     });
+
     this.fileManagerService.actionLoadingSubject.next(true);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
-      if (residue_guid) {
-        this.onDownloadResidue(residue_guid);
-      } else {
-        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
-      }
+      // Call email then directly process the next flow instead of waiting
+      this.subs.sink = this.emailApiService
+        .email(this.in_gate?.tank?.tank_no!, igs_guid!, this.getEmails())
+        .subscribe({
+          next: (res) => {
+            if (residue_guid && !this.isMobile) {
+              this.onDownloadResidue(residue_guid);
+            } else {
+              this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+            }
+          },
+          error: (error) => {
+            console.log(error)
+            // this.errorDialog();
+          },
+        });
     });
   }
 
@@ -2404,5 +2422,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getMaxDate() {
     return new Date();
+  }
+
+  getEmails() {
+    debugger
+    let emails: string[] = [];
+    if (this.in_gate?.tank?.storing_order?.customer_company?.email) emails.push(this.in_gate?.tank?.storing_order?.customer_company?.email)
+    this.in_gate?.tank?.storing_order?.customer_company?.cc_contact_person?.forEach(cp => {
+      if (cp?.email && !emails.includes(cp.email)) {
+        emails.push(cp.email);
+      }
+    });
+    return emails;
   }
 }

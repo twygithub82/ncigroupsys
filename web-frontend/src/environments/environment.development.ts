@@ -8,7 +8,7 @@ export const environment = {
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
+  fileManagerURL: 'https://tlx-filemanagement-app-b6aga4fcfwhbggd7.southeastasia-01.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
   topicSubscribe: '/idms/all/*'

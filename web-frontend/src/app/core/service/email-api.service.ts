@@ -7,8 +7,8 @@ import { api_endpoints } from "app/api-endpoints";
 export class EmailApiService {
   constructor(private api: ApiService) { }
 
-  email(tankNo: string, groupId: string, recipient: string[]): Observable<any> {
+  email(tankNo: string, eirGroupGuid: string, receipient: string[]): Observable<any> {
     const endpoint = api_endpoints.email;
-    return this.api.post<any>(endpoint, { tankNo, groupId, recipient });
+    return this.api.post<any>(endpoint, { tankNo, eirGroupGuid, receipient });
   }
 }

@@ -36,6 +36,8 @@ export interface DialogData {
   cvDS: CodeValuesDS;
   eirPdf?: any;
   eir_no?: string;
+  toDownload?: boolean;
+  toUpload?: boolean;
 }
 
 declare const html2canvas: any;
@@ -289,6 +291,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   renderedMiddle: { highlighted: boolean }[] = [];
   renderedBottom: { highlighted: boolean }[] = [];
 
+  toDownload = true;
+  toUpload = false;
 
   constructor(
     public dialogRef: MatDialogRef<EirFormComponent>,
@@ -310,9 +314,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
     this.eirPdf = data.eirPdf;
+    this.toDownload = data.toDownload || true;
+    this.toUpload = data.toUpload || false;
+
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
-
     this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.eirDisclaimerNote = customerInfo.eirDisclaimerNote
@@ -715,7 +721,6 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     const imgInfo = await Utility.getImageSizeFromBase64(imgData);
     const aspectRatio = imgInfo.width / imgInfo.height;
 
-
     const conversionTime = perf.now() - startConversion;
     console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
@@ -751,14 +756,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     textContent = `${customerInfo.companyName}`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
 
-
     textContent = `${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
 
-
     textContent = `${this.translatedLangText.EIR_COMPANY_DECLARATION}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
-
 
     textContent = `${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
@@ -827,7 +829,14 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
     // Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.downloadFile(pdf.output('blob'), this.getReportTitle())
+    const pdfBlob = pdf.output('blob');
+    if (this.toUpload) {
+      await this.uploadEir(this.eirDetails?.guid, pdfBlob);
+    }
+    
+    if (this.toDownload) {
+      this.downloadFile(pdfBlob, this.getReportTitle());
+    }
     this.dialogRef.close();
   }
 
@@ -2112,8 +2121,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
               url: response?.url?.[0]
             }
           ];
+          // To notify parent component
           this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
-
         }
       },
       error: (error) => {
