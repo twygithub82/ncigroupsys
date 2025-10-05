@@ -989,7 +989,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         if (isAutoApproveSteaming) {
           row.total_cost = (row.rate || 0);
           if (!row.flat_rate) {
-            row.total_cost *= row.total_hour;
+            row.total_cost = row.total_hour * row.rate;
           }
         }
         else {
