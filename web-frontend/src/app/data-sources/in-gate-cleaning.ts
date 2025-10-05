@@ -636,6 +636,13 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           this.pageInfo = retResult.pageInfo;
+          retResult.nodes = retResult.nodes.map((item: InGateCleaningItem) => ({
+            ...item,
+            customer_billing:
+              item.customer_billing?.delete_dt != null && item.customer_billing.delete_dt !== 0
+                ? null
+                : item.customer_billing
+          }));
           return retResult.nodes;
         })
       );

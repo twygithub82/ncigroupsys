@@ -829,6 +829,13 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
           this.dataSubject.next(resultList.nodes);
           this.totalCount = resultList.totalCount;
           this.pageInfo = resultList.pageInfo;
+            resultList.nodes = resultList.nodes.map((item: ResidueItem) => ({
+            ...item,
+            customer_billing:
+              item.customer_billing?.delete_dt != null && item.customer_billing.delete_dt !== 0
+                ? null
+                : item.customer_billing
+          }));
           return resultList.nodes;
         })
       );

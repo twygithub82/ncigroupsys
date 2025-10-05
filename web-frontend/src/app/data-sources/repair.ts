@@ -1588,6 +1588,20 @@ export class RepairDS extends BaseDataSource<RepairItem> {
           this.dataSubject.next(resultList.nodes);
           this.totalCount = resultList.totalCount;
           this.pageInfo = resultList.pageInfo;
+          resultList.nodes = resultList.nodes.map((item: RepairItem) => ({
+                  ...item,
+                  customer_billing:
+                    item.customer_billing?.delete_dt != null && item.customer_billing.delete_dt !== 0
+                      ? null
+                      : item.customer_billing
+                }));
+          resultList.nodes = resultList.nodes.map((item: RepairItem) => ({
+                  ...item,
+                  owner_billing:
+                    item.owner_billing?.delete_dt != null && item.owner_billing.delete_dt !== 0
+                      ? null
+                      : item.owner_billing
+                }));
           return resultList.nodes;
         })
       );

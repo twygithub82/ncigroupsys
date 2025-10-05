@@ -1177,7 +1177,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.action === 'confirmed') {
           this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
+
             if (result.data.recordSteamingTemp) {
+              this.deList=[steamTemp, ...this.deList];
               this.completeSteamJobWithoutConfirm(event!);
             }
           });
@@ -1186,7 +1188,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     } else {
       this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
         if (result.data.recordSteamingTemp) {
-          
+        
           this.resetSelectedItemForUpdating();
           this.QuerySteamTemp();
           //this.resetSelectedItemForUpdating();
@@ -1413,10 +1415,14 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       const minItem = this.deList.reduce((minItem, item) =>
         item.report_dt < minItem.report_dt ? item : minItem
       );
+        const maxItem = this.deList.reduce((maxItem, item) =>
+        item.report_dt > maxItem.report_dt ? item : maxItem
+      );
       steaming = new SteamGO(this.steamItem);
       steaming.action = "EDIT";
       var startTime = minItem?.report_dt || 0;
-      var endTime = Math.floor(Date.now() / 1000);
+      var endTime = maxItem?.report_dt||0;
+      // var endTime = Math.floor(Date.now() / 1000);
       // Calculate time difference in seconds
       const timeDiffSeconds = endTime - startTime;
 

@@ -1348,6 +1348,34 @@ export class BillingDS extends BaseDataSource<BillingItem> {
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           this.pageInfo = retResult.pageInfo;
+             retResult.nodes = retResult.nodes.map((item: BillingSOTItem) => ({
+            ...item,
+            gin_billing:
+              item.gin_billing?.delete_dt != null && item.gin_billing.delete_dt !== 0
+                ? null
+                : item.gin_billing,
+            gout_billing:
+              item.gout_billing?.delete_dt != null && item.gout_billing.delete_dt !== 0
+                ? null
+                : item.gout_billing,
+            lon_billing:
+             item.lon_billing?.delete_dt != null && item.lon_billing.delete_dt !== 0
+                ? null
+                : item.lon_billing,
+            loff_billing:
+             item.loff_billing?.delete_dt != null && item.loff_billing.delete_dt !== 0
+                ? null
+                : item.loff_billing,
+            preinsp_billing:
+             item.preinsp_billing?.delete_dt != null && item.preinsp_billing.delete_dt !== 0
+                ? null
+                : item.preinsp_billing,
+            storage_billing:
+            item.storage_billing?.delete_dt != null && item.storage_billing.delete_dt !== 0
+                ? null
+                : item.storage_billing,
+          }));
+        
           return retResult.nodes;
         })
       );
@@ -1373,6 +1401,39 @@ export class BillingDS extends BaseDataSource<BillingItem> {
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           this.pageInfo = retResult.pageInfo;
+           
+  // public gout_billing?: BillingItem;
+  // public lon_billing?: BillingItem;
+  // public loff_billing?: BillingItem;
+  // public preinsp_billing?: BillingItem;
+  // public storage_billing?: BillingItemStorageDetail;
+          retResult.nodes = retResult.nodes.map((item: BillingSOTItem) => ({
+            ...item,
+            gin_billing:
+              item.gin_billing?.delete_dt != null && item.gin_billing.delete_dt !== 0
+                ? null
+                : item.gin_billing,
+            gout_billing:
+              item.gout_billing?.delete_dt != null && item.gout_billing.delete_dt !== 0
+                ? null
+                : item.gout_billing,
+            lon_billing:
+             item.lon_billing?.delete_dt != null && item.lon_billing.delete_dt !== 0
+                ? null
+                : item.lon_billing,
+            loff_billing:
+             item.loff_billing?.delete_dt != null && item.loff_billing.delete_dt !== 0
+                ? null
+                : item.loff_billing,
+            preinsp_billing:
+             item.preinsp_billing?.delete_dt != null && item.preinsp_billing.delete_dt !== 0
+                ? null
+                : item.preinsp_billing,
+            storage_billing:
+            item.storage_billing?.delete_dt != null && item.storage_billing.delete_dt !== 0
+                ? null
+                : item.storage_billing,
+          }));
           return retResult.nodes;
         })
       );
