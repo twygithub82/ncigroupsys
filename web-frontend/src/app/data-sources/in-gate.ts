@@ -258,6 +258,10 @@ export const GET_IN_GATE_BY_ID = gql`
               code
               name
               guid
+              email
+              cc_contact_person(where: { delete_dt: { eq: null } }) {
+                email
+              }
             }
           }
           tank_info {
