@@ -25,7 +25,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
-    "@apollo/client": "^4.0.5",
+    "@apollo/client": "3.10.8",
     "@auth0/angular-jwt": "^5.2.0",
     "@ckeditor/ckeditor5-angular": "^7.0.1",
     "@ckeditor/ckeditor5-build-classic": "^41.2.1",
@@ -46,7 +46,7 @@
     "@types/d3-shape": "^3.1.6",
     "angular-feather": "^6.5.1",
     "apexcharts": "^3.47.0",
-    "apollo-angular": "^11.0.0",
+    "apollo-angular": "^7.2.1",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "browser-fs-access": "^0.35.0",
@@ -60,9 +60,10 @@
     "file-saver": "^2.0.5",
     "flag-icon-css": "^4.1.7",
     "form-data": "^4.0.0",
-    "graphql": "^16.8.2",
+    "graphql": "^16.11.0",
     "graphql-ws": "^5.16.0",
     "html2canvas": "^1.4.1",
+    "install": "^0.13.0",
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
@@ -76,11 +77,14 @@
     "ngx-mask": "^17.0.4",
     "ngx-mat-datetime-picker": "^3.0.0",
     "ngx-scrollbar": "^13.0.3",
+    "npm": "^11.6.1",
     "rxjs": "~7.8.1",
     "subsink": "^1.0.2",
     "sweetalert2": "^11.10.6",
+    "ts-invariant": "^0.10.3",
     "tslib": "^2.6.2",
     "xlsx": "^0.18.5",
+    "zen-observable-ts": "^1.1.0",
     "zone.js": "~0.14.4"
   },
   "devDependencies": {
@@ -108,7 +112,7 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.2.2"
+    "typescript": "^5.4.5"
   },
   "overrides": {
     "d3-array": "3.2.4"

@@ -435,10 +435,17 @@
             {{translatedLangText.DAYS}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" class="">
-            <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{100}}
+            <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getStorageDays(row)}}
           </mat-cell>
         </ng-container>
-
+          <ng-container matColumnDef="free-days">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.FREE_STORAGE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getFreeStorageDays(row)}}
+          </mat-cell>
+        </ng-container>
         <ng-container matColumnDef="cost">
           <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.COST}}

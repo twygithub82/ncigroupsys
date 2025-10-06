@@ -162,6 +162,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     DAYS: 'COMMON-FORM.DAYS',
     STORAGE_DAY: 'COMMON-FORM.STORAGE-DAY',
     START_DATE: 'COMMON-FORM.START-DATE',
+    
   }
 
   invForm?: UntypedFormGroup;
@@ -1525,5 +1526,24 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     if (Utility.IsAllowAutoSearch()) {
       this.search();
     }
+  }
+
+  getStorageDays(row:any)
+  {
+    var retval:String ="-";
+      let packDepotItm: PackageDepotItem = new PackageDepotItem();
+      packDepotItm.storage_cal_cv = row.storage_cal_cv;
+      let daysDifference: number = Number(this.pdDS.getStorageDays(row.storing_order_tank!, packDepotItm));
+
+
+    return  Utility.formatNumberDisplay(daysDifference) ;
+  }
+
+   getFreeStorageDays(row:any)
+  {
+    var retval:String ="-";
+    
+
+    return  Utility.formatNumberDisplay(row?.free_storage||0) ;
   }
 }
