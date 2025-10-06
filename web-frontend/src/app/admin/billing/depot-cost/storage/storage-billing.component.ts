@@ -1536,7 +1536,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       let daysDifference: number = Number(this.pdDS.getStorageDays(row.storing_order_tank!, packDepotItm));
 
 
-    return  Utility.formatNumberDisplay(daysDifference) ;
+    return  daysDifference; //Utility.formatNumberDisplay(daysDifference) ;
   }
 
    getFreeStorageDays(row:any)
