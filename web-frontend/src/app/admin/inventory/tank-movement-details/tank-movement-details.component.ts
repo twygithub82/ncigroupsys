@@ -2095,13 +2095,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSteam.action = "overwrite";
 
         console.log(newSteam)
-        // this.steamDS.updateSteam(newSteam).subscribe(result => {
-        //   console.log(result)
-        //   if (this.sot_guid) {
-        //     this.loadDataHandling_steam(this.sot_guid)
-        //     this.handleSaveSuccess(result?.data?.updateSteaming);
-        //   }
-        // });
+        this.steamDS.updateSteam(newSteam).subscribe(result => {
+          console.log(result)
+          if (this.sot_guid) {
+            this.loadDataHandling_steam(this.sot_guid)
+            this.handleSaveSuccess(result?.data?.updateSteaming);
+          }
+        });
       }
     });
   }
