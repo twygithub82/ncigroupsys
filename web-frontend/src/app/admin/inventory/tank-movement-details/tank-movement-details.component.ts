@@ -518,7 +518,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     HOUR_RATE: "COMMON-FORM.HOUR-RATE",
     STEAM_LOG: "COMMON-FORM.STEAM-LOG",
     ESTIMATE_DETAILS: "COMMON-FORM.ESTIMATE-DETAILS",
-    ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY"
+    ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY",
+    BY_HOUR: "COMMON-FORM.BY-HOUR"
   }
 
   sot_guid: string | null | undefined;
@@ -2094,13 +2095,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSteam.action = "overwrite";
 
         console.log(newSteam)
-        this.steamDS.updateSteam(newSteam).subscribe(result => {
-          console.log(result)
-          if (this.sot_guid) {
-            this.loadDataHandling_steam(this.sot_guid)
-            this.handleSaveSuccess(result?.data?.updateSteaming);
-          }
-        });
+        // this.steamDS.updateSteam(newSteam).subscribe(result => {
+        //   console.log(result)
+        //   if (this.sot_guid) {
+        //     this.loadDataHandling_steam(this.sot_guid)
+        //     this.handleSaveSuccess(result?.data?.updateSteaming);
+        //   }
+        // });
       }
     });
   }
