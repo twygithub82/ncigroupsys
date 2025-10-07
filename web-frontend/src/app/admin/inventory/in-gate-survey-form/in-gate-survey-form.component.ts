@@ -2425,7 +2425,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   getEmails() {
-    debugger
     let emails: string[] = [];
     if (this.in_gate?.tank?.storing_order?.customer_company?.email) emails.push(this.in_gate?.tank?.storing_order?.customer_company?.email)
     this.in_gate?.tank?.storing_order?.customer_company?.cc_contact_person?.forEach(cp => {
