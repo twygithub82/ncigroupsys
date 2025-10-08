@@ -233,6 +233,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
     TOTAL:'COMMON-FORM.TOTAL',
     LESSEE:'COMMON-FORM.LESSEE',
+    PREPARED_BY:'COMMON-FORM.PREPARED-BY',
     
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
@@ -1556,7 +1557,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var fontSize = 8
       var totalPages = pdf.getNumberOfPages();
        var offhireCodeHeight=65;
-       var totalCostTableHeight=45;
+       var totalCostTableHeight=38;
        var  dmgCodeRprCodePosY = pageHeight - offhireCodeHeight;
        pdf.setDrawColor(0, 0, 0); // black line color
         pdf.setLineWidth(0.1);
@@ -1916,7 +1917,8 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
    createRepairEstimateTotalTable_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
     {
 
-      const minHeightBodyCell = 6;
+      const grayColor=250;
+      const minHeightBodyCell = 5;
         const vAlign = "bottom";
         const headers:RowInput[] = [[
      { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
@@ -1940,41 +1942,43 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
   .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
 
     const rows: any[][] = [];
+    const fontStyle='normal';
+    const fontSz = 7;
     rows.push([
-      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } }
-    ]);
-    rows.push([
-      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
     rows.push([
-      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle:fontStyle } },
+      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
     ]);
 
      if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
@@ -1982,10 +1986,10 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold' } }
+        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
       ]);
       startY-=3;
     }
@@ -1997,29 +2001,58 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         startY: startY,
         styles: {
           cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: 7,
-          lineWidth: 0.05, // enable grid borders
-          lineColor: [0, 0, 0] // black lines
+          fontSize: fontSz,
         },
-        theme: 'grid',
+        theme: 'plain',
         margin: { left: buffer},
         headStyles: {
-          fillColor: [240, 240, 240],
+           fillColor: [grayColor, grayColor, grayColor],
           textColor: 0,
           fontStyle: 'bold',
-          lineWidth: 0.2 // slightly thicker border for header
         },
         columnStyles: comStyles,
-      });
+        didDrawCell: function (data) {
+          const { cell, doc } = data;
+          if (!cell) return;
 
+          const startX = cell.x;
+          const endX = cell.x + cell.width;
+          const yTop = cell.y;
+          const yBottom = cell.y + cell.height;
+
+         doc.setDrawColor(0);   // black
+         doc.setLineWidth(0.2); // thickness
+
+         
+
+          // Draw bottom border for the last row
+           if (data.section === 'body') {
+            const lastRowIndex = data.table.body.length - 1;
+            // Only draw bottom border for the last row
+            if (data.row.index === lastRowIndex) {
+              // doc.line(startX, yBottom, endX, yBottom);
+            }
+          }
+
+          // Always draw top border for header
+          if (data.section === 'head') {
+            doc.line(startX, yBottom, endX, yBottom);
+          //  doc.line(startX, yTop, endX, yTop);
+          }
+        },
+      });
+     var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+      tableEndY-=1;
+      const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+      PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
     }
 
   createRepairEstimateTotalTable_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
     {
 
       const minHeightBodyCell = 6;
-        const vAlign = "bottom";
-
+      const vAlign = "bottom";
+      const grayColor=245;
      
       const headers: RowInput[] = [[
       { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
@@ -2047,65 +2080,66 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
   .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
    
     const rows: any[][] = [];
+     const fontStyle='normal';
     rows.push([
-      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getOwnerLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getOwnerLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getLesseeLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: 'bold' } }
-    ]);
-    rows.push([
-      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getOwnerTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getLesseeLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
     rows.push([
-      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: 'bold' } },
-     { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getOwnerTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } }
+    ]);
+    rows.push([
+      { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: fontStyle } },
+     { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
-     { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getOwnerLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
+     { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: 'bold' } },
-     { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getOwnerMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
+     { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-       { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getLesseeNetCost(), styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: 'bold' } }
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
 
     if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
@@ -2117,14 +2151,14 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var foreignOwnerNetCost = ownerNetCost * rate;
       var foreignLesseeNetCost = lesseeNetCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-        { content:Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: 'bold' } },
-        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold' } }
+        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content:Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
       startY-=3;
     }
@@ -2137,20 +2171,48 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         styles: {
           cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
           fontSize: 7,
-          lineWidth: 0.05, // enable grid borders
-          lineColor: [0, 0, 0] // black lines
         },
-        theme: 'grid',
+        theme: 'plain',
         margin: { left: buffer},
         headStyles: {
-          fillColor: [240, 240, 240],
+           fillColor: [grayColor, grayColor, grayColor],
           textColor: 0,
           fontStyle: 'bold',
-          lineWidth: 0.2 // slightly thicker border for header
         },
         columnStyles: comStyles,
-      });
+        didDrawCell: function (data) {
+          const { cell, doc } = data;
+          if (!cell) return;
 
+          const startX = cell.x;
+          const endX = cell.x + cell.width;
+          const yTop = cell.y;
+          const yBottom = cell.y + cell.height;
+
+          doc.setDrawColor(0);   // black
+          doc.setLineWidth(0.2); // thin line
+
+          // ===== HEADER SECTION =====
+          if (data.section === 'head') {
+            // Draw top and bottom borders for the header
+            // doc.line(startX, yTop, endX, yTop);       // Top line
+            doc.line(startX, yBottom, endX, yBottom); // Bottom line
+          }
+
+          // ===== BODY SECTION =====
+          if (data.section === 'body') {
+            const lastRowIndex = data.table.body.length - 1;
+            // Only draw bottom border for the last row
+            if (data.row.index === lastRowIndex) {
+              // doc.line(startX, yBottom, endX, yBottom);
+            }
+          }
+        },
+      });
+      var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+      tableEndY-=1;
+      const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+     PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
     }
 
     getLabourCost(): string{
@@ -2282,6 +2344,11 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         
         const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
         return Utility.convertNumber(cost, 2);
+      }
+
+      getSurveyorName()
+      {
+        return this.repairItem?.aspnetsuser?.userName||'';
       }
     // getRepairCost(){
     //     this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);

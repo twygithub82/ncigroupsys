@@ -1305,6 +1305,9 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
     resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid
+        aspnetsuser {
+          userName
+        }
         create_by
         create_dt
         delete_dt
@@ -1417,6 +1420,7 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
           update_by
           update_dt
           storing_order {
+            
             customer_company {
               code
               name
