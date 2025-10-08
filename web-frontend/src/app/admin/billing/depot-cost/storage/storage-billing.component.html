@@ -413,10 +413,10 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75'">
             {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" class="">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
             <span
               class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
           </mat-cell>
@@ -431,10 +431,10 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.DAYS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" class="">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
             <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getStorageDays(row)}}
           </mat-cell>
         </ng-container>

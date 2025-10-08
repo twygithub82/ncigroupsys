@@ -590,6 +590,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
             guid
             job_no
             last_cargo_guid
+            last_release_dt
             last_test_guid
             liftoff_job_no
             lifton_job_no

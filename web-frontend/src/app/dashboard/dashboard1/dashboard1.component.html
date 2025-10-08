@@ -16,6 +16,35 @@
     @else if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
     <div class="dashboard-content-info">
       <div class="row">
+        @if (AllowToView(translatedLangText.GATEIO)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+          <div class="card info-card pointer">
+            <dashboard-gateio />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.TANK_IN_YARD)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+          <div class="card info-card pointer ">
+            <dashboard-tank-in-yard />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.GATE_IN_PENDING)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.GATE_IN_PENDING)">
+            <dashboard-gatein-waiting />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.RELEASE_PENDING)){
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-release-waiting />
+          </div>
+        </div>
+        }
         @if (AllowToView(translatedLangText.IN_GATE_SURVEY_PENDING)) {
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 ">
           <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.IN_GATE_SURVEY_PENDING)">
@@ -30,10 +59,27 @@
           </div>
         </div>
         }
-        @if (AllowToView(translatedLangText.GATE_IN_PENDING)) {
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.GATE_IN_PENDING)">
-            <dashboard-gatein-waiting />
+        @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-gatein-publish-waiting />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-gateout-publish-waiting />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-steaming-waiting />
           </div>
         </div>
         }
@@ -44,10 +90,25 @@
           </div>
         </div>
         }
+        @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-residue-waiting />
+          </div>
+        </div>
+        }
         @if (AllowToView(translatedLangText.CLEANING_KIV)) {
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
           <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.CLEANING_KIV)">
             <dashboard-cleaning-kiv />
+          </div>
+        </div>
+        }
+        @if (AllowToView(translatedLangText.REPAIR_ESTIMATE_PENDING)) {
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_ESTIMATE_PENDING)">
+            <dashboard-repair-estimate-waiting />
           </div>
         </div>
         }
@@ -59,13 +120,6 @@
           </div>
         </div>
         }
-        @if (AllowToView(translatedLangText.REPAIR_ESTIMATE_PENDING)) {
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_ESTIMATE_PENDING)">
-            <dashboard-repair-estimate-waiting />
-          </div>
-        </div>
-        }
         @if (AllowToView(translatedLangText.REPAIR_QC_PENDING)) {
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
           <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_QC_PENDING)">
@@ -73,44 +127,7 @@
           </div>
         </div>
         }
-        @if (AllowToView(translatedLangText.GATEIO)) {
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-          <div class="card info-card pointer">
-            <dashboard-gateio />
-          </div>
-        </div>
-        }
-        @if (AllowToView(translatedLangText.TANK_IN_YARD)) {
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-          <div class="card info-card pointer ">
-            <dashboard-tank-in-yard />
-          </div>
-        </div>
-        }
-
-        @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-          (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
-          <div class="card info-card pointer">
-            <dashboard-residue-waiting />
-          </div>
-        </div>
-        }
-        @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-          (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
-          <div class="card info-card pointer">
-            <dashboard-steaming-waiting />
-          </div>
-        </div>
-        }
-
         @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
-
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
           (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
           <div class="card info-card pointer">
@@ -118,38 +135,7 @@
           </div>
         </div>
         }
-
-        @if (AllowToView(translatedLangText.RELEASE_PENDING)){
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-          (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
-          <div class="card info-card pointer">
-            <dashboard-release-waiting />
-          </div>
-        </div>
-        }
-
-        @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-          (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
-          <div class="card info-card pointer">
-            <dashboard-gatein-publish-waiting />
-          </div>
-        </div>
-        }
-
-        @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
-
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-          (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
-          <div class="card info-card pointer">
-            <dashboard-gateout-publish-waiting />
-          </div>
-        </div>
-        }
       </div>
-
     </div>
     }
   </div>

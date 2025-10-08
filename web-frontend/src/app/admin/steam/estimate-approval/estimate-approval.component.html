@@ -398,7 +398,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let steamRow">
                               <span class="mobile-label">{{translatedLangText.COST}}:</span>
-                              <span>{{steamRow.net_cost}}</span>
+                              <span>{{steamRow.total_cost || '-'}}</span>
                             </mat-cell>
                           </ng-container>
                           <ng-container matColumnDef="status_cv">

@@ -502,14 +502,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  populateRepairEst(repair_est: RepairItem[] | undefined, isDuplicate: boolean) {
-
-  }
-
-  populateFoundRepairEst(repairEst: RepairPartItem, isDuplicate: boolean) {
-
-  }
-
   getCustomerLabourPackage(customer_company_guid: string) {
     const where = {
       and: [
@@ -1393,9 +1385,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
       this.getCustomerLabourPackage(ccGuid!);
-
-
-
     }
   }
 
@@ -1868,10 +1857,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return retval;
   }
 
-  // onRateChange(): void {
-  //   this.rateType = this.flat_rate ? this.translatedLangText.FLAT: this.translatedLangText.HOURLY;
-
-  // }
   getRateType(): string {
     this.steamItem!.flat_rate = this.flat_rate;
     return this.flat_rate ? this.translatedLangText.FLAT : this.translatedLangText.HOURLY;
@@ -1891,10 +1876,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       return this.packageLabourItem?.cost || 0;
     }
     else {
-      if (this.deList.length == 0) return 0;
-
-      if (this.flat_rate) return this.IsApproved() ? (this.deList[0].approve_cost || 0) : (this.deList[0].cost || 0);
-      else return this.IsApproved() ? (this.deList[0].approve_labour || 0) : (this.deList[0].labour || 0);
+      return this.steamItem?.rate || 0;
     }
   }
 

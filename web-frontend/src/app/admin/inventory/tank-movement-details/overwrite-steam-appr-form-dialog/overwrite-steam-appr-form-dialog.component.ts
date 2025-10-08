@@ -400,10 +400,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       return this.packageLabourItem?.cost || 0;
     }
     else {
-      if (this.spList.length == 0) return 0;
-
-      if (this.flat_rate) return this.isApproved() ? (this.spList[0].approve_cost || 0) : (this.spList[0].cost || 0);
-      else return this.isApproved() ? (this.spList[0].approve_labour || 0) : (this.spList[0].labour || 0);
+      return this.steamItem?.rate || 0;
     }
   }
 
@@ -412,6 +409,8 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       return this.packageLabourItem?.cost || 0;
     }
     else {
+      if (!this.flat_rate)
+        return this.packageLabourItem?.cost || 0;
       return 0;
     }
   }

@@ -597,9 +597,9 @@
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     (click)="editEstPartDetails($event, row, i)" matRipple>
                   </mat-row>
-                  <ng-container *ngIf="isSteamRepair">
-                    <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
-                  </ng-container>
+                  @if (isSteamRepair) {
+                  <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                  }
                   <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </table>
                 <!-- <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">

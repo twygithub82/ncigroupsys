@@ -417,7 +417,9 @@
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     matRipple>
                   </mat-row>
+                  @if (isSteamRepair) {
                   <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                  }
                   <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </ng-container>
               </table>

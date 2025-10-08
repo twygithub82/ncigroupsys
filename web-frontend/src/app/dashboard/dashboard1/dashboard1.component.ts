@@ -94,7 +94,6 @@ export type ChartOptions = {
 })
 
 export class Dashboard1Component implements OnInit {
-
   translatedLangText: any = {};
   langText = {
     DASHBOARD: 'COMMON-FORM.DASHBOARD',
@@ -126,8 +125,7 @@ export class Dashboard1Component implements OnInit {
   messageSubscription?: Subscription;
   in_gate_yet_to_survey?: number = 0;
   sot_waiting?: number = 0;
-
-
+  
   constructor(
     private router: Router,
     private apollo: Apollo,

@@ -701,6 +701,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         guid
         job_no
         na_dt
+        rate
         remarks
         sot_guid
         status_cv
