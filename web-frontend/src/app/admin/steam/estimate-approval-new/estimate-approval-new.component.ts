@@ -8,7 +8,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { _ErrorStateTracker, MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -1876,7 +1876,29 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       return this.packageLabourItem?.cost || 0;
     }
     else {
-      return this.steamItem?.rate || 0;
+       if (!this.flat_rate) {
+        if(this.IsApproved())
+        {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
+        }
+        else
+        {
+          return this.packageLabourItem?.cost || 0;
+        }
+       }
+       else
+       {
+        if(this.IsApproved())
+        {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
+          // return Number( this.steamItem?.steaming_part?[0]?.approve_cost||0);
+
+        }
+        else
+        {
+            return Number( this.steamItem?.steaming_part?.[0]?.cost||0);
+        }
+       }
     }
   }
 
