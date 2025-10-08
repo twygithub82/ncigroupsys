@@ -43,9 +43,9 @@ export class SteamPartGO {
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
     this.complete_dt = item.complete_dt;
-    this.approve_qty = item.approve_qty || 0;
-    this.approve_labour = item.approve_labour || 0;
-    this.approve_cost = item.approve_cost || 0;
+    this.approve_qty = Number(item.approve_qty || 0);
+    this.approve_labour = Number(item.approve_labour || 0);
+    this.approve_cost = Number(item.approve_cost || 0);
     this.approve_part = item.approve_part;
     this.action = item.action;
   }
