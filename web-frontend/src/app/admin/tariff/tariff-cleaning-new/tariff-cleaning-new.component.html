@@ -199,21 +199,6 @@
                           <input matInput formControlName="un_no" [maxLength]="6" (blur)="onUnNoBlur()"
                             (input)="onUNNumericOnly($event, 'un_no')"
                             [ngStyle]="{ 'color': this.newUNNo ? '#048efb' : 'black' }">
-                          <!-- @if (tcForm?.get('un_no')?.hasError('required')) {
-                          <mat-error>
-                            {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
-                          </mat-error>
-                          } -->
-                          <!-- @if (tcForm?.get('un_no')?.hasError('existed')) {
-                          <mat-error>
-                            {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
-                          </mat-error>
-                          } -->
-                          <!-- @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
-                          <mat-error>
-                            {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
-                          </mat-error>
-                          } -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
