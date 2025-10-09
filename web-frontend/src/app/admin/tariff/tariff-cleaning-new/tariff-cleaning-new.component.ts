@@ -321,14 +321,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
     this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-      if (value && !value.startsWith(this.prefix) && value != '-') {
-        // Remove existing prefix before adding a new one
-        const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-        if (numericPart && !isNaN(Number(numericPart))) {
-          const newValue = this.prefix + value.replace(this.prefix, '');
-          this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-        }
-      }
+      // if (value && !value.startsWith(this.prefix) && value != '-') {
+      //   // Remove existing prefix before adding a new one
+      //   const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+      //   if (numericPart && !isNaN(Number(numericPart))) {
+      //     const newValue = this.prefix + value.replace(this.prefix, '');
+      //     this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+      //   }
+      // }
       this.CheckUnNoValidity();
     });
     this.loadData();
@@ -408,14 +408,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
           this.initializeValueChanges();
           this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-            if (value && !value.startsWith(this.prefix) && value != '-') {
-              // Remove existing prefix before adding a new one
-              const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-              if (numericPart && !isNaN(Number(numericPart))) {
-                const newValue = this.prefix + value.replace(this.prefix, '');
-                this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-              }
-            }
+            // if (value && !value.startsWith(this.prefix) && value != '-') {
+            //   // Remove existing prefix before adding a new one
+            //   const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+            //   if (numericPart && !isNaN(Number(numericPart))) {
+            //     const newValue = this.prefix + value.replace(this.prefix, '');
+            //     this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+            //   }
+            // }
             this.CheckUnNoValidity();
           });
           this.CheckUnNoValidity();
