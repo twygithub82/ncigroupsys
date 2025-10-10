@@ -3348,35 +3348,35 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           "job_no": this.sot?.preinspect_job_no,
           "billing_guid": this.sot?.billing_sot?.preinsp_billing_guid,
           "invoice_no": this.sot?.billing_sot?.preinsp_billing?.invoice_no,
-          "cost": this.sot?.billing_sot?.preinspection_cost
+          "cost": this.sot?.billing_sot?.preinspection ? this.sot?.billing_sot?.preinspection_cost : '-'
         },
         {
           "description": this.translatedLangText.LIFT_OFF,
           "job_no": this.sot?.liftoff_job_no,
           "billing_guid": this.sot?.billing_sot?.loff_billing_guid,
           "invoice_no": this.sot?.billing_sot?.loff_billing?.invoice_no,
-          "cost": this.sot?.billing_sot?.lift_off_cost
+          "cost": this.sot?.billing_sot?.lift_off ? this.sot?.billing_sot?.lift_off_cost : '-'
         },
         {
           "description": this.translatedLangText.LIFT_ON,
           "job_no": this.sot?.lifton_job_no,
           "billing_guid": this.sot?.billing_sot?.lon_billing_guid,
           "invoice_no": this.sot?.billing_sot?.lon_billing?.invoice_no,
-          "cost": this.sot?.billing_sot?.lift_on_cost
+          "cost": this.sot?.billing_sot?.lift_on ? this.sot?.billing_sot?.lift_on_cost : '-'
         },
         {
           "description": this.translatedLangText.GATE_IN,
           "job_no": this.sot?.job_no,
           "billing_guid": this.sot?.billing_sot?.gin_billing_guid,
           "invoice_no": this.sot?.billing_sot?.gin_billing?.invoice_no,
-          "cost": this.sot?.billing_sot?.gate_in_cost
+          "cost": this.sot?.billing_sot?.gate_in ? this.sot?.billing_sot?.gate_in_cost : '-'
         },
         {
           "description": this.translatedLangText.GATE_OUT,
           "job_no": this.sot?.release_job_no,
           "billing_guid": this.sot?.billing_sot?.gout_billing_guid,
           "invoice_no": this.sot?.billing_sot?.gout_billing?.invoice_no,
-          "cost": this.sot?.billing_sot?.gate_out_cost
+          "cost": this.sot?.billing_sot?.gate_out ? this.sot?.billing_sot?.gate_out_cost : '-'
         },
         {
           "description": this.translatedLangText.STORAGE,
