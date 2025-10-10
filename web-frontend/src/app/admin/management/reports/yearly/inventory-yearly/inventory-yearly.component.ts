@@ -310,7 +310,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       this.reportTypeCvList = data;
       this.initSearchForm();
       this.initializeValueChanges();
-
+      this.yearList=[];
       var thisYear = new Date().getFullYear();
       var startYear = thisYear - 5;
       for (var i = startYear; i <= thisYear; i++) {
