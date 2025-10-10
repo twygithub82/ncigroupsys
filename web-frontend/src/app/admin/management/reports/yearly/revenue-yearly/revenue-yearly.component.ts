@@ -45,6 +45,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { CDK_DESCRIBEDBY_HOST_ATTRIBUTE } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-revenue-yearly',
@@ -315,7 +316,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       this.reportTypeCvList = data;
       this.initSearchForm();
       this.initializeValueChanges();
-
+      this.yearList=[];
       var thisYear = new Date().getFullYear();
       var startYear = thisYear - 5;
       for (var i = startYear; i <= thisYear; i++) {
@@ -327,6 +328,8 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     });
 
   }
+
+
   showNotification(
     colorName: string,
     text: string,
@@ -380,7 +383,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     //let processType=this.processType;
 
     var customerName: string = "";
-   // var invTypes = this.invTypes.filter(v => v !== "ALL");
+    // var invTypes = this.invTypes.filter(v => v !== "ALL");
     var invTypes = this.invTypesAll.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
