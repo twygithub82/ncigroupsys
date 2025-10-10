@@ -71,7 +71,6 @@ export class CancelFormDialogComponent {
       ro_no: [ro.ro_no],
       customer_company_guid: [ro.customer_company_guid],
       storing_order_tank: this.fb.array(ro.release_order_sot.map((rosot: any) => this.createTankGroup(rosot))),
-      // remarks: [ro.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
