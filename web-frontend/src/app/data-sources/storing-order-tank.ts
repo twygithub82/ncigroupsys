@@ -4184,7 +4184,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
-        variables: { where, order, first, after, last, before  },
+        variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -4204,40 +4204,40 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   searchStoringOrderTanksYardTransferReport_r1(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksYardTransferReport_r1(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     let allNodes: StoringOrderTankItem[] = [];
 
-      const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
-        return this.apollo.query<any>({
-          query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
-          variables: { where, order, first: first, after: afterCursor },
-          fetchPolicy: 'no-cache'
-        }).pipe(
-          map(result => result.data.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
-          switchMap(sotList => {
-            allNodes = [...allNodes, ...sotList.nodes];
+    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+      return this.apollo.query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
+        variables: { where, order, first: first, after: afterCursor },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+        switchMap(sotList => {
+          allNodes = [...allNodes, ...sotList.nodes];
 
-            if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
-              return fetchPage(sotList.pageInfo.endCursor); // recursively get next page
-            } else {
-              return of(allNodes); // done
-            }
-          })
-        );
-      };
-
-      this.loadingSubject.next(true);
-      return fetchPage().pipe(
-        finalize(() => this.loadingSubject.next(false)),
-        tap(finalList => {
-          this.dataSubject.next(finalList);
-          this.totalCount = finalList.length;
-        }),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([]);
+          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+            return fetchPage(sotList.pageInfo.endCursor); // recursively get next page
+          } else {
+            return of(allNodes); // done
+          }
         })
       );
+    };
+
+    this.loadingSubject.next(true);
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false)),
+      tap(finalList => {
+        this.dataSubject.next(finalList);
+        this.totalCount = finalList.length;
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([]);
+      })
+    );
   }
 
   searchStoringOrderTanksRepairOutstandingReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
@@ -4360,8 +4360,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-    searchStoringOrderTanksStatusReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
-     let allNodes: StoringOrderTankItem[] = [];
+  searchStoringOrderTanksStatusReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
+    let allNodes: StoringOrderTankItem[] = [];
 
     const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
       return this.apollo.query<any>({
@@ -4424,8 +4424,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-    searchStoringOrderTanksActivityReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
-     let allNodes: StoringOrderTankItem[] = [];
+  searchStoringOrderTanksActivityReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
+    let allNodes: StoringOrderTankItem[] = [];
 
     const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
       return this.apollo.query<any>({
@@ -4489,7 +4489,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   searchStoringOrderTanksEstimateDetailsAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
-  let allNodes: StoringOrderTankItem[] = [];
+    let allNodes: StoringOrderTankItem[] = [];
 
     const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
       return this.apollo.query<any>({
