@@ -1584,11 +1584,14 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         if(page==totalPages){
           if(this.repairItem.owner_enable)
           {
-            this.createRepairEstimateTotalTable_r2(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight)), leftMargin, rightMargin, pageWidth);
+           var buffer=0;
+            // this.createRepairEstimateTotalTable_r2(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight)), leftMargin, rightMargin, pageWidth);
+            this.createRepairEstimateTotalTable_r4(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight+buffer)), leftMargin, rightMargin, pageWidth);
           }
           else
           {
-            this.createRepairEstimateTotalTable_r3(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight)), leftMargin, rightMargin, pageWidth);
+            var buffer=-5;
+            this.createRepairEstimateTotalTable_r3(pdf, (pageHeight - (offhireCodeHeight+totalCostTableHeight+buffer)), leftMargin, rightMargin, pageWidth);
           }
         }
       }// Add Second Page, Add For Loop
@@ -2215,7 +2218,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
      PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
     }
 
-     createRepairEstimateTotalTable_r3(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
+    createRepairEstimateTotalTable_r3(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
     {
 
       const grayColor=255;
@@ -2265,7 +2268,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*5), minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2), minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth:cellWPerUnit, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*5), minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
@@ -2279,47 +2282,47 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
     const rows: any[][] = [];
     const fontStyle='normal';
-    const fontSz = 7;
-rows.push([
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.translatedLangText.LABOUR, styles: { halign: 'center', fontStyle: fontStyle } },
-  { content: this.getLabourRate(), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalLabourHour(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalLabourCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalLabourHour(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalLabourCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-  
-]);
+    const fontSz = 6.8;
+    rows.push([
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLabourRate(), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      
+    ]);
 
-rows.push([
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.translatedLangText.MATERIAL, styles: { halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalMaterialCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalMaterialCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-  
-]);
+    rows.push([
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.translatedLangText.MATERIAL, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      
+    ]);
 
- rows.push([
-    { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan:4, styles: { halign: 'left', valign:'bottom', fontStyle: 'bold' } },
-    { content: "",colSpan:7, styles: { halign: 'center', fontStyle: fontStyle } },
-  ]);
+    rows.push([
+        { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan:4, styles: { halign: 'left', valign:'bottom', fontStyle: 'bold' } },
+        { content: "",colSpan:7, styles: { halign: 'center', fontStyle: fontStyle } },
+      ]);
 
-  rows.push([
-  // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-  { content: this.getTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-  
-]);
+      rows.push([
+      // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      
+    ]);
 
  if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
       var estTotalCost = Number(this.getTotalCost(false).replace(",","")||0);
@@ -2429,6 +2432,262 @@ rows.push([
       // PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
     }
 
+     createRepairEstimateTotalTable_r4(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
+    {
+
+      const minHeightBodyCell = 5;
+      const vAlign = "bottom";
+      const grayColor=255;
+      const fontSz=6.8;
+       const headers: RowInput[] = [
+      [
+      
+        {
+          content: this.translatedLangText.APPROVED_COST,
+           rowSpan:4,
+          // colSpan:5,
+          styles: { halign: 'left', valign: 'top' }
+        },
+        {
+          content: '',
+          // colSpan:2,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: '',
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.OWNER,
+          colSpan:4,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.LESSEE, // Changed from duplicate MAINTENANCE_DETAILS
+          colSpan:4,
+          styles: { halign: 'center', valign: vAlign }
+        },
+      ],
+      
+    ];
+
+    var cellWPerUnit = (pageWidth-leftMargin-rightMargin)/19;
+      const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*4), minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth:cellWPerUnit, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
+    };
+
+   
+    var totalCellWidth = Object.values(comStyles)
+  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+   
+    const rows: any[][] = [];
+     const fontStyle='normal';
+     const fontStyleBold='bold';
+    rows.push([
+       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.translatedLangText.ITEM, styles: { halign: 'right', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.RATE, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.ESTIMATE_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.APPROVED_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } } ,
+      { content: this.translatedLangText.ESTIMATE_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.APPROVED_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } } ,
+    ]);
+    rows.push([
+       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourHour(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+       { content: this.getOwnerLabourHour(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourHour(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourHour(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+    ]);
+    rows.push([
+       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.translatedLangText.MATERIAL, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalMaterialCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalMaterialCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalMaterialCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalMaterialCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+    ]);
+
+
+     rows.push([
+        { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan:4, styles: { halign: 'left', valign:'bottom', fontStyle: 'bold' } },
+        { content: "",colSpan:10, styles: { halign: 'center', fontStyle: fontStyle } },
+      ]);
+
+      rows.push([
+      // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      
+    ]);
+
+  if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
+        var estOwnerTotalCost = Number(this.getOwnerTotalCost(false).replace(",","")||0);
+        var apvOwnerTotalCost = Number(this.getOwnerTotalCost(true).replace(",","")||0);
+        var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
+        var foreignOwnerNetCostEst = (estOwnerTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estOwnerTotalCost * rate));
+        var foreignOwnerNetCosApv = (apvOwnerTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvOwnerTotalCost * rate));
+
+        var estLesseeTotalCost = Number(this.getLesseeTotalCost(false).replace(",","")||0);
+        var apvLesseeTotalCost = Number(this.getLesseeTotalCost(true).replace(",","")||0);
+         var foreignLesseeNetCostEst = (estLesseeTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estLesseeTotalCost * rate));
+        var foreignLesseeNetCosApv = (apvLesseeTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvLesseeTotalCost * rate));
+      
+        rows.push([
+          { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: foreignOwnerNetCostEst, styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content: foreignOwnerNetCosApv, styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content:foreignLesseeNetCostEst, styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+          { content: foreignLesseeNetCosApv, styles: {  halign: 'center', fontStyle: fontStyle } },
+        ]);
+        rows.push([
+          { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
+        ]);
+        // startY-=3;
+      }
+      else
+      {
+        rows.push([
+          { content: ``, styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
+        ]);
+        rows.push([
+         { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
+        ]);
+      }
+
+     const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+     
+     rows.push([
+        { content: `${surveyorInfo}`, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
+      ]);
+
+   
+    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
+    autoTable(pdf, {
+        head: headers,
+        body: rows,
+        startY: startY,
+        styles: {
+          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+         fontSize: fontSz,
+        },
+        theme: 'grid',
+        margin: { left: leftMargin},
+        headStyles: {
+           fillColor: [grayColor, grayColor, grayColor],
+          textColor: 0,
+          lineWidth: 0.1,
+          fontStyle: 'bold',
+        },
+        columnStyles: comStyles,
+        bodyStyles: {
+        fillColor: [255, 255, 255],
+        lineWidth: 0.1,
+        },
+        // didDrawCell: function (data) {
+        //   const { cell, doc } = data;
+        //   if (!cell) return;
+
+        //   const startX = cell.x;
+        //   const endX = cell.x + cell.width;
+        //   const yTop = cell.y;
+        //   const yBottom = cell.y + cell.height;
+
+        //   doc.setDrawColor(0);   // black
+        //   doc.setLineWidth(0.2); // thin line
+
+        //   // ===== HEADER SECTION =====
+        //   if (data.section === 'head') {
+        //     // Draw top and bottom borders for the header
+        //     // doc.line(startX, yTop, endX, yTop);       // Top line
+        //     doc.line(startX, yBottom, endX, yBottom); // Bottom line
+        //   }
+
+        //   // ===== BODY SECTION =====
+        //   if (data.section === 'body') {
+        //     const lastRowIndex = data.table.body.length - 1;
+        //     // Only draw bottom border for the last row
+        //     if (data.row.index === lastRowIndex) {
+        //       // doc.line(startX, yBottom, endX, yBottom);
+        //     }
+        //   }
+        // },
+      });
+      var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+      tableEndY-=1;
+    //   const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+    //  PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
+    }
+
     getLabourCost(ApprovedValue:boolean=false): string{
        var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
@@ -2526,72 +2785,201 @@ rows.push([
     //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
     // }
 
-    getOwnerLabourCost()
-    {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+    getOwnerLabourCost(ApprovedValue:boolean=false): string{
+       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+       }
+       else 
+       {
+          return '';
+       }
+    
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
     }
 
-    getOwnerLabourHour()
-    {
+    getOwnerLabourHour(ApprovedValue:boolean=false): string{
+
       var labourHour = Number(this.getTotalLabourHour().replace(",",""))-Number(this.repairCost?.total_lessee_hour);
-      return Utility.formatNumberDisplay(labourHour);
+       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(labourHour);
+       }
+       else 
+       {
+          return '';
+       }
+      // return Utility.formatNumberDisplay(labourHour);
     }
 
-    getLesseeLabourCost()
+    getLesseeLabourCost(ApprovedValue:boolean=false): string
     {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
     }
      
-    getLesseeLabourHour()
+    getLesseeLabourHour(ApprovedValue:boolean=false): string
     {
-      return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
-    }
-    getLesseeTotalCost()
-    {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
-    }
-    getLesseeTotalMaterialCost()
-    {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
-    }
-
-    getLesseeMaterialDiscountCost()
-    {
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
-    }
-    getLesseeLabourDiscountCost()
-    {
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
+       }
+       else 
+       {
+          return '';
+       }
+      // return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
     }
 
-    getOwnerMaterialDiscountCost()
+    getLesseeTotalCost(ApprovedValue:boolean=false): string
     {
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+    }
+    getLesseeTotalMaterialCost(ApprovedValue:boolean=false): string
+    {
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
     }
 
-    getOwnerLabourDiscountCost()
+    getLesseeMaterialDiscountCost(ApprovedValue:boolean=false): string
     {
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
+       }
+       else 
+       {
+          return '';
+       }
+      
     }
-     getOwnerTotalCost()
+    getLesseeLabourDiscountCost(ApprovedValue:boolean=false): string
     {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
-    }
-    getOwnerTotalMaterialCost()
-    {
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
+       }
+       else 
+       {
+          return '';
+       }
+      
     }
 
-    getOwnerNetCost()
+    getOwnerMaterialDiscountCost(ApprovedValue:boolean=false): string
+    {
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
+       }
+       else 
+       {
+          return '';
+       }
+      
+    }
+
+    getOwnerLabourDiscountCost(ApprovedValue:boolean=false): string
+    {
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
+       }
+       else 
+       {
+          return '';
+       }
+      
+    }
+     getOwnerTotalCost(ApprovedValue:boolean=false): string
+    {
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      
+    }
+    getOwnerTotalMaterialCost(ApprovedValue:boolean=false): string
+    {
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      
+    }
+
+    getOwnerNetCost(ApprovedValue:boolean=false): string
     {
       var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+       }
+       else 
+       {
+          return '';
+       }
+      
+      
     }
    
-    getLesseeNetCost()
+    getLesseeNetCost(ApprovedValue:boolean=false): string
     {
-       var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+      var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+       }
+       else 
+       {
+          return '';
+       }
+       
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
     }
     
     displayApproveQty(rep: RepairPartItem) {

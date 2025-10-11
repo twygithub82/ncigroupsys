@@ -105,7 +105,7 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
         tariff_cleanings{
           guid
           description
-          
+          cargo
         }
       }
       totalCount

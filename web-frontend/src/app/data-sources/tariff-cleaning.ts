@@ -1,8 +1,8 @@
 import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
+import { catchError, expand, finalize, map, reduce } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CleaningCategoryItem } from './cleaning-category';
 import { CleaningMethodItem } from './cleaning-method';
@@ -199,6 +199,55 @@ export const GET_ALL_TARIFF_CLEANING = gql`
         un_no
         update_by
         update_dt
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_ALL_TARIFF_CLEANING_WITH_CATEGORY = gql`
+  query queryTariffCleaning($where: tariff_cleaningFilterInput, $first: Int) {
+    lastCargo: queryTariffCleaning(where: $where, first: $first) {
+      nodes {
+        alias
+        ban_type_cv
+        cargo
+        class_cv
+        cleaning_category_guid
+        cleaning_method_guid
+        create_by
+        create_dt
+        delete_dt
+        depot_note
+        description
+        flash_point
+        guid
+        hazard_level_cv
+        in_gate_alert
+        nature_cv
+        open_on_gate_cv
+        remarks
+        un_no
+        update_by
+        update_dt
+        cleaning_category{
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
       }
       pageInfo {
         endCursor
@@ -513,6 +562,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
+
   loadItems(where?: any, inputOrder?: any): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
     const order = inputOrder || [{ cargo: "ASC" }];
@@ -542,7 +592,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_ALL_TARIFF_CLEANING,
+        query: GET_ALL_TARIFF_CLEANING_WITH_CATEGORY,
         variables: { where, first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

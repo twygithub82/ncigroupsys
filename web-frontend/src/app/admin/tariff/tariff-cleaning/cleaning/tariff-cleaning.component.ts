@@ -894,13 +894,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.isGeneratingReport=true;
       var order={};
       var where={};
-      this.subs.sink = this.cMethodDS.searchAllCleaningMethods(where, order).subscribe(data => {
+      // this.subs.sink = this.cMethodDS.searchAllCleaningMethods(where, order).subscribe(data => 
+        this.subs.sink = this.tcDS.getAllTariffCleaning(where, 500).subscribe(data =>
+        {
         var Items = data;
   
         var prcList:CleaningPriceList[]=[];
         Items.forEach((item)=>{
           var prc:CleaningPriceList=new CleaningPriceList();
-          prc.Descripton=item.description||'';
+          // prc.Descripton=item.description||'';
+          prc.Descripton=item.cargo||'';
           prc.Unit=this.translatedLangText.PER_TANK;
           prc.Material=Utility.formatNumberDisplay(item.cleaning_category?.cost);
           prcList.push(prc);
