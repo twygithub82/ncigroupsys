@@ -1936,6 +1936,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sotDS.updateLastCargo(newSot).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateLastCargo);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_cleaning(this.sot_guid!);
         });
       }
     });
