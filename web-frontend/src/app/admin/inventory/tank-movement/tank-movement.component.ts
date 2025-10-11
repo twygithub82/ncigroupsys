@@ -292,11 +292,13 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-      this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
+      this.eirStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvListDisplay = data;
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+      const dataDef = data;
+      this.tankStatusCvList = addDefaultSelectOption(dataDef, 'All', 'ALL');
+      this.tankStatusCvList = addDefaultSelectOption(this.tankStatusCvList, '-- Select --');
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
@@ -402,9 +404,12 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     if (this.searchForm!.get('tank_status_cv')?.value) {
-      where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-    }
-    else {
+      if (this.searchForm!.get('tank_status_cv')?.value === 'ALL') {
+        where.tank_status_cv = { in: this.availableProcessStatus };
+      } else {
+        where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+      }
+    } else {
       where.tank_status_cv = { ncontains: 'RELEASED' };
     }
 
@@ -437,7 +442,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
       }
-      
+
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
         igSearch.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
       }

@@ -158,7 +158,8 @@
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                           <mat-select formControlName="tank_status_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of tankStatusCvList; track codeValue) {
-                            @if (codeValue.code_val === '' || availableProcessStatus.includes(codeValue.code_val ?? ''))
+                            @if (codeValue.code_val === '' || codeValue.code_val === 'ALL' ||
+                            availableProcessStatus.includes(codeValue.code_val ?? ''))
                             {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
