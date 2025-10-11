@@ -568,7 +568,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     if (searchFrm!.get('repair_type')?.value) {
       const repTypes = searchFrm!.get('repair_type')?.value;
       if (Array.isArray(repTypes)) {
-        const repairTypes: string[] = repTypes.map(t => t.code_val);
+        const repairTypes: string[] = repTypes.map(t => t);
         where.repair_type = repairTypes;
       }
     }
