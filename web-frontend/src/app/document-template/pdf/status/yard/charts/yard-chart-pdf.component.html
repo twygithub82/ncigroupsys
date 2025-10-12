@@ -36,13 +36,13 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-      <div class="card">
+      <div class="card" style="border: none; border-radius: 0;">
         <div class="header">
           <h2>{{this.translatedLangText.TOP_TEN_CUSTOMER}}</h2>
         </div>
         <div class="body">
           <div style="text-align:center">
-            <apx-chart [series]="columnChartOptions.series!" [chart]="columnChartOptions.chart!"
+            <apx-chart #chartLine [series]="columnChartOptions.series!" [chart]="columnChartOptions.chart!"
               [legend]="columnChartOptions.legend!" [grid]="columnChartOptions.grid!" 
               [title]="columnChartOptions.title!" [xaxis]="columnChartOptions.xaxis!"></apx-chart>
           </div>
@@ -50,13 +50,13 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-      <div class="card">
+      <div class="card" style="border: none; border-radius: 0;">
         <div class="header">
           <h2>{{this.translatedLangText.YARD_STATUS}}</h2>
         </div>
         <div class="body">
           <div style="text-align:center">
-            <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!"
+            <apx-chart  #chartPie [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!"
               [labels]="pieChartOptions.labels!" [title]="pieChartOptions.title!"
               [xaxis]="pieChartOptions.xaxis!" [legend]="pieChartOptions.legend!"></apx-chart>
           </div>

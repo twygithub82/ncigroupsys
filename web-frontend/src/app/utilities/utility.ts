@@ -1022,7 +1022,8 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
 
     // card.style.boxShadow = 'none';
     // card.style.transition = 'none';
-    const imgData1 = await this.convertToImage(card, "jpeg");
+      const imgData1 = await this.convertToImage(card, "jpeg");
+    // const imgData1 = await Utility.convertToImage_html2canvas(card, "jpeg");
    var retval= await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
    return retval;
 
@@ -1069,6 +1070,9 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
   }
 
   static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
+    // this.previewPDF_r1(pdf, fileName);
+    // return;
+    
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
     const html = `
@@ -1079,24 +1083,86 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
                 </body>
               </html>
             `;
-    // const a = document.createElement('a');
-    // a.href = blobUrl;
-    // a.download = `${fileName.replace(/\.pdf$/i, '')}`; // 👈 This sets the filename
-    // a.target = '_blank';
-    // a.click();
-    // Try opening in a new window
-    // const newWindow = window.open(blobUrl, '_blank');
-    // if (!newWindow) {
+    
     pdf.save(fileName);
-    // } else {
-    //   newWindow.document.write(html);
-    //   newWindow.document.close();
-    //   // Cleanup the URL after some time
-    //   setTimeout(() => {
-    //     URL.revokeObjectURL(blobUrl);
-    //   }, 10000); // Increased delay to ensure the PDF loads
-    // }
+    
   }
+
+  static async previewPDF_r1(pdf: jsPDF, fileName: string = 'document.pdf') {
+    try {
+        // Method 1: Direct save (preferred)
+        pdf.save(fileName);
+        
+        // Optional: Add preview window
+        this.openPDFPreview(pdf, fileName);
+        
+    } catch (error) {
+        console.warn('Direct save failed, using fallback:', error);
+        
+        // Method 2: Blob-based download (fallback)
+        await this.downloadPDFBlob(pdf, fileName);
+    }
+}
+
+private static openPDFPreview(pdf: jsPDF, fileName: string) {
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    
+    const html = `
+        <html>
+            <head>
+                <title>${fileName.replace(/\.pdf$/i, '')}</title>
+            </head>
+            <body style="margin:0; height:100vh; overflow:hidden;">
+                <embed 
+                    src="${blobUrl}" 
+                    type="application/pdf" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:none;"
+                />
+            </body>
+        </html>
+    `;
+    
+    const previewWindow = window.open('', '_blank');
+    if (previewWindow) {
+        previewWindow.document.write(html);
+        previewWindow.document.close();
+        
+        // Clean up URL when window closes
+        previewWindow.onbeforeunload = () => {
+            URL.revokeObjectURL(blobUrl);
+        };
+    }
+}
+
+private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void> {
+    return new Promise((resolve) => {
+        try {
+            const pdfBlob = pdf.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.style.display = 'none';
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Clean up
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            resolve();
+            
+        } catch (error) {
+            console.error('Blob download also failed:', error);
+            alert('Download failed. Please check your browser settings.');
+            resolve();
+        }
+    });
+}
 
   static async addHeaderWithCompanyLogo_Portrait(
     pdf: jsPDF,

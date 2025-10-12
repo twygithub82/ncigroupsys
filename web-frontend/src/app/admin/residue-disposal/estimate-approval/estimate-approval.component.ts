@@ -287,7 +287,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_end: [''],
       est_status_cv: [''],
       current_status_cv: [''],
-      tank_status: [['CLEANING']],
+      tank_status: [['CLEANING','STORAGE']],
     });
   }
 

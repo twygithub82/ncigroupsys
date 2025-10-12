@@ -9,12 +9,13 @@
       <div class="row clearfix">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
     
-           <div class="card">
+           <div class="card" style="border: none; border-radius: 0;">
             <div class="body">
               <div  style="display: flex; justify-content: center;">
                 <div style="width: 40vw">
                   <apx-chart #chartLine [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!" [colors]="lineChartOptions.colors!"
-                  [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!"
+                  [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [yaxis]="lineChartOptions.yaxis!" 
+                   [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!"
                   [markers]="lineChartOptions.markers!"  [stroke]="lineChartOptions.stroke!">
                   </apx-chart>
                 </div>
@@ -30,19 +31,20 @@
               </div>
             </div>
           </div> -->
-          <div class="card1">
+          <div class="card1" style="border: none; border-radius: 0;">
             <div class="body">
               <div  style="display: flex; justify-content: center;">
               <!-- <div style="width: 40vw"> -->
                 <div>
-                <apx-chart [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!"
-                [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!" >
+                <apx-chart #chartLine [series]="lineChartOptions.series!" [chart]="lineChartOptions.chart!"
+                [grid]="lineChartOptions.grid!" [xaxis]="lineChartOptions.xaxis!" [yaxis]="lineChartOptions.yaxis!" 
+                [title]="lineChartOptions.title!" [legend]="lineChartOptions.legend!" >
               </apx-chart>
               </div>
             </div>
             </div>
           </div>
-          <div class="card">
+          <div class="card" style="border: none; border-radius: 0;">
             <div class="body">
               <div  style="display: flex; justify-content: center;">
               <div #chartPie style="width: 40vw">

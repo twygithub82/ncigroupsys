@@ -46,6 +46,7 @@ import {
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts'
 import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import { sum } from 'd3';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -908,17 +909,25 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           5: { halign: 'center', cellWidth: 30, minCellHeight: minHeightBodyCell },
         };
         idx = 0;
+        var sumInGate :number =0;
+        var sumOutGate :number =0;
+        var sumOpenBal:number =0;
+        var sumCloseBal:number =0;
         const subData: any[][] = [];
         for (let n = 0; n < (this.report_inventory[0].opening_balance?.length || 0); n++) {
           //let startY = lastTableFinalY + 15; // Start Y position for the current table
           let itm = this.report_inventory[0].opening_balance?.[n];
+          sumInGate+=itm?.in_count || 0;
+          sumOutGate+=itm?.out_count || 0;
+          sumOpenBal+=itm?.open_balance || 0;
+          sumCloseBal+=this.displayClosingBalanceForYard(itm)||0;
           subData.push([
             (++idx).toString(), this.DisplayYard(String(itm!.yard!)) || "", itm!.open_balance || "0",
             itm!.in_count || "0", itm!.out_count || "0", this.displayClosingBalanceForYard(itm) || "0"
           ]);
         }
-        subData.push([this.translatedLangText.TOTAL, "", this.displayOpeningBalance(), this.displayTotalInGate(),
-        this.displayTotalOutGate(), this.displayClosingBalance()]);
+        subData.push([this.translatedLangText.TOTAL, "", sumOpenBal, sumInGate,
+        sumOutGate, sumCloseBal]);
         startY=startPostY;  
         autoTable(pdf, {
           head: subHeaders,
@@ -1186,10 +1195,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
       const card = cardElements[0];
 
-      const canvas = await html2canvas(card, { scale: 1.5 });
-      let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
-      const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPG', leftMargin , startY, chartContentWidth, imgHeight);
+      startY= await Utility.DrawCardForImageAtCenterPage(pdf, card, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+      // const canvas = await html2canvas(card, { scale: 1.5 });
+      // let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
+      // const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+      // pdf.addImage(imgData, 'JPG', leftMargin , startY, chartContentWidth, imgHeight);
     }
 
 
@@ -1821,10 +1831,10 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '30%',
+          columnWidth: '5%',
           borderRadius: 3,
           dataLabels: {
-            position: 'top', // top, center, bottom
+            position: 'top',
           },
         },
       },
@@ -1865,11 +1875,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         },
         labels: {
           formatter: function (val: number) {
-            return Number.isInteger(val) ? val.toString() : '';
+            return Math.round(val).toString();
           },
         },
         forceNiceScale: true,
-        tickAmount: 5, // Adjust based on your data range
+        // tickAmount: 5, // Adjust based on your data range
         decimalsInFloat: 0
       },
       grid: {

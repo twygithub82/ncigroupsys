@@ -436,6 +436,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       },
     },
   };
+  tickAmount: number=10;
 
   constructor(
     public dialogRef: MatDialogRef<RevenueYearlySalesReportDetailsPdfComponent>,
@@ -729,8 +730,9 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   // @ViewChild('chartLine')chartLine?:ChartComponent;
-  @ViewChild('chartPie', { static: false }) chartPie!: ElementRef;
+  @ViewChild('chartPie') chartPie!: ChartComponent;
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartLine') chartLine!: ChartComponent;
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -1285,27 +1287,59 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       // });
 
     }
-    // this.lineChartData.datasets = ds;
-    // this.lineChartData.labels = catgries;
-    // this.chart?.data != this.lineChartData;
-    // this.chart?.update();
 
-    // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-    // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-    // if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
-    // if(!showGateSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate"].includes(s.name));}
-    // if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
-    // if(!showResidueSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Residue"].includes(s.name));}
-    // if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    // if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
+    const maxValue = Math.max(
+      ...series.flatMap(s => s.data)
+    );
+
+    // 2️⃣ Add +2
+    this.tickAmount = maxValue + 1;
+
+     await this.chartLine.updateOptions({
+        series: [...this.lineChartOptions.series!],   // ✅ keep your line data
+        xaxis: {
+          categories: [...catgries]                   // ✅ new X-axis values
+        },
+        colors: [...this.lineChartOptions.colors],
+        yaxis: {
+          // tickAmount: this.tickAmount,
+          forceNiceScale: true,
+          labels: {
+            formatter: (val: number) => Math.round(val)
+          }
+        }
+      }, true, false);  // second arg: redrawPaths=true, third: animate=true
 
 
-    this.pieChartOptions.labels = prcss;
-    this.pieChartOptions.series2 = prcsValues;
+
+      if(prcss.length==1){
+        prcss =   catgries;
+        prcsValues = series[0].data;
+      }
+
+       this.pieChartOptions.labels = prcss;
+      this.pieChartOptions.series2 = prcsValues;
+
+
+      await this.chartPie.updateOptions({
+        series2: [...this.pieChartOptions.series2!],   // ✅ keep your line data
+        colors: [...this.lineChartOptions.colors],
+        labels: [...this.pieChartOptions.labels]
+      }, true, false);  // second arg: redrawPaths=true, third: animate=true
+
+
+    
+
+  
+    
+
+   
+
+     await new Promise(resolve => setTimeout(resolve, 100)); // wait for re-render
     //this.pieChartOptions.colors=this.colors;
 
 
-    setTimeout(async () => {
+    // setTimeout(async () => {
 
       // this.chartLine.
       startY = lastTableFinalY + 10;
@@ -1330,88 +1364,17 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       }
 
 
-      // if (this.chartCanvas?.nativeElement) {
-      //   pdf.addPage();
-      //    PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-      //   startY=PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-      //   startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-      //   // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-      //   pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      //   // startY = topMargin + 46;
-      //   const canvas = this.chartCanvas.nativeElement;
-      //   const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
-      //   await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
-      // }
-
-      // if (this.chartPie.nativeElement) {
-      //   pdf.addPage();
-      //   // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-      //   PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-      //    startY=PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-      //   startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-        
-      //   pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      //   // startY = topMargin + 46;
-      //   await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
-       
-      // }
+    
 
        await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate,pagePositions);
 
-      // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-      // for (var i = 0; i < cardElements.length; i++) {
-      //   if (i >= 0) {
-      //     pdf.addPage();
-      //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      //     startY=topMargin+20;
-      //   }
-      //   const card1 = cardElements[i];
-      //   await Utility.DrawCardForImageAtCenterPage(pdf,card1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
-      //   //const canvas1 = await html2canvas(card1, { scale: scale });
-      //   //Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
-
-      // }
-
-      // const totalPages = pdf.getNumberOfPages();
-
-
-      // for (const { page, x, y } of pagePositions) {
-      //   pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      //   pdf.setFontSize(8);
-      //   pdf.setPage(page);
-
-      //   const lineBuffer = 13;
-      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      //   if (page > 1) {
-      //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      //   }
-      // }// Add Second Page, Add For Loop
-
-      // pagePositions.forEach(({ page, x, y }) => {
-      //   pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      //   pdf.setFontSize(8);
-      //   pdf.setPage(page);
-      //   var lineBuffer = 13;
-      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-      // });
-
-      //  this.generatingPdfProgress = 100;
-      //pdf.save(fileName);
-      //  this.generatingPdfProgress = 0;
+      
       this.generatingPdfLoadingSubject.next(false);
       Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
-    }, 100);
+    // }, 100);
 
     // this.dialogRef.close();
   }
@@ -1618,7 +1581,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
         },
         foreColor: '#9aa0ac',
       },
-      colors: ['#77B6EA', '#545454'],
+        colors: ["#1f77b4", "#181716ff", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+       "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"],
       dataLabels: {
         enabled: true,
       },
@@ -1627,12 +1591,12 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       },
       series: [
         {
-          name: 'High - 2013',
-          data: [28, 29, 33, 36, 32, 32, 33],
+          name: 'High',
+          data: [28],
         },
         {
-          name: 'Low - 2013',
-          data: [12, 11, 14, 18, 17, 13, 13],
+          name: 'Low',
+          data: [12],
         },
       ],
       title: {
@@ -1656,19 +1620,15 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
         },
       },
       yaxis: {
-        title: {
-          text: 'Temperature',
-        },
-         labels: {
-          style: {
-            colors: ['#9aa0ac'],
-          },
+      
+        labels: {
           formatter: function (val: number) {
-            return val.toFixed(2); // ✅ show 2 decimal places
+            return Number.isInteger(val) ? Math.round(val) : '';
           },
         },
-        min: 5,
-        max: 40,
+        forceNiceScale: true,
+        // tickAmount: this.tickAmount, // Adjust based on your data range
+        decimalsInFloat: 0
       },
       legend: {
         fontSize: '14px',

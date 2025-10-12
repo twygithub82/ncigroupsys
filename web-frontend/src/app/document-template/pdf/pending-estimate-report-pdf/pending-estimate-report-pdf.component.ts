@@ -1135,7 +1135,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
       // const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-      const imgData = await Utility.convertToImage(card, "jpeg");
+      // const imgData = await Utility.convertToImage(card, "jpeg");
+      const imgData = await Utility.convertToImage_html2canvas(card, "jpeg");
       const imgInfo = await Utility.getImageSizeFromBase64(imgData);
       const aspectRatio = imgInfo.width / imgInfo.height;
 

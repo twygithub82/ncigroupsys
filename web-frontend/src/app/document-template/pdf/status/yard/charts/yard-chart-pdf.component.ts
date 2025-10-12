@@ -888,7 +888,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       }
       const card1 = cardElements[i];
 
-      const imgData1=await Utility.convertToImage(card1,"jpeg");
+      // const imgData1=await Utility.convertToImage(card1,"jpeg");
+      const imgData1 = await Utility.convertToImage_html2canvas(card1, "jpeg");
       const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
       const aspectRatio = imgInfo.width / imgInfo.height;
 
