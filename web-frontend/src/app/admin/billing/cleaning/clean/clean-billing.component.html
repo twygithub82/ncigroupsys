@@ -338,7 +338,7 @@
             {{translatedLangText.COST}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-            <span class="mobile-label">{{translatedLangText.COST}}:</span>{{row.total_cost.toFixed(2)}}
+            <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.total_cost)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_no">

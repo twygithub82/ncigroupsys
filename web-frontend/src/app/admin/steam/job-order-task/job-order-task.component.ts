@@ -293,7 +293,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     where.steaming_part = {
-      all: { tariff_steaming_guid: { eq: null } },
+      // all: { tariff_steaming_guid: { eq: null } },
+      all: { create_by: { neq: 'system' } },
       some: { guid: { neq: null } }
     };
 

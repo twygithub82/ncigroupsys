@@ -27,11 +27,13 @@ import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 import * as domtoimage from 'dom-to-image-more';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 export interface DialogData {
   type: string;
   gate_survey_guid: string;
   igsDS: InGateSurveyDS;
   ogsDS: OutGateSurveyDS;
+  sotDS: StoringOrderTankDS;
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   eirPdf?: any;
@@ -211,6 +213,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   type?: string | null;
   igsDS: InGateSurveyDS;
   ogsDS: OutGateSurveyDS;
+  sotDS?: StoringOrderTankDS;
   // igDS: InGateDS;
   cvDS: CodeValuesDS;
   gate_survey_guid?: string | null;
@@ -309,7 +312,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.type = data.type;
     this.igsDS = data.igsDS || new InGateSurveyDS(this.apollo);
     this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
-    // this.igDS = data.igDS || new InGateDS(this.apollo);
+    this.sotDS = data.sotDS || new StoringOrderTankDS(this.apollo);
     this.cvDS = data.cvDS || new CodeValuesDS(this.apollo);
     this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
@@ -2033,20 +2036,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   displayTankPurpose(sot: any) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+    return this.sotDS?.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this)) || '-';
   }
 
   translateLangText() {

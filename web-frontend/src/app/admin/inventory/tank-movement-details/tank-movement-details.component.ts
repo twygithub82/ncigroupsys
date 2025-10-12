@@ -2744,18 +2744,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (!this.isAllowEditLastCargo()) return false;
 
     if (this.sot?.purpose_cleaning) {
-      if (!this.cleaningItem?.[0]?.customer_billing_guid) {
-        return true;
+      if (!(this.cleaningItem?.[0]?.status_cv !== 'COMPLETED' && !this.cleaningItem?.[0]?.customer_billing_guid)) {
+        return false;
       }
     }
 
     if (this.sot?.purpose_steam) {
       const found = this.steamItem?.some(item => item.create_by === 'system' && item.status_cv === 'COMPLETED');
-      if (!found) {
-        return true;
+      if (found) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   canOverwriteCleanStatus() {
