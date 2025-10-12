@@ -1808,7 +1808,6 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       ],
       chart: {
         type: 'bar',
-
         height: 350,
         foreColor: '#9aa0ac',
         toolbar: {
@@ -1816,11 +1815,6 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         },
         dropShadow: {
           enabled: false,
-          color: '#bbb',
-          top: 3,
-          left: 2,
-          blur: 3,
-          opacity: 1,
         }
 
       },
@@ -2011,6 +2005,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       }
 
       this.barChartOptions.xaxis = {
+        tickPlacement: 'between',
         type: 'category',
         categories: categories,
         labels: {
@@ -2040,13 +2035,14 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           },
         },
         forceNiceScale: true,
-        ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
+        // ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
         decimalsInFloat: 0
       }
       this.barChartOptions.plotOptions = {
         bar: {
-          columnWidth: '40%',   // narrower bars → more gap
-          barHeight: '70%',     // only applies if horizontal
+         columnWidth: '8%',  // make bars thinner
+        //  borderRadius: 4,
+            barHeight: '70%',     // only applies if horizontal
           distributed: false,   // keep consistent width
           dataLabels: {
           position: 'top',    // labels on top
