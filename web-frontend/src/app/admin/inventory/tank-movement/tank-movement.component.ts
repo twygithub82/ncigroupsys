@@ -410,7 +410,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
       }
     } else {
-      where.tank_status_cv = { ncontains: 'RELEASED' };
+      const notReleasedStatus = this.availableProcessStatus.filter(s => s !== 'RELEASED');
+      where.tank_status_cv = { in: notReleasedStatus };
     }
 
     if (this.searchForm!.get('purpose')?.value) {
