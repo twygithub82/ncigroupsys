@@ -344,7 +344,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     await this.getCodeValuesData();
     this.report_customer_inventory = this.data.report_inventory;
     this.date = this.data.date;
-    this.onDownloadClick();
+   await this.onDownloadClick();
   }
 
   async getImageBase64(url: string): Promise<string> {
@@ -518,7 +518,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
 
   async onDownloadClick() {
     //this.exportToPDF();
-    this.exportToPDF_r1();
+   await  this.exportToPDF_r1();
   }
 
   downloadFile(blob: Blob, fileName: string) {

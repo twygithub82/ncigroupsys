@@ -755,7 +755,8 @@ lineChartOptions:any;
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
-  @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
+  // @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartLine') chartLine!: ChartComponent;
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -1348,8 +1349,25 @@ lineChartOptions:any;
       // this.chart?.update();
     }
 
+     await this.chartLine.updateOptions({
+        series: [...this.lineChartOptions.series!],   // ✅ keep your line data
+        xaxis: {
+          categories: [...shortCat]                   // ✅ new X-axis values
+        },
+        colors: [...this.lineChartOptions.colors],
+        markers: {
+          size: 3, // ✅ shows a visible dot
+          strokeWidth: 0,
+        },
+       stroke: {
+        curve: 'smooth',
+        width: 2,
+      },
+      }, true, false);  // second arg: redrawPaths=true, third: animate=true
+     await new Promise(resolve => setTimeout(resolve, 100)); // wait for re-render
 
-    setTimeout(async () => {
+
+    // setTimeout(async () => {
 
       startY = lastTableFinalY + 10;
       let chartContentWidth = pageWidth - leftMargin - rightMargin;
@@ -1430,7 +1448,7 @@ lineChartOptions:any;
       Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
-    }, 100);
+    // }, 100);
 
     // this.dialogRef.close();
   }
@@ -2026,6 +2044,23 @@ lineChartOptions:any;
       // this.chart?.data != this.lineChartData;
       // this.chart?.update();
     }
+
+
+    await this.chartLine.updateOptions({
+        series: [...this.lineChartOptions.series!],   // ✅ keep your line data
+        xaxis: {
+          categories: [...catgries]                   // ✅ new X-axis values
+        },
+        colors: [...this.lineChartOptions.colors],
+        yaxis: {
+          // tickAmount: this.tickAmount,
+          forceNiceScale: true,
+          labels: {
+            formatter: (val: number) => Math.round(val)
+          }
+        }
+      }, true, false);  // second arg: redrawPaths=true, third: animate=true
+     await new Promise(resolve => setTimeout(resolve, 100)); // wait for re-render
 
 
 

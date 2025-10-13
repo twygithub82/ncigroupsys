@@ -1587,24 +1587,12 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
   static async convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
     if (!element) throw new Error('Invalid element');
 
-    // 1. Ensure all resources are loaded
-    await this.waitForResources();
+    // await this.waitForResources();
 
-    // 2. Create a clone with proper dimensions
-    const clone = await this.createCloneForConversion(element);
+    // const clone = await this.createCloneForConversion(element);
 
-    // 3. Use html2canvas if available (more reliable)
-    // if (typeof html2canvas === 'function') {
-    //   try {
-    //     return await this.convertWithHtml2Canvas(clone, type);
-    //   } catch (error) {
-    //     console.warn('html2canvas failed, falling back to dom-to-image', error);
-    //   }
-    // }
-
-    // 4. Fallback to dom-to-image with proper sizing
-    // return await this.convertWithDomToImage(clone, type);
-    return await this.convertToImage_html2canvas(clone, type);
+    // return await this.convertToImage_html2canvas(clone, type);
+    return await this.convertToImage_html2canvas(element, type);
   }
 
   private static async waitForResources(): Promise<void> {

@@ -556,11 +556,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const reportTitle = this.GetReportTitle();
     const headers: RowInput[] = [
       [
-        // { 
-        //   content: this.translatedLangText.S_N, 
-        //   rowSpan: 2, 
-        //   styles: { halign: 'center', valign: vAlign } 
-        // },
+      
         {
           content: this.translatedLangText.TANK_DETAILS,
           colSpan: 7,
@@ -576,16 +572,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           colSpan: 8,
           styles: { halign: 'center', valign: vAlign }
         },
-        // { 
-        //   content: this.translatedLangText.CURRENT_STATUS, 
-        //   rowSpan: 2, 
-        //   styles: { halign: 'center', valign: vAlign }
-        // },
-        // { 
-        //   content: this.translatedLangText.YARD, 
-        //   rowSpan: 2, 
-        //   styles: { halign: 'center', valign: vAlign }
-        // }
+       
       ],
       [
         // Tank Details (7 columns)
@@ -683,8 +670,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
-    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape()*2;
-    lastTableFinalY = startPosY;
+     
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape()*1.5;
+     lastTableFinalY = startPosY;
     var buffer = 30;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_customer_tank_activity.length; n++) {

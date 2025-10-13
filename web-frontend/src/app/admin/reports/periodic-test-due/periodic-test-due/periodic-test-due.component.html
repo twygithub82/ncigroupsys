@@ -6,7 +6,8 @@
         </mat-panel-title>
         <mat-panel-description>
           <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
-            <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()">
+            <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
+             [disabled]=" isGeneratingReport">
               <mat-icon>assessment</mat-icon>
             </button>
           </div>

@@ -214,6 +214,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   noCond: boolean = false;
   dueType: string[] = [];
   periodicTestRes: periodic_test_due_item[] = [];
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -358,7 +359,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   search(report_type: number) {
-
+     this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const periodicTestDueReq: any = {};
@@ -402,7 +403,11 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond) return;
+    if (this.noCond)
+      {
+        this.isGeneratingReport = false;
+         return;
+      }
     this.lastSearchCriteria = periodicTestDueReq;
     this.performSearch(periodicTestDueReq);
   }
@@ -545,7 +550,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
+      this.isGeneratingReport = false;
     });
   }
 
