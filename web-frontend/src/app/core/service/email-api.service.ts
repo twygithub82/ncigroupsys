@@ -20,12 +20,14 @@ export class EmailApiService {
   //   return this.api.post<any>(endpoint, { tankNo, eirGroupGuid, receipient, eirNo });
   // }
 
-  email(tankNo: string, eirGroupGuid: string, receipient: string[], type: string, eirNo?: string): Observable<any> {
+  email(tankNo: string, eirGroupGuid: string, receipient: string[], type: string, cc_addresses: string[] = [], bcc_addresses: string[] = [], eirNo?: string): Observable<any> {
     const params = {
       to_addresses: receipient,
       eir_group_guid: eirGroupGuid,
       tank_no: tankNo,
       type: type,
+      cc_addresses: cc_addresses,
+      bcc_addresses: bcc_addresses,
     }
     return this.http.post<any>(`${this.baseUrl}${emailEndpoints.newEmailJob}`, params, {
       headers: this.defaultHeaders,
