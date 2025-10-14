@@ -233,6 +233,10 @@ export const GET_OUT_GATE_BY_ID = gql`
               code
               name
               guid
+              email
+              cc_contact_person(where: { delete_dt: { eq: null } }) {
+                email
+              }
             }
           }
           release_order_sot(where: { guid: { eq: $roSotGuid }, status_cv: { eq: "ACCEPTED" } }) {

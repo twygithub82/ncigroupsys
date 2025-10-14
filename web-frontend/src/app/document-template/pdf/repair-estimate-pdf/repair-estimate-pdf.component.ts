@@ -2269,8 +2269,8 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*5), minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth:cellWPerUnit, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*5), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth:(cellWPerUnit*2), minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*4), minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
@@ -2315,18 +2315,18 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       rows.push([
       // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getDiscountAmount(), styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
       
     ]);
 
  if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var estTotalCost = Number(this.getTotalCost(false).replace(",","")||0);
-      var apvTotalCost = Number(this.getTotalCost(true).replace(",","")||0);
+      var estTotalCost = Number(this.getNetCost(false).replace(",","")||0);
+      var apvTotalCost = Number(this.getNetCost(true).replace(",","")||0);
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCostEst = (estTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estTotalCost * rate));
       var foreignNetCosApv = (apvTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvTotalCost * rate));
@@ -2474,16 +2474,16 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
     var cellWPerUnit = (pageWidth-leftMargin-rightMargin)/19;
       const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*4), minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*3), minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth:cellWPerUnit, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth:(cellWPerUnit), minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
     };
 
@@ -2540,26 +2540,26 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeTotalCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeTotalCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerDiscountAmount(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerDiscountAmount(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+       { content: this.getLesseeDiscountAmount(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeDiscountAmount(true), styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
       
     ]);
 
   if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-        var estOwnerTotalCost = Number(this.getOwnerTotalCost(false).replace(",","")||0);
-        var apvOwnerTotalCost = Number(this.getOwnerTotalCost(true).replace(",","")||0);
+        var estOwnerTotalCost = Number(this.getOwnerNetCost(false).replace(",","")||0);
+        var apvOwnerTotalCost = Number(this.getOwnerNetCost(true).replace(",","")||0);
         var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
         var foreignOwnerNetCostEst = (estOwnerTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estOwnerTotalCost * rate));
         var foreignOwnerNetCosApv = (apvOwnerTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvOwnerTotalCost * rate));
 
-        var estLesseeTotalCost = Number(this.getLesseeTotalCost(false).replace(",","")||0);
-        var apvLesseeTotalCost = Number(this.getLesseeTotalCost(true).replace(",","")||0);
+        var estLesseeTotalCost = Number(this.getLesseeNetCost(false).replace(",","")||0);
+        var apvLesseeTotalCost = Number(this.getLesseeNetCost(true).replace(",","")||0);
          var foreignLesseeNetCostEst = (estLesseeTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estLesseeTotalCost * rate));
         var foreignLesseeNetCosApv = (apvLesseeTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvLesseeTotalCost * rate));
       
@@ -2739,10 +2739,10 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       return this.repairItem?.material_cost_discount;
     }
 
-    getNetCost(): string{
-      var netCost = Number(this.getTotalCost().replace(",",""))+Number(this.getMaterialDiscountCost().replace(",",""))+Number(this.getLabourDiscountCost().replace(",",""));
-      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-    }
+    // getNetCost(): string{
+    //   var netCost = Number(this.getTotalCost().replace(",",""))+Number(this.getMaterialDiscountCost().replace(",",""))+Number(this.getLabourDiscountCost().replace(",",""));
+    //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+    // }
 
     getMaterialDiscountCost(): string{
       return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_cost))}` ;
@@ -2768,6 +2768,24 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
     //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
     // }
 
+     getNetCost(ApprovedValue:boolean=false): string{
+       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_cost));
+       }
+       else 
+       {
+          return '';
+       }
+      
+    }
+
+    getDiscountAmount(): string{
+      var totalDiscount = Number(this.repairCost?.discount_labour_cost)+Number(this.repairCost?.discount_mat_cost);
+
+       return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+    }
      getTotalCost(ApprovedValue:boolean=false): string{
        var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
@@ -2784,6 +2802,22 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
     // getTotalCost(): string{
     //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
     // }
+
+     getOwnerDiscountAmount(ApprovedValue:boolean=false): string{
+      var totalDiscount = Number(this.repairCost?.discount_labour_owner_cost)+Number(this.repairCost?.discount_mat_owner_cost);
+
+       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+       }
+       else
+       {
+          return '';
+       }
+
+      //  return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+    }
 
     getOwnerLabourCost(ApprovedValue:boolean=false): string{
        var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
@@ -2828,6 +2862,18 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
     }
      
+    getLesseeDiscountAmount(ApprovedValue:boolean=false): string{
+      var totalDiscount = Number(this.repairCost?.discount_labour_lessee_cost)+Number(this.repairCost?.discount_mat_lessee_cost);
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+       }
+       else
+       {
+          return '';
+       }
+    }
     getLesseeLabourHour(ApprovedValue:boolean=false): string
     {
       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
@@ -2847,7 +2893,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
        {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_lessee_cost));
        }
        else 
        {
@@ -2874,7 +2920,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
        {
-          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
+          return `- ${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
        }
        else 
        {
@@ -2894,6 +2940,24 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
           return '';
        }
       
+    }
+
+
+     getLesseeNetCost(ApprovedValue:boolean=false): string
+    {
+      var netCost =this.repairCost?.net_lessee_cost;
+      // /var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
+      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
+       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
+       {
+        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+       }
+       else 
+       {
+          return '';
+       }
+       
+      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
     }
 
     getOwnerMaterialDiscountCost(ApprovedValue:boolean=false): string
@@ -2941,7 +3005,9 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
        {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
+        //  var discMaterialCost = Number(this.repairCost?.total_owner_mat_cost) - Number(this.repairCost?.discount_mat_owner_cost);
+        //  return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(discMaterialCost));
+         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
        }
        else 
        {
@@ -2952,7 +3018,8 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
     getOwnerNetCost(ApprovedValue:boolean=false): string
     {
-      var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
+      var netCost =this.repairCost?.net_owner_cost;
+      // var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
        if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
        {
@@ -2966,21 +3033,7 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       
     }
    
-    getLesseeNetCost(ApprovedValue:boolean=false): string
-    {
-      var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-       }
-       else 
-       {
-          return '';
-       }
-       
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-    }
+   
     
     displayApproveQty(rep: RepairPartItem) {
         if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {

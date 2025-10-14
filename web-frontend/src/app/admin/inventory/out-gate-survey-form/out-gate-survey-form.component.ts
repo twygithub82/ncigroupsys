@@ -62,6 +62,7 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { EmailApiService } from '@core/service/email-api.service';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -307,6 +308,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   last_test_desc?: string = "";
   next_test_desc?: string = "";
 
+  isMobile = false;
+
   // Stepper
   isLinear = false;
 
@@ -359,7 +362,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
-    private modulePackageService: ModulePackageService
+    private modulePackageService: ModulePackageService,
+    private emailApiService: EmailApiService,
   ) {
     super();
     this.translateLangText();
@@ -388,6 +392,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.isImageLoading$ = this.fileManagerService.loading$;
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
@@ -396,6 +405,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
   }
 
   initForm() {
@@ -1595,10 +1608,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         this.ogsDS.addOutGateSurvey(ogs, og).subscribe(result => {
           console.log(result)
           const record = result.data.record
-          if (record?.affected) {
-            this.uploadImages(record.guid[0], true);
-            this.onDownload(record.guid[0]);
-          }
+          this.uploadImages(record.guid[0], false);
+          this.onDownload(record.guid[0]);
         });
       }
     } else {
@@ -1676,13 +1687,27 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         eir_no: this.out_gate?.eir_no,
         ogsDS: this.ogsDS,
         cvDS: this.cvDS,
+        toDownload: !this.isMobile ? true : false,  // if mobile, do not download
+        toUpload: true // in gate survey, to upload for email
       },
       direction: tempDirection
     });
     this.fileManagerService.actionLoadingSubject.next(true);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
-      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      console.log('eir form dialog closed')
+      this.subs.sink = this.emailApiService
+        .email(this.out_gate?.tank?.tank_no!, ogs_guid!, this.getEmails(), 'OUT_GATE')
+        .subscribe({
+          next: (res) => {
+            console.log(res)
+            this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          },
+          error: (error) => {
+            console.log(error)
+            // this.errorDialog();
+          },
+        });
     });
   }
 
@@ -2294,5 +2319,16 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   validateAllControlsRaw(form: UntypedFormGroup): boolean {
     return BusinessLogicUtil.validateAllControlsRaw(form);
+  }
+
+  getEmails() {
+    let emails: string[] = [];
+    if (this.out_gate?.tank?.storing_order?.customer_company?.email) emails.push(this.out_gate?.tank?.storing_order?.customer_company?.email)
+    this.out_gate?.tank?.storing_order?.customer_company?.cc_contact_person?.forEach(cp => {
+      if (cp?.email && !emails.includes(cp.email)) {
+        emails.push(cp.email);
+      }
+    });
+    return emails;
   }
 }
