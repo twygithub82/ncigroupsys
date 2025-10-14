@@ -14,7 +14,7 @@ import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 //import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, lastValueFrom, Observable, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -834,9 +834,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     // Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     const pdfBlob = pdf.output('blob');
     if (this.toUpload) {
-      await this.uploadEir(this.eirDetails?.guid, pdfBlob);
+      await lastValueFrom(this.uploadEir(this.eirDetails?.guid, pdfBlob));
     }
-    
+
     if (this.toDownload) {
       this.downloadFile(pdfBlob, this.getReportTitle());
     }
@@ -2090,38 +2090,39 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   //   this.deleteFile();
   // }
 
-  async uploadEir(group_guid: string, pdfBlob: Blob) {
+  uploadEir(group_guid: string, pdfBlob: Blob) {
     const eirPdfUploadRequest: any = {
       file: pdfBlob,
       metadata: {
-        TableName: 'in_gate_survey',
+        TableName: this.isInGate() ? 'in_gate_survey' : 'out_gate_survey',
         FileType: 'pdf',
         GroupGuid: group_guid,
-        Description: 'IN_GATE_EIR'
+        Description: this.isInGate() ? 'IN_GATE_EIR' : 'OUT_GATE_EIR'
       }
     }
 
-    this.fileManagerService.uploadFiles([eirPdfUploadRequest]).subscribe({
-      next: (response) => {
-        console.log('Files uploaded successfully:', response);
-        if (response?.affected) {
-          this.eirPdf = [
-            {
-              description: 'IN_GATE_EIR',
-              url: response?.url?.[0]
-            }
-          ];
-          // To notify parent component
-          this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
+    return this.fileManagerService.uploadFiles([eirPdfUploadRequest]).pipe(
+      tap({
+        next: (response) => {
+          console.log('Files uploaded successfully:', response);
+          if (response?.affected) {
+            this.eirPdf = [
+              {
+                description: this.isInGate() ? 'IN_GATE_EIR' : 'OUT_GATE_EIR',
+                url: response?.url?.[0]
+              }
+            ];
+            this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
+          }
+        },
+        error: (error) => {
+          console.error('Error uploading files:', error);
+        },
+        complete: () => {
+          console.log('Upload process completed.');
         }
-      },
-      error: (error) => {
-        console.error('Error uploading files:', error);
-      },
-      complete: () => {
-        console.log('Upload process completed.');
-      }
-    });
+      })
+    );
   }
 
   deleteFile() {

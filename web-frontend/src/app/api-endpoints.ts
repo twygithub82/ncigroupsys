@@ -25,7 +25,16 @@ export const uploadEndpoints = {
   uploadFiles: '/api/v2/AzureBlob/UploadFiles',
   getFileUrl: '/api/v2/AzureBlob/GetFileUrl',
   getFileUrlByGroupGuid: '/api/v2/AzureBlob/GetFileUrlByGroupGuid',
-  deleteFile: '/api/v2/AzureBlob/DeleteFile'
+  deleteFile: '/api/v2/AzureBlob/DeleteFile',
+  newEirEmail: '/api/v2/Email/NewEirEmail',
+  newEmailJob: '/api/v2/Email/NewEmailJob',
+  startEirEmailJob: '/api/v2/Email/startEirEmailJob',
+}
+
+export const emailEndpoints = {
+  newEirEmail: '/api/v2/Email/NewEirEmail',
+  newEmailJob: '/api/v2/Email/NewEmailJob',
+  startEirEmailJob: '/api/v2/Email/startEirEmailJob',
 }
 
 export const api_full_endpoints = {

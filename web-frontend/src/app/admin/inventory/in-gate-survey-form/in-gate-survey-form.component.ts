@@ -1617,7 +1617,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
-            this.uploadImages(record.guid[0], true);
+            this.uploadImages(record.guid[0], false);
             // if (!this.isMobile) {
             //   // If mobile, do not download
             //   this.onDownload(record.guid[0], record.residue_guid);
@@ -1751,7 +1751,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.fileManagerService.actionLoadingSubject.next(false);
       // Call email then directly process the next flow instead of waiting
       this.subs.sink = this.emailApiService
-        .email(this.in_gate?.tank?.tank_no!, igs_guid!, this.getEmails())
+        .email(this.in_gate?.tank?.tank_no!, igs_guid!, this.getEmails(), 'IN_GATE')
         .subscribe({
           next: (res) => {
             if (residue_guid && !this.isMobile) {
