@@ -220,9 +220,8 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   isDisabled(): boolean {
-    return false;
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
-    return validStatus.includes(this.steamItem?.status_cv!) || this.isAutoApproveSteaming(this.steamItem);
+    return validStatus.includes(this.steamItem?.status_cv!);
   }
 
   isAutoApproveSteaming(row: any) {
@@ -381,12 +380,11 @@ export class OverwriteSteamingApprovalFormDialogComponent {
 
   onFlatRateChanged(newValue: boolean) {
     var cost = this.getRate();
-    var totalCost = this.parse2Decimal(cost);
+    var totalCost = this.parse2Decimal(this.calculateSteamItemCost(this.spList[0]));
     if (!this.flat_rate) {
       cost *= this.labourHour;
       totalCost = this.data.translatedLangText.BY_HOUR;
     }
-    this.autosteamCost = this.parse2Decimal(cost);
     this.autosteamTotalCost = totalCost;
   }
 
