@@ -220,6 +220,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   isDisabled(): boolean {
+    return false;
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
     return validStatus.includes(this.steamItem?.status_cv!);
   }
