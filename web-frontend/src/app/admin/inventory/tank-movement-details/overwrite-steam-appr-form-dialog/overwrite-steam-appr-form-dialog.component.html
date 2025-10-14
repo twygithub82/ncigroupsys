@@ -359,8 +359,16 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span
-                      class="mobile-label">{{data.translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}<br />
+                    @if(isSteamRepair)
+                    {
+                    <span class="mobile-label">{{data.translatedLangText.COST}}:</span><span
+                      class="">{{this.parse2Decimal(calculateSteamItemCost(row))}}</span>
+                    }
+                    @else
+                    {
+                    <span class="mobile-label">{{data.translatedLangText.COST}}:</span><span
+                      class="">{{autosteamCost}}</span>
+                    }
                   </mat-cell>
                   <mat-footer-cell *matFooterCellDef
                     class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
