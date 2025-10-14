@@ -1518,6 +1518,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
           flat_rate
           rate
           total_hour
+          total_cost
           est_hour
           est_cost
           create_by

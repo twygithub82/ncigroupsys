@@ -87,7 +87,6 @@ export class SteamGO {
     this.total_material_cost = item.total_material_cost;
     this.total_labour_cost = item.total_labour_cost;
     this.overwrite_remarks = item.overwrite_remarks;
-    this.total_cost = item.total_cost;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.create_dt = item.create_dt;
@@ -1018,7 +1017,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
                 : item.customer_billing
           }));
 
-          return resultList.nodes ;
+          return resultList.nodes;
         })
       );
   }
@@ -1405,7 +1404,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     if (!steam) {
       return undefined;
     }
-    
+
     if (BusinessLogicUtil.isAutoApproveSteaming(steam)) {
       const found = steam.steaming_part?.find(x => x.job_order?.steaming_temp?.length)
       if (found) {
