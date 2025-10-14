@@ -1876,29 +1876,22 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       return this.packageLabourItem?.cost || 0;
     }
     else {
-       if (!this.flat_rate) {
-        if(this.IsApproved())
-        {
+      if (!this.flat_rate) {
+        if (this.IsApproved()) {
           return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
         }
-        else
-        {
+        else {
           return this.packageLabourItem?.cost || 0;
         }
-       }
-       else
-       {
-        if(this.IsApproved())
-        {
+      }
+      else {
+        if (this.IsApproved()) {
           return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
-          // return Number( this.steamItem?.steaming_part?[0]?.approve_cost||0);
-
         }
-        else
-        {
-            return Number( this.steamItem?.steaming_part?.[0]?.cost||0);
+        else {
+          return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
         }
-       }
+      }
     }
   }
 

@@ -157,7 +157,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       billing_to: [{ value: getBillingCustomer, disabled: !this.canEdit() }],
       overwrite_remarks: [{ value: this.steamItem.overwrite_remarks, disabled: !this.canEdit() }]
     });
-
+    
     this.labourHour = this.steamItem?.est_hour || 1;
     if (BusinessLogicUtil.isEstimateApproved(this.steamItem!)) {
       this.labourHour = this.steamItem?.total_hour || 1;
@@ -398,7 +398,22 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       return this.packageLabourItem?.cost || 0;
     }
     else {
-      return this.steamItem?.rate || 0;
+      if (!this.flat_rate) {
+        if (this.isApproved()) {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
+        }
+        else {
+          return this.packageLabourItem?.cost || 0;
+        }
+      }
+      else {
+        if (this.isApproved()) {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
+        }
+        else {
+          return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
+        }
+      }
     }
   }
 
