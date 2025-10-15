@@ -597,7 +597,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-        igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value, true) };
+        const eirStartDt = this.searchForm!.get('eir_dt_start')?.value?.clone();
+        const eirEndDt = this.searchForm!.get('eir_dt_end')?.value?.clone();
+        igSome.eir_dt = { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) };
       }
 
       where.in_gate = { some: igSome }
