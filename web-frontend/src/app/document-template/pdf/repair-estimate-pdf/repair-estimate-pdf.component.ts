@@ -234,6 +234,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     TOTAL:'COMMON-FORM.TOTAL',
     LESSEE:'COMMON-FORM.LESSEE',
     PREPARED_BY:'COMMON-FORM.PREPARED-BY',
+    REPAIR_DISCLAIMER:'COMMON-FORM.REPAIR-DISCLAIMER',
     
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
@@ -1340,7 +1341,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     //   this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
     startY = lastTableFinalY + 2;
-    var offhireCodeHeight=65;
+    var offhireCodeHeight=49;
     var totalCostTableHeight=45;
     var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,(offhireCodeHeight+bottomMargin),pagePositions);
     
@@ -1364,7 +1365,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     //  startY = pageHeight - (bottomMargin*2);
 
 
-     await this.addFooterCompanyLogo_Portrait(pdf,pageWidth,pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions);
+     await this.addFooterCompanyLogo_Portrait(pdf,pageWidth,pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions,offhireCodeHeight);
     // pdf.setLineWidth(0.1);
 
     // pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -1553,10 +1554,10 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
 
 
   async addFooterCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, pageHeight:number, topMargin: number, bottomMargin: number,
-      leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[]) {
+      leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[], offhirecoreheight:number=50) {
       var fontSize = 8
       var totalPages = pdf.getNumberOfPages();
-       var offhireCodeHeight=65;
+       var offhireCodeHeight=offhirecoreheight;
        var totalCostTableHeight=44;
        var  dmgCodeRprCodePosY = pageHeight - offhireCodeHeight;
        pdf.setDrawColor(0, 0, 0); // black line color
@@ -1569,9 +1570,13 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         pdf.setPage(page);
   
         const lineBuffer = 13;
+        const repDisclaimerPosBuffer=10;
+        const fontSize=5;
         // pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-         
+        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth+3 - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+        var repDisclaimerPosY =  pdf.internal.pageSize.height - repDisclaimerPosBuffer;
+        var maxW = pageWidth+1 -rightMargin-leftMargin;
+        PDFUtility.addText(pdf, this.translatedLangText.REPAIR_DISCLAIMER, repDisclaimerPosY, leftMargin, fontSize, false,undefined,undefined,maxW);
         this.createOffhireEstimate_r1(pdf, dmgCodeRprCodePosY, leftMargin, rightMargin, pageWidth);
   
   
@@ -1637,17 +1642,18 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
         {
           content: this.translatedLangText.DAMAGE_CODE,
           colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 2 }
+          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
         },
         {
           content: this.translatedLangText.REPAIR_CODE,
           colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 2 }
+          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
         }
 
       ]
     ];
 
+    const gapTopBottom=0.3;
     const cellHeight = 2;
     autoTable(pdf, {
       head: headers,
@@ -1657,9 +1663,10 @@ async exportToPDF_r2_old(fileName: string = 'document.pdf') {
       }),
        startY: startY, // Start table at the current startY value
       styles: {
-        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
-        fontSize: 7,
+        cellPadding: { left: 2, right: 2, top: gapTopBottom, bottom: gapTopBottom }, // Reduce padding
+        fontSize: 6,
         lineWidth: 0 // remove all borders initially
+        
       },
       theme: 'grid',
        margin: { left: leftMargin},

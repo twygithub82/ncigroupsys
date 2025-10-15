@@ -1401,7 +1401,8 @@
     "MANHOUR": "Manhour",
     "UNIT": "Unit",
     "ESTIMATE-TOTAL":"Estimate Total",
-    "APPROVED-TOTAL":"Approved Total"
+    "APPROVED-TOTAL":"Approved Total",
+    "REPAIR-DISCLAIMER":"Note: If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

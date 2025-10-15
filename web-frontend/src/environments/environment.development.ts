@@ -10,6 +10,7 @@ export const environment = {
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagement-app-b6aga4fcfwhbggd7.southeastasia-01.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
+  // graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
   topicSubscribe: '/idms/all/*'
 };
