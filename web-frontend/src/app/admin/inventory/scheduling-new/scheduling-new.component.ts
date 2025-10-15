@@ -507,20 +507,20 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
       if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
         const eirDtStart = this.searchForm?.get('eir_dt_start')?.value?.clone();
-        const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value;
+        const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value?.clone();
         const today = new Date();
 
         // Check if `est_dt_start` is before today and `est_dt_end` is empty
         if (eirDtStart && new Date(eirDtStart) < today && !eirDtEnd) {
           igSearch.eir_dt = {
             gte: Utility.convertDate(eirDtStart),
-            lte: Utility.convertDate(today), // Set end date to today
+            lte: Utility.convertDate(today, true), // Set end date to today
           };
         } else if (eirDtStart || eirDtEnd) {
           // Handle general case where either or both dates are provided
           igSearch.eir_dt = {
             gte: Utility.convertDate(eirDtStart || today),
-            lte: Utility.convertDate(eirDtEnd || today),
+            lte: Utility.convertDate(eirDtEnd || today, true),
           };
         }
       }
