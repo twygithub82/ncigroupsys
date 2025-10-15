@@ -298,7 +298,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.tankStatusCvListDisplay = data;
       const dataDef = data;
       this.tankStatusCvList = addDefaultSelectOption(dataDef, 'All', 'ALL');
-      this.tankStatusCvList = addDefaultSelectOption(this.tankStatusCvList, '-- Select --');
+      // this.tankStatusCvList = addDefaultSelectOption(this.tankStatusCvList, '-- Select --');
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
