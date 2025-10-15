@@ -480,7 +480,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       if (etaStart && etaEnd) {
         sotSome.eta_dt = {
           gte: Utility.convertDate(etaStart),
-          lte: Utility.convertDate(etaEnd)
+          lte: Utility.convertDate(etaEnd, true)
         };
       }
 

@@ -220,6 +220,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   isDisabled(): boolean {
+    return false;
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
     return validStatus.includes(this.steamItem?.status_cv!);
   }
@@ -385,6 +386,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       cost *= this.labourHour;
       totalCost = this.data.translatedLangText.BY_HOUR;
     }
+    this.autosteamCost = this.parse2Decimal(this.roundUpCost(cost));
     this.autosteamTotalCost = totalCost;
   }
 
@@ -415,6 +417,10 @@ export class OverwriteSteamingApprovalFormDialogComponent {
         }
       }
     }
+  }
+
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 
   getLabourCost(): number {

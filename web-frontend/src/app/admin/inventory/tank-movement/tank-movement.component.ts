@@ -298,7 +298,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.tankStatusCvListDisplay = data;
       const dataDef = data;
       this.tankStatusCvList = addDefaultSelectOption(dataDef, 'All', 'ALL');
-      this.tankStatusCvList = addDefaultSelectOption(this.tankStatusCvList, '-- Select --');
+      // this.tankStatusCvList = addDefaultSelectOption(this.tankStatusCvList, '-- Select --');
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
@@ -445,7 +445,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       }
 
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-        igSearch.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
+        const eirStartDt = this.searchForm!.get('eir_dt_start')?.value?.clone();
+        const eirEndDt = this.searchForm!.get('eir_dt_end')?.value?.clone();
+        igSearch.eir_dt = { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) };
       }
 
       if (this.searchForm!.get('yard_cv')?.value) {

@@ -494,7 +494,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
         }
 
         if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-          igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value, true) };
+          const eirStartDt = this.searchForm!.get('eir_dt_start')?.value?.clone();
+          const eirEndDt = this.searchForm!.get('eir_dt_end')?.value?.clone();
+          igSome.eir_dt = { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) };
         }
 
         sotSome.in_gate = { some: igSome };
@@ -510,11 +512,14 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('est_dt')?.value) {
-      where.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt')?.value, true) };
+      const estDt = this.searchForm!.get('est_dt')?.value?.clone();
+      where.create_dt = { gte: Utility.convertDate(estDt), lte: Utility.convertDate(estDt, true) };
     }
 
     if (this.searchForm!.get('approval_dt_start')?.value && this.searchForm!.get('approval_dt_end')?.value) {
-      where.approve_dt = { gte: Utility.convertDate(this.searchForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('approval_dt_end')?.value, true) };
+      const appStartDt = this.searchForm!.get('approval_dt_start')?.value?.clone();
+      const appEndDt = this.searchForm!.get('approval_dt_end')?.value?.clone();
+      where.approve_dt = { gte: Utility.convertDate(appStartDt), lte: Utility.convertDate(appEndDt, true) };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);

@@ -547,8 +547,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
+      const eirStartDt = this.searchForm!.value['eir_dt_start']?.clone();
+      const eirEndDt = this.searchForm!.value['eir_dt_end']?.clone();
       if (!where.in_gate) where.in_gate = {};
-      where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
+      where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) } } };
     }
 
     if (this.customerCodeControl?.value) {
@@ -557,9 +559,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
 
     if (this.searchForm!.value['est_dt']) {
+      const estDt = this.searchForm!.value['est_dt']?.clone();
       if (!where.steaming) where.steaming = {};
       if (!where.steaming.some) where.steaming.some = {};
-      where.steaming.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt']), lte: Utility.convertDate(this.searchForm!.value['est_dt'], true) };
+      where.steaming.some.create_dt = { gte: Utility.convertDate(estDt), lte: Utility.convertDate(estDt, true) };
     }
 
     if (this.searchForm!.value['est_status_cv'].length) {

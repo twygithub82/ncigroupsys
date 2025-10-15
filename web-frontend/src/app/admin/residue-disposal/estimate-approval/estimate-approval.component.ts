@@ -287,7 +287,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_end: [''],
       est_status_cv: [''],
       current_status_cv: [''],
-      tank_status: [['CLEANING','STORAGE']],
+      tank_status: [['CLEANING', 'STORAGE']],
     });
   }
 
@@ -554,8 +554,10 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
 
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
+      const eirStartDt = this.searchForm!.value['eir_dt_start']?.clone();
+      const eirEndDt = this.searchForm!.value['eir_dt_end']?.clone();
       if (!where.in_gate) where.in_gate = {};
-      where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
+      where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) } } };
     }
 
     if (this.searchForm!.value['customer_code']) {

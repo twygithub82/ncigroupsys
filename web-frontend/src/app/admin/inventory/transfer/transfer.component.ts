@@ -395,19 +395,19 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
         igSearch.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
       }
       if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
-        const dtStart = this.searchForm!.get('eir_dt_start')?.value;
-        const dtEnd = this.searchForm!.get('eir_dt_end')?.value;
+        const dtStart = this.searchForm!.get('eir_dt_start')?.value?.clone();
+        const dtEnd = this.searchForm!.get('eir_dt_end')?.value?.clone();
         const today = new Date();
 
         if (dtStart && new Date(dtStart) < today && !dtEnd) {
           igSearch.eir_dt = {
             gte: Utility.convertDate(dtStart),
-            lte: Utility.convertDate(today),
+            lte: Utility.convertDate(today, true),
           };
         } else if (dtStart || dtEnd) {
           igSearch.eir_dt = {
             gte: Utility.convertDate(dtStart || today),
-            lte: Utility.convertDate(dtEnd || today),
+            lte: Utility.convertDate(dtEnd || today, true),
           };
         }
       }
