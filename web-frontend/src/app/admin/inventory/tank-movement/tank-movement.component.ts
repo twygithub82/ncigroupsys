@@ -445,7 +445,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       }
 
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-        igSearch.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
+        const eirStartDt = this.searchForm!.get('eir_dt_start')?.value?.clone();
+        const eirEndDt = this.searchForm!.get('eir_dt_end')?.value?.clone();
+        igSearch.eir_dt = { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) };
       }
 
       if (this.searchForm!.get('yard_cv')?.value) {
