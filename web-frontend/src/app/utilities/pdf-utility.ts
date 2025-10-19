@@ -8,38 +8,85 @@ import { CustomerCompanyItem } from "app/data-sources/customer-company";
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
 export class PDFUtility {
-  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
-    bold: boolean = false, fontFamily: string = 'helvetica', wrap: boolean = false, maxWidth: number = 0,
-    underline: boolean = false, textColor: string = '#000000'): number {
-    var crtY = topPos;
-    pdf.saveGraphicsState();
-    const fontStyle = bold ? 'bold' : 'normal';
-    pdf.setTextColor(textColor);
-    if (wrap) {
-      pdf.setFont(fontFamily, fontStyle);
-      pdf.setFontSize(fontSize); // Title font size 
-      pdf.text(content, leftPost, topPos, { maxWidth: maxWidth });
-    }
-    else {
-      pdf.setFont(fontFamily, fontStyle);
-      pdf.setFontSize(fontSize); // Title font size 
-      pdf.text(content, leftPost, topPos);
-    }
+  // static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
+  //   bold: boolean = false, fontFamily: string = 'helvetica', wrap: boolean = false, maxWidth: number = 0,
+  //   underline: boolean = false, textColor: string = '#000000'): number {
+  //   var crtY = topPos;
+  //   pdf.saveGraphicsState();
+  //   const fontStyle = bold ? 'bold' : 'normal';
+  //   pdf.setTextColor(textColor);
+  //   if (wrap) {
+  //     pdf.setFont(fontFamily, fontStyle);
+  //     pdf.setFontSize(fontSize); // Title font size 
+  //     pdf.text(content, leftPost, topPos, { maxWidth: maxWidth });
+  //   }
+  //   else {
+  //     pdf.setFont(fontFamily, fontStyle);
+  //     pdf.setFontSize(fontSize); // Title font size 
+  //     pdf.text(content, leftPost, topPos);
+  //   }
 
-    if (underline) {
-      const textWidth = pdf.getStringUnitWidth(content) * fontSize / pdf.internal.scaleFactor;
-      const underlineY = topPos + 0.8; // Adjust as needed for spacing under text
-      pdf.setLineWidth(0.1);
-      pdf.line(leftPost, underlineY, leftPost + textWidth, underlineY);
-    }
+  //   if (underline) {
+  //     const textWidth = pdf.getStringUnitWidth(content) * fontSize / pdf.internal.scaleFactor;
+  //     const underlineY = topPos + 0.8; // Adjust as needed for spacing under text
+  //     pdf.setLineWidth(0.1);
+  //     pdf.line(leftPost, underlineY, leftPost + textWidth, underlineY);
+  //   }
 
 
-    // pdf.setFont(fontFamily, fontStyle);
-    // pdf.setFontSize(fontSize); // Title font size 
-    // pdf.text(content, leftPost, topPos); // Position it at the top
-    pdf.restoreGraphicsState();
-    return crtY + fontSize * 0.3528; // return next Y (bottom of printed text)
+ 
+  //   pdf.restoreGraphicsState();
+  //   return crtY + fontSize * 0.3528; // return next Y (bottom of printed text)
+  // }
+
+  static addText(
+  pdf: jsPDF,
+  content: string,
+  topPos: number,
+  leftPos: number,
+  fontSize: number,
+  bold: boolean = false,
+  fontFamily: string = 'helvetica',
+  wrap: boolean = false,
+  maxWidth: number = 0,
+  underline: boolean = false,
+  textColor: string = '#000000'
+): number {
+  let crtY = topPos;
+ // pdf.saveGraphicsState();
+
+  const fontStyle = bold ? 'bold' : 'normal';
+  pdf.setFont(fontFamily, fontStyle);
+  pdf.setFontSize(fontSize);
+  pdf.setTextColor(textColor);
+
+  // Handle wrapping
+  let lines: string[] = [content];
+  if (wrap && maxWidth > 0) {
+    lines = pdf.splitTextToSize(content, maxWidth);
   }
+
+  // Print the text line(s)
+  pdf.text(lines, leftPos, crtY);
+
+  // Calculate total text height
+  const lineHeight = fontSize * 0.3528 * 1.2; // 1.2 is line spacing multiplier
+  const totalHeight = lines.length * lineHeight;
+
+  // Handle underline for all lines
+  if (underline) {
+    lines.forEach((line, index) => {
+      const textWidth = pdf.getStringUnitWidth(line) * fontSize / pdf.internal.scaleFactor;
+      const underlineY = crtY + (index * lineHeight) + 0.8;
+      pdf.setLineWidth(0.1);
+      pdf.line(leftPos, underlineY, leftPos + textWidth, underlineY);
+    });
+  }
+
+ // pdf.restoreGraphicsState();
+  return crtY + totalHeight; // Return Y position after printed text
+}
+
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
     topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0,

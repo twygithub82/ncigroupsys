@@ -1403,7 +1403,11 @@
     "ESTIMATE-TOTAL":"Estimate Total",
     "APPROVED-TOTAL":"Approved Total",
     "NOTE":"Note",
-    "REPAIR-DISCLAIMER":"If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards."
+    "REPAIR-DISCLAIMER":"If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards.",
+    "EQUIVALENT":"Equivalent",
+    "AMOUNT":"Amount",
+    "SUMMARY-COST":"Summary Cost"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

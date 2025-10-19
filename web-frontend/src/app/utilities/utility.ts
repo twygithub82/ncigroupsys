@@ -749,8 +749,9 @@ export class Utility {
     return guid ? 'UPDATE' : 'SAVE';
   }
 
-  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
+  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number, bold: boolean = false) {
     pdf.setFontSize(fontSize); // Title font size 
+    pdf.setFont("helvetica", bold ? "bold" : "normal");
     pdf.text(content, leftPost, topPos); // Position it at the top
   }
 
