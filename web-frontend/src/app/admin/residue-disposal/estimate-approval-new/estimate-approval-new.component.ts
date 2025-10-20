@@ -1142,7 +1142,11 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
       this.deList.forEach(data => {
         var residuePart: ResiduePartItem = new ResiduePartItem(data);
-
+        residuePart.approve_cost = Utility.convertNumber(residuePart.approve_cost, 2);
+        residuePart.approve_qty = Utility.convertNumber(residuePart.approve_qty, 0);
+        residuePart.cost = Utility.convertNumber(residuePart.cost, 2);
+        residuePart.quantity = Utility.convertNumber(residuePart.quantity, 0);
+        
         if (typeof residuePart.qty_unit_type_cv == 'object') {
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
@@ -1170,6 +1174,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       updResidueItem.residue_part = [];
       this.deList.forEach(data => {
         var residuePart: ResiduePartItem = new ResiduePartItem(data);
+        residuePart.approve_cost = Utility.convertNumber(residuePart.approve_cost, 2);
+        residuePart.approve_qty = Utility.convertNumber(residuePart.approve_qty, 0);
+        residuePart.cost = Utility.convertNumber(residuePart.cost, 2);
+        residuePart.quantity = Utility.convertNumber(residuePart.quantity, 0);
         if (typeof residuePart.qty_unit_type_cv == 'object') {
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
