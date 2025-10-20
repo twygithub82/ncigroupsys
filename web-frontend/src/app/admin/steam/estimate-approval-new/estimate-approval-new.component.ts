@@ -1011,7 +1011,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         data.labour = Number(data.labour);
         var steamPart: SteamPartItem = new SteamPartItem(data);
         steamPart.action = !data.action ? '' : data.action;
-
+        steamPart.quantity = Utility.convertNumber(steamPart.quantity, 0);
+        steamPart.cost = Utility.convertNumber(steamPart.cost, 2);
+        steamPart.labour = Number(steamPart.labour);
+        steamPart.approve_qty = Utility.convertNumber(steamPart.approve_qty, 0);
+        steamPart.approve_cost = Utility.convertNumber(steamPart.approve_cost, 2);
+        steamPart.approve_labour = Utility.convertNumber(steamPart.approve_labour, 2);
         updSteamItem.steaming_part?.push(steamPart);
 
       });
