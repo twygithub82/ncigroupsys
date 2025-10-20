@@ -1250,15 +1250,15 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     var totalCostTableHeight=45;
     var bufferY=67;
     startY = lastTableFinalY + bufferY+offhireCodeHeight;
-    var bufferHeight=5;
+    var bufferHeight=10;
     var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,bottomMargin,pagePositions,bufferHeight);
     
-    var TotalCostStartY=topMargin+bottomMargin+repairDetailLastRowY+offhireCodeHeight+totalCostTableHeight;
+    // var TotalCostStartY=topMargin+bottomMargin+repairDetailLastRowY+totalCostTableHeight;
 
-    var buffer=0;
-    if((TotalCostStartY+buffer)>=pageHeight)
+    var buffer=pageHeight/3.5;
+    if((repairDetailLastRowY+buffer)>=pageHeight)
     {
-      
+       pdf.addPage();
        const pageCount = pdf.getNumberOfPages();
 
        pagePositions.push({ page: pageCount, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
@@ -1276,6 +1276,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   async AddCustomerInfoTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number)
   {
 
+    const lColor = 0;
     var grayColor=255;
      const contentWidth = pageWidth - leftMargin - rightMargin;
      let minHeightHeaderCol = 3;
@@ -1296,6 +1297,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
     };
 
+    
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [grayColor, grayColor, grayColor], // Background color
@@ -1303,7 +1305,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       fontStyle: "bold", // Valid fontStyle value
       halign: 'center', // Centering header text
       valign: 'middle',
-      lineColor: [255, 255, 255],
+      lineColor: [lColor, lColor, lColor],
        lineWidth: 0.1
     };
 
@@ -1343,8 +1345,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
      var offhireCodeHeight=49;
      var lastTableFinalY =posY;
-      
-    
 
     autoTable(pdf, {
       body: data,
@@ -1355,24 +1355,30 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol,
-        lineWidth:0.1,
-        lineColor: [0, 0, 0], // black
+        // lineWidth:0.1,
+        // lineColor: [lColor, lColor, lColor], // black
       },
        headStyles: headStyles,
       tableWidth: contentWidth,
       columnStyles: {
-        0: { cellWidth: 35,lineWidth: 0.1 },
-        1: { cellWidth: 61,lineWidth: 0.1 },
-        2: { cellWidth: 35,lineWidth: 0.1 },
-        3: { cellWidth: 61,lineWidth: 0.1 }
+        0: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
+        1: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
+        2: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
+        3: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], }
       },
       // headStyles: headStyles, // Custom header styles
       bodyStyles: {
         fillColor: [255, 255, 255],
         halign: 'left', // Left-align content for body by default
         valign: 'middle', // Vertically align content
-        lineWidth:0.1,
+        // lineWidth:0.1,
+        // lineColor: [lColor, lColor, lColor], 
       },
+      //  didDrawCell: function (data) {
+      //   const doc = data.doc;
+      //   doc.setDrawColor(lColor, lColor, lColor);
+      //    doc.setLineWidth(0.1);
+      //   },
       didDrawPage: (data: any) => {
       
         const pageCount = pdf.getNumberOfPages();
@@ -1492,19 +1498,19 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
       return rows;
     };
-
+    const lColor = 230;
     const vAlign = "bottom";
     const headers: RowInput[] = [
       [
         {
           content: this.translatedLangText.DAMAGE_CODE,
           colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
+          styles: { fontSize: 9, halign: 'left', valign: vAlign,lineColor:lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
         },
         {
           content: this.translatedLangText.REPAIR_CODE,
           colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
+          styles: { fontSize: 9, halign: 'left', valign: vAlign, lineColor: lColor,fillColor: [255, 255, 255],  lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
         }
 
       ]
@@ -1566,20 +1572,22 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       didDrawCell: function (data) {
         const lineWidth = 0;
         const doc = data.doc;
+        doc.setDrawColor(lColor, lColor, lColor);
+         doc.setLineWidth(0.1);
         const isLastRow = data.row.index === data.table.body.length - 1;
 
         if (data.column.index === 0 || data.column.index === 3) {
-          doc.setLineWidth(lineWidth);
+         
           doc.line(data.cell.x, data.cell.y, data.cell.x, data.cell.y + data.cell.height); // left line
 
         }
         else if (data.column.index === 5) {
-          doc.setLineWidth(lineWidth);
+         
           doc.line(data.cell.x + data.cell.width, data.cell.y, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // right line
         }
 
         if (isLastRow) {
-           doc.setLineWidth(lineWidth);
+         
           doc.line(
             data.cell.x,
             data.cell.y + data.cell.height,
@@ -1712,8 +1720,9 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
+        var groupName = rep.group_name_cv.replaceAll('_',' ');
         repData.push([{
-          content: `${rep.group_name_cv}`, colSpan: 11,
+          content: `${groupName}`, colSpan: 11,
           styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz }
         }]);
       }
@@ -1810,6 +1819,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     LastLabelPosY += 5;
     PDFUtility.addText(pdf, remarksValue, LastLabelPosY, leftMargin, fontSz);
    
+    
     return LastLabelPosY;
   }
 
