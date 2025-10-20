@@ -414,11 +414,29 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     if (this.searchForm?.get('trf_dt_start')?.value && this.searchForm?.get('trf_dt_end')?.value) {
       var start_dt = new Date(this.searchForm!.value['trf_dt_start']);
       var end_dt = new Date(this.searchForm!.value['trf_dt_end']);
+      // var cond: any = {
+      //   some: {
+      //     or: [
+      //       { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
+      //       { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
+      //     ]
+      //   }
+      // };
       var cond: any = {
         some: {
-          or: [
-            { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
-            { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
+          and: [
+            {
+              or: [
+                { transfer_in_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } },
+                { transfer_out_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } }
+              ]
+            },
+            {
+              or: [
+                { delete_dt:{eq: null} },
+                { delete_dt:{eq: 0} }
+              ]
+            }
           ]
         }
       };
