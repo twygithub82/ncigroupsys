@@ -767,6 +767,43 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
+          if (itm.residue) {
+            if (itm.residue?.length || 0 > 1) {
+              for (let r = 1; r < itm.residue!.length; r++) {
+                var rs = itm.residue?.[r]!;
+                data.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                  "", "", "", "", rs.estimate_no || "", this.displayDate(rs.create_dt) || "", "", "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+          }
+
+           if (itm.steaming) {
+            if (itm.steaming?.length || 0 > 1) {
+              for (let r = 1; r < itm.steaming!.length; r++) {
+                var st = itm.steaming?.[r]!;
+                data.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                  "", "", "", "", st.estimate_no || "", this.displayDate(st.create_dt) || "", "", "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+          }
 
         }
         pdf.setDrawColor(0, 0, 0); // red line color
@@ -869,6 +906,44 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
                   //Maintenance details
                   "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+          }
+
+           if (itm.residue) {
+            if (itm.residue?.length || 0 > 1) {
+              for (let r = 1; r < itm.residue!.length; r++) {
+                var rs = itm.residue?.[r]!;
+                data.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                  "", "", "", "", rs.estimate_no || "", this.displayDate(rs.create_dt) || "", "", "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+          }
+
+           if (itm.steaming) {
+            if (itm.steaming?.length || 0 > 1) {
+              for (let r = 1; r < itm.steaming!.length; r++) {
+                var st = itm.steaming?.[r]!;
+                data.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                  "", "", "", "", st.estimate_no || "", this.displayDate(st.create_dt) || "", "", "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""

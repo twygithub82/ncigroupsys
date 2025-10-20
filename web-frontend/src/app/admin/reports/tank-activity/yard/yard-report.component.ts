@@ -428,10 +428,16 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+     var cond:any={ some: { eir_dt: { lte: Utility.convertDate(new Date(), true) } } };
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      var cond: any = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } } };
+      cond = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } } };
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      if (queryType == 1) {
+      
+      cond_counter++;
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (queryType == 1) {
         where.in_gate = {};
         where.in_gate = cond;
       }
@@ -439,9 +445,6 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
         where.out_gate = {};
         where.out_gate = cond;
       }
-      cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
 
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };

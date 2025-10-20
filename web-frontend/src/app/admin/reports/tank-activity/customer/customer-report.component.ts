@@ -831,7 +831,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.sotList.map(s => {
 
       if (s) {
-        s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
+        if((s.repair?.length||0)>0) s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
+        if((s.residue?.length||0)>0) s.residue = s.residue?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!) && r.create_by?.toLocaleLowerCase()!="system");
+        if((s.steaming?.length||0)>0) s.steaming = s.steaming?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!)&& r.create_by?.toLocaleLowerCase()!="system");
+
         var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
         let newCust = false;
         if (!repCust.code) {

@@ -3210,6 +3210,24 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
         guid
         tank_no
         so_guid
+        steaming(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         delete_dt
+         estimate_no
+         job_no
+         status_cv
+         create_by
+        }
+        residue(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
+         approve_dt
+         complete_dt
+         delete_dt
+         estimate_no
+         job_no
+         status_cv
+         create_by
+        }
         cleaning (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
          approve_dt
          complete_dt
