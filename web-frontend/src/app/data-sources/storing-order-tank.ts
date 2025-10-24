@@ -1508,7 +1508,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
             delete_dt
           }
         }
-        steaming {
+        steaming(where: { delete_dt: { eq: null } }) {
           estimate_no
           bill_to_guid
           allocate_by
@@ -1614,7 +1614,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
           eir_dt
           delete_dt
         }
-        repair {
+        repair(where: { delete_dt: { eq: null } }) {
           guid
           estimate_no
           job_no
@@ -1765,7 +1765,7 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
           eir_dt
           delete_dt
         }
-        repair {
+        repair(where: { delete_dt: { eq: null } }) {
           guid
           estimate_no
           job_no
@@ -1840,7 +1840,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_QC = gql`
           eir_dt
           delete_dt
         }
-        repair {
+        repair(where: { delete_dt: { eq: null } }) {
           guid
           estimate_no
           job_no

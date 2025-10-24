@@ -90,7 +90,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   ];
 
   customerCodeControl = new UntypedFormControl();
-  categoryControl = new UntypedFormControl();
 
   ccDS: CustomerCompanyDS;
   packSteamDS: PackageSteamingDS;
@@ -264,7 +263,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   initTcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
-      customer_code: [''],
+      customer_code: this.customerCodeControl,
       min_cost: [''],
       max_cost: [''],
       min_labour: [''],

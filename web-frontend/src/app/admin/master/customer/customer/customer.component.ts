@@ -232,7 +232,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   id?: number;
   pcForm?: UntypedFormGroup;
- 
+
 
   constructor(
     private router: Router,
@@ -252,7 +252,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
-     this.tfDepotDS= new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -445,14 +445,16 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
       // where.guid = { eq: customerCode.guid };
-      const customer_company: any = { guid: { eq: customerCode.guid } }
-      where.and.push({ customer_company: customer_company })
+      if (customerCode.guid) {
+        const customer_company: any = { guid: { eq: customerCode.guid } }
+        where.and.push({ customer_company: customer_company })
+      }
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
-       const tankSearch: any = {};
+      const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      const customer_company: any = { def_tank_guid:  { eq: this.pcForm!.get("default_profile")?.value?.guid } }
+      const customer_company: any = { def_tank_guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } }
       where.and.push({ customer_company: customer_company })
 
       // const tankSearch: any = {};
@@ -587,14 +589,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
-
-    
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
-
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = [{ guid: '', profile_name: 'All' }, ...data];
     });
-      
-    
+
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
       // this.unit_typeList = [...data]
@@ -759,6 +757,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       let count = d.data.deleteCustomerCompany;
       if (count > 0) {
         this.handleSaveSuccess(count);
+        this.refresCustomerList();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
@@ -842,16 +841,21 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_DELETE']);
   }
 
-  getDepotProfileName(guid:String):String{
-    var retval:String="-";
+  getDepotProfileName(guid: String): String {
+    var retval: String = "-";
 
     if (this.depotProfileList && this.depotProfileList.length > 0) {
       var depotProfile = this.depotProfileList.find(x => x.guid == guid);
       if (depotProfile) {
-        retval = depotProfile.profile_name??"-";
+        retval = depotProfile.profile_name ?? "-";
       }
     }
     return retval;
+  }
+
+  refresCustomerList() {
+    const existingValue = this.pcForm?.get('customer_code')?.value;
+    this.pcForm?.get('customer_code')?.setValue(existingValue);
   }
 }
 
