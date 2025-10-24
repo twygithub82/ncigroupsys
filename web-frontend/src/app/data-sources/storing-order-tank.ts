@@ -3231,6 +3231,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
         cleaning (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
          approve_dt
          complete_dt
+         status_cv
          delete_dt
         }
         repair (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
