@@ -758,7 +758,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+                  "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -767,24 +767,6 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
-          // if (itm.cleaning) {
-          //   if (itm.cleaning?.length || 0 > 1) {
-          //     for (let r = 1; r < itm.cleaning!.length; r++) {
-          //       var cl = itm.cleaning?.[r]!;
-          //       data.push([
-
-          //         //Tank details
-          //         "", "", "", "", "", "", "",
-
-          //         //Maintenance details
-          //         "", "", "", "", "", this.displayDate(cl.create_dt) || "", "", "",
-
-          //         // Release details
-          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-          //       ]);
-          //     }
-          //   }
-          // }
           if (itm.residue) {
             if (itm.residue?.length || 0 > 1) {
               for (let r = 0; r < itm.residue!.length; r++) {
@@ -795,7 +777,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rs.estimate_no || "", this.displayDate(rs.create_dt) || "", "", "",
+                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -814,7 +796,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", st.estimate_no || "", this.displayDate(st.create_dt) || "", "", "",
+                  "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -923,7 +905,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+                  "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "", this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -931,24 +913,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
               }
             }
           }
-          // if (itm.cleaning) {
-          //   if (itm.cleaning?.length || 0 > 1) {
-          //     for (let r = 1; r < itm.cleaning!.length; r++) {
-          //       var rp = itm.cleaning?.[r]!;
-          //       data.push([
-
-          //         //Tank details
-          //         "", "", "", "", "", "", "",
-
-          //         //Maintenance details
-          //         "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
-
-          //         // Release details
-          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-          //       ]);
-          //     }
-          //   }
-          // }
+        
            if (itm.residue) {
             if (itm.residue?.length || 0 > 1) {
               for (let r = 0; r < itm.residue!.length; r++) {
@@ -959,7 +924,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rs.estimate_no || "", this.displayDate(rs.create_dt) || "", "", "",
+                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -978,7 +943,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", st.estimate_no || "", this.displayDate(st.create_dt) || "", "", "",
+                  "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -1275,6 +1240,11 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   }
 
+  DisplayProcessEstimateDate(processItem: any): string {
+    // this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(processItem?.create_dt!)!;
+  }
+
   DisplayEstimateDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
     return Utility.convertEpochToDateStr(sot.repair?.[0]?.create_dt!)!;
@@ -1291,6 +1261,23 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   DisplayApprovalRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
     return `${sot.repair?.[0]?.job_no || ''}`;
+  }
+
+   DisplayProcessApprovalDate(itm: any): string {
+    // this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(itm?.approve_dt!)!;
+
+
+  }
+
+   DisplayProcessAVDate(itm: any): string {
+
+    return Utility.convertEpochToDateStr(itm?.complete_dt!)!;
+  }
+
+  DisplayProcessApprovalRef(itm: any): string {
+    // this.removeDeletedInGateAndOutGate(sot);
+    return `${itm?.job_no || ''}`;
   }
 
   DisplayAVDate(sot: StoringOrderTankItem): string {

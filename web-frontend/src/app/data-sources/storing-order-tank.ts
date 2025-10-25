@@ -3217,6 +3217,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
          estimate_no
          job_no
          status_cv
+         create_dt
          create_by
         }
         residue(where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
@@ -3226,12 +3227,14 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
          estimate_no
          job_no
          status_cv
+         create_dt
          create_by
         }
         cleaning (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
          approve_dt
          complete_dt
          status_cv
+         create_dt
          delete_dt
         }
         repair (where: { or:[{delete_dt: { eq: null }},{delete_dt: { eq: 0 }}]}){
@@ -3240,6 +3243,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
          estimate_no
          job_no
          create_dt
+         create_by
          delete_dt
          status_cv
         }
