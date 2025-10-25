@@ -286,6 +286,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     PENDING_REPAIR_ESTIMATE: 'COMMON-FORM.PENDING-REPAIR-ESTIMATE',
     S_N: 'COMMON-FORM.S_N',
     CODE: 'COMMON-FORM.CODE',
+    CLEAN_IN: 'COMMON-FORM.CLEAN-IN',
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
@@ -802,7 +803,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       this.translatedLangText.CODE, this.translatedLangText.EIR_NO,
       // this.translatedLangText.OWNER, 
       this.translatedLangText.EIR_DATE,
-      this.translatedLangText.CLEAN_BEING, this.translatedLangText.CLEAN_END,
+      this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_END,
       this.translatedLangText.REPAIR_TYPE, this.translatedLangText.DAYS
     ]];
 
@@ -877,7 +878,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       data.push([
         (++idx).toString(), itm.tank_no || "", this.DisplayCustomerCode(itm) || "", this.DisplayEIRNo(itm) || "",
         //this.DisplayOwner(itm) || "", 
-        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "", this.DisplayCleanEnd(itm) || "", 
+        this.DisplayEIRDate(itm) || "", this.DisplayCleanIn(itm) || "", this.DisplayCleanEnd(itm) || "", 
         this.DisplayRepairType(itm) || "", this.DisplayDays(itm) || "0",
       ]);
     }
@@ -955,133 +956,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     this.dialogRef.close();
   }
 
-  async exportToPDF_r3(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 20;
-    const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let tableHeaderHeight = 7.6153;
-    let tableRowHeight = 5.8974;
-
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-
-    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
-
-      const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-      const imgHeight = (canvas.height * contentWidth) / canvas.width;
-
-      if (currentY + imgHeight > maxContentHeight) {
-        let currentY_canvas = 0;
-        let nextPage = false;
-        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
-
-        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-        const pageTHeaderHeight = tableHeaderHeight;
-
-        do {
-          nextPage = false;
-
-          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-            currentY += pageTHeaderHeight;
-            currentY_canvas += tableHeaderHeight_canvas;
-
-            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
-
-            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
-
-            currentY_canvas += cpImgHeight_canvas;
-            currentY += cpImgHeight;
-
-            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-          } else {
-            if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-              pdf.addPage();
-              pageNumber++;
-              this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-              currentY = topMargin;
-            }
-
-            nextPage = (currentY + imgHeight > maxContentHeight);
-            if (!nextPage) {
-              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-              currentY += imgHeight + 5;
-            }
-          }
-
-          if (nextPage) {
-            pdf.addPage();
-            currentY = topMargin;
-            pageNumber++;
-            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            currentY_canvas -= tableHeaderHeight_canvas;
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          } else {
-            currentY += 5;
-          }
-
-        } while (nextPage);
-
-      } else {
-        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-          pdf.addPage();
-          pageNumber++;
-          this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          currentY = topMargin;
-        }
-
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-        currentY += imgHeight + 5;
-      }
-
-      this.generatingPdfProgress += progressValue;
-    }
-
-    const totalPages = pdf.getNumberOfPages();
-
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
+ 
 
   async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
 
@@ -1665,10 +1540,13 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   DisplayCleanDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.allocate_dt)!;
+     return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.allocate_dt)!;
   }
 
-
+DisplayCleanIn(sot: StoringOrderTankItem) {
+    var cln_dt: number = sot.cleaning?.[0]?.approve_dt || sot.cleaning?.[0]?.create_dt || 0;
+    return Utility.convertEpochToDateStr(cln_dt);
+  }
 
   DisplayRepairInDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
