@@ -767,9 +767,27 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
+          // if (itm.cleaning) {
+          //   if (itm.cleaning?.length || 0 > 1) {
+          //     for (let r = 1; r < itm.cleaning!.length; r++) {
+          //       var cl = itm.cleaning?.[r]!;
+          //       data.push([
+
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
+
+          //         //Maintenance details
+          //         "", "", "", "", "", this.displayDate(cl.create_dt) || "", "", "",
+
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
           if (itm.residue) {
             if (itm.residue?.length || 0 > 1) {
-              for (let r = 1; r < itm.residue!.length; r++) {
+              for (let r = 0; r < itm.residue!.length; r++) {
                 var rs = itm.residue?.[r]!;
                 data.push([
 
@@ -788,7 +806,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
            if (itm.steaming) {
             if (itm.steaming?.length || 0 > 1) {
-              for (let r = 1; r < itm.steaming!.length; r++) {
+              for (let r = 0; r < itm.steaming!.length; r++) {
                 var st = itm.steaming?.[r]!;
                 data.push([
 
@@ -913,10 +931,27 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
               }
             }
           }
+          // if (itm.cleaning) {
+          //   if (itm.cleaning?.length || 0 > 1) {
+          //     for (let r = 1; r < itm.cleaning!.length; r++) {
+          //       var rp = itm.cleaning?.[r]!;
+          //       data.push([
 
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
+
+          //         //Maintenance details
+          //         "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
            if (itm.residue) {
             if (itm.residue?.length || 0 > 1) {
-              for (let r = 1; r < itm.residue!.length; r++) {
+              for (let r = 0; r < itm.residue!.length; r++) {
                 var rs = itm.residue?.[r]!;
                 data.push([
 
@@ -935,7 +970,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
            if (itm.steaming) {
             if (itm.steaming?.length || 0 > 1) {
-              for (let r = 1; r < itm.steaming!.length; r++) {
+              for (let r = 0; r < itm.steaming!.length; r++) {
                 var st = itm.steaming?.[r]!;
                 data.push([
 
