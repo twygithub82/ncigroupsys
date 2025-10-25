@@ -831,7 +831,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.sotList.map(s => {
 
       if (s) {
-        if((s.cleaning?.length||0)>0) s.cleaning = s.cleaning?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
+        // if((s.cleaning?.length||0)>0) s.cleaning = s.cleaning?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
         if((s.repair?.length||0)>0) s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
         if((s.residue?.length||0)>0) s.residue = s.residue?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!) && r.create_by?.toLocaleLowerCase()!="system");
         if((s.steaming?.length||0)>0) s.steaming = s.steaming?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!)&& r.create_by?.toLocaleLowerCase()!="system");
