@@ -658,6 +658,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
         this.packageLabourItem = data[0];
+        this.calculateCost();
+        this.calculateCostEst();
       }
     });
   }
