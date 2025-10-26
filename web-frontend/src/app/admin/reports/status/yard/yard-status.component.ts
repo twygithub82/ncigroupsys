@@ -900,8 +900,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
             case "STORAGE":
               yard.noTank_storage! += 1;
               break;
-            case "IN_SURVEY":
+             case "IN_SURVEY":
               yard.noTank_in_survey! += 1;
+              break;
+            case "OUT_SURVEY":
+              yard.noTank_out_survey! += 1;
               break;
             case "RO_GENERATED":
               yard.noTank_withRO! += 1;
@@ -1055,24 +1058,48 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           yard.storing_order_tank = [];
           newYard = true;
         }
-        switch (s.tank_status_cv) {
-          case "STEAM":
-            yard.noTank_steam! += 1;
-            break;
-          case "OFFHIRE":
-          case "REPAIR":
-            yard.noTank_repair! += 1;
-            break;
-          case "CLEANING":
-            yard.noTank_clean! += 1;
-            break;
-          case "STORAGE":
-            yard.noTank_storage! += 1;
-            break;
-          case "IN_SURVEY":
-            yard.noTank_in_survey! += 1;
-            break;
-        }
+         switch (s.tank_status_cv) {
+            case "STEAM":
+              yard.noTank_steam! += 1;
+              break;
+            case "OFFHIRE":
+            case "REPAIR":
+              yard.noTank_repair! += 1;
+              break;
+            case "CLEANING":
+              yard.noTank_clean! += 1;
+              break;
+            case "STORAGE":
+              yard.noTank_storage! += 1;
+              break;
+            case "IN_SURVEY":
+              yard.noTank_in_survey! += 1;
+              break;
+            case "OUT_SURVEY":
+              yard.noTank_out_survey! += 1;
+              break;
+            case "RO_GENERATED":
+              yard.noTank_withRO! += 1;
+              break;
+         }
+        // switch (s.tank_status_cv) {
+        //   case "STEAM":
+        //     yard.noTank_steam! += 1;
+        //     break;
+        //   case "OFFHIRE":
+        //   case "REPAIR":
+        //     yard.noTank_repair! += 1;
+        //     break;
+        //   case "CLEANING":
+        //     yard.noTank_clean! += 1;
+        //     break;
+        //   case "STORAGE":
+        //     yard.noTank_storage! += 1;
+        //     break;
+        //   case "IN_SURVEY":
+        //     yard.noTank_in_survey! += 1;
+        //     break;
+        // }
         yard.storing_order_tank?.push(s);
         if (newYard) repCust.yards?.push(yard);
         if (newCust) repStatus.push(repCust);

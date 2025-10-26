@@ -109,6 +109,7 @@ export class report_status_yard{
     noTank_storage?:number=0;
     noTank_steam?:number=0;
     noTank_in_survey?:number=0;
+    noTank_out_survey?:number=0;
     noTank_pending?:number=0;
     noTank_withRO?:number=0;
     storing_order_tank?:StoringOrderTankItem[];

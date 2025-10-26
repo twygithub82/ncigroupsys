@@ -935,7 +935,9 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
           (++idx).toString(), itm.code || "", this.displayLocation(yard) || "",
           yard.noTank_steam || "0", yard.noTank_clean || "0", yard.noTank_repair || "0",
           yard.noTank_storage || "0", yard.noTank_pending || "0",
-          yard.noTank_withRO || "0", this.displayInYardTotal(yard) || "0"
+          yard.noTank_withRO || "0", 
+          this.displaySubTotal(yard)||"0"
+          // this.displayInYardTotal(yard) || "0"
 
         ]);
       });
@@ -1230,6 +1232,14 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
 
   }
 
+    displaySubTotal(yard: report_status_yard): number {
+    var total = 0;
+
+    total = (yard.noTank_storage || 0) + (yard.noTank_clean || 0) + (yard.noTank_steam || 0) + (yard.noTank_repair || 0) + (yard.noTank_withRO || 0);
+    return total;
+
+  }
+
   ResetIndex() {
     this.index = 0;
   }
@@ -1293,7 +1303,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     this.reportStatus.forEach(r => {
 
       r.yards?.forEach(y => {
-        retval += (y.noTank_repair || 0) + (y.noTank_storage || 0) + (y.noTank_clean || 0) + (y.noTank_steam || 0);
+        retval += (y.noTank_repair || 0) + (y.noTank_storage || 0) + (y.noTank_clean || 0) + (y.noTank_steam || 0)+(y.noTank_withRO || 0);
       })
 
     });
