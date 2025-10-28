@@ -949,13 +949,13 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     data.push([
       this.translatedLangText.AVERAGE, "",
       ...(showGateSurcharge ? [
-        this.repData?.gate_in_inventory?.average_count || '', "",
-        this.repData?.gate_out_inventory?.average_count || '', '', '', ''] : []),
+        this.repData?.gate_in_inventory?.average_count || '0', "",
+        this.repData?.gate_out_inventory?.average_count || '0', '', '', ''] : []),
 
-      ...(showCleanSurcharge ? [this.repData?.cleaning_yearly_inventory?.average_count || '', ''] : []),
-      ...(showRepairSurcharge ? [this.repData?.repair_yearly_inventory?.average_count || '', ''] : []),
-      ...(showSteamSurcharge ? [this.repData?.steaming_yearly_inventory?.average_count || '', ''] : []),
-      ...(showResidueSurcharge ? [this.repData?.residue_yearly_inventory?.average_count || '', ''] : [])
+      ...(showCleanSurcharge ? [this.repData?.cleaning_yearly_inventory?.average_count || '0', ''] : []),
+      ...(showRepairSurcharge ? [this.repData?.repair_yearly_inventory?.average_count || '0', ''] : []),
+      ...(showSteamSurcharge ? [this.repData?.steaming_yearly_inventory?.average_count || '0', ''] : []),
+      ...(showResidueSurcharge ? [this.repData?.residue_yearly_inventory?.average_count || '0', ''] : [])
 
     ]);
 

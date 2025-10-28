@@ -555,20 +555,20 @@ export class Utility {
     }
 
     if (input === undefined || input === null || input === '') {
-      return '';
+      return '0.00';
     }
 
     const numericValue = typeof input === 'string' ? parseFloat(input.replace(/,/g, '')) : input;
 
     if (isNaN(numericValue)) {
-      return '';
+      return '0.00';
     }
 
     return new Intl.NumberFormat(locale, {
       style: 'decimal',
       minimumFractionDigits: decimal,
       maximumFractionDigits: decimal,
-    }).format(numericValue);
+    }).format(numericValue)||"0.00";
   }
 
   static booleanToYesNo(input: boolean | undefined): string {

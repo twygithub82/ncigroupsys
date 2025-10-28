@@ -758,7 +758,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp) || "",
+                  // "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp) || "",
+                   "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -777,7 +778,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+                  // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -796,7 +798,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+                  // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -905,7 +908,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "", this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp) || "",
+                  // "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "", this.DisplayProcessApprovalRef(rp), this.DisplayProcessAVDate(rp)|| "",
+                   "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "", this.DisplayProcessApprovalRef(rp),  "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -924,7 +928,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+                  // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -943,7 +948,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                   "", "", "", "", "", "", "",
 
                   //Maintenance details
-                  "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+                  // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), "",
 
                   // Release details
                   "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
@@ -1282,7 +1288,18 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   DisplayAVDate(sot: StoringOrderTankItem): string {
 
-    return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;
+    
+    if(sot.purpose_repair_cv?.trim()!=''){
+       return Utility.convertEpochToDateStr(sot.repair?.[0]?.complete_dt!)!;
+    }
+    else if(sot.purpose_cleaning){
+       return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;
+    }
+    else if(sot.purpose_cleaning){
+      return Utility.convertEpochToDateStr(sot.steaming?.[0]?.complete_dt!)!;
+    }
+    
+    return '';
   }
 
   DisplayYard(sot: StoringOrderTankItem): string {
