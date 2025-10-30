@@ -4343,47 +4343,103 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+
   searchStoringOrderTanksRepairOutstandingReportAll(
-    where: any,
-    order?: any,
-    pageSize: number = 50
-  ): Observable<StoringOrderTankItem[]> {
-    let allNodes: StoringOrderTankItem[] = [];
+  where: any,
+  order?: any,
+  pageSize: number = 50
+): Observable<StoringOrderTankItem[]> {
+  let allNodes: StoringOrderTankItem[] = [];
 
-    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
-      return this.apollo.query<any>({
-        query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
-        variables: { where, order, first: pageSize, after: afterCursor },
-        fetchPolicy: 'no-cache'
-      }).pipe(
-        map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
-        switchMap(sotList => {
-          allNodes = [...allNodes, ...sotList.nodes];
+  const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+    return this.apollo.query<any>({
+      query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
+      variables: { where, order, first: pageSize, after: afterCursor },
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => result?.data?.sotList ?? { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } }),
+      switchMap(sotList => {
+        // ✅ Avoid duplicates based on unique identifier (adjust if needed)
+        const newNodes = sotList.nodes.filter(
+          (node: StoringOrderTankItem) => !allNodes.some(existing => existing.guid === node.guid)
+        );
+        allNodes = [...allNodes, ...newNodes];
 
-          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
-            // Keep fetching next page
-            return fetchPage(sotList.pageInfo.endCursor);
-          } else {
-            // All data fetched
-            return of(allNodes);
-          }
-        })
-      );
-    };
-
-    this.loadingSubject.next(true);
-    return fetchPage().pipe(
-      finalize(() => this.loadingSubject.next(false)),
-      tap(finalList => {
-        this.dataSubject.next(finalList);
-        this.totalCount = finalList.length;
-      }),
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of([]);
+        if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+          // Continue fetching the next page
+          return fetchPage(sotList.pageInfo.endCursor);
+        } else {
+          // ✅ Sort once all data is fetched by customer_company.code
+          allNodes.sort((a, b) => {
+            const codeA = a.tank_no?.toLowerCase() || '';
+            const codeB = b.tank_no?.toLowerCase() || '';
+            return codeA.localeCompare(codeB);
+          });
+          return of(allNodes);
+        }
       })
     );
-  }
+  };
+
+  this.loadingSubject.next(true);
+  return fetchPage().pipe(
+    finalize(() => this.loadingSubject.next(false)),
+    tap(finalList => {
+      this.dataSubject.next(finalList);
+      this.totalCount = finalList.length;
+    }),
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      this.dataSubject.next([]);
+      this.totalCount = 0;
+      return of([]);
+    })
+  );
+}
+
+
+
+  // searchStoringOrderTanksRepairOutstandingReportAll(
+  //   where: any,
+  //   order?: any,
+  //   pageSize: number = 50
+  // ): Observable<StoringOrderTankItem[]> {
+  //   let allNodes: StoringOrderTankItem[] = [];
+
+  //   const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+  //     return this.apollo.query<any>({
+  //       query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
+  //       variables: { where, order, first: pageSize, after: afterCursor },
+  //       fetchPolicy: 'no-cache'
+  //     }).pipe(
+  //       map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+  //       switchMap(sotList => {
+  //         allNodes = [...allNodes, ...sotList.nodes];
+
+  //         if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+  //           // Keep fetching next page
+  //           return fetchPage(sotList.pageInfo.endCursor);
+  //         } else {
+  //           // All data fetched
+  //           return of(allNodes);
+  //         }
+  //       })
+  //     );
+  //   };
+
+  //   this.loadingSubject.next(true);
+  //   return fetchPage().pipe(
+  //     finalize(() => this.loadingSubject.next(false)),
+  //     tap(finalList => {
+  //       this.dataSubject.next(finalList);
+  //       this.totalCount = finalList.length;
+  //     }),
+  //     catchError((error: ApolloError) => {
+  //       console.error('GraphQL Error:', error);
+  //       return of([]);
+  //     })
+  //   );
+  // }
 
   searchStoringOrderTanksInventoryReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);

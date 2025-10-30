@@ -44,6 +44,7 @@ import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { of } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -396,7 +397,16 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
     where.and = [
-      { repair: { any: false } },
+      { or: [
+        { repair: { any: false } },
+        {
+          or:[
+            { repair:{ some:{delete_dt:{neq:null}}}},
+            { repair:{ some:{delete_dt:{neq:0}}}}
+          ]
+        }
+      ] },
+      // { repair: { any: false } },
       { tank_status_cv: { in: ["REPAIR"] } }
     ]
     if (this.searchForm!.get('tank_no')?.value) {
