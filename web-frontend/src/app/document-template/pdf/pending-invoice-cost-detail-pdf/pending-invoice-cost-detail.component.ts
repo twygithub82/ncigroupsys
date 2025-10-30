@@ -1047,7 +1047,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           1: { halign: 'center', valign: 'middle', cellWidth: 23,minCellHeight: minHeightBodyCell },
           2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
           3: { halign: 'left', valign: 'middle', cellWidth: 32,minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-          4: { halign: 'center', valign: 'middle',cellWidth: 14,  minCellHeight: minHeightBodyCell },
+          4: { halign: 'center', valign: 'middle',cellWidth: 14,  minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
           5: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
           6: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
