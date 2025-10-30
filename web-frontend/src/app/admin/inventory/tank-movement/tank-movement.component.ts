@@ -404,14 +404,25 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     if (this.searchForm!.get('tank_status_cv')?.value) {
-      if (this.searchForm!.get('tank_status_cv')?.value === 'ALL') {
+      const statusValue = this.searchForm!.get('tank_status_cv')?.value;
+
+      if (statusValue === 'ALL') {
         where.tank_status_cv = { in: this.availableProcessStatus };
       } else {
-        where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+        where.tank_status_cv = { contains: statusValue };
+      }
+
+      if (this.availableProcessStatus.includes('STORAGE')) {
+        const currentIn = where.tank_status_cv.in || [statusValue];
+        where.tank_status_cv = { in: [...currentIn, 'RO_GENERATED'] };
       }
     } else {
       const notReleasedStatus = this.availableProcessStatus.filter(s => s !== 'RELEASED');
       where.tank_status_cv = { in: notReleasedStatus };
+
+      if (this.availableProcessStatus.includes('STORAGE')) {
+        where.tank_status_cv = { in: [...notReleasedStatus, 'RO_GENERATED'] };
+      }
     }
 
     if (this.searchForm!.get('purpose')?.value) {
