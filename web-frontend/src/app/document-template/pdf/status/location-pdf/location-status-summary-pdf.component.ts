@@ -895,6 +895,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         (n + 1).toString(), itm.code || "", itm.customer || ""
       ]);
 
+      var TotalTankNo=0;
       this.yards.forEach(y => {
         let t = yard_no_tank.find(a => a.key === y.code_val);
 
@@ -911,12 +912,14 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
         // Update the value in yard_no_tank
         t.value += noTank;
+        TotalTankNo+=noTank;
 
         // Push the noTank value to the data array
         data[n].push(noTank);
       });
-      total_tank_no += itm.number_tank || 0;
-      data[n].push(itm.number_tank);
+      total_tank_no += TotalTankNo || 0;
+      data[n].push(TotalTankNo);
+      // data[n].push(itm.number_tank);
 
 
     }
