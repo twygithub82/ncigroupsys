@@ -906,7 +906,8 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
         // Get the number of tanks for the yard
         const yard = itm.yards?.find(a => a.code === y.code_val);
-        const noTank = yard?.storing_order_tank?.length || 0;
+        var tanks = yard?.storing_order_tank?.filter(a => a.tank_status_cv != "IN_SURVEY" && a.tank_status_cv != "OUT_SURVEY") || [];
+        const noTank = tanks?.length || 0;
 
         // Update the value in yard_no_tank
         t.value += noTank;

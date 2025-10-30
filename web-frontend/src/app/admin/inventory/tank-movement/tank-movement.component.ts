@@ -364,11 +364,11 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
 
   constructSearchCriteria() {
     const where: any = {
-      status_cv: { in: ['WAITING', 'ACCEPTED'] },
+      // status_cv: { in: ['WAITING', 'ACCEPTED'] },
       in_gate: {
         some: {
           delete_dt: { eq: null },
-          eir_status_cv: { in: ["PUBLISHED"] }
+          // eir_status_cv: { in: ["PUBLISHED"] }
         }
       }
     };

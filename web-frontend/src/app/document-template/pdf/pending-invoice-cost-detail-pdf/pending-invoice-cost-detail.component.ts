@@ -1053,7 +1053,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
           8: { halign: 'center', valign: 'middle',cellWidth: 20, minCellHeight: minHeightBodyCell },
           9: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          10: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          10: { halign: 'center', valign: 'middle',cellWidth: 12, minCellHeight: minHeightBodyCell },
           11: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
           12: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
           13: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
@@ -1476,16 +1476,16 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   displaySubTotalCost(item: report_billing_item): string {
     var retval : number=0;
 
-    retval += item.gateio_cost ? Number(item.gateio_cost) : 0;
-    retval += item.preins_cost ? Number(item.preins_cost) : 0;
-    retval += item.lolo_cost ? Number(item.lolo_cost) : 0;
-    retval += item.storage_cost ? Number(item.storage_cost) : 0;
-    retval += item.clean_cost ? Number(item.clean_cost) : 0;
+    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "")||0) : 0;
    
-    retval += item.repair_cost ? Number(item.repair_cost) : 0;
+    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "")||0) : 0;
     if (!this.modulePackageService.isStarterPackage()) {
-      retval += item.residue_cost ? Number(item.residue_cost) : 0;
-     retval += item.steam_cost ? Number(item.steam_cost) : 0;
+      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "")||0) : 0;
+     retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "")||0) : 0;
     }
 
     var ret=Utility.formatNumberDisplay(retval || 0);
@@ -1494,18 +1494,19 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   GetTotalCost(item: report_billing_item): number {
     var retval : number=0;
 
-    retval += item.gateio_cost ? Number(item.gateio_cost) : 0;
-    retval += item.preins_cost ? Number(item.preins_cost) : 0;
-    retval += item.lolo_cost ? Number(item.lolo_cost) : 0;
-    retval += item.storage_cost ? Number(item.storage_cost) : 0;
-    retval += item.clean_cost ? Number(item.clean_cost) : 0;
+    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "")||0) : 0;
    
-    retval += item.repair_cost ? Number(item.repair_cost) : 0;
+    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "")||0) : 0;
     if (!this.modulePackageService.isStarterPackage()) {
-      retval += item.residue_cost ? Number(item.residue_cost) : 0;
-     retval += item.steam_cost ? Number(item.steam_cost) : 0;
+      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "")||0) : 0;
+     retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "")||0) : 0;
     }
 
+    
     return retval;
   }
 
