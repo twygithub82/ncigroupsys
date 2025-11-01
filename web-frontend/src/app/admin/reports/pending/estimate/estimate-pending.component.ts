@@ -401,7 +401,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
         { repair: { any: false } },
         {
           or:[
-            { repair:{ all:{status_cv:{nin:["CANCELED","NO_ACTION"]}}}},
+            { repair:{ all:{status_cv:{in:["CANCELED","NO_ACTION"]}}}},
           ]
         }
       ] },
