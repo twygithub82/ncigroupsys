@@ -43,7 +43,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PendingInvoiceCostDetailPdfComponent } from 'app/document-template/pdf/pending-invoice-cost-detail-pdf/pending-invoice-cost-detail.component';
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { BILLING_TANK_STATUS, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -333,7 +333,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     this.isGeneratingReport = true;
     const where: any = {};
 
-    where.and = [];
+    where.and = [
+      {tank_status_cv:{in:BILLING_TANK_STATUS}}
+    ];
 
     const itm: any = { or: [] };
     itm.or.push({
@@ -585,7 +587,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
+          // if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
             rep_bill_item.clean_est_no += 1;
             rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
@@ -688,6 +691,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       //if (loloCost > 0)
       if (item.lift_off || item.lift_on) {
         rep_bill_item.lolo_est_no += 1;
+        rep_bill_item.lolo_sot_guid.push(item.sot_guid!);
       }
 
       rep_bill_item.lolo_cost = Number((Number(rep_bill_item?.lolo_cost || 0) + loloCost)).toFixed(2);
@@ -757,7 +761,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       // let daysDifference: number = Number(this.pdDS.getStorageDays(item.storing_order_tank!, packDepotItm));
       // rep_bill_item.days = String(daysDifference);
 
-      //if (storageCost > 0) 
+      if ((sot.storage_detail?.length ||0)== 0) 
       {
         rep_bill_item.storage_est_no += 1;
       }
@@ -801,9 +805,12 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
             const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
             rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
             var currentEstNo: number = rep_bill_item.repair_est_no;
-            if ((CustomerType == 0 && Number(totalCost.total_lessee_mat_cost || 0) > 0) ||
-              (CustomerType == 1 && Number(totalCost.total_owner_cost || 0) > 0)) {
+            // if ((CustomerType == 0 && Number(totalCost.total_lessee_mat_cost || 0) > 0) ||
+            //   (CustomerType == 1 && Number(totalCost.total_owner_cost || 0) > 0)) 
+            {
               rep_bill_item.repair_est_no += 1;
+
+              rep_bill_item.repair_estimates.push(c.estimate_no||'');
             }
 
             if (newItem && (rep_bill_item.repair_est_no > currentEstNo)) rep_bill_items.push(rep_bill_item);
@@ -836,8 +843,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
-
+          // if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
             let total = 0;
             c.residue_part?.forEach(p => {
 
@@ -879,16 +886,17 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
-            var bProcess = false;
-            var cutoff_dt = Number(Utility.convertDate(this.searchForm!.value['cutoff_dt'], true));
-            if (((c.approve_by == "system" && ["QC_COMPLETED", "COMPLETED"].includes(c.status_cv!)) ||
-              (c.approve_by != "system" && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!))
-            ) && cutoff_dt >= (c.approve_dt || 0)) {
-              bProcess = true;
-            }
+          // if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
+            // var bProcess = false;
+            // var cutoff_dt = Number(Utility.convertDate(this.searchForm!.value['cutoff_dt'], true));
+            // if (((c.approve_by == "system" && ["QC_COMPLETED", "COMPLETED"].includes(c.status_cv!)) ||
+            //   (c.approve_by != "system" && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!))
+            // ) && cutoff_dt >= (c.approve_dt || 0)) {
+            //   bProcess = true;
+            // }
 
-            if (!bProcess) return;
+            // if (!bProcess) return;
 
             let total = 0;
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
@@ -896,7 +904,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
             rep_bill_item.steam_cost = Number(Number(rep_bill_item.steam_cost || 0) + total).toFixed(2);
 
-            if (total > 0) rep_bill_item.steam_est_no += 1;
+            rep_bill_item.steam_est_no += 1;
+            rep_bill_item.steam_estimates.push(c.estimate_no!);
             if (newItem) rep_bill_items.push(rep_bill_item);
           }
 
@@ -1215,16 +1224,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           cutOffDt.setDate(cutOffDt.getDate() + daysDifference + freeStorage - 1);
         }
         total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
-        // itm.currentStorageBilling = new StorageDetailRequest();
-        // itm.currentStorageBilling.start_dt = Utility.convertDate(startDt);
-        // itm.currentStorageBilling.end_dt = Utility.convertDate(cutOffDt);
-        // itm.currentStorageBilling.remaining_free_storage = (remainFreeDays > 0 ? remainFreeDays : 0);
-        // itm.currentStorageBilling.total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * itm.storage_cost);
-        // itm.currentStorageBilling.action = 'NEW';
-        // itm.currentStorageBilling.sot_guid = itm.storing_order_tank?.guid;
-        // itm.currentStorageBilling.state_cv = itm.tank_status_cv == "RELEASED" ? "START_END" : "START";
-        // itm.currentStorageBilling.remarks = '';
-        // itm.currentStorageBilling.guid = '';
+      
       } else {
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
         packDepotItm.storage_cal_cv = itm.storage_cal_cv;

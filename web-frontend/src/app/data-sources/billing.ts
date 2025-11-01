@@ -56,12 +56,19 @@ export class report_billing_item {
   lolo_est_no: number = 0;
   preins_est_no: number = 0;
 
+  repair_estimates:string[]=[];
+  steam_estimates:string[]=[];
+  lolo_sot_guid:string[]=[];
+
   constructor(item: Partial<report_billing_item> = {}) {
     this.job_no = item.job_no;
     this.sot_guid = item.sot_guid;
 
     this.clean_est_no = (item.clean_est_no || 0);
     this.repair_est_no = (item.repair_est_no || 0);
+    this.repair_estimates=item.repair_estimates||[];
+    this.steam_estimates=item.steam_estimates||[];
+    this.lolo_sot_guid=item.lolo_sot_guid||[];
     this.storage_est_no = (item.storage_est_no || 0);
     this.steam_est_no = (item.steam_est_no || 0);
     this.residue_est_no = (item.residue_est_no || 0);

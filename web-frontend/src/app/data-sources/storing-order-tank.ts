@@ -4632,7 +4632,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       }).pipe(
         map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
         switchMap(sotList => {
-          allNodes = [...allNodes, ...sotList.nodes];
+        //    const newNodes = sotList.nodes.filter(
+        //   (node: StoringOrderTankItem) => !allNodes.some(existing => existing.guid === node.guid)
+        // );
+        // allNodes = [...allNodes, ...newNodes];
+           allNodes = [...allNodes, ...sotList.nodes];
 
           if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
             // fetch next page

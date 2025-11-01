@@ -42,7 +42,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { BusinessLogicUtil, invoice_type_mapping } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD, BILLING_ESTIMATE_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -398,18 +398,19 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     // where.status_cv = { in: ['COMPLETED'] }; 
 
     where.or = [
-      {
-        and: [
-          { create_by: { neq: "system" } },
-          { status_cv: { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] } }
-        ]
-      },
-      {
-        and: [
-          { create_by: { eq: "system" } },
-          { status_cv: { in: ['QC_COMPLETED', 'COMPLETED'] } }
-        ]
-      }
+      {status_cv: { in: BILLING_ESTIMATE_STATUS }}
+      // {
+      //   and: [
+      //     { create_by: { neq: "system" } },
+      //     { status_cv: { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] } }
+      //   ]
+      // },
+      // {
+      //   and: [
+      //     { create_by: { eq: "system" } },
+      //     { status_cv: { in: ['QC_COMPLETED', 'COMPLETED'] } }
+      //   ]
+      // }
     ];
 
     where.bill_to_guid = { neq: null };

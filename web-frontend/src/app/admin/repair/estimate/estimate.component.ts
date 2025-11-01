@@ -609,7 +609,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       const soSome: any = {};
 
       if (this.searchForm!.value['customer_code']) {
-        soSome.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+        where.storing_order={customer_company : { code: { contains: this.searchForm!.value['customer_code'].code } }};
       }
     }
 
