@@ -3864,6 +3864,8 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
         tank_status_cv
         cleaning(where: { delete_dt: { eq: null } }) {
           bill_to_guid
+          complete_by
+          complete_dt
           buffer_cost
           cleaning_cost
           delete_dt

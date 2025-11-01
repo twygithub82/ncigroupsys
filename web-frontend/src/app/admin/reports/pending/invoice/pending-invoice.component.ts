@@ -754,7 +754,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item = this.createNewReportBillingItem(sot);
       }
 
-      var storageCost = this.calculateTotalCost([sot]);
+     // var storageCost=this.calculateStorageCostTotal(sot);
+       var storageCost = this.calculateTotalCost([sot]);
       // let packDepotItm: PackageDepotItem = new PackageDepotItem();
       // packDepotItm.storage_cal_cv = item.storage_cal_cv;
 
@@ -802,8 +803,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if (c.status_cv != 'NO_ACTION') 
           if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
-            const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
-            rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
+            const totalCost = this.repDS.calculateCostWithRoundUp(c, c.repair_part!, c.labour_cost);
+            // rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
+             rep_bill_item.repair_cost = Utility.formatNumberDisplay(CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0));
             var currentEstNo: number = rep_bill_item.repair_est_no;
             // if ((CustomerType == 0 && Number(totalCost.total_lessee_mat_cost || 0) > 0) ||
             //   (CustomerType == 1 && Number(totalCost.total_owner_cost || 0) > 0)) 
@@ -1190,7 +1192,18 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     return new Date();
   }
 
+ calculateStorageCostTotal(sot:StoringOrderTankItem)
+ {
+ 
+    var res= sot.billing_sot;
+      let packDepotItm: PackageDepotItem = new PackageDepotItem();
+      packDepotItm.storage_cal_cv = res?.storage_cal_cv;
+      let daysDifference: number = Number(this.pdDS.getStorageDays(res?.storing_order_tank!, packDepotItm));
 
+
+      return  (daysDifference || 0) * (res?.storage_cost || 0) ;
+
+ }
 
   calculateTotalCost(items: StoringOrderTankItem[]) {
     // this.invoiceTotalCostControl.setValue('0.00');

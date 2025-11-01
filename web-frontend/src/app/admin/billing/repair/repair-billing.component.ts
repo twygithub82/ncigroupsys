@@ -43,7 +43,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, BILLING_TANK_STATUS } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, BILLING_TANK_STATUS, BILLING_ESTIMATE_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -589,7 +589,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepairBiling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         const allowedStatuses = (this.searchForm!.get('estimate_status_cv')?.value.length) ? this.searchForm!.get('estimate_status_cv')?.value :
-          ['APPROVED', 'QC_COMPLETED', 'JOB_IN_PROGRESS', 'COMPLETED', 'ASSIGNED', 'PARTIAL_ASSIGNED'];
+         BILLING_ESTIMATE_STATUS;
         this.sotRepList = data.map(d => {
           d.repair = d.repair?.filter(r => allowedStatuses.includes(r.status_cv!))
           if (this.searchForm!.get('invoiced')?.value) {
@@ -1113,7 +1113,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       else {
         res.repair?.forEach(r => {
           let repEst: any = r;
-          let resultTotalCost = this.repDS.calculateCost(r, r.repair_part!, r.labour_cost);
+          let resultTotalCost = this.repDS.calculateCostWithRoundUp(r, r.repair_part!, r.labour_cost);
           repEst.invoiced = (r.customer_billing_guid) ? true : false;
           repEst.net_cost = resultTotalCost.net_lessee_cost;
         });
@@ -1128,7 +1128,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     let r: any = row;
     if (r.type == 1) {
       r.labour_cost
-      let resultTotalCost = this.repDS.calculateCost(r, r.repair_part!, r.labour_cost);
+      let resultTotalCost = this.repDS.calculateCostWithRoundUp(r, r.repair_part!, r.labour_cost);
       r.invoiced = (r.customer_billing_guid) ? true : false;
       r.net_cost = resultTotalCost.net_lessee_cost;
     }
@@ -1143,7 +1143,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         if (data?.length > 0) {
           labour_cost = data[0].cost;
         }
-        let resultTotalCost = this.repDS.calculateCost(r, r.repair_part!, labour_cost);
+        let resultTotalCost = this.repDS.calculateCostWithRoundUp(r, r.repair_part!, labour_cost);
         const hasLesseeInvoice = Number(resultTotalCost.net_lessee_cost!) > 0 && r.customer_billing_guid !== null;
         const hasOwnerInvoice = Number(resultTotalCost.net_owner_cost!) > 0 && r.owner_billing_guid !== null;
 
