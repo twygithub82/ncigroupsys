@@ -406,7 +406,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.searchForm?.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value.code };
+      where.tank_no = { eq: this.searchForm?.get('tank_no')?.value };
       cond_counter++;
     }
 
