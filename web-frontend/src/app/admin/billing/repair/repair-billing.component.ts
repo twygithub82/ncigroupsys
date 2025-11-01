@@ -448,7 +448,11 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
 
     if (this.searchForm!.get('invoiced')?.value) {
-      where.or = [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }];
+      if(!where.and)where.and=[];
+      where.and.push(
+        {or: [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }]}
+      );
+      //where.or = [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }];
     }
 
     if (this.searchForm!.get('inv_no')?.value) {
@@ -498,24 +502,39 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     // where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      where.or = [
-        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-      ];
+      if(!where.and)where.and=[];
+      where.and.push({or : [
+         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+         { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+       ]});
+      // where.or = [
+      //   { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+      //   { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+      // ];
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
 
-      if (!where.or) where.or = [];
-      where.or.push({ storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } });
-      where.or.push(
+      // if (!where.or) where.or = [];
+      if(!where.and)where.and=[];
+      where.and.push({or: [
+        { storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } },
         {
           and: [
             { owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } },
             { repair: { some: { owner_enable: { eq: true } } } }
           ]
         }
-      );
+      ]});
+      // where.or.push({ storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } });
+      // where.or.push(
+      //   {
+      //     and: [
+      //       { owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } },
+      //       { repair: { some: { owner_enable: { eq: true } } } }
+      //     ]
+      //   }
+      // );
 
       //where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
@@ -1011,7 +1030,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     const totalCost = this.reSelection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm: any = s;
-      return accumulator + itm.total_cost;
+      return accumulator + Number(itm.net_cost.replaceAll(',', ''));
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
