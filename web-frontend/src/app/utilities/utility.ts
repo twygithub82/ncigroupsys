@@ -2043,3 +2043,15 @@ export const HAS_AV_DATE_TANK_STATUS = [
   'OUT_SURVEY',
   'RELEASED',
 ]
+
+declare global {
+  interface String {
+    toNumber(): number;
+  }
+}
+
+String.prototype.toNumber = function (): number {
+  const cleaned = this.replaceAll(',', '').trim();
+  const num = Number(cleaned);
+  return isNaN(num) ? 0 : num;
+};

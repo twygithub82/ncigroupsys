@@ -591,7 +591,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
             rep_bill_item.clean_est_no += 1;
-            rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
+            rep_bill_item.clean_cost = this.displayNumber(Number(rep_bill_item?.clean_cost?.toNumber() || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0));
             if (newItem) rep_bill_items.push(rep_bill_item);
           }
 
@@ -632,7 +632,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
       }
 
-      rep_bill_item.gateio_cost = Number(Number(rep_bill_item.gateio_cost || 0) + gateIOCost).toFixed(2);
+      rep_bill_item.gateio_cost = this.displayNumber(Number(rep_bill_item.gateio_cost?.toNumber() || 0) + gateIOCost);
 
       // Push the new item if it was not found previously
       if (newItem) {
@@ -694,7 +694,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item.lolo_sot_guid.push(item.sot_guid!);
       }
 
-      rep_bill_item.lolo_cost = Number((Number(rep_bill_item?.lolo_cost || 0) + loloCost)).toFixed(2);
+      rep_bill_item.lolo_cost = this.displayNumber((Number(rep_bill_item?.lolo_cost?.toNumber() || 0) + loloCost));
 
       if (newItem) {
         rep_bill_items.push(rep_bill_item);
@@ -727,7 +727,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item.preins_est_no += 1;
       }
 
-      rep_bill_item.preins_cost = Number((Number(rep_bill_item?.preins_cost || 0) + preinsCost)).toFixed(2);
+      rep_bill_item.preins_cost = this.displayNumber((Number(rep_bill_item?.preins_cost?.toNumber() || 0) + preinsCost));
+      //  Number((Number(rep_bill_item?.preins_cost || 0) + preinsCost)).toFixed(2);
 
       if (newItem) {
         rep_bill_items.push(rep_bill_item);
@@ -804,8 +805,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
             const totalCost = this.repDS.calculateCostWithRoundUp(c, c.repair_part!, c.labour_cost);
-            // rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
-             rep_bill_item.repair_cost = Utility.formatNumberDisplay(CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0));
+             rep_bill_item.repair_cost = Utility.formatNumberDisplay(Number(Number(rep_bill_item?.repair_cost?.toNumber() || 0) + (CustomerType == 0 ? Number(totalCost.net_lessee_cost?.toNumber() || 0) : Number(totalCost.net_owner_cost?.toNumber() || 0))));
+            //  rep_bill_item.repair_cost = Utility.formatNumberDisplay(CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0));
             var currentEstNo: number = rep_bill_item.repair_est_no;
             // if ((CustomerType == 0 && Number(totalCost.total_lessee_mat_cost || 0) > 0) ||
             //   (CustomerType == 1 && Number(totalCost.total_owner_cost || 0) > 0)) 
@@ -852,7 +853,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
               if (rep_bill_item) {
                 total += ((p.approve_part ?? true) ? ((p.approve_cost || 0) * (p.approve_qty || 0)) : 0);
-                rep_bill_item.residue_cost = Number(Number(rep_bill_item?.residue_cost || 0) + ((p.approve_part ?? true) ? ((p.approve_cost || 0) * (p.approve_qty || 0)) : 0)).toFixed(2);
+                rep_bill_item.residue_cost = this.displayNumber(Number(rep_bill_item?.residue_cost?.toNumber() || 0) + ((p.approve_part ?? true) ? ((p.approve_cost || 0) * (p.approve_qty || 0)) : 0));
               }
 
             });
@@ -904,7 +905,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
             total = (this.stmDS.getApprovalTotalWithLabourCost(c?.steaming_part, cost).total_mat_cost || 0);
 
-            rep_bill_item.steam_cost = Number(Number(rep_bill_item.steam_cost || 0) + total).toFixed(2);
+            
+            rep_bill_item.steam_cost = this.displayNumber(Number(rep_bill_item.steam_cost?.toNumber() || 0) + total);
 
             rep_bill_item.steam_est_no += 1;
             rep_bill_item.steam_estimates.push(c.estimate_no!);
@@ -1026,6 +1028,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         if (newCust) repCustomers.push(repCust);
 
+        
         this.checkRepairBillingForTankOwner(b, repCustomers);
 
       });
@@ -1085,6 +1088,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     if (newCust && repCust.items?.length) repCustomers.push(repCust);
 
   }
+
 
   createReportBillingItem_R1(b: StoringOrderTankItem, rbCust: report_billing_customer) {
     var repBillItems: report_billing_item[] = rbCust.items || [];
