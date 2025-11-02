@@ -397,7 +397,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     //For Steaming Temp
     // where.status_cv = { in: ['COMPLETED'] }; 
 
-    where.or = [
+    where.and = [
       {status_cv: { in: BILLING_ESTIMATE_STATUS }}
       // {
       //   and: [
@@ -542,6 +542,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.subs.sink = this.stmDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.stmEstList = data;
+         if (this.searchForm!.get('customer_code')?.value) {
+            this.stmEstList  = this.stmEstList.filter(item => item.customer_company?.code === this.searchForm!.get('customer_code')?.value.code);
+         }
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;

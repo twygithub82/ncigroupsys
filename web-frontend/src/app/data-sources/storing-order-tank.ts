@@ -1464,6 +1464,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
         tank_status_cv
         update_by
         update_dt
+       
         tank {
           create_by
           create_dt
@@ -1532,6 +1533,8 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
           status_cv
           update_by
           update_dt
+          create_by
+          create_dt
           storing_order_tank {
             storing_order {
               customer_company_guid
@@ -3910,6 +3913,8 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           bill_to_guid
           approve_by
           approve_dt
+          create_by
+          create_dt
           delete_dt
           status_cv
           guid

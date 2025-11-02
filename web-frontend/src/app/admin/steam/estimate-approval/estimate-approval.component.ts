@@ -601,9 +601,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
               const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
 
               if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
-                return { ...stm, steaming_part: stm_part, net_cost: this.calculateNetCost(stm) };
+                // this.calculateNetCost_r1(stm);
+                 return { ...stm, steaming_part: stm_part ,net_cost: "0.01"};
+                
               } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
-                return { ...stm, steaming_part: stm_part, net_cost: this.calculateNetCost(stm) };
+                // this.calculateNetCost_r1(stm);
+                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
               }
 
               return {};
@@ -750,17 +753,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
-    // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
-
-    // this.getCustomerLabourPackage(custGuid!)
-    // .then(packLabourItem=>{
-    //   const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
-    //   return total.total_mat_cost.toFixed(2);
-    // //const total = this.steamDS.getTotal(steam?.steaming_part)
-    // })
-    // .catch(error=>{
-    //   return 0;
-    // });
+  
   }
 
   calculateNetCost(steam: SteamItem): any {
@@ -778,17 +771,34 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
-    // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
+   
+  }
 
-    // this.getCustomerLabourPackage(custGuid!)
-    // .then(packLabourItem=>{
-    //   const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
-    //   return total.total_mat_cost.toFixed(2);
-    // //const total = this.steamDS.getTotal(steam?.steaming_part)
-    // })
-    // .catch(error=>{
-    //   return 0;
-    // });
+   calculateNetCost_r1(row: any) {
+
+    const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company_guid;
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    };
+    this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data.length > 0) {
+        var guid = row.guid;
+        var cost: number = data[0].cost;
+        var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+        if (isAutoApproveSteaming) {
+          row.net_cost = this.displayNumber(row.rate || 0);
+          if (!row.flat_rate) {
+            row.net_cost = this.displayNumber(row.total_hour * row.rate) 
+          }
+        }
+        else {
+          row.net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        }
+      }
+    });
+
   }
 
 
@@ -964,14 +974,42 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       ]
     };
     this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data.length > 0) {
-        const cost = data[0].cost;
+        if (data.length > 0) {
+        var cost: number = data[0].cost;
         sot.steaming = sot.steaming?.map(stm => {
-          var stm_part = [...stm.steaming_part!];
-          stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
-          return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm, cost) };
+         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
+         var net_cost="";
+        if (isAutoApproveSteaming) {
+          net_cost = this.displayNumber(stm.rate || 0);
+          if (!stm.flat_rate) {
+            net_cost = this.displayNumber((stm?.total_hour||0) * (stm?.rate||0)) 
+          }
+        }
+        else {
+          net_cost= this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+        }
+          
+          return { ...stm, net_cost: net_cost };
         });
+        // var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+        // if (isAutoApproveSteaming) {
+        //   row.net_cost = this.displayNumber(row.rate || 0);
+        //   if (!row.flat_rate) {
+        //     row.net_cost = this.displayNumber(row.total_hour * row.rate) 
+        //   }
+        // }
+        // else {
+        //   row.net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        // }
       }
+      // if (data.length > 0) {
+      //   const cost = data[0].cost;
+      //   sot.steaming = sot.steaming?.map(stm => {
+      //     var stm_part = [...stm.steaming_part!];
+      //     stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
+      //     return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm, cost) };
+      //   });
+      // }
     });
 
   }
@@ -1151,5 +1189,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (Utility.IsAllowAutoSearch()) {
       this.search();
     }
+  }
+
+  displayNumber(value: number) {
+    return Utility.formatNumberDisplay(value);
   }
 }

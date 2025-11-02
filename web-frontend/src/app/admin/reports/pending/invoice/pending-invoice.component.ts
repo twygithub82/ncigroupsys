@@ -43,11 +43,12 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PendingInvoiceCostDetailPdfComponent } from 'app/document-template/pdf/pending-invoice-cost-detail-pdf/pending-invoice-cost-detail.component';
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
-import { BILLING_TANK_STATUS, Utility } from 'app/utilities/utility';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { BILLING_ESTIMATE_STATUS, BILLING_TANK_STATUS, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { firstValueFrom } from 'rxjs';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { firstValueFrom, Observable } from 'rxjs';
+import { debounceTime, map, startWith, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -564,10 +565,10 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     return rep_bill_item;
   }
 
-  calculateCleaningCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[])//(items:InGateCleaningItem[],rep_bill_items:report_billing_item[])
+  calculateCleaningCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string)//(items:InGateCleaningItem[],rep_bill_items:report_billing_item[])
   {
 
-    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null) || [];
+    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null && c.bill_to_guid==customerGuid) || [];
 
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
@@ -781,9 +782,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   calculateRepairCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[], CustomerType: number = 0)//(items:RepairItem[],rep_bill_items:report_billing_item[],CustomerType:number=0)
   {
 
-    var items: RepairItem[] = sot.repair?.filter(r => r.customer_billing_guid == null) || [];
+    var items: RepairItem[] = sot.repair?.filter(r => r.customer_billing_guid == null ) || [];
     if (CustomerType == 1) {
-      items = sot.repair?.filter(r => r.owner_billing_guid == null) || [];
+      items = sot.repair?.filter(r => r.owner_billing_guid == null ) || [];
     }
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
@@ -826,10 +827,10 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
 
-  calculateResidueCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[])//(items:ResidueItem[],rep_bill_items:report_billing_item[])
+  calculateResidueCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string)//(items:ResidueItem[],rep_bill_items:report_billing_item[])
   {
 
-    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null) || [];
+    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null && r.bill_to_guid==customerGuid) || [];
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
       if (itms.length > 0) {
@@ -867,57 +868,67 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
   }
 
-  calculateSteamingCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[])//(items:SteamItem[],rep_bill_items:report_billing_item[])
-  {
+ async calculateSteamingCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string) {
+  const items: SteamItem[] = sot.steaming?.filter(s => s.customer_billing_guid == null && s.bill_to_guid==customerGuid) || [];
 
-    var items: SteamItem[] = sot.steaming?.filter(s => s.customer_billing_guid == null) || [];
-    if (items.length > 0) {
-      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
-      if (itms.length > 0) {
-        itms.forEach((c) => {
-          c.storing_order_tank = sot;
-          let newItem = false;
-          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
-          if (!rep_bill_item) {
-            newItem = true;
-            rep_bill_item = this.createNewReportBillingItem(sot);
-            // rep_bill_item= new report_billing_item();
-            // rep_bill_item.sot_guid=c.storing_order_tank?.guid;
-          }
+  if (!items.length) return;
 
-          // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
-          // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
-          // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          // if (c.status_cv != 'NO_ACTION') 
-          // if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
-          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
-            // var bProcess = false;
-            // var cutoff_dt = Number(Utility.convertDate(this.searchForm!.value['cutoff_dt'], true));
-            // if (((c.approve_by == "system" && ["QC_COMPLETED", "COMPLETED"].includes(c.status_cv!)) ||
-            //   (c.approve_by != "system" && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!))
-            // ) && cutoff_dt >= (c.approve_dt || 0)) {
-            //   bProcess = true;
-            // }
+  const itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+  if (!itms.length) return;
 
-            // if (!bProcess) return;
+  // ✅ Use for...of instead of forEach to properly await
+  for (const c of itms) {
+    c.storing_order_tank = sot;
+    let newItem = false;
 
-            let total = 0;
-            let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
-            total = (this.stmDS.getApprovalTotalWithLabourCost(c?.steaming_part, cost).total_mat_cost || 0);
-
-            
-            rep_bill_item.steam_cost = this.displayNumber(Number(rep_bill_item.steam_cost?.toNumber() || 0) + total);
-
-            rep_bill_item.steam_est_no += 1;
-            rep_bill_item.steam_estimates.push(c.estimate_no!);
-            if (newItem) rep_bill_items.push(rep_bill_item);
-          }
-
-        });
-      }
+    // Find or create billing item
+    let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+    if (!rep_bill_item) {
+      newItem = true;
+      rep_bill_item = this.createNewReportBillingItem(sot);
     }
 
+    // ✅ Only process valid statuses
+    if (
+      !['NO_ACTION', 'KIV'].includes(c.status_cv!) &&
+      BILLING_ESTIMATE_STATUS.includes(c.status_cv!)
+    ) {
+      // ✅ Properly await async cost retrieval
+      const total = await firstValueFrom(this.getSteamTotalCost(c));
+
+      // ✅ Safely accumulate cost
+      const currentCost = Number(rep_bill_item.steam_cost?.toNumber?.() || rep_bill_item.steam_cost || 0);
+      rep_bill_item.steam_cost = this.displayNumber(currentCost + total);
+
+      rep_bill_item.steam_est_no = (rep_bill_item.steam_est_no || 0) + 1;
+      rep_bill_item.steam_estimates = rep_bill_item.steam_estimates || [];
+      rep_bill_item.steam_estimates.push(c.estimate_no!);
+
+      if (newItem) rep_bill_items.push(rep_bill_item);
+    }
   }
+}
+
+getSteamTotalCost(row: any): Observable<number> {
+  const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
+  const where = { and: [{ customer_company_guid: { eq: customer_company_guid } }] };
+
+  return this.plDS.getCustomerPackageCost(where).pipe(
+    map(data => {
+      if (data.length > 0) {
+        const cost = data[0].cost;
+        const isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+        if (isAutoApproveSteaming) {
+          row.total_cost = (row.rate || 0);
+          if (!row.flat_rate) return row.total_hour * row.rate;
+        } else {
+          return (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        }
+      }
+      return 0;
+    })
+  );
+}
 
   retrieveLabourCost(ccGuid: string): number {
     var cost: number = 0;
@@ -991,47 +1002,69 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-  export_report(reportType: number) {
+async  export_report(reportType: number) {
     // if (!this.sotList.length) {
     //   this.isGeneratingReport = false;
     //   return;
     // }
 
-    this.getAllClientLabourCost().then(() => {
+  //  await this.getAllClientLabourCost().then(async () => {
       var repCustomers: report_billing_customer[] = []
       // var rpItems:report_billing_item[]=[];
 
-      this.sotList.forEach((b) => {
-        var repCusts = repCustomers.filter(c => c.guid === b.storing_order?.customer_company?.guid);
-        //var repCusts = repCustomers.filter(c => c.guid === b.customer_company?.guid);
-        var repCust: report_billing_customer = new report_billing_customer();
-        var newCust: boolean = true;
-        if (repCusts.length > 0) {
-          repCust = repCusts[0];
-          newCust = false;
-        }
+      for (const b of this.sotList) {
+            // Try to find existing customer in the report list
+            let repCust = repCustomers.find(c => c.guid === b.storing_order?.customer_company?.guid);
+            let newCust = false;
 
-        else {
-          repCust.guid = b.storing_order?.customer_company?.guid;
-          //repCust.guid = b.customer_company?.guid;
-          repCust.items = [];
-        }
-        //repCust.customer = b.customer_company?.name;
-        repCust.customer = b.storing_order?.customer_company?.name;
-        //this.ccDS.displayName(b.storing_order?.customer_company);
-        //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-        //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
-        //  }
-        this.createReportBillingItem_R1(b, repCust);
-        //const rpBillingItm = await this.createReportBillingItem_R1(b, repCust);
-        //repCust.items = rpBillingItm;
+            if (!repCust) {
+              repCust = new report_billing_customer();
+              repCust.guid = b.storing_order?.customer_company?.guid;
+              repCust.customer = b.storing_order?.customer_company?.name;
+              repCust.items = [];
+              newCust = true;
+            }
 
-        if (newCust) repCustomers.push(repCust);
+            // ✅ Wait for async report item creation
+            await this.createReportBillingItem_R1(b, repCust);
+
+            if (newCust) repCustomers.push(repCust);
+
+            // Assuming synchronous
+            this.checkRepairBillingForTankOwner(b, repCustomers);
+      }
+
+      // this.sotList.forEach((b) => {
+      //   var repCusts = repCustomers.filter(c => c.guid === b.storing_order?.customer_company?.guid);
+      //   //var repCusts = repCustomers.filter(c => c.guid === b.customer_company?.guid);
+      //   var repCust: report_billing_customer = new report_billing_customer();
+      //   var newCust: boolean = true;
+      //   if (repCusts.length > 0) {
+      //     repCust = repCusts[0];
+      //     newCust = false;
+      //   }
+
+      //   else {
+      //     repCust.guid = b.storing_order?.customer_company?.guid;
+      //     //repCust.guid = b.customer_company?.guid;
+      //     repCust.items = [];
+      //   }
+      //   //repCust.customer = b.customer_company?.name;
+      //   repCust.customer = b.storing_order?.customer_company?.name;
+      //   //this.ccDS.displayName(b.storing_order?.customer_company);
+      //   //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+      //   //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
+      //   //  }
+      //  await this.createReportBillingItem_R1(b, repCust);
+      //   //const rpBillingItm = await this.createReportBillingItem_R1(b, repCust);
+      //   //repCust.items = rpBillingItm;
+
+      //   if (newCust) repCustomers.push(repCust);
 
         
-        this.checkRepairBillingForTankOwner(b, repCustomers);
+      //   this.checkRepairBillingForTankOwner(b, repCustomers);
 
-      });
+      // });
       repCustomers.map(c => {
 
         c.items?.map(i => {
@@ -1056,7 +1089,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         this.onExportDetail_Cost(repCustomers);
 
       }
-    });
+    // });
 
 
   }
@@ -1090,7 +1123,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
 
-  createReportBillingItem_R1(b: StoringOrderTankItem, rbCust: report_billing_customer) {
+  async createReportBillingItem_R1(b: StoringOrderTankItem, rbCust: report_billing_customer) {
     var repBillItems: report_billing_item[] = rbCust.items || [];
     //var repBillingItm:report_billing_item= new report_billing_item();
 
@@ -1099,10 +1132,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     // if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
     // if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
     //if(b.billing_sot?.length!>0) this.calculateBillingSOT(b.billing_sot!,repBillItems);
-    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems);
-    if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems);
-    if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems);
-    if (b.steaming?.length! > 0) this.calculateSteamingCost(b, repBillItems);
+    var custGuid = rbCust.guid!;
+    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems,custGuid);
+    if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems,0);
+    if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems,custGuid);
+    if (b.steaming?.length! > 0) await this.calculateSteamingCost(b, repBillItems,custGuid);
     if (b.billing_sot != null) this.calculateBillingSOT(b, repBillItems);
     rbCust.items = repBillItems || [];
     //return repBillItems;
@@ -1117,11 +1151,12 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     // if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
     // if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
     //if(b.billing_sot?.length!>0) this.calculateBillingSOT(b.billing_sot!,repBillItems);
-    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems);
-    if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems);
-    if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems);
-    if (b.steaming?.length! > 0) await this.calculateSteamingCost(b, repBillItems);
-    if (b.billing_sot != null) this.calculateBillingSOT(b, repBillItems);
+    
+    // if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems);
+    // if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems);
+    // if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems);
+    // if (b.steaming?.length! > 0) await this.calculateSteamingCost(b, repBillItems);
+    // if (b.billing_sot != null) this.calculateBillingSOT(b, repBillItems);
 
     return repBillItems;
 
