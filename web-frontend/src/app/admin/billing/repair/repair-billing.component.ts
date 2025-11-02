@@ -1358,7 +1358,6 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
     const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
       // width: '794px',
-      height: '90vh',
       // position: { top: '-9999px', left: '-9999px' },
       data: {
         repair_guid: repair?.guid?.replace("_1", ""),
