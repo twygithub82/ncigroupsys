@@ -674,13 +674,13 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     this.pageIndex = pageIndex;
   }
 
-  onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
+   onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-
+    let order: any | undefined = undefined;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
@@ -699,12 +699,46 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
         last = pageSize;
         before = this.startCursor;
       }
+      else if (pageIndex == this.pageIndex) {
+        first = pageSize;
+        after = this.previous_endCursor;
+      }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
-      this.updatePageSelection();
-    });
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
+  
+  // onPageEvent(event: PageEvent) {
+  //   const { pageIndex, pageSize } = event;
+  //   let first: number | undefined = undefined;
+  //   let after: string | undefined = undefined;
+  //   let last: number | undefined = undefined;
+  //   let before: string | undefined = undefined;
+
+  //   // Check if the page size has changed
+  //   if (this.pageSize !== pageSize) {
+  //     // Reset pagination if page size has changed
+  //     this.pageIndex = 0;
+  //     first = pageSize;
+  //     after = undefined;
+  //     last = undefined;
+  //     before = undefined;
+  //   } else {
+  //     if (pageIndex > this.pageIndex && this.hasNextPage) {
+  //       // Navigate forward
+  //       first = pageSize;
+  //       after = this.endCursor;
+  //     } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+  //       // Navigate backward
+  //       last = pageSize;
+  //       before = this.startCursor;
+  //     }
+  //   }
+
+  //   this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+  //     this.updatePageSelection();
+  //   });
+  // }
 
   updatePageSelection() {
 

@@ -123,8 +123,15 @@ export const GET_TEAM_BY_DEPARTMENT_AND_GUID_QUERY = gql`
 `;
 
 export const GET_TEAM_QUERY_WITH_COUNT = gql`
-  query queryTeamsWithCount($where: TeamResultFilterInput, $order: [TeamResultSortInput!],$first:Int) {
-    resultList: queryTeamsWithCount(where: $where, order: $order,first:$first) {
+  query queryTeamsWithCount($where: TeamResultFilterInput, $order: [TeamResultSortInput!],$first:Int,$after: String, $last: Int, $before: String) {
+    resultList: queryTeamsWithCount(where: $where, order: $order,first:$first,after:$after,last:$last,before:$before) {
+     pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       nodes {
         assign_count
         team {
