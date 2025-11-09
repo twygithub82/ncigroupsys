@@ -707,7 +707,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
     this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
-  
+
   // onPageEvent(event: PageEvent) {
   //   const { pageIndex, pageSize } = event;
   //   let first: number | undefined = undefined;
@@ -785,6 +785,11 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     this.departmentCvList.forEach(codeval => {
       if (codeval.code_val == row.team?.department_cv) {
         retval = codeval.description || '';
+      }
+      else
+      {
+        retval =row.team?.department_cv||''
+
       }
     })
     return retval;
