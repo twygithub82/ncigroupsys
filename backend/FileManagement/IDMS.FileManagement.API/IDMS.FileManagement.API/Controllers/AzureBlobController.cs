@@ -136,6 +136,22 @@ namespace IDMS.FileManagement.API.Controllers
             }
         }
 
+        [HttpPost("GetZipFilesByGroupGuid")]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetZipFilesByGroupGuid([FromBody] ZipFileRequest zipFileRequest)
+        {
+            try
+            {
+                var response = await _fileManagementService.GetZipBlobFolderAsync(zipFileRequest);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
+        }
+
+
         [HttpDelete("DeleteFile")]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> DeleteFile([FromBody] List<string> guid)

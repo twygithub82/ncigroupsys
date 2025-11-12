@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
 using System;
 using System.Globalization;
+using System.IO.Compression;
+using System.Net.Http;
 
 namespace IDMS.FileManagement.Service
 {
@@ -215,7 +217,7 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteFile(List<string> guid)
@@ -283,20 +285,134 @@ namespace IDMS.FileManagement.Service
             }
         }
 
-        public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid)
+        public async Task<MemoryStream> GetZipBlobFolderAsync(ZipFileRequest zipFileRequest, AppDBContext? dbContext = null, CancellationToken cancellationToken = default)
+        {
+
+            try
+            {
+                //Check and define which DbContext to Use
+                dbContext ??= _context;
+
+                var files = await GetGroupFileUrlFromDB(new List<string>() { zipFileRequest.GroupGuid }, dbContext);
+
+                var zipStream = new MemoryStream();
+                var _httpClient = new HttpClient();
+
+                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, leaveOpen: true))
+                {
+                    foreach (var file in files)
+                    {
+                        string url = file.Url;
+                        // Extract file extension
+                        string extension = Path.GetExtension(url.Split('?')[0]); // strips query params if any
+
+                        string targetFileName = $"{file.Description}{extension}";
+
+                        if (extension.EqualsIgnore("pdf"))
+                            targetFileName = $"{file.Description}_{zipFileRequest.TankNo}{extension}";
+
+                        try
+                        {
+                            byte[] imageBytes = await _httpClient.GetByteArrayAsync(url);
+
+                            var zipEntry = archive.CreateEntry(targetFileName, CompressionLevel.NoCompression);
+
+                            using (var entryStream = zipEntry.Open())
+                            {
+                                await entryStream.WriteAsync(imageBytes, 0, imageBytes.Length);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to download or add file from {url}: {ex.Message}");
+                            // Optionally: skip or throw depending on your use case
+                        }
+                    }
+                }
+
+                zipStream.Seek(0, SeekOrigin.Begin); // Reset stream before returning
+
+                ////Save ZIP to local disk
+                //string localFilePath = Path.Combine("D:\\Temp", "Documents.zip"); // Change path and filename as needed
+
+                //using (var fileStream = new FileStream(localFilePath, FileMode.Create, FileAccess.Write))
+                //{
+                //    await zipStream.CopyToAsync(fileStream);
+                //}
+                return zipStream;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
+            //var blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            ////BlobContainerClient containerClient = new BlobContainerClient(connectionString, containerName);
+            //var blobs = blobContainerClient.GetBlobsAsync(prefix: folderPath);
+
+            //MemoryStream zipStream = new MemoryStream();
+
+            //using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+            //{
+            //    await foreach (var blobItem in blobs)
+            //    {
+            //        var blobClient = blobContainerClient.GetBlobClient(blobItem.Name);
+
+            //        var ss = blobItem.Name;
+
+            //        // Create entry in ZIP file
+            //        //var entry = archive.CreateEntry(blobItem.Name.Substring(folderPath.Length).TrimStart('/'));
+
+            //        var entry = archive.CreateEntry(blobItem.Name);
+
+            //        using var blobStream = await blobClient.OpenReadAsync();
+            //        using var entryStream = entry.Open();
+            //        await blobStream.CopyToAsync(entryStream);
+            //    }
+            //}
+
+            //zipStream.Seek(0, SeekOrigin.Begin);
+
+
+            //// 🔽 Save ZIP to local disk
+            //string localFilePath = Path.Combine("D:\\Temp", "MyBlobFiles.zip"); // Change path and filename as needed
+
+            //using (var fileStream = new FileStream(localFilePath, FileMode.Create, FileAccess.Write))
+            //{
+            //    await zipStream.CopyToAsync(fileStream);
+            //}
+
+            //return zipStream; // Can be used to attach to email or return in API
+        }
+
+
+        public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid) => await GetGroupFileUrlFromDB(groupGuid, _context);
+
+        //try
+        //{
+        //    var res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
+        //            (f.delete_dt == null || f.delete_dt == 0)).Select(f => new FileManagementDto { Url = f.url, Description = f.description }).ToListAsync();
+        //    return res;
+        //}
+        //catch (Exception ex)
+        //{
+        //    throw;
+        //}
+
+        public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid, AppDBContext dbContext)
         {
             try
             {
-                var res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
+                var res = await dbContext.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
                         (f.delete_dt == null || f.delete_dt == 0)).Select(f => new FileManagementDto { Url = f.url, Description = f.description }).ToListAsync();
                 return res;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
-
 
         #region Private Function
         private async Task<bool> CreateFolderIfNotExistsAsync(string containerName, string folderName)

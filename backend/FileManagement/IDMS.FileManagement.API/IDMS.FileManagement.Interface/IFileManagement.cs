@@ -16,6 +16,10 @@ namespace IDMS.FileManagement.Interface
         public Task<List<string>> GetFileUrlFromDB(List<string> guid);
 
         public Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid);
+        public Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid, AppDBContext context);
+
+        public Task<MemoryStream> GetZipBlobFolderAsync(ZipFileRequest zipFileRequest, AppDBContext? context = null, CancellationToken cancellationToken = default);
+
         public Task<int> DeleteFile(List<string> guid);
 
     }

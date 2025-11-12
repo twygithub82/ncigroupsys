@@ -1,11 +1,16 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using IDMS.Email.Service;
 using IDMS.FileManagement.API.swagger;
 using IDMS.FileManagement.API.Swagger;
 using IDMS.FileManagement.Interface;
+using IDMS.FileManagement.Interface.Model;
 using IDMS.FileManagement.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
@@ -28,7 +33,8 @@ namespace IDMS.FileManagement.API
             });
 
             builder.Services
-                .AddApiVersioning(options => {
+                .AddApiVersioning(options =>
+                {
                     //indicating whether a default version is assumed when a client does
                     // does not provide an API version.
                     options.DefaultApiVersion = new ApiVersion(2, 0);
@@ -45,24 +51,32 @@ namespace IDMS.FileManagement.API
                     options.SubstituteApiVersionInUrl = true;
                 });
 
-            // Add Swagger with API versioning support
-            //builder.Services.AddSwaggerGen(options =>
-            //{
-            //    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-            //    options.SwaggerDoc("v2", new OpenApiInfo { Title = "My API", Version = "v2" });
+            // Add your normal app JWT authentication (frontend)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("AppJwt", options =>
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+                    )
+                };
+            })
 
-            //    // Enable filtering and versioning
-            //    options.DocInclusionPredicate((version, apiDescription) =>
-            //    {
-            //        var versions = apiDescription.ActionDescriptor.EndpointMetadata
-            //            .OfType<ApiVersionAttribute>()
-            //            .SelectMany(attr => attr.Versions)
-            //            .Select(v => v.ToString())
-            //            .ToList();
-
-            //        return versions.Any(v => $"v{v}" == version);
-            //    });
-            //});
+            // Add Azure AD authentication for Logic App
+            .AddMicrosoftIdentityWebApi(options =>
+            {
+                builder.Configuration.Bind("AzureAd", options);
+            }, options =>
+            {
+                builder.Configuration.Bind("AzureAd", options);
+            }, "AzureAd");
 
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             builder.Services.AddSwaggerGen(options =>
@@ -72,21 +86,71 @@ namespace IDMS.FileManagement.API
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
-            });
+
+                // Define the BearerAuth scheme that's in use
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                };
+
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+
+                var securityRequirement = new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecurityScheme{ Reference=new OpenApiReference{ Type=ReferenceType.SecurityScheme,Id="Bearer"} },new string[]{ } }
+                };
+
+                    options.AddSecurityRequirement(securityRequirement);
+                });
 
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //Add Email Configs
+            var emailConfig = builder.Configuration
+                    .GetSection("EmailConfiguration")
+                    .Get<EmailConfiguration>();
+
+            var reportConfig = builder.Configuration
+                                .GetSection("ReportSettings")
+                                .Get<ReportSettings>();
+
+            builder.Services.AddSingleton(emailConfig);
+            builder.Services.AddSingleton(reportConfig);
             builder.Services.AddScoped<IFileManagement, FileManagementService>();
+            builder.Services.AddScoped<IEmail, EmailService>();
+            //builder.Services.AddScoped<IReport, ReportService>();
+
+            builder.Services.AddScoped<IReport>(provider =>
+            {
+
+                var reportSettings = provider.GetRequiredService<ReportSettings>();
+                var dbContext = provider.GetRequiredService<AppDBContext>();
+                var emailService = provider.GetRequiredService<IEmail>();
+                var scopeService = provider.GetRequiredService<IServiceScopeFactory>();
+                var env = provider.GetRequiredService<IWebHostEnvironment>();
+
+                return new ReportService(reportSettings, dbContext, emailService, scopeService, env.WebRootPath);
+
+            });
+                
+
             builder.Services.AddScoped<AppDBContext>();
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             //if (app.Environment.IsDevelopment())
-            if(true)
+            if (true)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(options =>
@@ -100,15 +164,11 @@ namespace IDMS.FileManagement.API
                         options.SwaggerEndpoint(url, name);
                     }
                 });
-                //app.UseSwaggerUI(options =>
-                //{
-                //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                //    options.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
-                //});
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
+            //app.UseAuthentication();
             //app.UseAuthorization();
 
             app.MapControllers();

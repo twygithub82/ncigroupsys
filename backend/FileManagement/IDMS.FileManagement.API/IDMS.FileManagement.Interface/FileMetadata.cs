@@ -21,9 +21,9 @@ namespace IDMS.FileManagement.Interface
         public List<string> url { get; set; }
     }
 
-    //public class FileUploadRequest
-    //{
-    //    public IFormFile File { get; set; }
-    //    public FileMetadata Metadata { get; set; }
-    //}
+    public class ZipFileRequest
+    {
+        public string GroupGuid { get; set; } = string.Empty;
+        public string? TankNo { get; set; } = string.Empty;
+    }
 }
