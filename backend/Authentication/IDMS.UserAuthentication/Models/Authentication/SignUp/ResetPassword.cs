@@ -46,8 +46,6 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
                 </body>
                 </html>";
 
-
-
         public const string MessageBody1 = @"
                 <!DOCTYPE html>
                 <html>
@@ -95,7 +93,7 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
                 <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
                   <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px;'>
                     <h2 style='color: #333333; text-align: center;'>Password Reset</h2>
-                    <p>If you've lost your password or wish to reset it, use the link below to get started</p>
+                    <p style='text-align: center;'>If you've lost your password or wish to reset it, use the link below to get started</p>
     
                      <p style='text-align: center;'>
                       <table cellspacing='0' cellpadding='0' border='0' align='center' style='margin: auto;'>
@@ -111,9 +109,9 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
                       </table>
                     </p>
 
-                    <p>If you didn’t request a password reset, you can safely ignore this email. Only a person with access to your email can reset your account password.</p>
+                    <p style='text-align: center;'>If you didn’t request a password reset, you can safely ignore this email.</p>
 
-                    <hr style='margin-top: 40px;'>
+                    <hr style='margin-top: 10px;'>
                     <p style='font-size: 12px; color: #888888;'>If you’re having trouble clicking the button, copy and paste the URL below into your browser:</p>
                     <p style='font-size: 12px; color: #888888;'>{{ResetLink}}</p>
                   </div>

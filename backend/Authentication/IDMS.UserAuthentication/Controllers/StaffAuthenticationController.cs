@@ -873,7 +873,7 @@ namespace IDMS.User.Authentication.API.Controllers
             //return retval;
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
         {

@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -34,6 +35,64 @@ namespace IDMS.User.Authentication.API.Utilities
             return now.ToUnixTimeSeconds();
         }
 
+        public static byte[] CreateZipFromFiles(string pdfPath, List<string> imagePaths)
+        {
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                // Add PDF file
+                if (File.Exists(pdfPath))
+                {
+                    var pdfEntry = archive.CreateEntry(Path.GetFileName(pdfPath));
+                    using var pdfStream = File.OpenRead(pdfPath);
+                    using var entryStream = pdfEntry.Open();
+                    pdfStream.CopyTo(entryStream);
+                }
+
+                // Add up to 10 JPEG images
+                foreach (var imagePath in imagePaths.Take(10))
+                {
+                    if (File.Exists(imagePath))
+                    {
+                        var imageEntry = archive.CreateEntry(Path.GetFileName(imagePath));
+                        using var imageStream = File.OpenRead(imagePath);
+                        using var entryStream = imageEntry.Open();
+                        imageStream.CopyTo(entryStream);
+                    }
+                }
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        public static async Task<byte[]> GetZipFile(string eirGuid, string url)
+        {
+            HttpClient _httpClient = new HttpClient();
+            try
+            {
+                string endpointUrl = url;  //"http://localhost:5176/api/v2/AzureBlob/GetZipFilesByGroupGuid";
+
+                var jsonBody = JsonSerializer.Serialize(eirGuid);
+
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync(endpointUrl, content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Failed to fetch ZIP: {response.StatusCode}");
+                }
+
+                var zipBytes = await response.Content.ReadAsByteArrayAsync();
+                return zipBytes;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+
+            }
+        }
+
         public static async Task<JArray> GetFunctionsByUser(ApplicationDbContext _dbContext, string userId)
         {
             try
@@ -49,8 +108,8 @@ namespace IDMS.User.Authentication.API.Utilities
 
                 var result = await functionNames.ToListAsync();
                 JArray functionNamesArray = new JArray();
-                    
-                if(result != null)
+
+                if (result != null)
                     functionNamesArray = JArray.FromObject(result);
 
                 var addHocfunctionNames = from f in _dbContext.functions
@@ -69,7 +128,8 @@ namespace IDMS.User.Authentication.API.Utilities
                     }
                 }
 
-                var adHocFuncDisable= from f in _dbContext.user_functions where f.delete_dt == null && f.user_guid == userId && f.adhoc == false
+                var adHocFuncDisable = from f in _dbContext.user_functions
+                                       where f.delete_dt == null && f.user_guid == userId && f.adhoc == false
                                        join func in _dbContext.functions on f.functions_guid equals func.guid
                                        select func.code;
 
@@ -110,7 +170,7 @@ namespace IDMS.User.Authentication.API.Utilities
                                 select r.code;
 
                 var result = await roleNames.ToListAsync();
-                JArray roleNamesArray = new JArray();  
+                JArray roleNamesArray = new JArray();
                 if (result != null)
                     roleNamesArray = JArray.FromObject(result);
 
@@ -150,9 +210,9 @@ namespace IDMS.User.Authentication.API.Utilities
                                        Description = t.description,
                                        Department = t.department_cv
                                    }).ToList();
-               var result = teamDetails
-               .Select(t => $"{t.Description} - {t.Department}")
-               .ToList();
+                var result = teamDetails
+                .Select(t => $"{t.Description} - {t.Department}")
+                .ToList();
 
                 return result;
             }

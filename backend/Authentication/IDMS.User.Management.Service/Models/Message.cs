@@ -24,5 +24,42 @@ namespace IDMS.User.Authentication.Service.Models
         }
     }
 
+    public static class EirMessage
+    {
+        /// <summary>
+        /// Gets the subject for EIR email, inserting the tank number.
+        /// </summary>
+        public static string GetEirSubject_InGate(string tankNumber)
+        {
+            return $"EIR IN_Tank no: {tankNumber}_Photos";
+        }
 
+        /// <summary>
+        /// Gets the subject for EIR email, inserting the tank number.
+        /// </summary>
+        public static string GetEirSubject_OutGate(string tankNumber)
+        {
+            return $"EIR OUT_Tank no: {tankNumber}_Photos";
+        }
+
+        /// <summary>
+        /// Gets the standard EIR email body message.
+        /// </summary>
+        public static string GetEirBody_InGate()
+        {
+            return @"<p>Dear All,</p>
+                 <p>Please find attached EIR IN for your reference.</p>
+                 <p>Thank you!</p>";
+        }
+
+        /// <summary>
+        /// Gets the standard EIR email body message.
+        /// </summary>
+        public static string GetEirBody_OutGate()
+        {
+            return @"<p>Dear All,</p>
+                 <p>Please find attached EIR OUT for your reference.</p>
+                 <p>Thank you!</p>";
+        }
+    }
 }
