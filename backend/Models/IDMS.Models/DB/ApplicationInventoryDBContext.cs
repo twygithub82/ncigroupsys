@@ -96,6 +96,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             modelBuilder.Entity<package_buffer>();
             modelBuilder.Entity<tariff_steaming>();
             modelBuilder.Entity<package_steaming>();
+            modelBuilder.Entity<package_labour>();
 
         }
     }

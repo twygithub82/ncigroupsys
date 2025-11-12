@@ -524,7 +524,7 @@ namespace IDMS.Survey.GqlTypes
                 if (isFlatRate ?? false)
                 {
                     cost = result?.cost ?? 0.0;
-                    rate = result?.cost ?? 0.0;
+                    rate = result?.labour ?? 0.0; //result?.cost ?? 0.0;
                     newSteam.total_hour = 1.0;
                     newSteam.est_hour = 1.0;
                 }

@@ -25,7 +25,7 @@ namespace IDMS.Repair
                     .Include(d => d.repair_part)
                         .ThenInclude(p => p.rp_damage_repair)
                     .Include(d => d.storing_order_tank)
-                        .ThenInclude(p => p.in_gate);
+                        .ThenInclude(p => p.in_gate).AsSplitQuery();
 
                 return repair;
             }

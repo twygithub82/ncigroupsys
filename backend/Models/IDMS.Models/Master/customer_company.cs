@@ -2,6 +2,8 @@
 using IDMS.Models.Package;
 using IDMS.Models.Service;
 using IDMS.Models.Shared;
+using IDMS.Models.Tariff;
+
 
 //using IDMS.StoringOrder.Model.Domain.Customer;
 using System;
@@ -27,7 +29,7 @@ namespace IDMS.Models.Master
         public string? address_line2 { get; set; }
         public string? city { get; set; }
         public string? country { get; set; }
-        public string? postal { get; set; }
+        public string? postal { get; set; } 
         public string? phone { get; set; }
         public string? country_code { get; set; }
         public string? email { get; set; }
@@ -38,12 +40,15 @@ namespace IDMS.Models.Master
         
         [ForeignKey("template_est")]
         public string? def_template_guid { get; set; }
-        [ForeignKey("tank")]
+
+        [ForeignKey("tariff_depot")]
         public string? def_tank_guid { get; set; }
         public string? main_customer_guid { get; set; }
         //public bool billing_branch {  get; set; }
 
-        public tank? tank { get; set; }
+        [UseFiltering]
+        public tariff_depot? tariff_depot { get; set; } 
+        //public tank? tank { get; set; }
         public currency? currency { get; set; }
         
         [UseFiltering]
@@ -64,6 +69,9 @@ namespace IDMS.Models.Master
 
         [UseFiltering]
         public IEnumerable<tank_info?>? tank_info { get; set; }
+
+        [ForeignKey("main_customer_guid")]
+        public customer_company? main_customer_company { get; set; }
     }
 
 

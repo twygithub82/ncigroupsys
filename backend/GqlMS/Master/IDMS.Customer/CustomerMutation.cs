@@ -75,7 +75,7 @@ namespace IDMS.Customer.GqlTypes
 
                             await context.customer_company.AddAsync(branchCustomer);
 
-                            if(branch.BranchContactPerson != null)
+                            if (branch.BranchContactPerson != null)
                             {
                                 foreach (var ccPerson in branch.BranchContactPerson)
                                 {
@@ -155,7 +155,7 @@ namespace IDMS.Customer.GqlTypes
                             {
                                 customer_company branchCustomer = new();
                                 mapper.Map(branch.BranchCustomer, branchCustomer);
-                
+
                                 branchCustomer.update_dt = currentDateTime;
                                 branchCustomer.update_by = user; ;
                                 mainCustomerGuid = branch.BranchCustomer.guid;
@@ -212,6 +212,19 @@ namespace IDMS.Customer.GqlTypes
                     customer.update_dt = currentDateTime;
                     customer.update_by = user;
                     customer.delete_dt = currentDateTime;
+                }
+
+
+                foreach (var id in customerGuids)
+                {
+                    var branchCustomers = await context.customer_company.Where(cc => cc.main_customer_guid == id && cc.type_cv == "BRANCH" && cc.delete_dt == null).ToListAsync();
+                    foreach (var branch in branchCustomers)
+                    {
+                        branch.update_by = user;
+                        branch.update_dt = currentDateTime;
+                        branch.main_customer_guid = null;
+                        context.Entry(branch).Property(b => b.main_customer_guid).IsModified = true;
+                    }
                 }
 
                 res = await context.SaveChangesAsync();
@@ -282,11 +295,11 @@ namespace IDMS.Customer.GqlTypes
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
-            return true; 
+            return true;
         }
     }
 }

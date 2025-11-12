@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotChocolate;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -116,6 +117,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? name { get; set; }   
         public int count { get; set; }
         public double percentage { get; set; }
+        [GraphQLIgnore]
+        public string FormattedDate => key;
     }
 
     [NotMapped]

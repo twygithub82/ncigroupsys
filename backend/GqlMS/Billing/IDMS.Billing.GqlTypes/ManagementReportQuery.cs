@@ -72,7 +72,7 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, "repair", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.repair_yearly_inventory = yearlyInventory;
                     }
 
@@ -80,7 +80,7 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, "steaming", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.steaming_yearly_inventory = yearlyInventory;
                     }
 
@@ -88,7 +88,7 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, "cleaning", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.cleaning_yearly_inventory = yearlyInventory;
                     }
 
@@ -96,7 +96,7 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "residue", startEpoch, endEpoch, reportFormat);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, "residue", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.residue_yearly_inventory = yearlyInventory;
                     }
 
@@ -104,7 +104,7 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "depot", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, "depot", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.depot_yearly_inventory = yearlyInventory;
                     }
 
@@ -112,10 +112,10 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
 
-                        var yearlyInventory = await GenerateYearlyInventoryResult(gateInResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyInventory = await GenerateYearlyInventoryResult(gateInResult, reportFormat, "gate", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.gate_in_inventory = yearlyInventory;
 
-                        var yearlyGateOutInventory = await GenerateYearlyInventoryResult(gateOutResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyGateOutInventory = await GenerateYearlyInventoryResult(gateOutResult, reportFormat, "gate", startOfMonth, endOfMonth, specificTimeZone);
                         yearlyInventoryResult.gate_out_inventory = yearlyGateOutInventory;
                     }
                 }
@@ -432,7 +432,7 @@ namespace IDMS.Billing.GqlTypes
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = (s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0,
+                               cost = (s.lift_off == true ? 1.0 : 0.0) * (s.lift_off_cost ?? 0.0),
                                appv_date = (long)ig.eir_dt,
                            };
                 case "gate-in":
@@ -459,7 +459,7 @@ namespace IDMS.Billing.GqlTypes
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = (s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0,
+                               cost = (s.lift_on == true ? 1.0 : 0.0) * (s.lift_on_cost ?? 0.0),
                                appv_date = (long)ig.eir_dt,
                            };
                 case "gate-out":
@@ -506,160 +506,6 @@ namespace IDMS.Billing.GqlTypes
                     return Enumerable.Empty<TempInventoryResult>().AsQueryable();
             }
         }
-
-        //private IQueryable<TempInventoryResult> GetInventoryCompletedQuery(ApplicationBillingDBContext context, IQueryable<TempInventoryResult> query, string inventoryType, long startEpoch, long endEpoch, long? startMonthLastDay = null)
-        //{
-        //    //string yetSurvey = "YET_TO_SURVEY";
-        //    //string published = "PUBLISHED";
-
-        //    switch (inventoryType.ToLower())
-        //    {
-        //        case "repair":
-        //            return from result in query
-        //                   join s in context.repair on result.sot_guid equals s.sot_guid
-        //                   where s.delete_dt == null && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.total_cost ?? 0.0,
-        //                       appv_date = (long)s.approve_dt,
-        //                       complete_date = (long)s.complete_dt,
-        //                       status = s.status_cv
-        //                   };
-
-        //        case "steaming":
-        //            return from result in query
-        //                   join s in context.steaming on result.sot_guid equals s.sot_guid
-        //                   where s.delete_dt == null && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.total_cost ?? 0.0,
-        //                       appv_date = (long)s.approve_dt,
-        //                       complete_date = (long)s.complete_dt,
-        //                       status = s.status_cv
-        //                   };
-
-        //        case "cleaning":
-        //            return from result in query
-        //                   join s in context.cleaning on result.sot_guid equals s.sot_guid
-        //                   where s.delete_dt == null && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.buffer_cost ?? 0.0 + s.cleaning_cost ?? 0.0,
-        //                       appv_date = (long)s.approve_dt,
-        //                       complete_date = (long)s.complete_dt,
-        //                       status = s.status_cv
-        //                   };
-
-        //        case "residue":
-        //            return from result in query
-        //                   join s in context.residue on result.sot_guid equals s.sot_guid
-        //                   where s.delete_dt == null && s.complete_dt >= startEpoch && s.complete_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.total_cost ?? 0.0,
-        //                       appv_date = (long)s.approve_dt,
-        //                       complete_date = (long)s.complete_dt,
-        //                       status = s.status_cv
-        //                   };
-
-        //        case "lift-off":
-        //            return from result in query
-        //                   join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-        //                   where s.lift_off == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-        //                       && s.delete_dt == null
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = (s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-        //        case "gate-in":
-        //            return from result in query
-        //                   join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-        //                   where s.gate_in == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.gate_in_cost ?? 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-        //        case "lift-on":
-        //            return from result in query
-        //                   join ig in context.out_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-        //                   where s.lift_on == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = (s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-        //        case "gate-out":
-        //            return from result in query
-        //                   join ig in context.out_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-        //                   where s.gate_out == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.gate_in_cost ?? 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-
-        //        case "preinspect":
-        //            return from result in query
-        //                   join ig in context.out_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join s in context.billing_sot on ig.so_tank_guid equals s.sot_guid
-        //                   where s.preinspection == true && ig.delete_dt == null && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = result.sot_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = s.preinspection_cost ?? 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-        //        case "depot":
-        //            return from result in query
-        //                   join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-        //                   join og in context.out_gate on result.sot_guid equals og.so_tank_guid
-        //                   where (ig.delete_dt == null && ig.eir_dt <= endEpoch) && (og.delete_dt == null && og.eir_dt > startMonthLastDay)
-        //                   select new TempInventoryResult
-        //                   {
-        //                       sot_guid = ig.so_tank_guid,
-        //                       code = result.code,
-        //                       cc_name = result.cc_name,
-        //                       cost = 0.0,
-        //                       appv_date = (long)ig.eir_dt,
-        //                   };
-        //        default:
-        //            return Enumerable.Empty<TempInventoryResult>().AsQueryable();
-        //    }
-        //}
-
         private async Task<List<ResultPerDay>> GetInventoryPerDay(List<TempInventoryResult> resultList, string resultType, string inventoryType, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
         {
 
@@ -678,18 +524,20 @@ namespace IDMS.Billing.GqlTypes
                 DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                 item.date = dateTimeOffset.ToString("dd/MM/yyyy");
             }
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.date)  // Group by formatted date
-                .Select(g => new
-                {
-                    FormattedDate = g.Key,
-                    //Count = g.Count(),
-                    //if type is repair, we take the cost (which is total_hour) else we take the count of sot only
-                    Cost = inventoryType.EqualsIgnore("repair") ? g.Select(n => n.cost).Sum() : g.Count()
-                })
-                .OrderBy(g => g.FormattedDate) // Sort by date
-                .ToList();
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.date)  // Group by formatted date
+            //    .Select(g => new
+            //    {
+            //        FormattedDate = g.Key,
+            //        //Count = g.Count(),
+            //        //if type is repair, we take the cost (which is total_hour) else we take the count of sot only
+            //        Cost = inventoryType.EqualsIgnore("repair") ? g.Select(n => n.cost).Sum() : g.Count()
+            //    })
+            //    .OrderBy(g => g.FormattedDate) // Sort by date
+            //    .ToList();
+
+            var groupedNodes = GetGroupNodesInventory(resultList, inventoryType);
 
             List<string> allDatesInMonth = new List<string>();
             for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
@@ -704,14 +552,15 @@ namespace IDMS.Billing.GqlTypes
                     date = date,
                     day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
                     //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    cost = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Cost)
                 })
                 .OrderBy(g => g.date) // Sort by date
                 .ToList();
 
             return completeGroupedNodes;
         }
-        private async Task<List<InventoryPerMonth>> GetInventoryPerMonth(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
+        private async Task<List<InventoryPerMonth>> GetInventoryPerMonth(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string type, string specificTimeZone)
         {
 
             // Normalize to the platform-correct ID
@@ -729,19 +578,24 @@ namespace IDMS.Billing.GqlTypes
 
                 // Convert UTC to desired time zone
                 DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
+                //item.date = dateTimeOffset.ToString("MMMM");
                 item.date = dateTimeOffset.ToString("MMMM");
             }
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.date)  // Group by formatted date
-                .Select(g => new
-                {
-                    FormattedDate = g.Key,
-                    Count = g.Count(),
-                    //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                })
-                //.OrderBy(g => g.FormattedDate) // Sort by date
-                .ToList();
+
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.date)  // Group by formatted date
+            //    .Select(g => new
+            //    {
+            //        FormattedDate = g.Key,
+            //        count = g.Count(),
+            //        //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    //.OrderBy(g => g.FormattedDate) // Sort by date
+            //    .ToList();
+
+
+            var groupedNodes = GetGroupInventoryMonthlyWithCount(resultList, type);
 
             List<string> allMonthInYear = new List<string>();
             for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
@@ -755,31 +609,64 @@ namespace IDMS.Billing.GqlTypes
                 {
                     key = date,
                     //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                    count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    //count = groupedNodes.FirstOrDefault(g => g.key == date)?.count ?? 0,
+                    count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.count)
                 })
                 //.OrderBy(g => g.date) // Sort by date
                 .ToList();
 
             return completeGroupedNodes;
         }
-        private async Task<List<InventoryPerMonth>> GetInventoryPerCustomer(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        private async Task<List<InventoryPerMonth>> GetInventoryPerCustomer(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string type)
         {
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.code)  // Group by formatted date
-                .Select(g => new InventoryPerMonth
-                {
-                    key = g.Key,
-                    name = g.Select(n => n.cc_name).FirstOrDefault(),
-                    count = g.Count(),
-                    //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                })
-                .OrderBy(g => g.key) // Sort by date
-                .ToList();
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.code)  // Group by formatted date
+            //    .Select(g => new InventoryPerMonth
+            //    {
+            //        key = g.Key,
+            //        name = g.Select(n => n.cc_name).FirstOrDefault(),
+            //        count = g.Count(),
+            //        //Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    .OrderBy(g => g.key) // Sort by date
+            //    .ToList();
 
-            return groupedNodes;
+            //return groupedNodes;
+
+
+            return GetGroupInventoryMonthlyWithCount(resultList, type);
+
+            //if (type.EqualsIgnore("repair"))
+            //{
+            //    return resultList
+            //        .GroupBy(n => n.code)
+            //        .Select(g => new InventoryPerMonth
+            //        {
+            //            key = g.Key,
+            //            name = g.Select(n => n.cc_name).FirstOrDefault(),
+            //            count = g.Count(),
+            //        })
+            //        .OrderBy(g => g.key) // Sort by date
+            //        .ToList();
+            //}
+            //else
+            //{
+            //    // Group nodes by FormattedDate and count the number of SotGuids for each group
+            //    return resultList
+            //        .GroupBy(n => new { n.code, n.cc_name })  // Group by formatted date
+            //        .Select(g => new InventoryPerMonth
+            //        {
+            //            key = g.Key.code,
+            //            name = g.Select(n => n.cc_name).FirstOrDefault(),
+            //            count = g.Select(n => n.sot_guid).Distinct().Count()
+            //        })
+            //        .OrderBy(g => g.key) // Sort by date
+            //        .ToList();
+            //}
+
         }
+
         private async Task<IEnumerable<MergedMonthlyResult>> MergeMonthlyList(List<ResultPerDay> list1, List<ResultPerDay> list2)
         {
             // Join the results based on Date and Day
@@ -820,15 +707,15 @@ namespace IDMS.Billing.GqlTypes
             return (totalCount, averageCount);
         }
 
-        private async Task<YearlyInventory> GenerateYearlyInventoryResult(List<TempInventoryResult> approvedResult, string reportFormat, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
+        private async Task<YearlyInventory> GenerateYearlyInventoryResult(List<TempInventoryResult> approvedResult, string reportFormat, string type, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
         {
             IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
             if (reportFormat.EqualsIgnore("customer_wise"))
             {
-                approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
+                approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth, type);
             }
             else
-                approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth,type, specificTimeZone);
 
             (var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
 
@@ -910,8 +797,8 @@ namespace IDMS.Billing.GqlTypes
                                  last_cargo = tc.cargo,
                                  order_no = ro.ro_no,
                                  order_date = ro.create_dt,
-                                 cancel_date = ro.status_cv.Equals(CANCELED) ? ro.update_dt : null,
-                                 cancel_remarks = ro.status_cv.Equals(CANCELED) ? ro.remarks : "",
+                                 cancel_date = ros.status_cv.Equals(CANCELED) ? ros.update_dt : null,
+                                 cancel_remarks = ros.status_cv.Equals(CANCELED) ? ros.remarks : "",
                                  status = ros.status_cv, //sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
@@ -946,8 +833,8 @@ namespace IDMS.Billing.GqlTypes
                                  last_cargo = tc.cargo,
                                  order_no = so.so_no,
                                  order_date = so.create_dt,
-                                 cancel_date = so.status_cv.Equals(CANCELED) ? so.update_dt : null,
-                                 cancel_remarks = so.status_cv.Equals(CANCELED) ? so.remarks : "",
+                                 cancel_date = sot.status_cv.Equals(CANCELED) ? sot.update_dt : null,
+                                 cancel_remarks = sot.status_cv.Equals(CANCELED) ? sot.remarks : "",
                                  status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
@@ -1194,9 +1081,6 @@ namespace IDMS.Billing.GqlTypes
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
-                //DateTime startMonthLastDay = new DateTime(year, start_month, DateTime.DaysInMonth(year, start_month));
-                //long startMonthLastDayEpoch = ((DateTimeOffset)startMonthLastDay).ToUnixTimeSeconds();
-
                 var query = (from sot in context.storing_order_tank
                              join so in context.storing_order on sot.so_guid equals so.guid
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid
@@ -1218,7 +1102,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "repair", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.repair_monthly_revenue = monthlyRevenue;
                     }
@@ -1230,7 +1114,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "steaming", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.steam_monthly_revenue = monthlyRevenue;
                     }
@@ -1241,7 +1125,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "cleaning", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.cleaning_monthly_revenue = monthlyRevenue;
                     }
@@ -1252,7 +1136,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "residue", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.residue_monthly_revenue = monthlyRevenue;
                     }
@@ -1263,7 +1147,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "lolo", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.lolo_monthly_revenue = monthlyRevenue;
                     }
@@ -1275,7 +1159,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "gate", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.gate_monthly_revenue = monthlyRevenue;
                     }
@@ -1286,7 +1170,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "preinspection", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.preinspection_monthly_revenue = monthlyRevenue;
                     }
@@ -1297,7 +1181,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, "storage", specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.storage_monthly_revenue = monthlyRevenue;
                     }
@@ -1363,7 +1247,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "repair", specificTimeZone);
                         yearlyRevenueResult.repair_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1380,7 +1264,7 @@ namespace IDMS.Billing.GqlTypes
                         //else
                         //    approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "steaming", specificTimeZone);
                         yearlyRevenueResult.steam_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1393,7 +1277,7 @@ namespace IDMS.Billing.GqlTypes
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "cleaning", specificTimeZone);
                         yearlyRevenueResult.cleaning_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1405,7 +1289,7 @@ namespace IDMS.Billing.GqlTypes
 
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "residue", specificTimeZone);
                         yearlyRevenueResult.residue_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1417,7 +1301,7 @@ namespace IDMS.Billing.GqlTypes
 
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "lolo", specificTimeZone);
                         yearlyRevenueResult.lolo_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1431,7 +1315,7 @@ namespace IDMS.Billing.GqlTypes
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "gate", specificTimeZone);
                         yearlyRevenueResult.gate_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1444,7 +1328,7 @@ namespace IDMS.Billing.GqlTypes
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "preinspection", specificTimeZone);
                         yearlyRevenueResult.preinspection_yearly_revenue = yearlyRevenue;
                     }
 
@@ -1457,7 +1341,7 @@ namespace IDMS.Billing.GqlTypes
                         //var approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth);
                         //var yearlyRevenue = await GetYearlyRevenue(approveResultPerMonth);
 
-                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, specificTimeZone);
+                        var yearlyRevenue = await GetYearlyRevenue(approvedResult, reportFormat, startOfMonth, endOfMonth, "storage", specificTimeZone);
                         yearlyRevenueResult.storage_yearly_revenue = yearlyRevenue;
                     }
                 }
@@ -1684,7 +1568,63 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private async Task<List<RevenuePerMonth>> GetRevenuePerMonth(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
+        private async Task<List<ResultPerDay>> GetRevenuePerDay(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string type, string specificTimeZone = "Singapore Standard Time")
+        {
+            // Normalize to the platform-correct ID
+            TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
+
+            foreach (var item in resultList)
+            {
+                // Convert epoch timestamp to UTC
+                DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date);
+
+                // Convert UTC to desired time zone
+                DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
+
+                // Convert epoch timestamp to DateTimeOffset (local time zone)
+                //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
+
+                // Format the date as yyyy-MM-dd and replace the code with date
+                item.date = dateTimeOffset.ToString("dd/MM/yyyy");
+            }
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.date)  // Group by formatted date
+            //    .Select(g => new
+            //    {
+            //        FormattedDate = g.Key,
+            //        Count = g.Count(),
+            //        Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    .OrderBy(g => g.FormattedDate) // Sort by date
+            //    .ToList();
+
+            var groupedNodes = GetGroupNodesWithCost(resultList, type);
+
+            List<string> allDatesInMonth = new List<string>();
+            for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
+            {
+                allDatesInMonth.Add(date.ToString("dd/MM/yyyy"));
+            }
+
+            // Fill missing dates with count = 0 if not present
+            var completeGroupedNodes = allDatesInMonth
+                .Select(date => new ResultPerDay
+                {
+                    date = date,
+                    day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
+                    //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count),
+                    cost = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Cost)
+                })
+                .OrderBy(g => g.date) // Sort by date
+                .ToList();
+
+            return completeGroupedNodes;
+        }
+
+        private async Task<List<RevenuePerMonth>> GetRevenuePerMonth(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string type, string specificTimeZone)
         {
 
             TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
@@ -1703,17 +1643,19 @@ namespace IDMS.Billing.GqlTypes
                 // Format the date as yyyy-MM-dd and replace the code with date
                 item.date = dateTimeOffset.ToString("MMMM");
             }
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.date)  // Group by formatted date
-                .Select(g => new
-                {
-                    FormattedDate = g.Key,
-                    Count = g.Count(),
-                    Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                })
-                //.OrderBy(g => g.FormattedDate) // Sort by date
-                .ToList();
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.date)  // Group by formatted date
+            //    .Select(g => new
+            //    {
+            //        FormattedDate = g.Key,
+            //        Count = g.Count(),
+            //        Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    //.OrderBy(g => g.FormattedDate) // Sort by date
+            //    .ToList();
+
+            var groupedNodes = GetGroupNodesWithCost(resultList, "");
 
             List<string> allMonthInYear = new List<string>();
             for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
@@ -1727,8 +1669,10 @@ namespace IDMS.Billing.GqlTypes
                 {
                     key = date,
                     //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                    count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                    //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                    count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count),
+                    cost = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Cost)
                 })
                 //.OrderBy(g => g.date) // Sort by date
                 .ToList();
@@ -1736,33 +1680,66 @@ namespace IDMS.Billing.GqlTypes
             return completeGroupedNodes;
         }
 
-        private async Task<List<RevenuePerMonth>> GetRevenuePerCustomer(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
+        private async Task<List<RevenuePerMonth>> GetRevenuePerCustomer(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string type)
         {
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.code)  // Group by formatted date
-                .Select(g => new RevenuePerMonth
-                {
-                    key = g.Key,
-                    name = g.Select(n => n.cc_name).FirstOrDefault(),
-                    count = g.Count(),
-                    cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                })
-                .OrderBy(g => g.key) // Sort by date
-                .ToList();
+            //// Group nodes by FormattedDate and count the number of SotGuids for each group
+            //var groupedNodes = resultList
+            //    .GroupBy(n => n.code)  // Group by formatted date
+            //    .Select(g => new RevenuePerMonth
+            //    {
+            //        key = g.Key,
+            //        name = g.Select(n => n.cc_name).FirstOrDefault(),
+            //        count = g.Count(),
+            //        cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+            //    })
+            //    .OrderBy(g => g.key) // Sort by date
+            //    .ToList();
 
-            return groupedNodes;
+            //return groupedNodes;
+
+
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                return resultList
+                    .GroupBy(n => n.date)  // Group by formatted date
+                    .Select(g => new RevenuePerMonth
+                    {
+                        key = g.Key,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Count(),
+                        cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
+            else
+            {
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                return resultList
+                    .GroupBy(n => new { n.date, n.sot_guid })  // Group by formatted date
+                    .Select(g => new RevenuePerMonth
+                    {
+                        key = g.Key.date,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Select(n => n.sot_guid).Distinct().Count(),
+                        cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
+
         }
 
-        private async Task<YearlyRevenueManagement> GetYearlyRevenue(List<TempRevenueResult> approvedResult, string reportFormat, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
+        private async Task<YearlyRevenueManagement> GetYearlyRevenue(List<TempRevenueResult> approvedResult, string reportFormat, DateTime startOfMonth, DateTime endOfMonth, string type, string specificTimeZone)
         {
             IList<RevenuePerMonth> approveResultPerMonth = new List<RevenuePerMonth>();
             if (reportFormat.EqualsIgnore("customer_wise"))
             {
-                approveResultPerMonth = await GetRevenuePerCustomer(approvedResult, startOfMonth, endOfMonth);
+                approveResultPerMonth = await GetRevenuePerCustomer(approvedResult, startOfMonth, endOfMonth, type);
             }
             else
-                approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
+                approveResultPerMonth = await GetRevenuePerMonth(approvedResult, startOfMonth, endOfMonth, type, specificTimeZone);
 
             var total_count = approveResultPerMonth.Sum(g => g.count);
             int monthsWithCount = approveResultPerMonth.Count(g => g.count > 0);
@@ -1784,58 +1761,6 @@ namespace IDMS.Billing.GqlTypes
             yearlyRevenue.average_cost = average_cost;
 
             return yearlyRevenue;
-        }
-
-        private async Task<List<ResultPerDay>> GetRevenuePerDay(List<TempRevenueResult> resultList, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone = "Singapore Standard Time")
-        {
-            // Normalize to the platform-correct ID
-            TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
-
-            foreach (var item in resultList)
-            {
-                // Convert epoch timestamp to UTC
-                DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date);
-
-                // Convert UTC to desired time zone
-                DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
-
-                // Convert epoch timestamp to DateTimeOffset (local time zone)
-                //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
-
-                // Format the date as yyyy-MM-dd and replace the code with date
-                item.date = dateTimeOffset.ToString("dd/MM/yyyy");
-            }
-            // Group nodes by FormattedDate and count the number of SotGuids for each group
-            var groupedNodes = resultList
-                .GroupBy(n => n.date)  // Group by formatted date
-                .Select(g => new
-                {
-                    FormattedDate = g.Key,
-                    Count = g.Count(),
-                    Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                })
-                .OrderBy(g => g.FormattedDate) // Sort by date
-                .ToList();
-
-            List<string> allDatesInMonth = new List<string>();
-            for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
-            {
-                allDatesInMonth.Add(date.ToString("dd/MM/yyyy"));
-            }
-
-            // Fill missing dates with count = 0 if not present
-            var completeGroupedNodes = allDatesInMonth
-                .Select(date => new ResultPerDay
-                {
-                    date = date,
-                    day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                    count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                    cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
-                })
-                .OrderBy(g => g.date) // Sort by date
-                .ToList();
-
-            return completeGroupedNodes;
         }
 
         private async Task<MonthlySales> GetMonthlyRevenue(List<ResultPerDay?> approveResultPerDay)
@@ -1860,7 +1785,128 @@ namespace IDMS.Billing.GqlTypes
 
             return monthlyRevenue;
         }
+
         #endregion
 
+
+        private List<GroupedNodeWithCost> GetGroupNodesWithCost(List<TempRevenueResult>? resultList, string type)
+        {
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.date)
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key,
+                        Count = g.Count(),
+                        Cost = g.Select(n => n.cost).Sum()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+            else // cleaning
+            {
+                return resultList
+                    .GroupBy(n => new { n.date, n.sot_guid })
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key.date,
+                        Count = g.Select(n => n.sot_guid).Distinct().Count(),
+                        Cost = g.Select(n => n.cost).Sum()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+        }
+
+        private List<GroupedNodeWithCost> GetGroupNodesInventory(List<TempInventoryResult>? resultList, string type)
+        {
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.date)
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key,
+                        Cost = g.Select(n => n.cost).Sum() ?? 0.0 //IF repair, show the total_hour, the cost here is retrieve from total_hour
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+            else // cleaning
+            {
+                return resultList
+                    .GroupBy(n => new { n.date, n.sot_guid })
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key.date,
+                        Cost = g.Select(n => n.sot_guid).Distinct().Count()// We purpose use cost as number count for this query.. not a bug
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+        }
+
+        //private List<InventoryPerMonth> GetGroupInventoryCustomerWithCount(List<TempInventoryResult>? resultList, string type)
+        //{
+        //    if (type.EqualsIgnore("repair"))
+        //    {
+        //        return resultList
+        //            .GroupBy(n => n.date)
+        //            .Select(g => new InventoryPerMonth
+        //            {
+        //                key = g.Key,
+        //                name = g.Select(n => n.cc_name).FirstOrDefault(),
+        //                count = g.Count(),
+        //            })
+        //            .OrderBy(g => g.key) // Sort by date
+        //            .ToList();
+        //    }
+        //    else
+        //    {
+        //        // Group nodes by FormattedDate and count the number of SotGuids for each group
+        //        return resultList
+        //            .GroupBy(n => new { n.date, n.sot_guid })  // Group by formatted date
+        //            .Select(g => new InventoryPerMonth
+        //            {
+        //                key = g.Key.date,
+        //                name = g.Select(n => n.cc_name).FirstOrDefault(),
+        //                count = g.Select(n => n.sot_guid).Distinct().Count()
+        //            })
+        //            .OrderBy(g => g.key) // Sort by date
+        //            .ToList();
+        //    }
+        //}
+
+        private List<InventoryPerMonth> GetGroupInventoryMonthlyWithCount(List<TempInventoryResult>? resultList, string type)
+        {
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.date)
+                    .Select(g => new InventoryPerMonth
+                    {
+                        key = g.Key,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Count(),
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
+            else
+            {
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                return resultList
+                    .GroupBy(n => new { n.date, n.sot_guid })  // Group by formatted date
+                    .Select(g => new InventoryPerMonth
+                    {
+                        key = g.Key.date,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Select(n => n.sot_guid).Distinct().Count()
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
+        }
     }
 }

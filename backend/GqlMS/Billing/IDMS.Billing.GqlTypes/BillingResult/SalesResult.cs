@@ -188,4 +188,21 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public int total_offhire_count { get; set; }
         public double total_offhire_cost { get; set; }
     }
+
+    [NotMapped]
+    public class GroupedNodeWithCost: GroupedNode
+    {
+        //public string FormattedDate { get; set; }
+        //public int Count { get; set; }
+        public double Cost { get; set; } // optional, include only if needed
+    }
+
+    [NotMapped]
+    public class GroupedNode
+    {
+        public string FormattedDate { get; set; }
+        public int Count { get; set; }
+
+    }
+
 }

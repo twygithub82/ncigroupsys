@@ -417,10 +417,10 @@ namespace IDMS.Billing.GqlTypes
                                             })
                                             .FirstOrDefaultAsync();
 
-                bool hasLinkedRecords = result.InStorageDetail == 0 && result.InBillingSot == 0 && result.InResidue == 0 &&
+                bool noLinkedRecords = result.InStorageDetail == 0 && result.InBillingSot == 0 && result.InResidue == 0 &&
                                                    result.InRepair == 0 && result.InSteaming == 0 && result.InCleaning == 0;
 
-                if (!hasLinkedRecords)
+                if (noLinkedRecords)
                 {
                     result.BillingEntity.delete_dt = currentDateTime;
                     result.BillingEntity.update_by = user;

@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -207,5 +208,6 @@ namespace IDMS.Billing.Application
             var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
             return specificTimeZone;
         }
+
     }
 }

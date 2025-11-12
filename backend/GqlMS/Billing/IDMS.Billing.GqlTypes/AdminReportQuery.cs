@@ -13,6 +13,7 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using TimeZoneConverter;
 
 namespace IDMS.Billing.GqlTypes
@@ -342,7 +343,7 @@ namespace IDMS.Billing.GqlTypes
 
         private double RoundUpValue(double? value)
         {
-           return Math.Round(value ?? 0, 2); 
+            return Math.Round(value ?? 0, 2);
         }
 
 
@@ -507,12 +508,13 @@ namespace IDMS.Billing.GqlTypes
                     if (type.EqualsIgnore("cleaning"))
                     {
                         salesByCustomer = resultList
-                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        //.GroupBy(n => n.code)  // Group by formatted date
+                                        .GroupBy(n => new { n.code, n.sot_guid })
                                         .Select(g => new CustomerSales
                                         {
-                                            code = g.Key,
+                                            code = g.Key.code,
                                             name = g.Select(n => n.cc_name).FirstOrDefault(),
-                                            clean_count = g.Count(),
+                                            clean_count = g.Select(n => n.sot_guid).Distinct().Count(),//g.Count(),
                                             clean_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                                         })
                                         .OrderBy(g => g.code) // Sort by date
@@ -521,12 +523,13 @@ namespace IDMS.Billing.GqlTypes
                     else if (type.EqualsIgnore("steaming"))
                     {
                         salesByCustomer = resultList
-                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        //.GroupBy(n => n.code)  // Group by formatted date
+                                        .GroupBy(n => new { n.code, n.sot_guid })
                                         .Select(g => new CustomerSales
                                         {
-                                            code = g.Key,
+                                            code = g.Key.code,
                                             name = g.Select(n => n.cc_name).FirstOrDefault(),
-                                            steam_count = g.Count(),
+                                            steam_count = g.Select(n => n.sot_guid).Distinct().Count(),//g.Count(),
                                             steam_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                                         })
                                         .OrderBy(g => g.code) // Sort by date
@@ -535,12 +538,13 @@ namespace IDMS.Billing.GqlTypes
                     else if (type.EqualsIgnore("residue"))
                     {
                         salesByCustomer = resultList
-                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        //.GroupBy(n => n.code)  // Group by formatted date
+                                        .GroupBy(n => new { n.code, n.sot_guid })
                                         .Select(g => new CustomerSales
                                         {
-                                            code = g.Key,
+                                            code = g.Key.code,
                                             name = g.Select(n => n.cc_name).FirstOrDefault(),
-                                            residue_count = g.Count(),
+                                            residue_count = g.Select(n => n.sot_guid).Distinct().Count(),//g.Count(),
                                             residue_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                                         })
                                         .OrderBy(g => g.code) // Sort by date
@@ -550,11 +554,12 @@ namespace IDMS.Billing.GqlTypes
                     {
                         salesByCustomer = resultList
                                         .GroupBy(n => n.code)  // Group by formatted date
+                                        //.GroupBy(n => new { n.code, n.cc_name })
                                         .Select(g => new CustomerSales
                                         {
-                                            code = g.Key,
+                                            code = g.Key,//g.Key.code,
                                             name = g.Select(n => n.cc_name).FirstOrDefault(),
-                                            in_service_count = g.Count(),
+                                            in_service_count = g.Count(),//g.Select(n => n.sot_guid).Distinct().Count(),
                                             in_service_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                                         })
                                         .OrderBy(g => g.code) // Sort by date
@@ -563,12 +568,13 @@ namespace IDMS.Billing.GqlTypes
                     else if (type.EqualsIgnore("offhire"))
                     {
                         salesByCustomer = resultList
-                                        .GroupBy(n => n.code)  // Group by formatted date
+                                        .GroupBy(n => n.code)
+                                        //.GroupBy(n => new { n.code, n.cc_name })// Group by formatted date
                                         .Select(g => new CustomerSales
                                         {
-                                            code = g.Key,
+                                            code = g.Key, //g.Select(n => n.code).FirstOrDefault(), //g.Key,
                                             name = g.Select(n => n.cc_name).FirstOrDefault(),
-                                            offhire_count = g.Count(),
+                                            offhire_count = g.Count(),//g.Select(n => n.sot_guid).Distinct().Count(), 
                                             offhire_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                                         })
                                         .OrderBy(g => g.code) // Sort by date
@@ -603,15 +609,15 @@ namespace IDMS.Billing.GqlTypes
                         name = group.FirstOrDefault()?.name ?? "", // Select the name from the first available entry
                         tank_in_count = group.Where(x => x.tank_in_count > 0).Sum(x => x.tank_in_count),
                         clean_count = group.Where(x => x.clean_count > 0).Sum(x => x.clean_count),
-                        clean_cost = Math.Ceiling(group.Where(x => x.clean_cost > 0).Sum(x => x.clean_cost)),
+                        clean_cost = RoundUpValue(group.Where(x => x.clean_cost > 0).Sum(x => x.clean_cost)),
                         steam_count = group.Where(x => x.steam_count > 0).Sum(x => x.steam_count),
-                        steam_cost = Math.Ceiling(group.Where(x => x.steam_cost > 0).Sum(x => x.steam_cost)),
+                        steam_cost = RoundUpValue(group.Where(x => x.steam_cost > 0).Sum(x => x.steam_cost)),
                         residue_count = group.Where(x => x.residue_count > 0).Sum(x => x.residue_count),
-                        residue_cost = Math.Ceiling(group.Where(x => x.residue_cost > 0).Sum(x => x.residue_cost)),
+                        residue_cost = RoundUpValue(group.Where(x => x.residue_cost > 0).Sum(x => x.residue_cost)),
                         in_service_count = group.Where(x => x.in_service_count > 0).Sum(x => x.in_service_count),
-                        in_service_cost = Math.Ceiling(group.Where(x => x.in_service_cost > 0).Sum(x => x.in_service_cost)),
+                        in_service_cost = RoundUpValue(group.Where(x => x.in_service_cost > 0).Sum(x => x.in_service_cost)),
                         offhire_count = group.Where(x => x.offhire_count > 0).Sum(x => x.offhire_count),
-                        offhire_cost = Math.Ceiling(group.Where(x => x.offhire_cost > 0).Sum(x => x.offhire_cost))
+                        offhire_cost = RoundUpValue(group.Where(x => x.offhire_cost > 0).Sum(x => x.offhire_cost))
 
                     })
                     .ToList();
@@ -688,16 +694,43 @@ namespace IDMS.Billing.GqlTypes
                         item.code = dateTimeOffset.ToString("dd/MM/yyyy");
                     }
                     // Group nodes by FormattedDate and count the number of SotGuids for each group
-                    var groupedNodes = resultList
-                        .GroupBy(n => n.code)  // Group by formatted date
-                        .Select(g => new
-                        {
-                            FormattedDate = g.Key,
-                            Count = g.Count(),
-                            Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                        })
-                        .OrderBy(g => g.FormattedDate) // Sort by date
-                        .ToList();
+
+                    //var groupedNodes = resultList
+                    //    //.GroupBy(n => n.code)  // Group by formatted date
+                    //    .GroupBy(n => new { n.code, n.cc_name })
+                    //    .Select(g => new
+                    //    {
+                    //        FormattedDate = g.Key.code,
+                    //        Count = g.Select(n => n.sot_guid).Distinct().Count(),//g.Count(),
+                    //        Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    //    })
+                    //    .OrderBy(g => g.FormattedDate) // Sort by date
+                    //    .ToList();
+
+                    var groupedNodes = GetGroupNodesWithCost(resultList, type);
+
+                    //var groupedNodes = (type.EqualsIgnore("repair"))
+                    //                    ? resultList
+                    //                        .GroupBy(n => new { n.code })
+                    //                        .Select(g => new
+                    //                        {
+                    //                            FormattedDate = g.Key.code,
+                    //                            Count = g.Count(),
+                    //                            Cost = g.Select(n => n.cost).Sum()
+                    //                        })
+                    //                        .OrderBy(g => g.FormattedDate)
+                    //                        .ToList()
+                    //                    : resultList
+                    //                        .GroupBy(n => new { n.code, n.cc_name })
+                    //                        .Select(g => new
+                    //                        {
+                    //                            FormattedDate = g.Key.code,
+                    //                            Count = g.Select(n => n.sot_guid).Distinct().Count(),
+                    //                            Cost = g.Select(n => n.cost).Sum()
+                    //                        })
+                    //                        .OrderBy(g => g.FormattedDate)
+                    //                        .ToList();
+
 
                     List<string> allDatesInMonth = new List<string>();
                     for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
@@ -711,8 +744,11 @@ namespace IDMS.Billing.GqlTypes
                         {
                             date = date,
                             day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                            count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                            cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                            //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                            //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+
+                            count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count),
+                            cost = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Cost)
                         })
                         .OrderBy(g => g.date) // Sort by date
                         .ToList();
@@ -735,7 +771,7 @@ namespace IDMS.Billing.GqlTypes
                         total_count = totalCountForMonth,
                         average_count = averageCountPerDay,
                         total_cost = totalCostForMonth,
-                        average_cost = averageCostPerDay,
+                        average_cost = RoundUpValue(averageCostPerDay)
                     };
 
                     if (type.EqualsIgnore(ProcessType.PREINSPECTION))
@@ -819,17 +855,20 @@ namespace IDMS.Billing.GqlTypes
                         DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                         item.code = dateTimeOffset.ToString("MMMM");
                     }
-                    // Group nodes by FormattedDate and count the number of SotGuids for each group
-                    var groupedNodes = resultList
-                        .GroupBy(n => n.code)  // Group by formatted date
-                        .Select(g => new
-                        {
-                            FormattedDate = g.Key,
-                            Count = g.Count(),
-                            Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-                        })
-                        //.OrderBy(g => g.FormattedDate) // Sort by date
-                        .ToList();
+                    //// Group nodes by FormattedDate and count the number of SotGuids for each group
+                    //var groupedNodes = resultList
+                    //    //.GroupBy(n => n.code)  // Group by formatted date
+                    //    .GroupBy(n => new { n.code, n.cc_name })
+                    //    .Select(g => new
+                    //    {
+                    //        FormattedDate = g.Key.code,
+                    //        Count = g.Select(n => n.sot_guid).Distinct().Count(),//g.Count(),
+                    //        Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
+                    //    })
+                    //    //.OrderBy(g => g.FormattedDate) // Sort by date
+                    //    .ToList();
+
+                    var groupedNodes = GetGroupNodesWithCost(resultList, type);
 
                     List<string> allMonthInYear = new List<string>();
                     for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
@@ -844,10 +883,12 @@ namespace IDMS.Billing.GqlTypes
                             //date = date,
                             //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
                             month = date,
-                            count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-                            cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+                            //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                            //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
+
+                            count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count),
+                            cost = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Cost)
                         })
-                        //.OrderBy(g => g.date) // Sort by date
                         .ToList();
 
                     // Calculate the total count of SotGuids for the month
@@ -859,7 +900,7 @@ namespace IDMS.Billing.GqlTypes
 
                     double totalCost = completeGroupedNodes.Sum(g => g.cost);
                     double monthWithCost = completeGroupedNodes.Count(g => g.cost > 0);
-                    double averageCost = Math.Ceiling(monthWithCost > 0 ? totalCost / monthWithCost : 0);
+                    double averageCost = RoundUpValue(monthWithCost > 0 ? totalCost / monthWithCost : 0);
 
                     YearlySales yearlySalesReport = new YearlySales()
                     {
@@ -941,17 +982,19 @@ namespace IDMS.Billing.GqlTypes
                     DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                     item.code = dateTimeOffset.ToString("dd/MM/yyyy");
                 }
-                // Group nodes by FormattedDate and count the number of SotGuids for each group
-                var groupedNodes = resultList
-                    .GroupBy(n => n.code)  // Group by formatted date
-                    .Select(g => new
-                    {
-                        FormattedDate = g.Key,
-                        Count = g.Count(),
-                        //SotGuids = g.Select(n => n.sot_guid).Distinct().ToList() // Get distinct SotGuids
-                    })
-                    .OrderBy(g => g.FormattedDate) // Sort by date
-                    .ToList();
+                //// Group nodes by FormattedDate and count the number of SotGuids for each group
+                //var groupedNodes = resultList
+                //    .GroupBy(n => n.code)  // Group by formatted date
+                //    .Select(g => new
+                //    {
+                //        FormattedDate = g.Key,
+                //        Count = g.Count(),
+                //        //SotGuids = g.Select(n => n.sot_guid).Distinct().ToList() // Get distinct SotGuids
+                //    })
+                //    .OrderBy(g => g.FormattedDate) // Sort by date
+                //    .ToList();
+
+                var groupedNodes = GetGroupNodes(resultList, monthlyProcessRequest.report_type);
 
                 List<string> allDatesInMonth = new List<string>();
                 for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
@@ -965,7 +1008,8 @@ namespace IDMS.Billing.GqlTypes
                     {
                         date = date,
                         day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                        //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                        count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count)
                     })
                     .OrderBy(g => g.date) // Sort by date
                     .ToList();
@@ -1043,16 +1087,18 @@ namespace IDMS.Billing.GqlTypes
                     DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                     item.code = dateTimeOffset.ToString("MMMM");
                 }
-                // Group nodes by FormattedDate and count the number of SotGuids for each group
-                var groupedNodes = resultList
-                    .GroupBy(n => n.code)  // Group by formatted date
-                    .Select(g => new
-                    {
-                        FormattedDate = g.Key,
-                        Count = g.Count(),
-                    })
-                    //.OrderBy(g => g.FormattedDate) // Sort by date
-                    .ToList();
+                //// Group nodes by FormattedDate and count the number of SotGuids for each group
+                //var groupedNodes = resultList
+                //    .GroupBy(n => n.code)  // Group by formatted date
+                //    .Select(g => new
+                //    {
+                //        FormattedDate = g.Key,
+                //        Count = g.Count(),
+                //    })
+                //    //.OrderBy(g => g.FormattedDate) // Sort by date
+                //    .ToList();
+
+                var groupedNodes = GetGroupNodes(resultList, yearlyProcessRequest.report_type);
 
                 List<string> allMonthInYear = new List<string>();
                 for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
@@ -1067,7 +1113,8 @@ namespace IDMS.Billing.GqlTypes
                         //date = date,
                         //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
                         month = date,
-                        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                        //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0
+                        count = groupedNodes.Where(g => g.FormattedDate == date).Sum(g => g.Count)
                     })
                     //.OrderBy(g => g.date) // Sort by date
                     .ToList();
@@ -1196,8 +1243,8 @@ namespace IDMS.Billing.GqlTypes
 
             try
             {
-                string completedStatus = "COMPLETED";
-                string qcCompletedStatus = "QC_COMPLETED";
+                //string completedStatus = "COMPLETED";
+                //string qcCompletedStatus = "QC_COMPLETED";
                 string yetSurvey = "YET_TO_SURVEY";
 
                 //var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
@@ -1229,7 +1276,7 @@ namespace IDMS.Billing.GqlTypes
                                  sot_guid = result.sot_guid,
                                  code = result.code,
                                  cc_name = result.cc_name,
-                                 cost = s.cleaning_cost ?? 0.0 + s.buffer_cost ?? 0.0,
+                                 cost = (s.cleaning_cost ?? 0.0) + (s.buffer_cost ?? 0.0),
                                  date = (long)s.approve_dt
                              }).AsQueryable();
                 }
@@ -1300,39 +1347,89 @@ namespace IDMS.Billing.GqlTypes
                 else if (processType.EqualsIgnore(ProcessType.LOLO))
                 {
                     //NEED CHECK
-                    query = (from result in query
+                    var queryIn = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
                              join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
                              from ig in igJoin.DefaultIfEmpty()  // Left Join
-                             where (s.lift_off == true || s.lift_on == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                             where s.lift_off == true && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
                                  && s.delete_dt == null
                              select new TempReport
                              {
                                  sot_guid = result.sot_guid,
-                                 cost = ((s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0) + ((s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0),
+                                 //cost = ((s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0) + ((s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0),
+                                 cost = (s.lift_off == true ? 1.0 : 0.0) * (s.lift_off_cost ?? 0.0),
                                  code = result.code,
                                  cc_name = result.cc_name,
                                  date = (long)ig.eir_dt
                              }).AsQueryable();
+
+                    var queryOut = (from result in query
+                             join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                             join og in context.out_gate on s.sot_guid equals og.so_tank_guid into ogJoin
+                             from og in ogJoin.DefaultIfEmpty()  // Left Join
+                             where s.lift_on == true && og.delete_dt == null && og.eir_status_cv != yetSurvey && og.eir_dt >= startEpoch && og.eir_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 //cost = ((s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0) + ((s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0),
+                                 cost = (s.lift_on == true ? 1.0 : 0.0) * (s.lift_on_cost ?? 0.0),
+                                 code = result.code,
+                                 cc_name = result.cc_name,
+                                 date = (long)og.eir_dt
+                             }).AsQueryable();
+
+                    query = queryIn.Concat(queryOut).AsQueryable();
 
                 }
                 else if (processType.EqualsIgnore(ProcessType.GATE) || processType.EqualsIgnore(ProcessType.IN_OUT))
                 {
-                    query = (from result in query
-                             join s in context.billing_sot on result.sot_guid equals s.sot_guid
-                             join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
-                             from ig in igJoin.DefaultIfEmpty()  // Left Join
-                             where (s.gate_in == true || s.gate_out == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
-                                 && s.delete_dt == null
-                             select new TempReport
-                             {
-                                 sot_guid = result.sot_guid,
-                                 cost = ((s.gate_in == true ? 1.0 : 0.0) * s.gate_in_cost ?? 0.0) + ((s.gate_out == true ? 1.0 : 0.0) * s.gate_out_cost ?? 0.0),
-                                 code = result.code,
-                                 cc_name = result.cc_name,
-                                 date = (long)ig.eir_dt
-                             }).AsQueryable();
+                    //query = (from result in query
+                    //         join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                    //         join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
+                    //         from ig in igJoin.DefaultIfEmpty()  // Left Join
+                    //         where (s.gate_in == true || s.gate_out == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                    //             && s.delete_dt == null
+                    //         select new TempReport
+                    //         {
+                    //             sot_guid = result.sot_guid,
+                    //             cost = ((s.gate_in == true ? 1.0 : 0.0) * s.gate_in_cost ?? 0.0) + ((s.gate_out == true ? 1.0 : 0.0) * s.gate_out_cost ?? 0.0),
+                    //             code = result.code,
+                    //             cc_name = result.cc_name,
+                    //             date = (long)ig.eir_dt
+                    //         }).AsQueryable();
 
+                    var Inquery = (from result in query
+                                   join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                                   join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
+                                   from ig in igJoin.DefaultIfEmpty()  // Left Join
+                                   where (s.gate_in == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                                       && s.delete_dt == null
+                                   select new TempReport
+                                   {
+                                       sot_guid = result.sot_guid,
+                                       cost = (s.gate_in == true ? 1.0 : 0.0) * (s.gate_in_cost ?? 0.0),
+                                       code = result.code,
+                                       cc_name = result.cc_name,
+                                       date = (long)ig.eir_dt
+                                   });
+
+                    var Outquery = (from result in query
+                                    join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                                    join og in context.out_gate on s.sot_guid equals og.so_tank_guid into ogJoin
+                                    from og in ogJoin.DefaultIfEmpty()  // Left Join
+                                    where (s.gate_out == true) && og.eir_status_cv != yetSurvey && og.eir_dt >= startEpoch && og.eir_dt <= endEpoch
+                                        && s.delete_dt == null
+                                    select new TempReport
+                                    {
+                                        sot_guid = result.sot_guid,
+                                        cost = (s.gate_out == true ? 1.0 : 0.0) * (s.gate_out_cost ?? 0.0),
+                                        code = result.code,
+                                        cc_name = result.cc_name,
+                                        date = (long)og.eir_dt
+                                    });
+
+                    query = Inquery.Concat(Outquery).AsQueryable();
                 }
                 else if (processType.EqualsIgnore("storage"))
                 {
@@ -1413,6 +1510,65 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+
+        private List<GroupedNodeWithCost> GetGroupNodesWithCost(List<TempReport>? resultList, string type)
+        {
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.code)
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key,
+                        Count = g.Count(),
+                        Cost = g.Select(n => n.cost).Sum()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+            else // cleaning
+            {
+                return resultList
+                    .GroupBy(n => new { n.code, n.sot_guid })
+                    .Select(g => new GroupedNodeWithCost
+                    {
+                        FormattedDate = g.Key.code,
+                        Count = g.Select(n => n.sot_guid).Distinct().Count(),
+                        Cost = g.Select(n => n.cost).Sum()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+        }
+
+        private List<GroupedNode> GetGroupNodes(List<TempReport>? resultList, string type)
+        {
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.code)
+                    .Select(g => new GroupedNode
+                    {
+                        FormattedDate = g.Key,
+                        Count = g.Count()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+            else // cleaning
+            {
+                return resultList
+                    .GroupBy(n => new { n.code, n.sot_guid })
+                    .Select(g => new GroupedNode
+                    {
+                        FormattedDate = g.Key.code,
+                        Count = g.Select(n => n.sot_guid).Distinct().Count()
+                    })
+                    .OrderBy(g => g.FormattedDate)
+                    .ToList();
+            }
+        }
+
         #endregion
 
         #region DailyTeamRepairReport
@@ -1441,21 +1597,32 @@ namespace IDMS.Billing.GqlTypes
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
                              join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-                             where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             where r.delete_dt == null && r.status_cv == repairStatus && rp.approve_part == true && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             group new { r, rp, jo, t, sot, cc, ig } by new { t.guid, t.description, r.estimate_no } into g
+                             orderby g.Key.description
                              select new DailyTeamRevenue
                              {
-                                 estimate_no = r.estimate_no,
-                                 tank_no = sot.tank_no,
-                                 code = cc.code,
-                                 estimate_date = r.create_dt,
-                                 approved_date = r.approve_dt,
-                                 allocation_date = r.allocate_dt,
-                                 qc_by = jo.qc_by,
-                                 qc_date = jo.qc_dt,
-                                 eir_no = ig.eir_no,
-                                 repair_cost = r.total_cost,
-                                 team = t.description,
-                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+                                 team_guid = g.Key.guid,
+                                 estimate_no = g.Key.estimate_no,
+                                 tank_no = g.Max(x => x.sot.tank_no),
+                                 code = g.Max(x => x.cc.code),
+                                 estimate_date = g.Max(x => x.r.create_dt),
+                                 approved_date = g.Max(x => x.r.approve_dt),
+                                 allocation_date = g.Max(x => x.r.allocate_dt),
+                                 qc_by = g.Max(x => x.jo.qc_by),
+                                 qc_date = g.Max(x => x.jo.qc_dt),
+                                 eir_no = g.Max(x => x.ig.eir_no),
+                                 //repair_cost = (rp.approve_cost * rp.approve_qty * (1 - (r.material_cost_discount / 100))) +
+                                 //              (rp.approve_hour * r.labour_cost * (1 - (r.labour_cost_discount / 100))),
+                                 repair_cost = Math.Round(g.Sum(x =>
+                                     (
+                                         ((x.rp.approve_cost ?? 0) * (x.rp.approve_qty ?? 0) * (1 - ((x.r.material_cost_discount ?? 0) / 100d))) * 10) / 10
+                                     +
+                                     (
+                                         ((x.rp.approve_hour ?? 0) * (x.r.labour_cost ?? 0) * (1 - ((x.r.labour_cost_discount ?? 0) / 100d))) * 10) / 10), 2, MidpointRounding.AwayFromZero),
+
+                                 team = g.Max(x => x.t.description),
+                                 repair_type = g.Max(x => x.sot.purpose_repair_cv) //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
                              }).AsQueryable();
 
@@ -1504,7 +1671,7 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => dailyTeamRevenueRequest.team.Contains(tr.team));
                 }
 
-                return await query.OrderBy(tr => tr.code).OrderBy(tr => tr.approved_date).ToListAsync();
+                return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.approved_date).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -1621,43 +1788,82 @@ namespace IDMS.Billing.GqlTypes
 
                 string repairStatus = "QC_COMPLETED";
 
-                //var query1 = GetDailyRepairQuery(context);
-                //var qq = (from result in query1
-                //          where result.
-                //          )
+                //var query = (from r in context.repair
+                //             from rp in context.repair_part
+                //                    .Where(x => x.repair_guid == r.guid && x.approve_part == true && x.job_order_guid != null)
+                //                    .OrderBy(x => x.guid) // Or any other logic to pick "first"
+                //                    .Take(1)
+                //                    //.FirstOrDefault()
+                //             //join rp in context.repair_part on r.guid equals rp.repair_guid 
+                //             join jo in context.job_order on rp.job_order_guid equals jo.guid
+                //             //join t in context.team on jo.team_guid equals t.guid
+                //             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                //             join so in context.storing_order on sot.so_guid equals so.guid into soGroup
+                //             from so in soGroup.DefaultIfEmpty()
+                //             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                //             from cc in ccGroup.DefaultIfEmpty()
+                //                 //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                //             where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                //             select new DailyQCDetail
+                //             {
+                //                 estimate_no = r.estimate_no,
+                //                 tank_no = sot.tank_no,
+                //                 code = cc.code,
+                //                 estimate_date = r.create_dt,
+                //                 approved_date = r.approve_dt,
+                //                 allocation_date = r.allocate_dt,
+                //                 qc_date = jo.qc_dt,
+                //                 qc_by = jo.qc_by,
+                //                 //eir_no = ig.eir_no,
+                //                 //repair_cost = r.total_cost,
+                //                 repair_cost = Math.Round(
+                //                      ((rp.approve_cost ?? 0) * (rp.approve_qty ?? 0) * (1 - ((r.material_cost_discount ?? 0) / 100d))) * 10 / 10
+                //                  +
+                //                      ((rp.approve_hour ?? 0) * (r.labour_cost ?? 0) * (1 - ((r.labour_cost_discount ?? 0) / 100d))) * 10 / 10, 2, MidpointRounding.AwayFromZero),
+                //                 //team = t.description,
+                //                 appv_hour = r.total_hour, // need to change 
+                //                 appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
+                //                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
+
+                //             })
+                //             .AsQueryable();
 
                 var query = (from r in context.repair
-                             let rp = context.repair_part
-                                    .Where(x => x.repair_guid == r.guid)
-                                    .OrderBy(x => x.guid) // Or any other logic to pick "first"
-                                    .FirstOrDefault()
-                             //join rp in context.repair_part on r.guid equals rp.repair_guid 
+                             join rp in context.repair_part on r.guid equals rp.repair_guid
                              join jo in context.job_order on rp.job_order_guid equals jo.guid
-                             //join t in context.team on jo.team_guid equals t.guid
+                             join t in context.team on jo.team_guid equals t.guid
                              join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
                              join so in context.storing_order on sot.so_guid equals so.guid into soGroup
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                                 //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-                             where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             where r.delete_dt == null && r.status_cv == repairStatus && rp.approve_part == true && !string.IsNullOrEmpty(sot.purpose_repair_cv)
+                             group new { r, rp, jo, t, sot, cc, ig } by new { t.guid, t.description, r.estimate_no } into g
+                             orderby g.Key.description
                              select new DailyQCDetail
                              {
-                                 estimate_no = r.estimate_no,
-                                 tank_no = sot.tank_no,
-                                 code = cc.code,
-                                 estimate_date = r.create_dt,
-                                 approved_date = r.approve_dt,
-                                 allocation_date = r.allocate_dt,
-                                 qc_date = jo.qc_dt,
-                                 qc_by = jo.qc_by,
+                                 estimate_no = g.Key.estimate_no,
+                                 tank_no = g.Max(x => x.sot.tank_no),
+                                 code = g.Max(x => x.cc.code),
+                                 estimate_date = g.Max(x => x.r.create_dt),
+                                 approved_date = g.Max(x => x.r.approve_dt),
+                                 allocation_date = g.Max(x => x.r.allocate_dt),
+                                 qc_date = g.Max(x => x.jo.qc_dt),
+                                 qc_by = g.Max(x => x.jo.qc_by),
+                                 team = g.Max(x => x.t.description),
                                  //eir_no = ig.eir_no,
-                                 repair_cost = r.total_cost,
+                                 //repair_cost = r.total_cost,
+                                 repair_cost = Math.Round(g.Sum(x =>
+                                     (
+                                         ((x.rp.approve_cost ?? 0) * (x.rp.approve_qty ?? 0) * (1 - ((x.r.material_cost_discount ?? 0) / 100d))) * 10) / 10
+                                     +
+                                     (
+                                         ((x.rp.approve_hour ?? 0) * (x.r.labour_cost ?? 0) * (1 - ((x.r.labour_cost_discount ?? 0) / 100d))) * 10) / 10), 2, MidpointRounding.AwayFromZero),
                                  //team = t.description,
-                                 appv_hour = r.total_hour, // need to change 
-                                 appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
-                                 repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
-
+                                 appv_hour = g.Max(x => x.r.total_hour), // need to change 
+                                 appv_material_cost = g.Max(x => x.r.total_material_cost - x.r.material_cost_discount), //need to change
+                                 repair_type = g.Max(x => x.sot.purpose_repair_cv) //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
                              })
                              .AsQueryable();
 
@@ -1718,38 +1924,6 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private IQueryable<TempRepairDetail> GetDailyRepairQuery(ApplicationBillingDBContext context)
-        {
-            var query = (from r in context.repair
-                         join rp in context.repair_part on r.guid equals rp.repair_guid
-                         join jo in context.job_order on rp.job_order_guid equals jo.guid
-                         join t in context.team on jo.team_guid equals t.guid
-                         join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
-                         join so in context.storing_order on sot.so_guid equals so.guid into soGroup
-                         from so in soGroup.DefaultIfEmpty()
-                         join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
-                         from cc in ccGroup.DefaultIfEmpty()
-                         join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
-                         select new TempRepairDetail
-                         {
-                             estimate_no = r.estimate_no,
-                             tank_no = sot.tank_no,
-                             code = cc.code,
-                             estimate_date = r.create_dt,
-                             approved_date = r.approve_dt,
-                             allocation_date = r.allocate_dt,
-                             qc_date = jo.qc_dt,
-                             eir_no = ig.eir_no,
-                             repair_cost = r.total_cost,
-                             team = t.description,
-                             appv_hour = r.total_hour, // need to change 
-                             appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
-                             repair_type = sot.purpose_repair_cv
-
-                         }).AsQueryable();
-
-            return query;
-        }
 
         #endregion
 
@@ -1965,6 +2139,9 @@ namespace IDMS.Billing.GqlTypes
             {
                 result += $"{minutes:D2}m";
             }
+
+            if (result == "")
+                result = $"{(int)timeSpan.TotalSeconds}s";
 
             return result;
         }

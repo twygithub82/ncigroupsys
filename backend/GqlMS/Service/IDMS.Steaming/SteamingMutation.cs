@@ -1,14 +1,14 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
-using IDMS.Models.Service.GqlTypes.DB;
-using IDMS.Models.Service;
-using IDMS.Service.GqlTypes;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using HotChocolate.Types;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Steaming.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
+using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
+using IDMS.Service.GqlTypes;
+using IDMS.Steaming.GqlTypes.LocalModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -192,6 +192,8 @@ namespace IDMS.Steaming.GqlTypes
                 if (steaming.action != null && steaming.action.EqualsIgnore(ObjectAction.OVERWRITE))
                 {
                     updateSteaming.overwrite_remarks = steaming.overwrite_remarks;
+                    if (steaming.rate != null)
+                        updateSteaming.rate = steaming.rate;
                     updateSteaming.flat_rate = steaming.flat_rate;
                     updateSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
                 }
@@ -282,6 +284,7 @@ namespace IDMS.Steaming.GqlTypes
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
+                string linkSotGuid = "";
 
                 foreach (var item in steaming)
                 {
@@ -294,10 +297,12 @@ namespace IDMS.Steaming.GqlTypes
                             rollbackSteaming.update_by = user;
                             rollbackSteaming.update_dt = currentDateTime;
                             rollbackSteaming.remarks = item.remarks;
+                            linkSotGuid = rollbackSteaming.sot_guid;
 
-                            //if (item.estimate_no.StartsWith("SE"))
                             if (rollbackSteaming.create_by.EqualsIgnore("system") || rollbackSteaming.estimate_no.StartsWith("SE"))
+                            {
                                 rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                            }
                             else
                                 rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
 
@@ -342,6 +347,9 @@ namespace IDMS.Steaming.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, linkSotGuid, "");
+
                 return res;
             }
             catch (Exception ex)
@@ -627,7 +635,17 @@ namespace IDMS.Steaming.GqlTypes
                     rollbackSteaming.update_dt = currentDateTime;
 
                     if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                    {
                         rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                        if (rollbackSteaming.flat_rate == true)
+                            rollbackSteaming.total_hour = 1.0;
+                        else 
+                        {
+                            rollbackSteaming.total_hour = null;
+                            context.Entry(rollbackSteaming).Property(x => x.total_hour).IsModified = true;
+                        }
+
+                    }
                     else
                     {
                         if (rollbackSteaming.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))

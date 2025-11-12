@@ -246,7 +246,7 @@ namespace IDMS.Inventory.GqlTypes
 
                 var authUser = httpContextAccessor.HttpContext.User;
 
-                
+
                 var sessionId = $"{authUser.FindFirst("sessionid")?.Value}";
 
                 var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
@@ -262,14 +262,14 @@ namespace IDMS.Inventory.GqlTypes
                 }
                 else
                 {
-                    var dbSessionId=await GetCurrentSessionId(config, uid);
+                    var dbSessionId = await GetCurrentSessionId(config, uid);
                     if (sessionId != dbSessionId)
                     {
                         throw new GraphQLException(new Error("Unauthorized", "401"));
                     }
                 }
-                
-              
+
+
             }
             catch
             {
@@ -606,7 +606,8 @@ namespace IDMS.Inventory.GqlTypes
 
                     if (isFlatRate ?? false)
                     {
-                        rate = cost = result?.cost ?? 0.0;
+                        cost = result?.cost ?? 0.0;
+                        rate = result?.labour ?? 0.0;
                         total_hour = 1.0;
                     }
                     else
@@ -919,9 +920,10 @@ namespace IDMS.Inventory.GqlTypes
             double cost = 0;
             try
             {
-                if (!string.IsNullOrEmpty(customerGuid))
+                //if (!string.IsNullOrEmpty(customerGuid))
+                if (!string.IsNullOrEmpty(tariffLabourGuid))
                     cost = await context.Set<package_labour>().Where(b => b.customer_company_guid == customerGuid && b.tariff_labour_guid == tariffLabourGuid)
-                                        .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+                                    .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
                 else
                     cost = await context.Set<package_labour>().Where(b => b.customer_company_guid == customerGuid)
                                         .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
@@ -1102,7 +1104,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                if (gate.EqualsIgnore("IN")) 
+                if (gate.EqualsIgnore("IN"))
                 {
                     var count = context.in_gate.Where(ig => ig.eir_status_cv == EirStatus.YET_TO_SURVEY && (ig.delete_dt == null || ig.delete_dt == 0))
                               .Select(ig => ig.guid)

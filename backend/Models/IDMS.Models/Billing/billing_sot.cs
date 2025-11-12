@@ -56,14 +56,19 @@ namespace IDMS.Models.Billing
 
         [ForeignKey("lon_billing_guid")]
         public virtual billing? lon_billing { get; set; }
+
         [ForeignKey("loff_billing_guid")]
         public virtual billing? loff_billing { get; set; }
+
         [ForeignKey("preinsp_billing_guid")]
         public virtual billing? preinsp_billing { get; set; }
+
         [ForeignKey("storage_billing_guid")]
         public virtual billing? storage_billing { get; set; }
+
         [ForeignKey("gin_billing_guid")]
         public virtual billing? gin_billing { get; set; }
+
         [ForeignKey("gout_billing_guid")]
         public virtual billing? gout_billing { get; set; }
     }

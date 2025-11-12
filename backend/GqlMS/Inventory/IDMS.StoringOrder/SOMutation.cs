@@ -274,6 +274,7 @@ namespace IDMS.StoringOrder.GqlTypes
                                     || SOTankStatus.PREORDER.EqualsIgnore(tnk.status_cv))
                                 {
                                     tnk.status_cv = SOTankStatus.CANCELED;
+                                    tnk.remarks = soRequest.remarks;
                                     tnk.update_dt = currentDateTime;
                                     tnk.update_by = user;
                                 }

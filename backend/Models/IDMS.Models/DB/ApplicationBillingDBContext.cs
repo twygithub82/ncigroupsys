@@ -70,7 +70,9 @@ namespace IDMS.Models.DB
         public DbSet<tank_info> tank_info { get; set; }
         public DbSet<survey_detail> survey_detail { get; set; }
         public DbSet<code_values> code_values { get; set; }
-        
+        public DbSet<code_values> release_order { get; set; }
+        public DbSet<code_values> release_order_sot { get; set; }
+
         //public DbSet<steaming> steaming { get; set; }
 
     }

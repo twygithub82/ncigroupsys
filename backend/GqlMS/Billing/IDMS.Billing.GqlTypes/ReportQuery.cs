@@ -161,7 +161,7 @@ namespace IDMS.Billing.GqlTypes
                                                            from cc in ccGroup.DefaultIfEmpty()
                                                            join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
                                                            from i in iGroup.DefaultIfEmpty()
-                                                           where tf.yard_cv != null
+                                                           where tf.yard_cv != null && tf.delete_dt == null
                                                                  && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv) && i.delete_dt == null
                                                            select (new PeriodicTestDueSummary
                                                            {
@@ -266,7 +266,8 @@ namespace IDMS.Billing.GqlTypes
                                                            {
                                                                cc.code,
                                                                sot.tank_no,
-                                                               sot.status_cv,
+                                                               //sot.status_cv,
+                                                               sd.status_cv,
                                                                i.eir_no,
                                                                sd.survey_type_cv,
                                                                sd.survey_dt,
@@ -321,6 +322,117 @@ namespace IDMS.Billing.GqlTypes
         }
 
         public async Task<List<DailyInventorySummary>> QueryDailyInventorySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, DailyInventoryRequest dailyInventoryRequest)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                long sDate = dailyInventoryRequest.start_date; //StartDateExtract(dailyInventoryRequest.start_date);
+                long eDate = dailyInventoryRequest.end_date; //EndDateExtract(dailyInventoryRequest.end_date);
+
+                List<OpeningBalance?> openingBalances = new List<OpeningBalance?>();
+                var OB = await QueryOpeningBalance(context, sDate);
+                openingBalances = await QueryYardCount(context, dailyInventoryRequest.inventory_type, sDate, eDate, OB);
+
+                List<DailyInventorySummary> inList = new List<DailyInventorySummary>();
+                List<DailyInventorySummary> outList = new List<DailyInventorySummary>();
+
+                var query = context.storing_order_tank.AsQueryable();
+                if (!string.IsNullOrEmpty(dailyInventoryRequest.customer_code))
+                {
+                    if (query != null)
+                    {
+                        query = query.Where(s => s.storing_order.customer_company.code == dailyInventoryRequest.customer_code);
+                    }
+                }
+
+                var query1 = query;
+
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
+                {
+                    //Master in here need to check eir_status = published ?? and publish_dt != null ???
+                    query = query.Where(sot => context.in_gate
+                                    .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
+                                    .Select(i => i.so_tank_guid)
+                                    .Contains(sot.guid)).AsQueryable();
+
+                    var res = await query.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Code = g.Key.code,
+                                          Name = g.Key.name
+                                      }).ToListAsync();
+
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.IN))
+                    {
+                        return res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            in_gate_count = x.NoOfTanks,
+                            opening_balance = openingBalances
+
+                        }).ToList();
+                    }
+                    else
+                    {
+                        inList = res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            in_gate_count = x.NoOfTanks
+                        }).ToList();
+                    }
+                }
+
+                if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT) || dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.ALL))
+                {
+                    query1 = query1.Where(sot => context.out_gate
+                                    .Where(i => (i.delete_dt == null || i.delete_dt == 0) && i.eir_dt >= sDate && i.eir_dt <= eDate)
+                                    .Select(i => i.so_tank_guid)
+                                    .Contains(sot.guid)).AsQueryable();
+
+                    var res = await query1.GroupBy(sot => new { sot.storing_order.customer_company.code, sot.storing_order.customer_company.name })
+                                      .Select(g => new
+                                      {
+                                          NoOfTanks = g.Select(s => s.guid).Distinct().Count(), // Count distinct `guid`
+                                          Code = g.Key.code,
+                                          Name = g.Key.name
+                                      }).ToListAsync();
+
+                    if (dailyInventoryRequest.inventory_type.EqualsIgnore(ReportType.OUT))
+                    {
+                        return res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            out_gate_count = x.NoOfTanks,
+                            opening_balance = openingBalances
+                        }).ToList();
+                    }
+                    else
+                    {
+                        outList = res.Select(x => new DailyInventorySummary
+                        {
+                            code = x.Code,
+                            name = x.Name,
+                            out_gate_count = x.NoOfTanks
+                        }).ToList();
+                    }
+                }
+                return MergeList(inList, outList, openingBalances);
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        public async Task<List<DailyInventorySummary>> QueryDailyInventorySummary1(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, DailyInventoryRequest dailyInventoryRequest)
         {
             try

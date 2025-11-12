@@ -15,24 +15,27 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         [GraphQLIgnore]
         public long? qc_date { get; set; }
         [NotMapped]
-        [GraphQLIgnore]
+        //[GraphQLIgnore]
         public string? team { get; set; }
+        [GraphQLIgnore]
+        public string? team_guid { get; set; }
     }
 
+    [NotMapped]
     public class DailyTeamApproval : RepairDetails
     {
-        [NotMapped]
+        
         public string? status { get; set; }
-        [NotMapped]
+
         [GraphQLIgnore]
         public long? estimate_date { get; set; }
-        [NotMapped]
+
         [GraphQLIgnore]
         public long? qc_date { get; set; }
-        [NotMapped]
+
         [GraphQLIgnore]
         public string? eir_no { get; set; }
-        [NotMapped]
+
         [GraphQLIgnore]
         public string? team { get; set; }
     }
@@ -44,10 +47,13 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? qc_by { get; set; }
         public double? appv_hour { get; set; }
         public double? appv_material_cost { get; set; }
+        public string? team { get; set; }
+
         [GraphQLIgnore]
         public string? eir_no { get; set; }
         [GraphQLIgnore]
         public long? qc_date { get; set; }
+
     }
 
     [NotMapped]
