@@ -118,6 +118,13 @@
             </a>
             <ul class="ml-menu">
               <li [routerLinkActive]="''">
+                <a (click)="languageDialog($event)" [ngClass]="['ml-menu']" matRipple>
+                  {{ translatedLangText.LANGUAGE }}
+                </a>
+              </li>
+            </ul>
+            <ul class="ml-menu">
+              <li [routerLinkActive]="''">
                 <a (click)="logoutDialog($event)" [ngClass]="['ml-menu']" matRipple>
                   {{ translatedLangText.LOGOUT }}
                 </a>
