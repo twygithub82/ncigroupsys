@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+Dockerfile
+Dockerfile.prod
+README.md
+.git
+.gitignore
+*.md
+*.log
+*.ts
+*.js.map
+*.spec.ts
+*.tgz
+*.zip
+src/environments/environment.ts
+src/environments/environment.prod.ts
