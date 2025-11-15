@@ -26,6 +26,7 @@ import { environment, modulePackage } from 'environments/environment';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ROUTES } from './sidebar-items';
 import { RouteInfo } from './sidebar.metadata';
+import { ChangeLanguageDialogComponent } from '@shared/components/change-language-dialog/change-language-dialog.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -54,6 +55,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
   langText = {
     SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT',
     ACCOUNT: 'COMMON-FORM.ACCOUNT',
+    LANGUAGE: 'COMMON-FORM.LANGUAGE',
     LOGOUT: 'COMMON-FORM.LOGOUT',
     CONFIRM_LOGOUT: 'COMMON-FORM.CONFIRM-LOGOUT',
   }
@@ -205,6 +207,25 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   logout() {
     this.authService.logout();
+  }
+
+  languageDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ChangeLanguageDialogComponent, {
+      autoFocus: false,
+      data: {
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 
   logoutDialog(event: Event) {
