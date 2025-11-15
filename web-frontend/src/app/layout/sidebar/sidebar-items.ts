@@ -1146,7 +1146,7 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
-   {
+  {
     path: "admin/user-management",
     title: "MENUITEMS.USER-MANAGEMENT.TEXT",
     iconType: "material",
@@ -1157,7 +1157,7 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     visible: true,
     modulePackage: ['growth', 'customized'],
-    expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW', 'MANAGEMENT_MAN_HOUR_VIEW'],
+    expectedFunctions: ['USER_MANAGEMENT_USERS_VIEW', 'USER_MANAGEMENT_USERS_EDIT', 'USER_MANAGEMENT_USERS_DELETE', 'USER_MANAGEMENT_USERS_ADD', 'USER_MANAGEMENT_ROLES_VIEW', 'USER_MANAGEMENT_ROLES_EDIT', 'USER_MANAGEMENT_ROLES_DELETE', 'USER_MANAGEMENT_ROLES_ADD', 'USER_MANAGEMENT_TEAMS_VIEW', 'USER_MANAGEMENT_TEAMS_EDIT', 'USER_MANAGEMENT_TEAMS_DELETE', 'USER_MANAGEMENT_TEAMS_ADD'],
     submenu: [
       {
         path: "admin/user-management/user",
@@ -1170,9 +1170,10 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         visible: true,
         modulePackage: [],
+        expectedFunctions: ['USER_MANAGEMENT_USERS_VIEW', 'USER_MANAGEMENT_USERS_EDIT', 'USER_MANAGEMENT_USERS_DELETE', 'USER_MANAGEMENT_USERS_ADD'],
         submenu: [],
       },
-       {
+      {
         path: "admin/user-management/role",
         title: "MENUITEMS.USER-MANAGEMENT.LIST.ROLES",
         iconType: "",
@@ -1183,9 +1184,10 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         visible: true,
         modulePackage: [],
+        expectedFunctions: ['USER_MANAGEMENT_ROLES_VIEW', 'USER_MANAGEMENT_ROLES_EDIT', 'USER_MANAGEMENT_ROLES_DELETE', 'USER_MANAGEMENT_ROLES_ADD'],
         submenu: [],
       },
-       {
+      {
         path: "admin/user-management/team",
         title: "MENUITEMS.USER-MANAGEMENT.LIST.TEAMS",
         iconType: "",
@@ -1196,6 +1198,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         visible: true,
         modulePackage: [],
+        expectedFunctions: ['USER_MANAGEMENT_TEAMS_VIEW', 'USER_MANAGEMENT_TEAMS_EDIT', 'USER_MANAGEMENT_TEAMS_DELETE', 'USER_MANAGEMENT_TEAMS_ADD'],
         submenu: [],
       }
     ].filter(item => item.visible !== false),
