@@ -3,7 +3,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -14,9 +13,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Models.Tariff.GqlTypes
+namespace IDMS.Models.Package.GqlTypes
 {
-    public class GqlUtils
+    internal class GqlUtils1
     {
         public static string GenerateSqlUpdate(JToken jToken, string tableName)
         {
@@ -281,13 +280,11 @@ namespace IDMS.Models.Tariff.GqlTypes
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
-
             }
             catch (Exception ex)
             {
-
                 throw new Exception("Unauthorized - " + ex.Message);
-            }   
+            }
             return uid;
         }
     }

@@ -50,11 +50,11 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
         public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
         public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
         
-        public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
-        public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
+        public DbSet<customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
+        public DbSet<customer_company> customer_company { get; set; }
 
-        public DbSet<IDMS.Models.Inventory.storing_order> storing_order { get; set; }
-        public DbSet<IDMS.Models.Inventory.storing_order_tank> storing_order_tank { get; set; }
+        public DbSet<storing_order> storing_order { get; set; }
+        public DbSet<storing_order_tank> storing_order_tank { get; set; }
 
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
         public DbSet<tariff_depot> tariff_depot { get; set; }
