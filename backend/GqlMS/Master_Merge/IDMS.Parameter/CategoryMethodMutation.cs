@@ -6,6 +6,7 @@ using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using static IDMS.Parameter.GqlTypes.StatusConstant;
 
 namespace IDMS.Models.Parameter.GqlTypes
@@ -13,6 +14,13 @@ namespace IDMS.Models.Parameter.GqlTypes
     [ExtendObjectType(typeof(TemplateEstMutation))]
     public class CleanningMethodMutation
     {
+        private readonly ILogger<CleanningMethodMutation> _logger;
+        const string graphqlErrorCode = "ERROR";
+
+        public CleanningMethodMutation(ILogger<CleanningMethodMutation> logger)
+        {
+            _logger = logger;
+        }
 
         #region Cleaning Methods
         public async Task<int> AddCleaningMethod(ApplicationMasterDBContext context,
@@ -34,19 +42,17 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanMthd.category_guid = NewCleanMethod.category_guid;
                 newCleanMthd.description = NewCleanMethod.description;
                 newCleanMthd.name = NewCleanMethod.name;
-                newCleanMthd.sequence = maxSequence ?? 0 + 1;
+                newCleanMthd.sequence = (maxSequence ?? 0) + 1;
                 newCleanMthd.create_by = uid;
                 newCleanMthd.create_dt = currentDateTime;
                 newCleanMthd.update_by = uid;
                 newCleanMthd.update_dt = currentDateTime;
 
                 //Cleaning formula handling
-                //IList<cleaning_method_formula> cleaningMethodFormulaList = new List<cleaning_method_formula>();
                 foreach (var item in NewCleanMethod.cleaning_method_formula)
                 {
                     if (item != null)
                     {
-                        //var newCMF = new cleaning_method_formula();
                         item.guid = Util.GenerateGUID();
                         item.method_guid = newCleanMthd.guid;
                         item.create_by = uid;
@@ -54,16 +60,24 @@ namespace IDMS.Models.Parameter.GqlTypes
                         item.update_by = uid;
                         item.update_dt = currentDateTime;
 
+                        _logger.LogInformation("Adding cleaning_method_formula GUID {Guid} for method {MethodGuid}", item.guid, item.method_guid);
                         await context.cleaning_method_formula.AddAsync(item);
                     }
                 }
 
                 await context.AddAsync(newCleanMthd);
                 retval = await context.SaveChangesAsync();
+
+                _logger.LogInformation("AddCleaningMethod completed by {User}. Saved {Changes} change(s). Method GUID: {Guid}", uid, retval, newCleanMthd.guid);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddCleaningMethod: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
 
             return retval;
@@ -83,9 +97,12 @@ namespace IDMS.Models.Parameter.GqlTypes
                 var currentDateTime = GqlUtils.GetNowEpochInSec();
 
                 cleaning_method dbCleanMethod = await context.cleaning_method.Where(c => c.guid == UpdateCleanMethod.guid).Include(c => c.cleaning_method_formula).FirstOrDefaultAsync();
-                                                            
+
                 if (dbCleanMethod == null)
+                {
+                    _logger.LogWarning("UpdateCleaningMethod could not find cleaning_method with GUID {Guid}", UpdateCleanMethod?.guid);
                     throw new GraphQLException(new Error($"Cleaning method not found", "ERROR"));
+                }
 
                 dbCleanMethod.description = UpdateCleanMethod.description;
                 dbCleanMethod.name = UpdateCleanMethod.name;
@@ -107,6 +124,7 @@ namespace IDMS.Models.Parameter.GqlTypes
                         newCMF.update_by = user;
                         newCMF.update_dt = currentDateTime;
 
+                        _logger.LogInformation("Adding new cleaning_method_formula GUID {Guid} for method {MethodGuid}", newCMF.guid, curMethodGuid);
                         await context.cleaning_method_formula.AddAsync(newCMF);
                     }
 
@@ -118,6 +136,11 @@ namespace IDMS.Models.Parameter.GqlTypes
                             updateCMF.sequence = item.sequence;
                             updateCMF.update_by = user;
                             updateCMF.update_dt = currentDateTime;
+                            _logger.LogInformation("Edited cleaning_method_formula GUID {Guid} sequence set to {Seq}", updateCMF.guid, updateCMF.sequence);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("EDIT action: cleaning_method_formula not found for method {MethodGuid} and formula {FormulaGuid}", curMethodGuid, item.formula_guid);
                         }
                     }
 
@@ -129,17 +152,27 @@ namespace IDMS.Models.Parameter.GqlTypes
                             updateCMF.delete_dt = currentDateTime;
                             updateCMF.update_by = user;
                             updateCMF.update_dt = currentDateTime;
+                            _logger.LogInformation("Cancelled cleaning_method_formula GUID {Guid}", updateCMF.guid);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("CANCEL action: cleaning_method_formula not found for method {MethodGuid} and formula {FormulaGuid}", curMethodGuid, item.formula_guid);
                         }
                     }
                 }
 
                 retval = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateCleaningMethod completed by {User}. Saved {Changes} change(s) for method {MethodGuid}", user, retval, curMethodGuid);
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateCleaningMethod: {Message}", ex.Message);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
             return retval;
         }
@@ -156,20 +189,25 @@ namespace IDMS.Models.Parameter.GqlTypes
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var delCleanMethods = context.cleaning_method.Where(s => DeleteCleanMethod_guids.Contains(s.guid) && s.delete_dt == null);
 
-
                 foreach (var delCleanMethod in delCleanMethods)
                 {
                     delCleanMethod.delete_dt = GqlUtils.GetNowEpochInSec();
                     delCleanMethod.update_by = uid;
                     delCleanMethod.update_dt = GqlUtils.GetNowEpochInSec();
+
+                    _logger.LogInformation("Marked cleaning_method GUID {Guid} as deleted", delCleanMethod.guid);
                 }
                 retval = await context.SaveChangesAsync();
-
+                _logger.LogInformation("DeleteCleaningMethod completed by {User}. Changes saved: {Changes}", uid, retval);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteCleaningMethod: {Message}", ex.Message);
+                throw new GraphQLException(
+                             ErrorBuilder.New()
+                                 .SetMessage(ex.Message)
+                                 .SetCode(graphqlErrorCode)
+                                 .Build());
             }
             return retval;
         }
@@ -196,31 +234,21 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanCategory.update_by = uid;
                 newCleanCategory.update_dt = GqlUtils.GetNowEpochInSec();
 
+                _logger.LogInformation("Adding cleaning_category GUID {Guid} name {Name}", newCleanCategory.guid, newCleanCategory.name);
                 await context.cleaning_category.AddAsync(newCleanCategory);
                 retval = await context.SaveChangesAsync();
 
-                //Change below code to use trigger
-                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null);
-                //foreach (var customerCompany in customerCompanies)
-                //{
-                //    var customerCom_CleanCat = new customer_company_cleaning_category();
-                //    customerCom_CleanCat.guid = Util.GenerateGUID();
-                //    customerCom_CleanCat.adjusted_price = newCleanCategory.cost;
-                //    customerCom_CleanCat.initial_price = newCleanCategory.cost;
-                //    customerCom_CleanCat.customer_company_guid = customerCompany.guid;
-                //    customerCom_CleanCat.cleaning_category_guid = newCleanCategory.guid;
-                //    customerCom_CleanCat.create_by = uid;
-                //    customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
-                //    context.customer_company_cleaning_category.Add(customerCom_CleanCat);
-                //}
-                //context.cleaning_category.Add(newCleanCategory);
+                _logger.LogInformation("AddCleaningCategory completed by {User}. Saved {Changes} change(s). Category GUID: {Guid}", uid, retval, newCleanCategory.guid);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddCleaningCategory: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
-
-
             return retval;
         }
 
@@ -235,14 +263,6 @@ namespace IDMS.Models.Parameter.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var guid = UpdateCleanCategory.guid;
-
-                //var dbCleanCategory = context.cleaning_category.Find(guid);
-                //if (dbCleanCategory == null)
-                //{
-                //    throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
-                //}
-
                 var dbCleanCategory = new cleaning_category() { guid = UpdateCleanCategory.guid };
                 context.Attach(dbCleanCategory);
 
@@ -254,11 +274,16 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                 retval = await context.SaveChangesAsync();
 
+                _logger.LogInformation("UpdateCleaningCategory completed by {User}. Saved {Changes} change(s). Category GUID: {Guid}", uid, retval, UpdateCleanCategory.guid);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateCleaningCategory: {Message}", ex.Message);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
             return retval;
         }
@@ -280,14 +305,21 @@ namespace IDMS.Models.Parameter.GqlTypes
                     delCleanCategory.delete_dt = GqlUtils.GetNowEpochInSec();
                     delCleanCategory.update_by = uid;
                     delCleanCategory.update_dt = GqlUtils.GetNowEpochInSec();
-                }
-                retval = context.SaveChanges();
 
+                    _logger.LogInformation("Marked cleaning_category GUID {Guid} as deleted", delCleanCategory.guid);
+                }
+                retval = await context.SaveChangesAsync();
+
+                _logger.LogInformation("DeleteCleaningCategory completed by {User}. Saved {Changes} change(s).", uid, retval);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteCleaningCategory: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
             return retval;
         }
@@ -303,7 +335,7 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                 var queryCats = context.cleaning_category.Where(c => c.delete_dt == null || c.delete_dt == 0).ToArray();
                 var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                //var customerCompCategories = context.customer_company_cleaning_category.Where(d => d.delete_dt == null || d.delete_dt == 0);
+
                 foreach (var cat in queryCats)
                 {
                     foreach (var cc in customerCompanies)
@@ -323,15 +355,22 @@ namespace IDMS.Models.Parameter.GqlTypes
                             customerCom_CleanCat.create_by = uid;
                             customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
                             context.customer_company_cleaning_category.Add(customerCom_CleanCat);
+
+                            _logger.LogInformation("Added customer_company_cleaning_category GUID {Guid} for customer {CustomerGuid} category {CategoryGuid}", customerCom_CleanCat.guid, cc.guid, cat.guid);
                         }
                     }
                 }
                 retval = context.SaveChanges();
+                _logger.LogInformation("SyncUpCustomerCompaniesWithCleaningCategories completed by {User}. Saved {Changes} change(s).", uid, retval);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in SyncUpCustomerCompaniesWithCleaningCategories: {Message}", ex.Message);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
             return retval;
 
@@ -359,12 +398,20 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanFormula.update_by = uid;
                 newCleanFormula.update_dt = GqlUtils.GetNowEpochInSec();
 
+                _logger.LogInformation("Adding cleaning_formula GUID {Guid}", newCleanFormula.guid);
                 await context.cleaning_formula.AddAsync(newCleanFormula);
                 retval = await context.SaveChangesAsync();
+
+                _logger.LogInformation("AddCleaningFormula completed by {User}. Saved {Changes} change(s). Formula GUID: {Guid}", uid, retval, newCleanFormula.guid);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddCleaningFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
             return retval;
         }
@@ -380,6 +427,7 @@ namespace IDMS.Models.Parameter.GqlTypes
                 var dbCleanFormula = context.cleaning_formula.Find(guid);
                 if (dbCleanFormula == null)
                 {
+                    _logger.LogWarning("UpdateCleaningFormula could not find cleaning_formula with GUID {Guid}", guid);
                     throw new GraphQLException(new Error("The Cleaning Formula not found", "NOT FOUND"));
                 }
                 dbCleanFormula.description = UpdateCleanFormula.description;
@@ -388,12 +436,16 @@ namespace IDMS.Models.Parameter.GqlTypes
                 dbCleanFormula.update_dt = GqlUtils.GetNowEpochInSec();
 
                 retval = await context.SaveChangesAsync();
-
+                _logger.LogInformation("UpdateCleaningFormula completed by {User}. Saved {Changes} change(s). Formula GUID: {Guid}", uid, retval, guid);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateCleaningFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
             return retval;
         }
@@ -414,13 +466,20 @@ namespace IDMS.Models.Parameter.GqlTypes
                     delCleanMethod.delete_dt = currentDateTime;
                     delCleanMethod.update_by = uid;
                     delCleanMethod.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Marked cleaning_formula GUID {Guid} as deleted", delCleanMethod.guid);
                 }
                 retval = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteCleaningFormula completed by {User}. Saved {Changes} change(s).", uid, retval);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteCleaningFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
             return retval;
         }
@@ -446,13 +505,20 @@ namespace IDMS.Models.Parameter.GqlTypes
                     delCleanMethodForm.delete_dt = currentDateTime;
                     delCleanMethodForm.update_by = uid;
                     delCleanMethodForm.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Marked cleaning_method_formula GUID {Guid} as deleted", delCleanMethodForm.guid);
                 }
                 retval = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteCleaningMethodFormula completed by {User}. Saved {Changes} change(s).", uid, retval);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteCleaningMethodFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
             return retval;
         }

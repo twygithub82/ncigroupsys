@@ -5,6 +5,7 @@ using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace IDMS.EstimateTemplate.GqlTypes
@@ -15,7 +16,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<template_est> QueryTemplateEstimation(ApplicationMasterDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<template_est> QueryTemplateEstimation(ApplicationMasterDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, [Service] ILogger<TemplateEstQuery> logger)
         {
             try
             {
@@ -30,7 +31,12 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                logger.LogError(ex, "Error in QueryTemplateEstimation: {Message}", ex.Message);
+                throw new GraphQLException(
+                        ErrorBuilder.New()
+                            .SetMessage(ex.Message)
+                            .SetCode("ERROR")
+                            .Build());
             }
         }
 

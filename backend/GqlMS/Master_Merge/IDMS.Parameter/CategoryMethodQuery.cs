@@ -4,6 +4,7 @@ using IDMS.Models.Master.GqlTypes.DB;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 
 namespace IDMS.Models.Parameter.GqlTypes
@@ -11,6 +12,14 @@ namespace IDMS.Models.Parameter.GqlTypes
     [ExtendObjectType(typeof(TemplateEstQuery))]
     public class CleaningMethodQuery
     {
+        private readonly ILogger<CleaningMethodQuery> _logger;
+        const string graphqlErrorCode = "ERROR";
+
+        public CleaningMethodQuery(ILogger<CleaningMethodQuery> logger)
+        {
+            _logger = logger;
+        }
+
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
@@ -23,20 +32,21 @@ namespace IDMS.Models.Parameter.GqlTypes
             IQueryable<cleaning_method> query = null;
             try
             {
-               // var context = _contextFactory.CreateDbContext();   
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning_method.Where(i => i.delete_dt == null);
-              //  System.Threading.Thread.Sleep(5000);
-                
 
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in QueryCleaningMethod: {Message}", ex.Message);
+                throw new GraphQLException(
+                        ErrorBuilder.New()
+                            .SetMessage(ex.Message)
+                            .SetCode(graphqlErrorCode)
+                            .Build());
             }
 
             return query;
-         
         }
 
 
@@ -52,13 +62,17 @@ namespace IDMS.Models.Parameter.GqlTypes
             IQueryable<cleaning_category> query = null;
             try
             {
-              // var context = _contextFactory.CreateDbContext();
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning_category.Where(i => i.delete_dt == null);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in QueryCleaningCategory: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
 
             return query;
@@ -77,13 +91,17 @@ namespace IDMS.Models.Parameter.GqlTypes
             IQueryable<cleaning_formula> query = null;
             try
             {
-                // var context = _contextFactory.CreateDbContext();
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning_formula.Where(i => i.delete_dt == null);
             }
             catch(Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCleaningFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
 
             return query;
@@ -101,13 +119,17 @@ namespace IDMS.Models.Parameter.GqlTypes
             IQueryable<cleaning_method_formula> query = null;
             try
             {
-                // var context = _contextFactory.CreateDbContext();
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning_method_formula.Where(i => i.delete_dt == null);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCleaningMethodFormula: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
 
             return query;

@@ -9,12 +9,20 @@ using IDMS.Models.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Customer.GqlTypes
 {
     [ExtendObjectType(typeof(TemplateEstQuery))]
     public class CustomerQuery
     {
+        private readonly ILogger<CustomerQuery> _logger;
+        const string graphqlErrorCode = "ERROR";
+        public CustomerQuery(ILogger<CustomerQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -29,7 +37,12 @@ namespace IDMS.Customer.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCustomerCompany: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
 
@@ -63,7 +76,12 @@ namespace IDMS.Customer.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCustomerCompanyWithCount: {Message}", ex.Message);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
 
@@ -80,7 +98,12 @@ namespace IDMS.Customer.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryContactPerson: {Message}", ex.Message);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
 
@@ -98,7 +121,12 @@ namespace IDMS.Customer.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCurrency: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
 
@@ -146,7 +174,12 @@ namespace IDMS.Customer.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCanDeleteCustomer for GUID {Guid}: {Message}", guid, ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
     }
