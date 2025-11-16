@@ -5,18 +5,15 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace IDMS.Models.Tariff.GqlTypes
 {
     public class TariffMutation
     {
-        const string graphqlErrorCode = "ERROR";
-
         #region Tariff Depot methods
 
         public async Task<int> AddTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_depot NewTariffDepot, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_depot NewTariffDepot)
         {
             int retval = 0;
             try
@@ -52,17 +49,29 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffDepot.update_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_depot.Add(newTariffDepot);
 
+                //change this to use trigger, instead of using code to perform the insert
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_depot = new package_depot();
+                //    pack_depot.guid = Util.GenerateGUID();
+                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
+                //    pack_depot.customer_company_guid = customerCompany.guid;
+                //    pack_depot.free_storage = newTariffDepot.free_storage;
+                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
+                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
+                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
+                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                //    pack_depot.storage_cal_cv = "TANK_IN_DATE";
+                //    pack_depot.create_by = uid;
+                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_depot.Add(pack_depot);
+                //}
+
                 retval = await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffDepot");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
-            }
+            catch { throw; }
 
 
             return retval;
@@ -134,7 +143,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
 
         public async Task<int> UpdateTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
-                [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot, [Service] ILogger<TariffQuery> logger)
+                [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot)
         {
             int retval = 0;
             try
@@ -218,22 +227,18 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffDepot");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
         public async Task<int> DeleteTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffDepot_guids, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffDepot_guids)
         {
             int retval = 0;
             var currentDateTime = GqlUtils.GetNowEpochInSec();
-
+            
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
                 try
@@ -273,12 +278,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    logger.LogError(ex, "Error in DeleteTariffDepot");
-                    throw new GraphQLException(
-                                ErrorBuilder.New()
-                                    .SetMessage(ex.Message)
-                                    .SetCode(graphqlErrorCode)
-                                    .Build());
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
                 }
             }
 
@@ -289,7 +289,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         #region Tariff Cleaning methods
 
         public async Task<int> AddTariffCleaning(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning NewTariffClean, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning NewTariffClean)
         {
             int retval = 0;
             try
@@ -330,12 +330,7 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in AddTariffCleaning");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
 
 
@@ -343,7 +338,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
 
-        public async Task<int> UpdateTariffClean(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<int> UpdateTariffClean(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning UpdateTariffClean)
         {
             int retval = 0;
@@ -357,7 +352,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffClean == null)
                 {
-                    logger.LogError("The Cleaning Procedure not found for guid: {Guid}", guid); 
                     throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
                 }
 
@@ -385,17 +379,13 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffClean");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
-        public async Task<int> DeleteTariffClean(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<int> DeleteTariffClean(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffClean_guids)
         {
             int retval = 0;
@@ -417,12 +407,7 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in DeleteTariffClean");
-                throw new GraphQLException(
-                        ErrorBuilder.New()
-                            .SetMessage(ex.Message)
-                            .SetCode(graphqlErrorCode)
-                            .Build());
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -460,7 +445,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         #region Tariff Buffer methods
 
         public async Task<int> AddTariffBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer NewTariffBuffer, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer NewTariffBuffer)
         {
             int retval = 0;
             try
@@ -482,22 +467,14 @@ namespace IDMS.Models.Tariff.GqlTypes
                 //change this to use trigger, instead of using code to perform the insert
                 retval = await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffBuffer");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
-            }
+            catch { throw; }
 
 
             return retval;
         }
 
         public async Task<int> UpdateTariffBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer UpdateTariffBuffer, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer UpdateTariffBuffer)
         {
             int retval = 0;
             try
@@ -509,7 +486,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffBuffer == null)
                 {
-                    logger.LogWarning("The Tariff Buffer not found for guid: {Guid}", guid);
                     throw new GraphQLException(new Error("The Tariff Buffer not found", "500"));
                 }
 
@@ -524,18 +500,14 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffBuffer");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
         public async Task<int> DeleteTariffBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffBuffer_guids, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffBuffer_guids)
         {
             int retval = 0;
             var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
@@ -571,12 +543,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 catch (Exception ex)
                 {  // Rollback the transaction if any errors occur
                     await transaction.RollbackAsync();
-                    logger.LogError(ex, "Error in DeleteTariffBuffer");
-                    throw new GraphQLException(
-                                ErrorBuilder.New()
-                                    .SetMessage(ex.Message)
-                                    .SetCode(graphqlErrorCode)
-                                    .Build());
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
                 }
             }
             return retval;
@@ -585,7 +552,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         #region Tariff Labour methods
 
-        public async Task<int> SyncUpPackageLabours(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, [Service] ILogger<TariffQuery> logger)
+        public async Task<int> SyncUpPackageLabours(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             int retval = 0;
             try
@@ -618,18 +585,14 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in SyncUpPackageLabours");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
         public async Task<int> AddTariffLabour(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour NewTariffLabour, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour NewTariffLabour)
         {
             int retval = 0;
             try
@@ -664,20 +627,14 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 retval = await context.SaveChangesAsync();
             }
-            catch(Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffLabour");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
-            }
+            catch { throw; }
+
+
             return retval;
         }
 
         public async Task<int> UpdateTariffLabour(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour UpdateTariffLabour, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour UpdateTariffLabour)
         {
             int retval = 0;
             try
@@ -689,7 +646,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffLabour == null)
                 {
-                    logger.LogWarning("The Tariff Labour not found for guid: {Guid}", guid);
                     throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
                 }
 
@@ -704,18 +660,14 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffLabour");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
         public async Task<int> DeleteTariffLabour(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffLabour_guids, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffLabour_guids)
         {
             int retval = 0;
             try
@@ -736,12 +688,8 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in DeleteTariffLabour");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
@@ -750,7 +698,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         #region Tariff Residue methods
 
         public async Task<int> AddTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue NewTariffResidue, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue NewTariffResidue)
         {
             int retval = 0;
             //_context = context;
@@ -775,21 +723,13 @@ namespace IDMS.Models.Tariff.GqlTypes
                 //change this to use trigger, instead of using code to perform the insert
                 retval = await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffResidue");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
-            }
+            catch { throw; }
             return retval;
         }
 
 
         public async Task<int> UpdateTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue UpdateTariffResidue, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue UpdateTariffResidue)
         {
             int retval = 0;
             try
@@ -801,7 +741,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffResidue == null)
                 {
-                    logger.LogWarning("The Tariff Residue not found for guid: {Guid}", guid);
                     throw new GraphQLException(new Error("The Tariff Residue not found", "500"));
                 }
 
@@ -816,17 +755,13 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffResidue");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
-        public async Task<int> DeleteTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<int> DeleteTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffResidue_guids)
         {
             int retval = 0;
@@ -865,12 +800,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    logger.LogError(ex, "Error in DeleteTariffResidue");
-                    throw new GraphQLException(
-                                 ErrorBuilder.New()
-                                     .SetMessage(ex.Message)
-                                     .SetCode(graphqlErrorCode)
-                                     .Build());
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
                 }
             }
             return retval;
@@ -881,7 +811,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         #region Tariff Repair methods
 
         public async Task<int> AddTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair NewTariffRepair, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair NewTariffRepair)
         {
             int retval = 0;
             try
@@ -930,22 +860,15 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 retval = await context.SaveChangesAsync();
             }
-            catch(Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffRepair");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
-            }   
+            catch { throw; }
+
 
             return retval;
         }
 
 
         public async Task<int> UpdateTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair UpdateTariffRepair, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair UpdateTariffRepair)
         {
             int retval = 0;
             try
@@ -957,7 +880,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffRepair == null)
                 {
-                    logger.LogWarning("The Tariff Repair not found for guid: {Guid}", guid);
                     throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
                 }
 
@@ -987,12 +909,8 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffRepair");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
@@ -1000,7 +918,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         public async Task<int> UpdateTariffRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids, string group_name_cv, string subgroup_name_cv,
             string dimension, double height_diameter, string height_diameter_unit_cv, double width_diameter, string width_diameter_unit_cv, double labour_hour, double length,
-            string length_unit_cv, double material_cost, string part_name, string alias, double thickness, string thickness_unit_cv, string remarks, [Service] ILogger<TariffQuery> logger)
+            string length_unit_cv, double material_cost, string part_name, string alias, double thickness, string thickness_unit_cv, string remarks)
         {
             int retval = 0;
             try
@@ -1012,7 +930,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffRepairs == null)
                 {
-                    logger.LogError("The Tariff Labour not found");
                     throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
                 }
 
@@ -1042,18 +959,14 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffRepairs");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
 
-        public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string>? group_name_cv, List<string>? subgroup_name_cv, string? part_name, string? dimension,
             int? length, List<string?>? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
         {
@@ -1109,7 +1022,6 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                     if (dbTariffRepairs == null)
                     {
-                        logger.LogError("The Tariff Labour not found");
                         throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
                     }
 
@@ -1152,12 +1064,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                     // Rollback the transaction if any errors occur
                     await transaction.RollbackAsync();
 
-                    logger.LogError(ex, "Error in UpdateTariffRepair_MaterialCost");
-                    throw new GraphQLException(
-                                     ErrorBuilder.New()
-                                         .SetMessage(ex.Message)
-                                         .SetCode(graphqlErrorCode)
-                                         .Build());
+                    // Handle or log the exception
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                    //throw; // Re-throw if necessary
                 }
             }
 
@@ -1174,7 +1083,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
         public async Task<int> DeleteTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffRepair_guids, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffRepair_guids)
         {
             int retval = 0;
             var currentDateTime = GqlUtils.GetNowEpochInSec();
@@ -1211,12 +1120,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    logger.LogError(ex, "Error in DeleteTariffRepair");
-                    throw new GraphQLException(
-                                 ErrorBuilder.New()
-                                     .SetMessage(ex.Message)
-                                     .SetCode(graphqlErrorCode)
-                                     .Build());
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
                 }
             }
 
@@ -1228,7 +1132,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         #region Tariff Steaming methods
 
         public async Task<int> AddTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming NewTariffSteaming, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming NewTariffSteaming)
         {
             int retval = 0;
             try
@@ -1250,15 +1154,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 retval = await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error in AddTariffSteaming");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
-            }
+            catch { throw; }
 
 
             return retval;
@@ -1266,7 +1162,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
 
         public async Task<int> UpdateTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming UpdateTariffSteaming, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming UpdateTariffSteaming)
         {
             int retval = 0;
             try
@@ -1278,8 +1174,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 if (dbTariffSteaming == null)
                 {
-                    logger.LogWarning("Tariff steaming not found"); 
-                    throw new GraphQLException(new Error("Tariff steaming not found", "500"));
+                    throw new GraphQLException(new Error("The record not found", "500"));
                 }
 
                 dbTariffSteaming.temp_max = UpdateTariffSteaming.temp_max;
@@ -1295,18 +1190,14 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in UpdateTariffSteaming");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
             return retval;
         }
 
         public async Task<int> DeleteTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffSteam_guids, [Service] ILogger<TariffQuery> logger)
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffSteam_guids)
         {
             int retval = 0;
             using (var transaction = await context.Database.BeginTransactionAsync())
@@ -1342,12 +1233,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    logger.LogError(ex, "Error in DeleteTariffSteaming");
-                    throw new GraphQLException(
-                                 ErrorBuilder.New()
-                                     .SetMessage(ex.Message)
-                                     .SetCode(graphqlErrorCode)
-                                     .Build());
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
                 }
             }
 
@@ -1358,7 +1244,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         #region AddUnNO&Class
 
-        public async Task<int> AddUN_Number(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<int> AddUN_Number(ApplicationTariffDBContext context, [Service] IConfiguration config,
         [Service] IHttpContextAccessor httpContextAccessor, un_number unNumber)
         {
             int retval = 0;
@@ -1368,11 +1254,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 var res = await context.un_number.Where(u => u.un_no.EqualsIgnore(unNumber.un_no) & (u.class_cv.EqualsIgnore(unNumber.class_cv))).FirstOrDefaultAsync();
                 if (res != null)
-                {
-                    logger.LogWarning("Duplicate UN_No & class not allowed");
                     throw new GraphQLException(new Error("Duplicate UN_No & class not allowed", "Error"));
-                }
-
 
                 var newUnNo = new un_number();
                 newUnNo.guid = (string.IsNullOrEmpty(unNumber.guid) ? Util.GenerateGUID() : unNumber.guid);
@@ -1386,14 +1268,9 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 retval = await context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in AddUN_Number");
-                throw new GraphQLException(
-                             ErrorBuilder.New()
-                                 .SetMessage(ex.Message)
-                                 .SetCode(graphqlErrorCode)
-                                 .Build());
+                throw;
             }
 
             return retval;

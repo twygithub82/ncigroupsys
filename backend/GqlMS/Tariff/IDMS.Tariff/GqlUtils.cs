@@ -3,7 +3,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Tariff.GqlTypes
 {
-    public class GqlUtils
+    internal class GqlUtils
     {
         public static string GenerateSqlUpdate(JToken jToken, string tableName)
         {
@@ -285,7 +284,6 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-
                 throw new Exception("Unauthorized - " + ex.Message);
             }   
             return uid;

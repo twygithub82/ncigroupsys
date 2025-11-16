@@ -8,14 +8,12 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 
 namespace IDMS.Models.Tariff.GqlTypes
 {
     public class TariffQuery
     {
-        const string graphqlErrorCode = "ERROR";
 
         #region Original
         // [Authorize]
@@ -23,7 +21,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_cleaning?> QueryTariffCleaning(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_cleaning?> QueryTariffCleaning(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -39,15 +37,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                       .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&
                        (tc.cleaning_category.delete_dt == null || tc.cleaning_category.delete_dt == 0));
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffCleaning");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -58,7 +50,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_depot?> QueryTariffDepot(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_depot?> QueryTariffDepot(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -70,15 +62,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_depot.Where(i => i.delete_dt == null || i.delete_dt == 0)
                         .Include(t => t.tanks);
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffDepot");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -90,7 +76,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_labour?> QueryTariffLabour(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_labour?> QueryTariffLabour(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -102,15 +88,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_labour.Where(i => i.delete_dt == null || i.delete_dt == 0);
 
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffLabour");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -123,7 +103,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_residue?> QueryTariffResidue(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_residue?> QueryTariffResidue(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -135,15 +115,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_residue.Where(i => i.delete_dt == null || i.delete_dt == 0);
 
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffResidue");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -155,7 +129,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_buffer?> QueryTariffBuffer(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_buffer?> QueryTariffBuffer(ApplicationTariffDBContext context,
           [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -167,15 +141,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_buffer.Where(i => i.delete_dt == null || i.delete_dt == 0);
 
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffBuffer");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -186,7 +154,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_repair?> QueryTariffRepair(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_repair?> QueryTariffRepair(ApplicationTariffDBContext context,
            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -198,15 +166,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0);
 
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffRepair");
-                // Return a GraphQL friendly error
-                throw new GraphQLException(
-                    ErrorBuilder.New()
-                        .SetMessage(ex.Message)
-                        .SetCode(graphqlErrorCode)
-                        .Build());
+                throw;
             }
 
             return query;
@@ -218,7 +180,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_steaming?> QueryTariffSteaming(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<tariff_steaming?> QueryTariffSteaming(ApplicationTariffDBContext context,
            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -230,14 +192,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 query = context.tariff_steaming.Where(i => i.delete_dt == null || i.delete_dt == 0);
 
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffSteaming");
-                throw new GraphQLException(
-                        ErrorBuilder.New()
-                            .SetMessage(ex.Message)
-                            .SetCode(graphqlErrorCode)
-                            .Build());
+                throw;
             }
 
             return query;
@@ -250,7 +207,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffCleaningResult?> QueryTariffCleaningWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffCleaningResult?> QueryTariffCleaningWithCount(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -270,14 +227,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffCleaningWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -287,7 +239,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffResidueResult?> QueryTariffResidueWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffResidueResult?> QueryTariffResidueWithCount(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -312,14 +264,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffResidueWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -328,7 +275,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffSteamingResult?> QueryTariffSteamingWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffSteamingResult?> QueryTariffSteamingWithCount(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
@@ -351,14 +298,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffSteamingWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -367,7 +309,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffRepairResult?> QueryTariffRepairWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffRepairResult?> QueryTariffRepairWithCount(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
@@ -389,14 +331,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffRepairWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -405,7 +342,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffDepotResult?> QueryTariffDepotWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffDepotResult?> QueryTariffDepotWithCount(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
@@ -423,14 +360,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                     .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffDepotWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -438,7 +370,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<TariffBufferResult?> QueryTariffBufferWithCount(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<TariffBufferResult?> QueryTariffBufferWithCount(ApplicationTariffDBContext context,
            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
@@ -456,14 +388,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                                       .AsQueryable();
                 return result;
             }
-            catch (Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QueryTariffBufferWithCount");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
         }
 
@@ -472,7 +399,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<steaming_exclusive?> QuerySteamingExclusive(ApplicationTariffDBContext context, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<steaming_exclusive?> QuerySteamingExclusive(ApplicationTariffDBContext context,
            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<steaming_exclusive> query = null;
@@ -481,14 +408,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.steaming_exclusive.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }
-            catch(Exception ex)
+            catch
             {
-                logger.LogError(ex, "Error in QuerySteamingExclusive");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw;
             }
 
             return query;
@@ -498,7 +420,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<un_number?> QueryUNClassByNo(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public IQueryable<un_number?> QueryUNClassByNo(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string unNo)
         {
             try
@@ -509,16 +431,11 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in QueryUNClassByNo for unNo={unNo}", unNo);
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 
-        public async Task<List<string?>> QueryDistinctClassNo(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<List<string?>> QueryDistinctClassNo(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
@@ -536,16 +453,11 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in QueryDistinctClassNo");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 
-        public async Task<List<string?>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<List<string?>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName, string? part_name, bool? isPartNameOnly = false)
         {
             try
@@ -560,6 +472,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                     {
                         query = query.Where(tr => tr.part_name.ToLower().Contains(part_name.ToLower()));
                     }
+                    //else
+                    //    throw new GraphQLException(new Error($"Part name cannot be null or empty", "ERROR"));
                 }
                 else
                 {
@@ -594,16 +508,11 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in QueryDistinctPartName");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 
-        public async Task<List<string?>> QueryDistinctDimension(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<List<string?>> QueryDistinctDimension(ApplicationTariffDBContext context, [Service] IConfiguration config,
           [Service] IHttpContextAccessor httpContextAccessor, string? partName)
         {
             try
@@ -628,16 +537,11 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in QueryDistinctDimension");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 
-        public async Task<List<LengthWithUnit>> QueryDistinctLength(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<TariffQuery> logger,
+        public async Task<List<LengthWithUnit>> QueryDistinctLength(ApplicationTariffDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, string? partName, string? dimension)
         {
             try
@@ -677,12 +581,7 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in QueryDistinctLength");
-                throw new GraphQLException(
-                            ErrorBuilder.New()
-                                .SetMessage(ex.Message)
-                                .SetCode(graphqlErrorCode)
-                                .Build());
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 
