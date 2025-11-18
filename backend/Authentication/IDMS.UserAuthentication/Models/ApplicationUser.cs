@@ -10,5 +10,7 @@ namespace IDMS.UserAuthentication.Models
         public string? ActivationCode { get; set; } = string.Empty;
         public string? LicenseToken { get; set; } = string.Empty;
 
+        //public string? CustomerCompanyGuid { get; set; } = string.Empty;
+
     }
 }

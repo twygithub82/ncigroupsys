@@ -31,6 +31,8 @@ export class CustomerCompanyGO {
   public remarks?: string;
   public currency_guid?: string;
   public main_customer_guid?: string;
+  public discount_threshold?: number;
+
 
   public create_dt?: number;
   public create_by?: string;
@@ -60,6 +62,7 @@ export class CustomerCompanyGO {
     this.remarks = item.remarks;
     this.currency_guid = item.currency_guid;
     this.main_customer_guid = item.main_customer_guid;
+    this.discount_threshold = item.discount_threshold;
     //this.billing_branch = item.billing_branch;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
