@@ -30,7 +30,7 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public string? remarks { get; set; }
         public string? def_tank_guid { get; set; }
         public string? main_customer_guid { get; set; }
-        //public bool billing_branch { get; set; } = false;
+        public int? approval_threshold { get; set; }
         [NotMapped]
         public string? action { get; set; }
     }

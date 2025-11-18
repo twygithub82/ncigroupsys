@@ -32,7 +32,7 @@ namespace IDMS.Models.Master.GqlTypes.DB
                 .HasKey(e => e.guid);
         }
 
-        public DbSet<currency> currency { get; set; }   
+        public DbSet<currency> currency { get; set; }
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
         public DbSet<template_est> template_est { get; set; }
@@ -45,6 +45,6 @@ namespace IDMS.Models.Master.GqlTypes.DB
         public DbSet<cleaning_formula> cleaning_formula { get; set; }
         public DbSet<cleaning_method_formula> cleaning_method_formula { get; set; }
         public DbSet<customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
-
+        public DbSet<user_customer> user_customer { get; set; }
     }
 }

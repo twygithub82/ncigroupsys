@@ -182,5 +182,28 @@ namespace IDMS.Customer.GqlTypes
                                 .Build());
             }
         }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<user_customer> QueryUserCustomer([Service] IHttpContextAccessor httpContextAccessor, [Service] IConfiguration config,
+         ApplicationMasterDBContext context)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                return context.user_customer.Where(d => d.delete_dt == null || d.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in QueryUserCustomer: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
+            }
+        }
     }
 }
