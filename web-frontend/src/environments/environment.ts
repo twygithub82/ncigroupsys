@@ -46,4 +46,4 @@ export const maxTankCount: number = 5;
 
 export const systemCurrencyCode: string = "SGD";
 
-export const default_discount_threshold: number = 25;
+export const defaultDiscountThreshold: number = 25;

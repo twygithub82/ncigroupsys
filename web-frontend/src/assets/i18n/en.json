@@ -1406,7 +1406,8 @@
     "REPAIR-DISCLAIMER":"If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards.",
     "EQUIVALENT":"Equivalent",
     "AMOUNT":"Amount",
-    "SUMMARY-COST":"Summary Cost"
+    "SUMMARY-COST":"Summary Cost",
+    "MAX-DISCOUNT":"Max Discount (%)"
     
   },
   "CLEAN-PROCEDURES": {

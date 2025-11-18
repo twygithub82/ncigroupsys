@@ -48,6 +48,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { defaultDiscountThreshold } from 'environments/environment';
 
 @Component({
   selector: 'app-customer-new',
@@ -182,7 +183,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     MIN_3_ALPHA: 'COMMON-FORM.MIN-3-ALPHA',
     ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
-    S_N: 'COMMON-FORM.S_N'
+    S_N: 'COMMON-FORM.S_N',
+    MAX_DISCOUNT: 'COMMON-FORM.MAX-DISCOUNT',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -238,6 +240,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
+  defDiscThd: number= defaultDiscountThreshold;
 
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -335,7 +338,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       city_name: [''],
       country: [''],
       remarks: [''],
-      repList: []
+      repList: [],
+      discount_threshold: []
     });
   }
 
@@ -365,7 +369,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         phone: cust.phone,
         postal_code: cust.postal,
         default_profile: this.getDefaultTank(cust.def_tank_guid!),
-        customer_type: this.getCustomerTypeCvObject(cust.type_cv!)
+        customer_type: this.getCustomerTypeCvObject(cust.type_cv!),
+        discount_threshold: cust?.discount_threshold
       });
       var existContact = contactPsn?.map((row) => ({
         ...row
@@ -408,6 +413,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           city_name: this.selectedCustomerCmp?.city,
           country: this.selectedCustomerCmp?.country,
           remarks: this.selectedCustomerCmp?.remarks,
+          discount_threshold:  this.selectedCustomerCmp?.discount_threshold
         });
 
         var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
@@ -443,6 +449,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.ccForm?.get('country')?.disable();
       this.ccForm?.get('remarks')?.disable();
       this.ccForm?.get('repList')?.disable();
+      this.ccForm?.get('discount_threshold')?.disable();
     }
 
     if (!this.canEditBillingBranch()) {
@@ -735,6 +742,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     else {
       cust.currency_guid = "-";
     }
+
+    if (this.ccForm?.get("discount_threshold")?.value) {
+      cust.discount_threshold = Number(cust.discount_threshold||0);
+    }
+    else {
+      cust.discount_threshold =0;
+    }
     delete cust.currency;
     cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
@@ -813,6 +827,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selectedCusCmp.country_code = this.ccForm?.get("country_code")?.value?.code;
       selectedCusCmp.phone = this.ccForm?.get("phone")?.value;
       selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
+      selectedCusCmp.discount_threshold = Number(this.ccForm?.get("discount_threshold")?.value||0);
 
       if (this.ccForm?.get("default_profile")?.value) {
         // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
