@@ -125,6 +125,7 @@ export const SEARCH_COMPANY_QUERY = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        approval_threshold
         address_line1
         address_line2
         agreement_due_dt
@@ -195,6 +196,7 @@ export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        approval_threshold
         address_line1
         address_line2
         agreement_due_dt
