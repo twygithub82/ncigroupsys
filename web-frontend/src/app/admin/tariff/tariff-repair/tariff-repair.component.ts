@@ -252,6 +252,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   isGeneratingReport = false;
+  isMobile=false;
 
   @ViewChild('partInput', { static: true }) partInput?: ElementRef<HTMLInputElement>;
 
@@ -282,6 +283,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.translateLangText();
     this.displayColumnChanged();
     this.initializeValueChanges();
+    this.isMobile=Utility.isMobile();
   }
 
   translateLangText() {
@@ -367,8 +369,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
+
+    const wdth =this.isMobile?'95vw':'65vw'
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '65vw',
+      width: wdth,
       autoFocus: false,
       disableClose: true,
       //height: '90vh',
@@ -400,11 +404,13 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
+
+    const wdth =this.isMobile?'95vw':'65vw'
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '65vw',
+      width: wdth,
       autoFocus: false,
       disableClose: true,
-      //height: '90vh',
+      height: '95vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -491,9 +497,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     const tariffRepair = this.selection.selected.map(x => x.tariff_repair);
 
+    const wdth =this.isMobile?'95vw':'65vw';
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
-      width: '65vw',
+      width: wdth,
       maxHeight: '90vh',
       //height: '1000px',
       data: {
@@ -522,11 +529,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     var rows: TariffRepairItem[] = [];
     rows.push(row);
+     const wdth =this.isMobile?'95vw':'65vw';
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
-      width: '65vw',
-      // height: '900px',
-      maxHeight: '99vh',
+      width: wdth,
+      maxHeight: '95vh',
+      // maxHeight: '99vh',
       data: {
         action: 'edit',
         langText: this.langText,

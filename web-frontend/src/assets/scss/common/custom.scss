@@ -1047,7 +1047,7 @@ $breakpoints: (
 
 @media (max-width: 1400px) {
   .mobile-label {
-    width: 100px;
+    min-width: 100px;
     display: inline-block;
     font-weight: bold;
   }

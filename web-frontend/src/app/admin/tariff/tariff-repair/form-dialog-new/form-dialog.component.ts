@@ -101,7 +101,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   heightDiameterUnitControl = new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
-
+  isMobile =false;
 
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
@@ -240,7 +240,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
-
+    this.isMobile=Utility.isMobile();
     if (data.action == "duplicate") {
       this.selectedItem = data.selectedItem;
       this.pcForm.patchValue({
@@ -528,4 +528,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_ADD']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

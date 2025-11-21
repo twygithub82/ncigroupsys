@@ -114,7 +114,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   heightDiameterUnitControl = new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
-
+  isMobile=false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -251,7 +251,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
-
+    this.isMobile=Utility.isMobile();
     if (this.selectedItems.length == 1) {
       var rec = this.selectedItems[0];
       this.pcForm.patchValue({
@@ -739,4 +739,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+     getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

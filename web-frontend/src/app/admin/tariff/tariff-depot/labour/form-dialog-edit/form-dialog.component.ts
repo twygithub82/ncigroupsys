@@ -97,6 +97,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
+  isMobile:boolean=false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -217,6 +218,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
     this.action = data.action!;
     this.translateLangText();
+    this.isMobile = Utility.isMobile();
   }
 
   createTariffLabour(): UntypedFormGroup {
@@ -448,5 +450,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
 }

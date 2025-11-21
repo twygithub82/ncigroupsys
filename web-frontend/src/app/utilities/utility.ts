@@ -1944,6 +1944,12 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
         chr.toUpperCase()
       );
   }
+
+  static isMobile(): boolean {
+
+       var mobileWidth = 768;
+       return window.innerWidth < mobileWidth;
+  }
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {
   //     var imgRetval:string ='';

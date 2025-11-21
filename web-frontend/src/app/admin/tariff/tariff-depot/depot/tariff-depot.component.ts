@@ -106,7 +106,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
-
+  isMobile: boolean = false;
   id?: number;
   tdForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -182,6 +182,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile=Utility.isMobile();
     this.loadData();
     this.translateLangText();
   }
@@ -506,7 +507,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       autoFocus: false,
       disableClose: true,
       width: '600px',
-      height: 'auto',
+      height: '90vh',
       data: {
         action: 'view',
         langText: this.langText,
@@ -535,6 +536,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: '600px',
+      height: '90vh',
       data: {
         action: 'edit',
         langText: this.langText,

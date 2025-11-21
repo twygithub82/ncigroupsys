@@ -175,7 +175,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffResidueItem;
-
+isMobile: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -195,6 +195,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
+    this.isMobile = Utility.isMobile();
   }
 
   createTariffResidue(): UntypedFormGroup {
@@ -309,4 +310,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   isAllowView() {
     return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_VIEW']);
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'ms-3 me-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
