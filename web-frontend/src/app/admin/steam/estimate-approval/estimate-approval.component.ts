@@ -268,18 +268,24 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.loadData();
 
     this.groupedRepairs = [
-      {
-        groupKey: 'cleaning',
-        groupLabel: 'Cleaning',
-        items: this.repairData.filter(item => item.group === 'Cleaning'),
-        isExpanded: true
-      },
-      {
-        groupKey: 'mainway',
-        groupLabel: 'Mainway',
-        items: this.repairData.filter(item => item.group === 'Mainway'),
-        isExpanded: true
-      }
+      // {
+      //   groupKey: 'cleaning',
+      //   groupLabel: 'Cleaning',
+      //   items: this.repairData.filter(item => item.group === 'Cleaning'),
+      //   isExpanded: true
+      // },
+      // {
+      //   groupKey: 'mainway',
+      //   groupLabel: 'Mainway',
+      //   items: this.repairData.filter(item => item.group === 'Mainway'),
+      //   isExpanded: true
+      // },
+      // {
+      //   groupKey: 'walkway',
+      //   groupLabel: 'Walkway',
+      //   items: this.repairData.filter(item => item.group === 'Walkway'),
+      //   isExpanded: true
+      // }
     ];
   }
 
@@ -1081,17 +1087,17 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-  // columns: TableColumn[] = [
-  //   { key: 'index', header: 'No.', width: '5%' },
-  //   { key: 'group', header: 'Sub Group', width: '12%' },
-  //   { key: 'damage_code', header: 'Damage', width: '8%' },
-  //   { key: 'repair_code', header: 'Repair', width: '8%' },
-  //   { key: 'description', header: 'Description', width: '37%' },
-  //   { key: 'quantity', header: 'Qty', width: '6%' },
-  //   { key: 'hour', header: 'Hour', width: '8%' },
-  //   { key: 'material_cost', header: 'Material $', width: '8%' },
-  //   { key: 'price', header: 'Price $', width: '8%' }
-  // ];
+  columns: TableColumn[] = [
+    { key: 'index', header: 'No.', width: '5%' },
+    { key: 'group', header: 'Sub Group', width: '12%' },
+    { key: 'damage_code', header: 'Damage', width: '8%' },
+    { key: 'repair_code', header: 'Repair', width: '8%' },
+    { key: 'description', header: 'Description', width: '37%' },
+    { key: 'quantity', header: 'Qty', width: '6%' },
+    { key: 'hour', header: 'Hour', width: '8%' },
+    { key: 'material_cost', header: 'Material $', width: '8%' },
+    { key: 'price', header: 'Price $', width: '8%' }
+  ];
 
   // simpleColumns: TableColumn[] = [
   //   { key: 'id', header: 'ID', width: '10%' },
