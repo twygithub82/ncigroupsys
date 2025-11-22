@@ -3,12 +3,20 @@ using IDMS.Models;
 using IDMS.Models.DB;
 using IDMS.Models.GqlTypes;
 using IDMS.Models.Notification;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace GlobalMQ.GqlTypes
 {
     public class MutationType
     {
+        private readonly ILogger<MutationType> _logger;
+        const string graphqlErrorCode = "ERROR";
+
+        public MutationType(ILogger<MutationType> logger)
+        {
+            _logger = logger;
+        }
 
         public async Task<int> AddNotification([Service] ApplicationNotificationDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, notification newNotification, [Service] ITopicEventSender topicEventSender)
@@ -16,6 +24,7 @@ namespace GlobalMQ.GqlTypes
             int retval = 0;
             try
             {
+                _logger.LogInformation("AddNotification called with notification guid={Guid}", newNotification?.guid);
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
 
@@ -28,13 +37,10 @@ namespace GlobalMQ.GqlTypes
                     context.notification.Add(newNotification);
                     retval = context.SaveChanges();
 
+                    _logger.LogInformation("Creating notification: {Guid} Title: {Title}", newNotification.guid, newNotification.title);
+
                     if (retval > 0)
                     {
-                        //Message msg = new Message();
-                        //msg.event_dt = GqlUtils.GetNowEpochInSec();
-                        //msg.event_id = "2030";
-                        //msg.event_name = "Notification trigger";
-                        //msg.payload = JToken.FromObject(newNotification).ToString();
                         topicEventSender.SendAsync(nameof(SubscriptionType.NotificationTriggered), newNotification);
                     }
                 }
@@ -42,8 +48,12 @@ namespace GlobalMQ.GqlTypes
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
+                _logger.LogError(ex, "Error while adding notification guid={Guid}", newNotification?.guid);
+                throw new GraphQLException(
+                             ErrorBuilder.New()
+                                 .SetMessage(ex.Message)
+                                 .SetCode(graphqlErrorCode)
+                                 .Build());
             }
             return retval;
         }
