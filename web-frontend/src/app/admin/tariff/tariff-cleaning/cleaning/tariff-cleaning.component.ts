@@ -49,6 +49,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {TariffLabourDS} from "app/data-sources/tariff-labour";
 import { TariffCleaningCostPdfComponent } from 'app/document-template/pdf/tariff/cleaning/tariff-cleaning-cost-pdf.component';
 
+
 @Component({
   selector: 'app-tariff-cleaning',
   standalone: true,
@@ -193,7 +194,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   selectedCargo: any[] = [];
   isGeneratingReport: boolean=false;
-
+  isMobile: boolean = false;
 
   constructor(
     private router: Router,
@@ -225,10 +226,14 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile=Utility.isMobile();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.initializeValueChanges();
   }
+
+ 
+
   refresh() {
     this.loadData();
     this.initSearchForm();
@@ -963,4 +968,11 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
           });
   
     }
+
+    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+    
 }

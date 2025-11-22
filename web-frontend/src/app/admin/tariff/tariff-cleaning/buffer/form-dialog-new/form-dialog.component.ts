@@ -181,7 +181,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   unit_type_control = new UntypedFormControl();
   selectedItem: TariffDepotItem;
-
+  isMobile: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -198,7 +198,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm = this.createTariffBuffer();
     this.action = data.action!;
     this.translateLangText();
-    this.loadData()
+    this.loadData();
+    this.isMobile = Utility.isMobile();
   }
 
   createTariffBuffer(): UntypedFormGroup {
@@ -291,4 +292,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_ADD']);
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

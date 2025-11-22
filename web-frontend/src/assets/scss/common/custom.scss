@@ -1047,7 +1047,7 @@ $breakpoints: (
 
 @media (max-width: 1400px) {
   .mobile-label {
-    width: 100px;
+    min-width: 100px;
     display: inline-block;
     font-weight: bold;
   }
@@ -2627,7 +2627,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
 
 .previous-label {
   font-weight: bold;
-  color: mat.get-color-from-palette(custom-theme.$custom-primary, 500) !important;;
+  color: mat.get-color-from-palette(custom-theme.$custom-primary, 500) !important;
   font-style: italic;
 }
 
@@ -3740,6 +3740,20 @@ mat-checkbox.compact-checkbox {
 }
 
 .tlx-card-action-section {
-    min-width: 40px;
-    min-height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+@media (max-width: 575.98px) {
+  .mat-mdc-paginator-container {
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .mat-mdc-paginator-range-actions,
+  .mat-mdc-paginator-page-size {
+    justify-content: center !important;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
 }

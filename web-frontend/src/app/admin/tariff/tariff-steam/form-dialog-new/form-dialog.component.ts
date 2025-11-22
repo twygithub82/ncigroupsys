@@ -199,7 +199,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     RANGE: 'COMMON-FORM.RANGE',
   };
   unit_type_control = new UntypedFormControl();
-
+  isMobile:boolean=false;
   selectedItem: TariffSteamingItem;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
@@ -228,6 +228,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.pcForm.get('cost')?.disable();
       this.pcForm.get('remarks')?.disable();
     }
+    this.isMobile=Utility.isMobile();
+    
   }
 
   patchTariffSteam(row: TariffSteamingItem) {
@@ -421,4 +423,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_ADD']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

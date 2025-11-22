@@ -35,6 +35,10 @@
         <ul class="list">
           <!-- Top Most level menu -->
           @for (sidebarItem of sidebarItems; track sidebarItem) {
+          @if (sidebarItem.type === 'divider') {
+          <mat-divider></mat-divider>
+          }
+          @else {
           <li [routerLinkActive]="sidebarItem.submenu.length !== 0 ? 'active' : 'active-top'">
             @if (sidebarItem.groupTitle === true) {
             <div class="header">{{sidebarItem.title | translate}}</div>
@@ -109,6 +113,7 @@
             }
           </li>
           }
+          }
           <mat-divider></mat-divider>
           <li [routerLinkActive]="'active'">
             <a [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)" class="menu-top" matRipple>
@@ -118,15 +123,18 @@
             </a>
             <ul class="ml-menu">
               <li [routerLinkActive]="''">
+                <a (click)="languageDialog($event)" [ngClass]="['ml-menu']" matRipple>
+                  {{ translatedLangText.LANGUAGE }}
+                </a>
+              </li>
+            </ul>
+            <ul class="ml-menu">
+              <li [routerLinkActive]="''">
                 <a (click)="logoutDialog($event)" [ngClass]="['ml-menu']" matRipple>
                   {{ translatedLangText.LOGOUT }}
                 </a>
               </li>
             </ul>
-            <!-- <a (click)="logoutDialog($event)" class="menu-top mt-1 pt-1 mb-1 pb-1">
-              <mat-icon class="sidebarIcon font-20">logout</mat-icon>
-              <span class="hide-menu">{{ translatedLangText.LOGOUT }}</span>
-            </a> -->
           </li>
         </ul>
       </ng-scrollbar>

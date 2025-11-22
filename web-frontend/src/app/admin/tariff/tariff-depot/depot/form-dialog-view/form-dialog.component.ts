@@ -91,6 +91,7 @@ export class FormDialogComponent_View {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  isMobile:boolean=false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -176,6 +177,7 @@ export class FormDialogComponent_View {
     this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
     this.action = data.action!;
     this.translateLangText();
+    this.isMobile=Utility.isMobile();
   }
 
   createTariffDepot(): UntypedFormGroup {
@@ -333,5 +335,10 @@ export class FormDialogComponent_View {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
 }

@@ -1,0 +1,50 @@
+name: Angular CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # --- Enforce TypeScript version ---
+      - name: Check TypeScript version
+        run: |
+          TSC_VERSION=$(npx tsc --version | awk '{print $2}')
+          echo "Found TypeScript version: $TSC_VERSION"
+          # Compare version numbers
+          if [[ $(echo -e "5.2.0\n$TSC_VERSION" | sort -V | head -n1) != "5.2.0" ]]; then
+            echo "TypeScript version is too low! Angular requires >=5.2.0."
+            exit 1
+          fi
+          if [[ $(echo -e "$TSC_VERSION\n5.5.0" | sort -V | head -n1) != "$TSC_VERSION" ]]; then
+            echo "TypeScript version is too high! Angular requires <5.5.0."
+            exit 1
+          fi
+
+      - name: Build Angular app
+        run: npx ng build --configuration production
+
+      - name: Run tests
+        run: npx ng test --watch=false --browsers=ChromeHeadless
+
+      - name: Lint
+        run: npx ng lint

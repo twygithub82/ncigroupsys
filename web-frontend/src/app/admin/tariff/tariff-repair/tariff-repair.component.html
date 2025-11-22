@@ -276,7 +276,8 @@
                           [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <mat-checkbox color="primary" (click)="$event.stopPropagation()"
                           (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
                           [ngClass]="'tbl-checkbox'">
@@ -286,13 +287,24 @@
                     }
                     <ng-container matColumnDef="fName">
                       <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear
-                        disableClear [ngClass]="'tbl-col-width-per-3_25'">
+                        disableClear 
+                        [ngClass]="'tbl-col-width-per-3_25'"
+                        >
                         {{this.translatedLangText.PART_NAME
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_25'">
+                      <mat-cell *matCellDef="let row" 
+                        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        >
                         <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                          }}:</span><span
-                          class="truncate-one-wrap">{{getTariffRepairAlias(row.tariff_repair)}}</span></mat-cell>
+                          }}:</span>
+                          @if(!isMobile) {
+                             <span
+                          class="truncate-one-wrap">{{getTariffRepairAlias(row.tariff_repair)}}</span>
+                          }
+                          @else {
+                            {{getTariffRepairAlias(row.tariff_repair)}}
+                          }
+                         </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="dimension">
                       <mat-header-cell *matHeaderCellDef
@@ -315,14 +327,17 @@
                     <ng-container matColumnDef="gname">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      >
                         <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
                         {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="subgroup">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                      <mat-cell *matCellDef="let row" 
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
                         <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
                         {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
@@ -330,7 +345,8 @@
                     <ng-container matColumnDef="hour">
                       <mat-header-cell *matHeaderCellDef disableClear
                         [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                      <mat-cell *matCellDef="let row" 
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
                         <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
                         {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
@@ -338,10 +354,11 @@
                     <ng-container matColumnDef="bDate">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
                         <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
-                        <div class="cost-label">
+                        <div>
                           <span>{{parse2Decimal(row.tariff_repair?.material_cost)}}</span>
                         </div>
                       </mat-cell>
@@ -349,7 +366,9 @@
                     <ng-container matColumnDef="last_date">
                       <mat-header-cell *matHeaderCellDef mat-sort-header="last_date" disableClear disableClear
                         [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      >
                         <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                         {{this.displayLastUpdated(row.tariff_repair)}}
                       </mat-cell>
@@ -357,7 +376,8 @@
                     <ng-container matColumnDef="handled_item">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
                         {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')}}
                       </mat-cell>
@@ -366,7 +386,8 @@
                     <!-- actions -->
                     <ng-container matColumnDef="actions">
                       <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'"></mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      <mat-cell *matCellDef="let row; let i=index;" 
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         @if (hasMenuItem(row)) {
                         <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                           <mat-icon>more_vert</mat-icon>

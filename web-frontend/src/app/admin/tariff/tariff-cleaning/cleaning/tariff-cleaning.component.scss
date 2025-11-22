@@ -77,3 +77,19 @@ mat-chip-row[color="primary"] {
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
   display: none
 }
+
+@media (max-width: 575.98px) {
+  .mat-column-flash_point .mat-cell,
+  .mat-column-flash_point .mat-header-cell {
+    min-width: 90px !important;
+    max-width: 100px !important;
+    flex: 0 0 90px !important;
+  }
+
+  .mat-column-class .mat-cell,
+  .mat-column-class .mat-header-cell {
+    min-width: 70px !important;
+    max-width: 80px !important;
+    flex: 0 0 70px !important;
+  }
+}

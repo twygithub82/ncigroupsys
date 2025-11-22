@@ -242,6 +242,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   sdsFileLoading: boolean = false;
   trfCleaningSubmitting: boolean = false;
 
+  isMobile: boolean = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -319,6 +321,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     //this.initializeFilter();
     this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
       // if (value && !value.startsWith(this.prefix) && value != '-') {
@@ -909,5 +912,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     if (un_no == '') return false;
     else return true;
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'mx-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
 }
 

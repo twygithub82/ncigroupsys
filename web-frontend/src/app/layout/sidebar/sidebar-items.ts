@@ -1204,6 +1204,21 @@ export const ROUTES: RouteInfo[] = [
     ].filter(item => item.visible !== false),
   },
   // {
+  //   path: "",
+  //   title: "",
+  //   iconType: "",
+  //   icon: "",
+  //   class: "",
+  //   groupTitle: false,
+  //   badge: "",
+  //   badgeClass: "",
+  //   visible: true,
+  //   modulePackage: [],
+  //   expectedFunctions: [],
+  //   submenu: [],
+  //   type: "divider"
+  // },
+  // {
   //   path: "account",
   //   title: "MENUITEMS.ACCOUNT.TEXT",
   //   iconType: "material",
@@ -1213,6 +1228,8 @@ export const ROUTES: RouteInfo[] = [
   //   badge: "",
   //   badgeClass: "",
   //   visible: true,
+  //   modulePackage: [],
+  //   expectedFunctions: [],
   //   submenu: [
   //     // {
   //     //   path: "account/change-password",
@@ -1227,6 +1244,20 @@ export const ROUTES: RouteInfo[] = [
   //     //   visible: true
   //     // },
   //     {
+  //       path: "account/language",
+  //       title: "MENUITEMS.ACCOUNT.LIST.LANGUAGE",
+  //       iconType: "",
+  //       icon: "",
+  //       class: "ml-menu",
+  //       groupTitle: false,
+  //       badge: "",
+  //       badgeClass: "",
+  //       modulePackage: [],
+  //       expectedFunctions: [],
+  //       submenu: [],
+  //       visible: true
+  //     },
+  //     {
   //       path: "account/logout",
   //       title: "MENUITEMS.ACCOUNT.LIST.LOGOUT",
   //       iconType: "",
@@ -1235,6 +1266,8 @@ export const ROUTES: RouteInfo[] = [
   //       groupTitle: false,
   //       badge: "",
   //       badgeClass: "",
+  //       modulePackage: [],
+  //       expectedFunctions: [],
   //       submenu: [],
   //       visible: true
   //     },
