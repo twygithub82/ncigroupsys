@@ -10,9 +10,6 @@ namespace GlobalMQ.GqlTypes
     {
         string prefix = "On";
 
-
-      
-
         [Subscribe]
         public Message_r1 MessageReceived_r1([EventMessage] Message_r1 message) => message;
 

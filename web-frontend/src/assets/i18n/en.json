@@ -1400,14 +1400,40 @@
     "PER-HOUR": "Per Hour",
     "MANHOUR": "Manhour",
     "UNIT": "Unit",
-    "ESTIMATE-TOTAL": "Estimate Total",
-    "APPROVED-TOTAL": "Approved Total",
-    "NOTE": "Note",
-    "REPAIR-DISCLAIMER": "If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards.",
-    "EQUIVALENT": "Equivalent",
-    "AMOUNT": "Amount",
-    "SUMMARY-COST": "Summary Cost",
-    "LANGUAGE": "Language",
-    "SELECT-LANGUAGE": "Select Language"
+    "ESTIMATE-TOTAL":"Estimate Total",
+    "APPROVED-TOTAL":"Approved Total",
+    "NOTE":"Note",
+    "REPAIR-DISCLAIMER":"If any additional defects are identified after the initial repair, a supplementary repair estimate will be issued to comply with ITCO repair standards.",
+    "EQUIVALENT":"Equivalent",
+    "AMOUNT":"Amount",
+    "SUMMARY-COST":"Summary Cost",
+    "MAX-DISCOUNT":"Max Discount (%)"
+    
+  },
+  "CLEAN-PROCEDURES": {
+    "TEXT": "Cleaning Procedures",
+    "FORMS": {
+      "PROCEDURE-DETAILS": "Procedure Details",
+      "PROCEDURE-NAME": "Procedure Name",
+      "DESCRIPTION": "Description",
+      "CLEAN-CATEGORY": "Cleaning Category",
+      "CLEAN-GROUP": "Cleaning Group",
+      "MIN-COST": "Minimum Cost $",
+      "MAX-COST": "Maximum Cost $",
+      "TOTAL-DURATION": "Total Duration [mins]",
+      "IS-REQUIRED": "is required",
+      "PROCEDURE-STEPS": "Procedure Steps",
+      "STEP-NAME": "Step Name",
+      "STEP-DURATION": "Duration",
+      "STEP-DURATION-TOOLTIP": "Duration minutes"
+    }
+  },
+  "CLEAN-GROUPS": {
+    "TEXT": "Cleaning Groups",
+    "FORMS": {
+      "GROUP-DETAILS": "Group Details",
+      "GROUP-NAME": "Group Name",
+      "BAY": "Bay"
+    }
   }
 }

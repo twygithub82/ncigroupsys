@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using IDMS.Models.Master;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,13 +27,16 @@ namespace IDMS.Models.Shared
         //public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
 
         [UseFiltering]
-        public IEnumerable<user_role?>? user_role { get; set; }
+        public virtual IEnumerable<user_role?>? user_role { get; set; }
 
         [UseFiltering]
-        public IEnumerable<team_user?>? team_user { get; set; }
+        public virtual IEnumerable<team_user?>? team_user { get; set; }
 
         [UseFiltering]
-        public IEnumerable<user_functions?>? user_functions { get; set; }
+        public virtual IEnumerable<user_functions?>? user_functions { get; set; }
+
+        [UseFiltering]
+        public virtual IEnumerable<user_customer?>? user_customer { get; set; }
 
     }
 
@@ -43,7 +48,7 @@ namespace IDMS.Models.Shared
         public string? Name { get; set; }
 
         [UseFiltering]
-        public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
+        public virtual IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
     }
 
     [PrimaryKey("userID", "roleID")]
@@ -53,8 +58,26 @@ namespace IDMS.Models.Shared
         public string roleID { get; set; }
 
         [UseFiltering]
-        public aspnetusers? aspnetusers { get; set; }
+        public virtual aspnetusers? aspnetusers { get; set; }
         [UseFiltering]
-        public aspnetroles? aspnetroles { get; set; }
+        public virtual aspnetroles? aspnetroles { get; set; }
+    }
+
+    public class user_customer : Dates
+    {
+        [Key]
+        public string? guid { get; set; }
+
+        [ForeignKey("user")]
+        //[UseFiltering]
+        public string? user_id { get; set; }
+
+        [ForeignKey("customer_company")]
+        //[UseFiltering]
+        public string? customer_company_guid { get; set; }
+
+        public virtual aspnetusers? user { get; set; }
+        public virtual customer_company? customer_company { get; set; }
+
     }
 }

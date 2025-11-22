@@ -45,3 +45,5 @@ export const modulePackage: string = "customized"; // ng serve --configuration=u
 export const maxTankCount: number = 5;
 
 export const systemCurrencyCode: string = "SGD";
+
+export const defaultDiscountThreshold: number = 25;

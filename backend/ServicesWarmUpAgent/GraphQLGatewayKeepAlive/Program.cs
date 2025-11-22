@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ServicesKeepAlive
+namespace ServiceWarmUpAgent
 {
     public class Program
     {

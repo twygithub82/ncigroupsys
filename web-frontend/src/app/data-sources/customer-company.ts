@@ -31,6 +31,8 @@ export class CustomerCompanyGO {
   public remarks?: string;
   public currency_guid?: string;
   public main_customer_guid?: string;
+  public approval_threshold?: number;
+
 
   public create_dt?: number;
   public create_by?: string;
@@ -60,6 +62,7 @@ export class CustomerCompanyGO {
     this.remarks = item.remarks;
     this.currency_guid = item.currency_guid;
     this.main_customer_guid = item.main_customer_guid;
+    this.approval_threshold = item.approval_threshold;
     //this.billing_branch = item.billing_branch;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -122,6 +125,7 @@ export const SEARCH_COMPANY_QUERY = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        approval_threshold
         address_line1
         address_line2
         agreement_due_dt
@@ -192,6 +196,7 @@ export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        approval_threshold
         address_line1
         address_line2
         agreement_due_dt
@@ -275,6 +280,7 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
     companyList: queryCustomerCompanyWithCount(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         customer_company {
+          approval_threshold
           address_line1
           address_line2
           agreement_due_dt

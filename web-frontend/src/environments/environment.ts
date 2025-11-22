@@ -45,3 +45,5 @@ export const modulePackage: string = "customized";
 export const maxTankCount: number = 5;
 
 export const systemCurrencyCode: string = "SGD";
+
+export const defaultDiscountThreshold: number = 25;

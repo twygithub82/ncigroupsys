@@ -37,20 +37,21 @@ namespace IDMS.Models.Master
         public long? effective_dt { get; set; }
         public long? agreement_due_dt { get; set; }
         public string? remarks { get; set; }
-        
+
         [ForeignKey("template_est")]
         public string? def_template_guid { get; set; }
 
         [ForeignKey("tariff_depot")]
         public string? def_tank_guid { get; set; }
         public string? main_customer_guid { get; set; }
-        //public bool billing_branch {  get; set; }
-
+       
         [UseFiltering]
         public tariff_depot? tariff_depot { get; set; } 
         //public tank? tank { get; set; }
         public currency? currency { get; set; }
-        
+
+        public int? approval_threshold { get; set; }
+
         [UseFiltering]
         public template_est? template_est { get; set; }
 
