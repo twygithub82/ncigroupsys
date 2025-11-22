@@ -1,0 +1,27 @@
+<div [ngClass]="{'container confirmation-dialog': true, 'p-2': true}">
+    <h4 mat-dialog-title [ngClass]="{'pb-3': true, 'align-center': true}">
+        {{translatedLangText.SELECT_LANGUAGE}}
+    </h4>
+    <div mat-dialog-content>
+        <div class="row g-3">
+            @for (row of listLang; track row.lang) {
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center">
+                <button type="button" class="btn btn-light w-100 d-flex align-items-center gap-2 p-2"
+                    (click)="setLanguage(row.lang)" [class.active]="row.lang === langStoreValue">
+                    <img [src]="row.flag" [alt]="row.text + ' flag'" width="24" height="16" class="rounded border"
+                        loading="lazy" />
+                    <span class="flex-grow-1 text-start">{{ row.text }}</span>
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    <!-- <div mat-dialog-actions [ngClass]="{'pt-2 mb-1': true, 'd-flex justify-content-center': true}">
+        <button mat-flat-button color="warn" (click)="confirm()">
+            {{translatedLangText.CONFIRM}}
+        </button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
+            {{getCloseButtonContent()}}
+        </button>
+    </div> -->
+</div>

@@ -81,7 +81,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   trfDepotDS: TariffDepotDS;
 
   tnkItems?: TankItem[] = [];
-
+  isMobile: boolean=false;
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -212,6 +212,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   ngOnInit() {
+    this.isMobile=Utility.isMobile();
     if (!this.canEdit()) {
       this.pcForm?.get('name')?.disable()
       this.pcForm?.get('description')?.disable()
@@ -384,4 +385,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   isAllowSave(){
     return this.unit_type_control?.value?.length > 0;
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

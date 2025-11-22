@@ -150,7 +150,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffResidueItem;
-
+  isMobile: boolean=false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -168,6 +168,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
     this.action = data.action!;
     this.translateLangText();
+    this.isMobile = Utility.isMobile();
   }
 
   ngOnInit() {
@@ -269,4 +270,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_EDIT']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
 }

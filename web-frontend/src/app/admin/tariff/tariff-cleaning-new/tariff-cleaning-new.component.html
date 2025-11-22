@@ -323,17 +323,37 @@
 
             </div>
           </div>
-
-          <div class="row m-t-10">
-
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+         <div  [ngClass]="getColumnClasses('d-flex align-items-center mb-3 m-t-10', isMobile)">
+              <!-- mb-3 = margin-bottom, mx-3 = margin left & right -->
               <button mat-flat-button aria-label="Back to previous page" (click)="GoBackPrevious($event)" type="button">
-                <!-- [routerLink]="['/admin/tariff/tariff-cleaning']"  type="button"> -->
+                <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
+              </button>
+
+              <div class="ms-auto">
+                @if (!(submitForSaving | async)) {
+                  @if (canEdit()) {
+                    <button mat-flat-button color="primary" type="submit">
+                      <mat-icon>save</mat-icon>
+                      {{ this.tc_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
+                    </button>
+                  }
+                } @else {
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                }
+              </div>
+            </div>
+
+          <!-- <div class="row m-t-10">
+
+          
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+              <button mat-flat-button aria-label="Back to previous page" (click)="GoBackPrevious($event)" type="button">
                 <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
               </button>
             </div>
 
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 align-right">
               @if (!(submitForSaving | async)) {
               @if (canEdit()) {
               <button mat-flat-button color="primary" type="submit">
@@ -349,7 +369,7 @@
               }
             </div>
 
-          </div>
+          </div> -->
         </form>
       </div>
     </div>

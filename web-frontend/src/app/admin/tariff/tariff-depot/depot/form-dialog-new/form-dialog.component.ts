@@ -102,6 +102,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   formSubmitted: boolean = false;
+  isMobile:boolean=false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -232,6 +233,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
+    this.isMobile=Utility.isMobile();
     // this.sotExistedList = data.sotExistedList;
     // if (this.action === 'edit') {
     //   this.dialogTitle = 'Edit ' + data.item.tank_no;
@@ -413,4 +415,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

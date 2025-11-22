@@ -1,4 +1,5 @@
-<div class="addContainer">
+<!-- <div class="addContainer"> -->
+  <div [ngClass]="getColumnClasses('addContainer',isMobile) ">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -234,7 +235,7 @@
                   *matHeaderCellDef>{{translatedLangText.GROUP_NAME
                   }}</mat-header-cell>
                 <mat-cell
-                  [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                  [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                   *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.GROUP_NAME
                     }}:</span>{{this.getGroupNameCodeValue(row.group_name_cv)?.description}}</mat-cell>
@@ -245,7 +246,7 @@
                   *matHeaderCellDef>{{translatedLangText.SUB_GROUP_NAME
                   }}</mat-header-cell>
                 <mat-cell
-                  [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                  [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                   *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span>
                   {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
@@ -253,7 +254,7 @@
               <ng-container matColumnDef="gender">
                 <mat-header-cell [ngClass]="'justify-content-center'" *matHeaderCellDef>{{translatedLangText.LABOUR_HOUR
                   }}</mat-header-cell>
-                <mat-cell [ngClass]="'justify-content-center'" *matCellDef="let row">
+                <mat-cell  *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.LABOUR_HOUR }}:</span>
                   {{row.labour_hour}}</mat-cell>
               </ng-container>
@@ -261,7 +262,7 @@
                 <mat-header-cell [ngClass]="'justify-content-center'"
                   *matHeaderCellDef>{{translatedLangText.MATERIAL_COST
                   }}</mat-header-cell>
-                <mat-cell [ngClass]="'justify-content-center'" *matCellDef="let row">
+                <mat-cell  *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.MATERIAL_COST }} :</span>
                   {{row.material_cost.toFixed(2)}}</mat-cell>
               </ng-container>

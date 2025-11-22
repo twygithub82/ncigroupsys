@@ -212,7 +212,7 @@
           <mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+            [ngClass]="getColumnClasses('tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm', !isMobile)"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_CLASS }}:</span>
             {{row.tariff_cleaning?.class_cv}}
@@ -261,10 +261,12 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="flash_point">
-          <mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
+          <!-- <mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"> -->
+             <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  justify-content-center'">
+            {{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+            [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm', !isMobile)"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
             {{row.tariff_cleaning?.flash_point}}</mat-cell>

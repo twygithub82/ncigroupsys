@@ -241,6 +241,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   };
   unit_type_control = new UntypedFormControl();
   selectedItems: TariffRepairItem[];
+  isMobile: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
@@ -261,6 +262,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+    this.isMobile = Utility.isMobile();
   }
 
   createTarifRepair(): UntypedFormGroup {
@@ -657,4 +659,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
   }
+
+   getColumnClasses(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12' : 'col-xl-5-75';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

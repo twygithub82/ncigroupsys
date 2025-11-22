@@ -12,4 +12,5 @@ export interface RouteInfo {
   queryParams?: Record<string, string | number | boolean>;
   modulePackage: string[];
   expectedFunctions?: string[];
+  type?: string;
 }

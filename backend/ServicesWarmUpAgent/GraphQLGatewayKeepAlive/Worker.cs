@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+
+
 namespace ServicesKeepAlive
 {
     public class KeepAliveWorker : BackgroundService
@@ -12,7 +14,7 @@ namespace ServicesKeepAlive
         private readonly ILogger<KeepAliveWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
-
+        private bool _disposed=false;
         public KeepAliveWorker(ILogger<KeepAliveWorker> logger, IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _logger = logger;
@@ -28,40 +30,81 @@ namespace ServicesKeepAlive
             var username = _config["KeepAliveSettings:Username"];
             var password = _config["KeepAliveSettings:Password"];
             var intervalMinutes = double.Parse(_config["KeepAliveSettings:IntervalMinutes"] ?? "5");
+            
 
-            while (!stoppingToken.IsCancellationRequested)
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30) // Add timeout to prevent hanging
+            };
+
+            _logger.LogInformation("KeepAlive service started.");
+            int maxSecs= Convert.ToInt16( intervalMinutes * 60);
+            int counter = 0;
+            while (!_disposed)
             {
                 try
                 {
-                    var token = await LoginAsync(loginUrl!, username!, password!);
-                    if (string.IsNullOrEmpty(token))
+                    if (counter <= 0)
                     {
-                        _logger.LogWarning("Login failed, skipping this cycle...");
+                        counter = maxSecs;
+                        _logger.LogInformation("Starting keep-alive cycle...");
+
+                        var token = await LoginAsync(loginUrl!, username!, password!, httpClient, stoppingToken);
+                        if (string.IsNullOrEmpty(token))
+                        {
+                            _logger.LogWarning("Login failed, skipping this cycle...");
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Login successful, proceeding with GraphQL and frontend calls.");
+
+                            await QueryGraphQLAsync(gqlUrl!, token, httpClient, stoppingToken);
+                            //await CallFrontendAsync(frontendUrl!, token, httpClient, stoppingToken);
+                            await LoadFrontendAsync(frontendUrl!);
+
+                            _logger.LogInformation($"Keep-alive successful at {DateTime.Now}");
+                        }
                     }
-                    else
-                    {
-                        await QueryGraphQLAsync(gqlUrl!, token);
-                        await CallFrontendAsync(frontendUrl!,token);
-                        _logger.LogInformation($"Keep-alive successful at {DateTime.Now}");
-                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    _logger.LogWarning("KeepAlive cycle cancelled.");
+                    break;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error during keep-alive cycle");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(intervalMinutes), stoppingToken);
+                try
+                {
+                    int interval = 30;
+                    _logger.LogInformation($"Waiting... {counter} seconds remaining until next cycle - {DateTime.Now} ");
+                    System.Threading.Thread.Sleep((interval*1000));
+                    counter -= interval;
+                  
+                    //await Task.Delay(TimeSpan.FromMinutes(intervalMinutes), stoppingToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    _logger.LogWarning("Delay cancelled, exiting keep-alive loop.");
+                    break;
+                }
             }
+
+            _logger.LogWarning("KeepAlive : Exited");
         }
 
-        private async Task<string?> LoginAsync(string loginUrl, string username, string password)
+
+
+        private async Task<string?> LoginAsync(string loginUrl, string username, string password, HttpClient client, CancellationToken CancelToken)
         {
-            var client = _httpClientFactory.CreateClient();
+            //var client = _httpClientFactory.CreateClient();
             var body = new { username, password };
             var json = JsonSerializer.Serialize(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(loginUrl, content);
+            var response = await client.PostAsync(loginUrl, content, CancelToken);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("Login failed with status code {StatusCode}", response.StatusCode);
@@ -79,9 +122,9 @@ namespace ServicesKeepAlive
             return null;
         }
 
-        private async Task QueryGraphQLAsync(string gqlUrl, string token)
+        private async Task QueryGraphQLAsync(string gqlUrl, string token, HttpClient client, CancellationToken CancelToken)
         {
-            var client = _httpClientFactory.CreateClient();
+            //var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var query = @"
@@ -103,7 +146,7 @@ namespace ServicesKeepAlive
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(gqlUrl, content);
+            var response = await client.PostAsync(gqlUrl, content, CancelToken);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("GraphQL query failed with status code {StatusCode}", response.StatusCode);
@@ -113,14 +156,19 @@ namespace ServicesKeepAlive
             _logger.LogInformation("GraphQL query executed successfully");
         }
 
-        private async Task CallFrontendAsync(string frontendUrl, string token)
+        private async Task CallFrontendAsync(string frontendUrl, string token, HttpClient client, CancellationToken CancelToken)
         {
-            var client = _httpClientFactory.CreateClient();
+            //var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync(frontendUrl);
+
+            var response = await client.GetAsync(frontendUrl, CancelToken);
+            response.EnsureSuccessStatusCode();
+
             if (response.IsSuccessStatusCode)
             {
+                var cnt=response.Content;
+                var contentText=await cnt.ReadAsStringAsync();
                 _logger.LogInformation("Frontend ping successful");
             }
             else
@@ -128,5 +176,42 @@ namespace ServicesKeepAlive
                 _logger.LogWarning("Frontend ping failed with status code {StatusCode}", response.StatusCode);
             }
         }
+
+        private async Task LoadFrontendAsync(string url)
+        {
+            var browserService = new BrowserMimicService();
+            try
+            {
+                _logger.LogInformation("Frontend fully loading at: " + DateTime.Now);
+                var result = await browserService.LoadPageWithResourcesAsync(url);
+
+                if (result.Success)
+                {
+                    Console.WriteLine($"✓ Main page loaded successfully");
+                    Console.WriteLine($"✓ Found {result.Resources.Count} resources");
+                    Console.WriteLine($"✓ Made {result.ApiCalls.Count} API calls");
+
+                    // Save complete results
+                    _logger.LogInformation("Frontend fully loaded at: " + DateTime.Now);
+                }
+                else
+                {
+                    _logger.LogInformation($"Frontend ✗ Error : {result.ErrorMessage}  at {DateTime.Now}");
+                    
+                }
+
+               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error loading frontend: " + ex.Message);
+            }
+            finally
+            {
+                browserService = null;
+            }
+        }
+
+
     }
 }
