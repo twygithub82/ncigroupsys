@@ -224,6 +224,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   plDS: PackageLabourDS;
 
+  // isSteamRepair?: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -988,11 +990,21 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         if (isAutoApproveSteaming) {
           net_cost = this.displayNumber(stm.rate || 0);
           if (!stm.flat_rate) {
-            net_cost = this.displayNumber((stm?.total_hour||0) * (stm?.rate||0)) 
+                net_cost = this.displayNumber((stm?.total_hour||0) * (stm?.rate||0)) 
           }
         }
         else {
-          net_cost= this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+          var isApproved = true;
+          isApproved = BusinessLogicUtil.isEstimateApproved(stm);
+          if(isApproved)
+          {
+            net_cost= this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+          }
+          else
+          {
+             net_cost=this.displayNumber(this.steamDS.getTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+          }
+
         }
           
           return { ...stm, net_cost: net_cost };
@@ -1200,4 +1212,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
   }
+
+ 
 }

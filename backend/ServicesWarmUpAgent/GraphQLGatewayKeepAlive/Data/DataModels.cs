@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServicesKeepAlive.Data
+namespace ServiceWarmUpAgent.Data
 {
     public class PageLoadResult
     {

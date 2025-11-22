@@ -209,6 +209,12 @@
                     <input matInput formControlName="remarks">
                   </mat-form-field>
                 </div>
+                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.MAX_DISCOUNT}}</mat-label>
+                    <input matInput formControlName="approval_threshold" type="number" [max]="50" [min]="0">
+                  </mat-form-field>
+                </div>
                 @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
@@ -223,15 +229,16 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                @if (canEdit() && canEditBillingBranch()) {
-                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
-                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
-                    (click)="addBillingBranch($event)">
-                    <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
-                  </button>
-                </div>
+                  @if (canEdit() && canEditBillingBranch()) {
+                  <div class="col-xl-1-5 col-lg-2 col-md-12 col-sm-12 mb-0">
+                    <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
+                      (click)="addBillingBranch($event)">
+                      <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                    </button>
+                  </div>
+                  }
                 }
-                }
+            
               </div>
               @if (canEdit()) {
               <div class="row">
