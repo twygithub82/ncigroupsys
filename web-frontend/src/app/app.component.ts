@@ -51,7 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.userLoggedOut.subscribe(() => {
       this.clearAllTimers();
       this.userActivitySubscription?.unsubscribe();
-      this.router.navigate(['/authentication/signin-staff']);
+      this.router.navigate(['/authentication/signin']);
     });
     this.authService.userLoggedIn.subscribe(() => { // ✅ Resubscribe when user logs in
       this.userActivitySubscription?.unsubscribe();

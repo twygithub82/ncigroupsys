@@ -192,6 +192,47 @@ export const SEARCH_COMPANY_QUERY = gql`
   }
 `;
 
+export const GET_COMPANY_MAX_DISCOUNT = gql`
+  query queryCustomerCompany($where: customer_companyFilterInput) {
+    companyList: queryCustomerCompany(where: $where) {
+      nodes {
+        approval_threshold
+        address_line1
+        address_line2
+        agreement_due_dt
+        city
+        code
+        country
+        create_by
+        create_dt
+        delete_dt
+        effective_dt
+        def_tank_guid
+        email
+        guid
+        name
+        country_code
+        phone
+        postal
+        type_cv
+        update_by
+        update_dt
+        website
+        main_customer_guid
+        remarks
+        currency_guid
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const SEARCH_COMPANY_QUERY_WITH_SO_SOT = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int, $after: String, $last: Int, $before: String ) {
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
@@ -409,52 +450,51 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
 
   loadAllItems(where?: any, order?: any): Observable<CustomerCompanyItem[]> {
-  this.loadingSubject.next(true);
+    this.loadingSubject.next(true);
 
-  where = {
-    ...where,
-    type_cv: { in: [...(where?.type_cv?.in || []), "LEESSEE", "BRANCH", "OWNER"] },
-  };
-  where = this.addDeleteDtCriteria(where);
+    where = {
+      ...where,
+      type_cv: { in: [...(where?.type_cv?.in || []), "LEESSEE", "BRANCH", "OWNER"] },
+    };
+    where = this.addDeleteDtCriteria(where);
 
-  const allNodes: CustomerCompanyItem[] = [];
-  const pageSize = 100; // adjust to match your API limit
+    const allNodes: CustomerCompanyItem[] = [];
+    const pageSize = 100; // adjust to match your API limit
 
-  const fetchPage = (after?: string): Observable<CustomerCompanyItem[]> => {
-    return this.apollo
-      .query<any>({
-        query: SEARCH_COMPANY_QUERY,
-        variables: { where, order, first: pageSize, after },
-        fetchPolicy: "no-cache",
-      })
-      .pipe(
-        map((result) => result.data.companyList),
-        switchMap((companyList) => {
-          allNodes.push(...companyList.nodes);
-          if (companyList.pageInfo?.hasNextPage) {
-            // recursively fetch next page
-            return fetchPage(companyList.pageInfo.endCursor);
-          } else {
-            return of(allNodes);
-          }
+    const fetchPage = (after?: string): Observable<CustomerCompanyItem[]> => {
+      return this.apollo
+        .query<any>({
+          query: SEARCH_COMPANY_QUERY,
+          variables: { where, order, first: pageSize, after },
+          fetchPolicy: "no-cache",
         })
-      );
-  };
+        .pipe(
+          map((result) => result.data.companyList),
+          switchMap((companyList) => {
+            allNodes.push(...companyList.nodes);
+            if (companyList.pageInfo?.hasNextPage) {
+              // recursively fetch next page
+              return fetchPage(companyList.pageInfo.endCursor);
+            } else {
+              return of(allNodes);
+            }
+          })
+        );
+    };
 
-  return fetchPage().pipe(
-    catchError((error: ApolloError) => {
-      console.error("GraphQL Error:", error);
-      return of([] as CustomerCompanyItem[]);
-    }),
-    finalize(() => this.loadingSubject.next(false)),
-    map((nodes) => {
-      this.dataSubject.next(nodes);
-      this.totalCount = nodes.length;
-      return nodes;
-    })
-  );
-}
-
+    return fetchPage().pipe(
+      catchError((error: ApolloError) => {
+        console.error("GraphQL Error:", error);
+        return of([] as CustomerCompanyItem[]);
+      }),
+      finalize(() => this.loadingSubject.next(false)),
+      map((nodes) => {
+        this.dataSubject.next(nodes);
+        this.totalCount = nodes.length;
+        return nodes;
+      })
+    );
+  }
 
   getBranchSearch(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
@@ -773,6 +813,34 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
           const list = result.companyList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(list.nodes);
           this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
+  getCustomerMaxDiscount(customer_company_guid: string): Observable<CustomerCompanyItem[]> {
+    this.loadingSubject.next(true);
+    const where = this.addDeleteDtCriteria({ guid: { eq: customer_company_guid } });
+    return this.apollo
+      .query<any>({
+        query: GET_COMPANY_MAX_DISCOUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+
           this.totalCount = list.totalCount;
           return list.nodes;
         })

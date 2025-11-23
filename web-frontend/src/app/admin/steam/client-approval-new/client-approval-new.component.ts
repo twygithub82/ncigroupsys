@@ -59,6 +59,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { defaultDiscountThreshold } from 'environments/environment';
 @Component({
   selector: 'app-client-steaming-estimate-approval-new',
   standalone: true,
@@ -104,7 +105,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     'hour',
     'cost',
     'approve_part',
-    'actions'
   ];
   labourCostDisplayedColumns = [
     'seq',
@@ -114,7 +114,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     'labourSummaryHrs',
     'labourSummaryCost',
     'approve_part',
-    'actions'
   ];
   totalCostDisplayedColumns = [
     'seq',
@@ -124,7 +123,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     'totalSummaryHrs',
     'totalSummaryCost',
     'approve_part',
-    'actions'
   ];
 
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
@@ -247,6 +245,8 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     APPROVED: 'COMMON-FORM.APPROVED',
     ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
+    CONTACT_SYSTEM_ADMIN: 'COMMON-FORM.CONTACT-SYSTEM-ADMIN',
+    CONTACT_DEPOT_FOR_ADJUSTMENT: 'COMMON-FORM.CONTACT-DEPOT-FOR-ADJUSTMENT',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -318,6 +318,8 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
   autosteamTotalCost: string = '';
 
   isMobile = false;
+  previousOverallCost: number = 0;
+  maxDiscount: number = 0;
 
   constructor(
     public httpClient: HttpClient,
@@ -385,7 +387,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
         'hour',
         'cost',
         'approve_part',
-        'actions'
       ];
     this.labourCostDisplayedColumns = this.isMobile
       ? ['labourSummaryCost']
@@ -398,7 +399,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
         'labourSummaryHrs',
         'labourSummaryCost',
         'approve_part',
-        'actions'
       ];
     this.totalCostDisplayedColumns = this.isMobile
       ? ['totalSummaryCost']
@@ -411,7 +411,6 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
         'totalSummaryHrs',
         'totalSummaryCost',
         'approve_part',
-        'actions'
       ];
   }
 
@@ -511,6 +510,18 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
         this.packageLabourItem = data[0];
+
+        this.previousOverallCost = this.getTotalCost();
+        console.log(this.previousOverallCost)
+      }
+    });
+  }
+
+  getCustomerMaxDiscount(customer_company_guid: string) {
+    this.subs.sink = this.ccDS.getCustomerMaxDiscount(customer_company_guid).subscribe(data => {
+      if (data?.length > 0) {
+        this.maxDiscount = data[0]?.approval_threshold || 0;
+        console.log(`Max Discount: ${this.maxDiscount}`)
       }
     });
   }
@@ -919,6 +930,27 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     this.updateData(data);
   }
 
+  alertMessage(message: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
+      data: {
+        langText: this.langText,
+        headerText: message,
+        action: "confirm_only"
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
+  }
+
   addRepairEstPart(result: any) {
     const data = [...this.repList];
     const newItem = new RepairPartItem({
@@ -1085,7 +1117,7 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/steam/estimate-approval'], {
+        this.router.navigate(['/admin/steam/client-approval'], {
           state: this.historyState
 
         }
@@ -1329,6 +1361,9 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
       this.packSteamList = data;
       this.displayPackSteamList = this.packSteamList;
       this.populateSteamPartList(this.steamItem!);
+
+      this.previousOverallCost = this.getTotalCost();
+      console.log(this.previousOverallCost)
     });
   }
 
@@ -1381,15 +1416,11 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
       }
       this.steam_guid = this.steamItem?.guid;
       this.isSteamRepair = this.steamDS.IsSteamRepair(this.steamItem!);
-      if (!this.isSteamRepair) {
-        this.displayedColumns = this.displayedColumns.filter(col => col !== 'actions');
-        this.labourCostDisplayedColumns = this.labourCostDisplayedColumns.filter(col => col !== 'actions');
-        this.totalCostDisplayedColumns = this.totalCostDisplayedColumns.filter(col => col !== 'actions');
-      }
       this.getPackageSteam();
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
       this.getCustomerLabourPackage(ccGuid!);
+      this.getCustomerMaxDiscount(ccGuid!);
     }
   }
 
@@ -1499,7 +1530,7 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-      this.router.navigate(['/admin/steam/estimate-approval'], {
+      this.router.navigate(['/admin/steam/client-approval'], {
         state: this.historyState
       });
     }
@@ -1684,6 +1715,15 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
 
   approveRow(event: Event) {
     event.preventDefault();
+
+    const isDescreasedByQuarter = this.hasCostDecreasedByQuarter();
+    if (isDescreasedByQuarter == null) {
+      this.alertMessage(this.translatedLangText.CONTACT_SYSTEM_ADMIN);
+      return;
+    } else if (isDescreasedByQuarter) {
+      this.alertMessage(this.translatedLangText.CONTACT_DEPOT_FOR_ADJUSTMENT)
+      return;
+    }
     const bill_to = (this.steamEstForm?.get("bill_to")?.value?.guid);
 
     if (bill_to) {
@@ -1916,5 +1956,16 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
 
   displayApproveUpdateButton() {
     return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
+  }
+
+  hasCostDecreasedByQuarter(): boolean | null {
+    const currentCost = this.getTotalCost();
+    if (currentCost == null || this.previousOverallCost == null) {
+      return false;
+    }
+    const discount = this.maxDiscount ?? defaultDiscountThreshold;
+    const threshold = 1 - (discount / 100);
+    console.log(this.previousOverallCost * threshold)
+    return currentCost < this.previousOverallCost * threshold;
   }
 }

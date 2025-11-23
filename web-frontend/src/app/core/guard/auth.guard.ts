@@ -15,7 +15,7 @@ export class AuthGuard {
     const url = state.url.toLowerCase();
 
     if (!currentUser?.token) {
-      this.router.navigate(['/authentication/signin-staff']);
+      this.router.navigate(['/authentication/signin']);
       return false;
     }
 
