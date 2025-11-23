@@ -2241,6 +2241,7 @@ tlx-card-list .alternate-panel {
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    align-items: center !important;
 
     &:hover,
     &:focus {
@@ -2251,6 +2252,7 @@ tlx-card-list .alternate-panel {
     }
 
     .header-content {
+
       @media (min-width: 481px) {
         padding-left: 1.5%;
       }

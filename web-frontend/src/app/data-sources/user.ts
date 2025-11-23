@@ -14,7 +14,7 @@ export class UserGO {
   public userName?: string;
   public phoneNumber?: string;
   public email?: string;
-  public corporateID?:number;
+  public corporateID?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -26,7 +26,7 @@ export class UserGO {
     this.userName = item.userName;
     this.phoneNumber = item.phoneNumber;
     this.email = item.email;
-    this.corporateID=item.corporateID;
+    this.corporateID = item.corporateID;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -41,7 +41,7 @@ export class UserItem extends UserGO {
   constructor(item: Partial<UserItem> = {}) {
     super(item)
     this.userrole = item.userrole || undefined;
-    this.aspnetuserroles=item.aspnetuserroles || undefined;
+    this.aspnetuserroles = item.aspnetuserroles || undefined;
   }
 }
 
@@ -51,52 +51,51 @@ export class UserItemWithDetails extends UserItem {
   public user_functions?: UserFunctionLinkage[];
   constructor(item: Partial<UserItemWithDetails> = {}) {
     super(item)
-    this.team_user=item.team_user || undefined;
-    this.user_role=item.user_role || undefined;
-    this.user_functions=item.user_functions || undefined;
+    this.team_user = item.team_user || undefined;
+    this.user_role = item.user_role || undefined;
+    this.user_functions = item.user_functions || undefined;
 
   }
 }
 export class AspnetUserRolesItem {
   public role?: AspRolesItem;
   constructor(item: Partial<AspnetUserRolesItem> = {}) {
-    this.role = item.role||undefined;
+    this.role = item.role || undefined;
   }
 }
 
-export class AspRolesItem{
+export class AspRolesItem {
   public role: string;
   constructor(item: Partial<AspRolesItem> = {}) {
     this.role = item.role || '';
   }
 }
 
-export class UserFunctionLinkage{
+export class UserFunctionLinkage {
   public adhoc?: boolean;
   public guid?: string;
   public user_guid?: string;
   public functions_guid?: string;
-  public remarks?:string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public functions?:Functions;
+  public functions?: Functions;
 
   constructor(item: Partial<UserFunctionLinkage> = {}) {
-          this.adhoc = item.adhoc;
-          this.guid = item.guid;
-          this.user_guid = item.user_guid;
-          this.functions_guid = item.functions_guid;
-          this.remarks = item.remarks;
-          this.create_dt = item.create_dt;
-          this.create_by = item.create_by;
-          this.update_dt = item.update_dt;
-          this.update_by = item.update_by;
-          this.delete_dt = item.delete_dt;
-          this.functions=item.functions || undefined;
-          
+    this.adhoc = item.adhoc;
+    this.guid = item.guid;
+    this.user_guid = item.user_guid;
+    this.functions_guid = item.functions_guid;
+    this.remarks = item.remarks;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+    this.functions = item.functions || undefined;
   }
 }
 const GET_USERS = gql`
@@ -346,7 +345,7 @@ export class UserDS extends BaseDataSource<UserItem> {
       );
   }
 
-   searchUserWithRolesNTeams(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<UserItemWithDetails[]> {
+  searchUserWithRolesNTeams(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<UserItemWithDetails[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
@@ -394,21 +393,21 @@ export class UserDS extends BaseDataSource<UserItem> {
   }
 
 
-   updateUser(userRequest:any,rolesRequest:any,teamsRequest: any,functionsRequest: any): Observable<any> {
-        return this.apollo.mutate({
-          mutation: UPDATE_USER,
-          variables: {
-            userRequest,
-            teamsRequest,
-            rolesRequest,
-            functionsRequest
-          }
-        }).pipe(
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of(0); // Return an empty array on error
-          }),
-        );
+  updateUser(userRequest: any, rolesRequest: any, teamsRequest: any, functionsRequest: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_USER,
+      variables: {
+        userRequest,
+        teamsRequest,
+        rolesRequest,
+        functionsRequest
       }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
 }

@@ -38,19 +38,19 @@ export const REPAIR_ROUTE: Routes = [
     path: "approval",
     component: RepairApprovalComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW'] }
+    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
   },
-    {
+  {
     path: "approval/:id",
     component: RepairApprovalComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW'] }
+    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
   },
   {
     path: "approval/view/:id",
     component: RepairApprovalViewComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW'] }
+    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
   },
   {
     path: "job-order",
@@ -58,7 +58,7 @@ export const REPAIR_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['REPAIR_JOB_ALLOCATION_DELETE', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_VIEW', 'REPAIR_JOBS_DELETE', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_VIEW', 'REPAIR_QC_DELETE', 'REPAIR_QC_EDIT', 'REPAIR_QC_VIEW'] }
   },
-   {
+  {
     path: "job-order/:id",
     component: JobOrderComponent,
     canActivate: [AuthGuard],

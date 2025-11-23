@@ -25,6 +25,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '@core/service/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -52,10 +53,10 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-estimate',
+  selector: 'app-client-steaming-estimate-approval',
   standalone: true,
-  templateUrl: './estimate-approval.component.html',
-  styleUrl: './estimate-approval.component.scss',
+  templateUrl: './client-approval.component.html',
+  styleUrl: './client-approval.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -88,7 +89,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ],
 })
-export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'estimate_no',
     'net_cost',
@@ -97,9 +98,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.STEAM.LIST.STEAM-ESTIMATE-APPROVAL'
+  pageTitle = 'MENUITEMS.STEAM.LIST.APPROVAL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/estimate-approval' },
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/client-approval' },
   ]
 
   translatedLangText: any = {};
@@ -223,8 +224,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   plDS: PackageLabourDS;
 
-  // isSteamRepair?: boolean = true;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -236,6 +235,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     private translate: TranslateService,
     private searchStateService: SearchStateService,
     private modulePackageService: ModulePackageService,
+    private authService: AuthService
   ) {
     super();
     this.translateLangText();
@@ -268,27 +268,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
-
-    this.groupedRepairs = [
-      // {
-      //   groupKey: 'cleaning',
-      //   groupLabel: 'Cleaning',
-      //   items: this.repairData.filter(item => item.group === 'Cleaning'),
-      //   isExpanded: true
-      // },
-      // {
-      //   groupKey: 'mainway',
-      //   groupLabel: 'Mainway',
-      //   items: this.repairData.filter(item => item.group === 'Mainway'),
-      //   isExpanded: true
-      // },
-      // {
-      //   groupKey: 'walkway',
-      //   groupLabel: 'Walkway',
-      //   items: this.repairData.filter(item => item.group === 'Walkway'),
-      //   isExpanded: true
-      // }
-    ];
   }
 
   private updateView(width: number): void {
@@ -522,8 +501,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: ['STEAM', 'STORAGE'] },
-      purpose_steam: { eq: true }
+      tank_status_cv: { in: ['STEAM'] },
+      purpose_steam: { eq: true },
+      storing_order: { customer_company_guid: { in: this.authService.getClientCompany() } },
+      steaming: { some: { status_cv: { eq: "PENDING" } } },
     };
 
     // if (this.searchForm!.value['tank_status']) {
@@ -556,11 +537,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       const eirEndDt = this.searchForm!.value['eir_dt_end']?.clone();
       if (!where.in_gate) where.in_gate = {};
       where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) } } };
-    }
-
-    if (this.customerCodeControl?.value) {
-      if (!where.storing_order) where.storing_order = {};
-      where.storing_order.customer_company = { code: { contains: this.customerCodeControl?.value?.code } };
     }
 
     if (this.searchForm!.value['est_dt']) {
@@ -597,7 +573,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       before
     });
     console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimateClient(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         if (data) {
           const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
@@ -695,23 +671,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   initializeFilterCustomerCompany() {
-    this.customerCodeControl.valueChanges.pipe
-      (
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (typeof value === 'string') {
-            searchCriteria = value;
-          } else {
-            searchCriteria = `${value?.code}`;
-          }
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            this.customer_companyList = data
-          });
-        })
-      ).subscribe();
-
     this.lastCargoControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -903,11 +862,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
   updateSteamEstimate(event: Event, sot: StoringOrderItem, row: SteamItem) {
     event.stopPropagation(); // Stop the click event from propagating
-    if (!this.isAllowView() && !this.isAllowEdit()) {
-      return;
-    }
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate-approval/new/', row.guid], {
+    this.router.navigate(['/admin/steam/client-approval/new/', row.guid], {
       state: {
         id: '',
         action: "UPDATE",
@@ -1077,52 +1033,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-  // simpleColumns: TableColumn[] = [
-  //   { key: 'id', header: 'ID', width: '10%' },
-  //   { key: 'name', header: 'Name', width: '30%' },
-  //   { key: 'email', header: 'Email', width: '40%' },
-  //   { key: 'status', header: 'Status', width: '20%' }
-  // ];
-
-  repairData: any[] = [
-    {
-      group: 'Cleaning',
-      damage_code: 'B/18',
-      repair_code: '4X',
-      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
-      quantity: 0,
-      hour: 0,
-      material_cost: 79.95,
-      price: 0.00
-    },
-    {
-      group: 'Cleaning',
-      damage_code: '3',
-      repair_code: '32',
-      description: 'Exterior wash-Chemical (WD5)',
-      quantity: 1,
-      hour: 4,
-      material_cost: 230.84,
-      price: 230.84
-    },
-    {
-      group: 'Mainway',
-      damage_code: '4/5',
-      repair_code: '31/32',
-      description: 'Front yes - Swingbolt assembly glue screw Top',
-      quantity: 1,
-      hour: 1,
-      material_cost: 7.55,
-      price: 7.55
-    }
-  ];
-
-  simpleData = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Active' }
-  ];
-
   groupedRepairs: TableGroup[] = [];
 
   footers: TableFooter[] = [
@@ -1155,13 +1065,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   IsEnable3Dots(steamRow: any): boolean {
     var bRetval: boolean = false;
 
-    bRetval = this.isAllowAdd() && this.steamDS.canCopy(steamRow);
-    if (bRetval) return bRetval;
-    bRetval = this.isAllowEdit() && this.steamDS.canRollbackEstimate(steamRow);
-    if (bRetval) return bRetval;
-    bRetval = this.isAllowDelete() && this.steamDS.canCancel(steamRow);
-    if (bRetval) return bRetval;
-
     return bRetval;
   }
 
@@ -1175,19 +1078,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return Utility.formatNumberDisplay(value);
   }
 
-  isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_EDIT']);
-  }
-
-  isAllowAdd() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_ADD']);
-  }
-
-  isAllowDelete() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_DELETE']);
-  }
-
-  isAllowView() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
+  isAllowClientApproval() {
+    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_CLIENT']);
   }
 }
