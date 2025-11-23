@@ -8,6 +8,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using IDMS.Models.Shared;
 using IDMS.Inventory.GqlTypes.LocalModel;
 
@@ -16,6 +17,13 @@ namespace IDMS.Survey.GqlTypes
     [ExtendObjectType(typeof(InventoryMutation))]
     public class OGSurveyMutation
     {
+        private readonly ILogger<OGSurveyMutation> _logger;
+
+        public OGSurveyMutation(ILogger<OGSurveyMutation> logger)
+        {
+            _logger = logger;
+        }
+
         //[Authorize]
         public async Task<Record> AddOutGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
@@ -44,10 +52,15 @@ namespace IDMS.Survey.GqlTypes
                     //Add the newly created guid into list for return
                     retGuids.Add(outgateSurvey.guid);
 
+                    _logger.LogDebug("Created out_gate_survey guid={Guid}", outgateSurvey.guid);
+
                     //Outgate handling
                     var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid && i.delete_dt == null).FirstOrDefaultAsync();
                     if (outgate == null)
+                    {
+                        _logger.LogWarning("Outgate not found for guid={OutGateGuid}", outGateRequest?.guid);
                         throw new GraphQLException(new Error($"Outgate not found", "ERROR"));
+                    }
 
                     outgate.remarks = outGateRequest.remarks;
                     outgate.vehicle_no = outGateRequest.vehicle_no;
@@ -63,6 +76,8 @@ namespace IDMS.Survey.GqlTypes
                     if (!string.IsNullOrEmpty(outGateSurveyRequest?.action ?? "")
                         && outGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
                     {
+                        _logger.LogInformation("Publishing EIR for OutGateGuid={OutGateGuid} by user={User}", outGateRequest.guid, user);
+
                         outgate.eir_status_cv = EirStatus.PUBLISHED;
                         outgate.publish_by = user;
                         outgate.publish_dt = currentDateTime;
@@ -78,8 +93,10 @@ namespace IDMS.Survey.GqlTypes
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
 
+                    _logger.LogInformation("AddOutGateSurvey committed for guid={Guid}, affected={Affected}", outgateSurvey.guid, retval);
+
                     //TODO
-                    string evtId = EventId.NEW_OUTGATE;
+                    string evtId = Models.EventId.NEW_OUTGATE;
                     string evtName = EventName.NEW_OUTGATE;
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
@@ -90,7 +107,9 @@ namespace IDMS.Survey.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+
+                    _logger.LogError(ex, "Error in AddOutGateSurvey for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
+                    throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
             }
 
@@ -113,11 +132,16 @@ namespace IDMS.Survey.GqlTypes
                     out_gate_survey? outgateSurvey = await context.out_gate_survey.Where(i => i.guid == outGateSurveyRequest.guid &&
                                                                                      (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                     if (outgateSurvey == null)
-                        throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
+                    {
+                        _logger.LogWarning("Outgate survey not found for guid={OGSurveyGuid}", outGateSurveyRequest?.guid);
+                        throw new GraphQLException(new Error("Outgate survey not found.", "ERROR"));
+                    }
 
                     if (outgateSurvey.out_gate_guid == null)
+                    {
+                        _logger.LogWarning("Outgate guid is null for outgate survey guid={OGSurveyGuid}", outGateSurveyRequest?.guid);
                         throw new GraphQLException(new Error("Outgate guid cant be null.", "ERROR"));
-
+                    }
 
                     mapper.Map(outGateSurveyRequest, outgateSurvey);
 
@@ -183,7 +207,7 @@ namespace IDMS.Survey.GqlTypes
                     await transaction.CommitAsync();
 
                     //TODO
-                    string evtId = EventId.NEW_OUTGATE;
+                    string evtId = Models.EventId.NEW_OUTGATE;
                     string evtName = EventName.NEW_OUTGATE;
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
                 }
@@ -191,7 +215,8 @@ namespace IDMS.Survey.GqlTypes
                 {
                     // Rollback the transaction if any errors occur
                     await transaction.RollbackAsync();
-                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                    _logger.LogError(ex, "Error in UpdateOutGateSurvey for OGSurveyGuid={OGSurveyGuid}", outGateSurveyRequest?.guid);
+                    throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
             }
 
@@ -218,11 +243,18 @@ namespace IDMS.Survey.GqlTypes
                     delOutGateSurvey.update_dt = currentDateTime;
 
                     retval = await context.SaveChangesAsync(true);
+
+                    _logger.LogInformation("Deleted out gate survey {OGSurveyGuid}, affected={Affected}", OGSurvey_guid, retval);
+                }
+                else
+                {
+                    _logger.LogWarning("No out gate survey found to delete for guid={OGSurveyGuid}", OGSurvey_guid);
                 }
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteOutGateSurvey for OGSurveyGuid={OGSurveyGuid}", OGSurvey_guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retval;
         }
@@ -249,49 +281,19 @@ namespace IDMS.Survey.GqlTypes
                     outgate.update_dt = currentDateTime;
                     outgate.publish_dt = currentDateTime;
 
-                    ////SOT Handling
-                    //if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
-                    //    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
-
-                    //if (outGateRequest.out_gate_survey == null)
-                    //    throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
-
-                    //var tnk = outGateRequest.tank;
-                    //storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
-                    //context.storing_order_tank.Attach(sot);
-                    //sot.update_by = user;
-                    //sot.update_dt = currentDateTime;
-                    //sot.tank_status_cv = TankMovementStatus.RELEASED;
-
-                    ////Pre-Order Handling
-                    //var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no &&
-                    //                                            s.status_cv == SOTankStatus.PREORDER && s.delete_dt == null).FirstOrDefaultAsync();
-                    //if (preOrderTank != null)
-                    //{
-                    //    preOrderTank.status_cv = SOTankStatus.WAITING;
-                    //    preOrderTank.update_by = user;
-                    //    preOrderTank.update_dt = currentDateTime;
-                    //}
-
-                    //await context.SaveChangesAsync();
-
-                    ////Tank info handling
-                    //var tankDetail = new TankDetail();
-                    //tankDetail.tank_no = tnk.tank_no;
-                    //tankDetail.owner_guid = tnk.owner_guid;
-                    //tankDetail.unit_type_guid = tnk.unit_type_guid;
-                    //await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, outGateRequest.out_gate_survey, null);
-
                     await PublishEirHandling(context, user, currentDateTime, mapper, outGateRequest);
 
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
+
+                    _logger.LogInformation("PublishOutgateSurvey committed for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
                 }
                 catch (Exception ex)
                 {
                     // Rollback the transaction if any errors occur
                     await transaction.RollbackAsync();
-                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                    _logger.LogError(ex, "Error in PublishOutgateSurvey for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
+                    throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
             }
 
@@ -347,14 +349,18 @@ namespace IDMS.Survey.GqlTypes
                     //already ignore the guid, created_by, created_dt in program.config
                     tf.update_by = user;
                     tf.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Updated tank_info guid={Guid} tank_no={TankNo}", tf.guid, tf.tank_no);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogDebug("AddTankInfo SaveChanges affected={Affected}", res);
                 //return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddTankInfo for TankNo={TankNo}", tankDetail?.tank_no);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -366,10 +372,16 @@ namespace IDMS.Survey.GqlTypes
             {
                 //SOT Handling
                 if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
+                {
+                    _logger.LogWarning("PublishEirHandling missing tank information for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+                }
 
                 if (outGateRequest.out_gate_survey == null)
+                {
+                    _logger.LogWarning("PublishEirHandling missing out_gate_survey for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
                     throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
+                }
 
                 var tnk = outGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
@@ -399,7 +411,8 @@ namespace IDMS.Survey.GqlTypes
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "Error in PublishEirHandling for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retVal;
         }

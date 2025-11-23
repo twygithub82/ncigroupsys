@@ -13,6 +13,7 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using TimeZoneConverter;
 
@@ -21,6 +22,13 @@ namespace IDMS.Billing.GqlTypes
     [ExtendObjectType(typeof(BillingQuery))]
     public class AdminReportQuery
     {
+        private readonly ILogger<AdminReportQuery> _logger;
+
+        public AdminReportQuery(ILogger<AdminReportQuery> logger)
+        {
+            _logger = logger;
+        }
+
         #region Performance Report
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -98,11 +106,15 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var resultList = await query.OrderBy(tr => tr.tank_no).ToListAsync();
+
+                _logger.LogInformation("QueryCleanerPerformance completed: returned {Count} records", resultList?.Count ?? 0);
+
                 return resultList;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryCleanerPerformance failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -204,11 +216,14 @@ namespace IDMS.Billing.GqlTypes
                            })
                        .ToList();
 
+                _logger.LogInformation("QuerySteamPerformance completed: returning {Count} joined records", joinedResults?.Count ?? 0);
+
                 return joinedResults;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QuerySteamPerformance failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -219,10 +234,6 @@ namespace IDMS.Billing.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-                //string completedStatus = "COMPLETED";
-                //long sDate = surveyorPerfSummaryRequest.start_date;
-                //long eDate = surveyorPerfSummaryRequest.end_date;
 
                 int year = surveyorPerfSummaryRequest.year;
                 int start_month = surveyorPerfSummaryRequest.start_month;
@@ -332,12 +343,14 @@ namespace IDMS.Billing.GqlTypes
                 surveyorPerformanceResult.grand_total_rejected = surveyorPerformanceResult.grand_total_diff_cost < 0 ? 0 : RoundUpValue(surveyorPerformanceResult.grand_total_diff_cost
                                                                 / surveyorPerformanceResult.grand_total_est_cost);
 
+                _logger.LogInformation("QuerySurveyorPerformanceSummary completed: months={Months}, totalEstCount={Total}", groupedNodes.Count, surveyorPerformanceResult.grand_total_est_count);
 
                 return surveyorPerformanceResult;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QuerySurveyorPerformanceSummary failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -362,20 +375,6 @@ namespace IDMS.Billing.GqlTypes
                 string estimateStatus = "CANCELED";
                 long sDate = surveyorPerfDetailRequest.start_date;
                 long eDate = surveyorPerfDetailRequest.end_date;
-
-                //int year = surveyorPerfDetailRequest.year;
-                //int start_month = surveyorPerfDetailRequest.start_month;
-                //int end_month = surveyorPerfDetailRequest.end_month;
-
-                //// Get the start date of the month (1st of the month)
-                //DateTime startOfMonth = new DateTime(year, start_month, 1);
-                //// Get the end date of the month (last day of the month)
-                //// Get the number of days in the specified month
-                //int daysInMonth = DateTime.DaysInMonth(year, end_month);
-                //DateTime endOfMonth = new DateTime(year, end_month, daysInMonth).AddHours(23).AddMinutes(59).AddSeconds(59);
-                //// Convert the start and end dates to Unix Epoch (seconds since 1970-01-01)
-                //long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
-                //long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
                 var query = (from r in context.repair
                                  //join rp in context.Set<repair_part>() on r.guid equals rp.repair_guid
@@ -465,11 +464,14 @@ namespace IDMS.Billing.GqlTypes
                            total_appv_cost = g.Select(x => x.appv_cost).Sum(),
                        }).ToList();
 
+                _logger.LogInformation("QuerySurveyorPerformanceDetail completed: groups={Groups}", surveyorPerformanceDetail?.Count ?? 0);
+
                 return surveyorPerformanceDetail; //surveyorPerformanceResult;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QuerySurveyorPerformanceDetail failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -636,12 +638,15 @@ namespace IDMS.Billing.GqlTypes
                 customerMonthlySales.total_offhire_count = combinedList.Sum(x => x.offhire_count);
                 customerMonthlySales.total_offhire_cost = combinedList.Sum(x => x.offhire_cost);
 
+                _logger.LogInformation("QueryCustomerMonthlySalesReport completed: totalCustomers={Count}", customerMonthlySales.customer_sales?.Count ?? 0);
+
                 return customerMonthlySales;
 
                 //return combinedList.OrderBy(x => x.code).ToList();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryCustomerMonthlySalesReport failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -792,10 +797,13 @@ namespace IDMS.Billing.GqlTypes
                         monthlySalesReportResult.repair_monthly_sales = monthlyReport;
                 }
 
+                _logger.LogInformation("QueryMonthlySalesReport completed");
+
                 return monthlySalesReportResult;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryMonthlySalesReport failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -929,10 +937,13 @@ namespace IDMS.Billing.GqlTypes
                         yearlySalesReportResult.repair_yearly_sales = yearlySalesReport;
                 }
 
+                _logger.LogInformation("QueryYearlySalesReport completed");
+
                 return yearlySalesReportResult;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryYearlySalesReport failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1029,10 +1040,13 @@ namespace IDMS.Billing.GqlTypes
                     average = averageSotGuidsPerDay
                 };
 
+                _logger.LogInformation("QueryMonthlyProcessReport completed: total={Total}, average={Average}", monthlyReport.total, monthlyReport.average);
+
                 return monthlyReport;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryMonthlyProcessReport failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1134,10 +1148,13 @@ namespace IDMS.Billing.GqlTypes
                     average = average
                 };
 
+                _logger.LogInformation("Prepared YearlyReport for type={Type}: total={Total}, average={Average}", yearlyProcessRequest.report_type, total, average);
+
                 return yearlyReport;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryYearlyProcessReport failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1230,10 +1247,14 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var resultList = await query.OrderBy(tr => tr.date).ToListAsync();
+
+                _logger.LogDebug("RetriveProcessInventoryResult completed: returned {Count} records", resultList?.Count ?? 0);
+
                 return resultList;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "RetriveProcessInventoryResult failed");
                 throw ex;
             }
         }
@@ -1243,12 +1264,7 @@ namespace IDMS.Billing.GqlTypes
 
             try
             {
-                //string completedStatus = "COMPLETED";
-                //string qcCompletedStatus = "QC_COMPLETED";
                 string yetSurvey = "YET_TO_SURVEY";
-
-                //var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
-                //var cancelStatus = new[] { "CANCELED", "NO_ACTION" };
 
                 var query = (from sot in context.storing_order_tank
                              join so in context.storing_order on sot.so_guid equals so.guid into soJoin
@@ -1502,10 +1518,14 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var resultList = await query.OrderBy(tr => tr.date).ToListAsync();
+
+                _logger.LogDebug("RetriveSalesResult completed: returned {Count} records", resultList?.Count ?? 0);
+
                 return resultList;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "RetriveSalesResult failed");
                 throw ex;
             }
         }
@@ -1612,8 +1632,6 @@ namespace IDMS.Billing.GqlTypes
                                  qc_by = g.Max(x => x.jo.qc_by),
                                  qc_date = g.Max(x => x.jo.qc_dt),
                                  eir_no = g.Max(x => x.ig.eir_no),
-                                 //repair_cost = (rp.approve_cost * rp.approve_qty * (1 - (r.material_cost_discount / 100))) +
-                                 //              (rp.approve_hour * r.labour_cost * (1 - (r.labour_cost_discount / 100))),
                                  repair_cost = Math.Round(g.Sum(x =>
                                      (
                                          ((x.rp.approve_cost ?? 0) * (x.rp.approve_qty ?? 0) * (1 - ((x.r.material_cost_discount ?? 0) / 100d))) * 10) / 10
@@ -1675,6 +1693,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryDailyTeamRevenue failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1769,6 +1788,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryDailyTeamApproval failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1920,6 +1940,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryDailyQCDetail failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1942,9 +1963,6 @@ namespace IDMS.Billing.GqlTypes
                 // Check if all elements in inputList are within the process list
                 if (!ProcessType.ProcessList.ContainsIgnore(zeroApprovalRequest.report_type))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
-
-                //string completedStatus = "COMPLETED";
-                //var invalidStatus = new[] { "PENDING", "CANCELED", "NO_ACTION" };
 
                 int year = zeroApprovalRequest.year;
                 int month = zeroApprovalRequest.month;
@@ -2060,10 +2078,14 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 var resultList = await res.OrderBy(tr => tr.tank_no).ToListAsync();
+
+                _logger.LogInformation("QueryZeroApprovalCost completed: returned {Count} records", resultList?.Count ?? 0);
+
                 return resultList;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "QueryZeroApprovalCost failed");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -2109,6 +2131,8 @@ namespace IDMS.Billing.GqlTypes
                     LastRecordTime = g.Where(s => s.s.report_dt == s.lr.MaxReportDt).Max(s => (long?)s.s.report_dt)
                 })
                 .ToList();
+
+            _logger.LogDebug("GetSteamingTempResults1 completed: returned {Count} records", query?.Count ?? 0);
 
             return query;
         }
@@ -2162,6 +2186,8 @@ namespace IDMS.Billing.GqlTypes
                     LastBottomTemp = g.Where(s => s.report_dt == g.Max(x => x.report_dt)).Select(s => (double?)s.bottom_temp).FirstOrDefault()
                 })
                 .ToListAsync();
+
+            _logger.LogDebug("GetSteamingTempResults completed: returned {Count} records", results?.Count ?? 0);
 
             return results;
         }
