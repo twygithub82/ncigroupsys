@@ -240,7 +240,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
-  defDiscThd: number= defaultDiscountThreshold;
+  defDiscThd: number = defaultDiscountThreshold;
 
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -266,7 +266,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    this.tfDepotDS= new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -313,8 +313,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
 
     this.ccForm?.get('discount_threshold')?.valueChanges.subscribe(value => {
-    const min = 0;
-    const max = 50;
+      const min = 0;
+      const max = 50;
 
       if (value < min) {
         this.ccForm?.get('discount_threshold')?.setValue(min, { emitEvent: false });
@@ -425,7 +425,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           city_name: this.selectedCustomerCmp?.city,
           country: this.selectedCustomerCmp?.country,
           remarks: this.selectedCustomerCmp?.remarks,
-          approval_threshold:  this.selectedCustomerCmp?.approval_threshold
+          approval_threshold: this.selectedCustomerCmp?.approval_threshold
         });
 
         var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
@@ -505,8 +505,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     })
 
-     this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=data;
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = data;
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
         this.ccForm?.patchValue({
@@ -743,7 +743,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.country_code = this.ccForm?.get("country_code")?.value?.code;
     cust.phone = this.ccForm?.get("phone")?.value;
     cust.postal = this.ccForm?.get("postal_code")?.value;
-    cust.approval_threshold = Number(this.ccForm?.get("approval_threshold")?.value||0);
+    cust.approval_threshold = Number(this.ccForm?.get("approval_threshold")?.value || 0);
     if (this.ccForm?.get("default_profile")?.value) {
       // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
       let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
@@ -757,10 +757,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.ccForm?.get("approval_threshold")?.value) {
-      cust.approval_threshold = Number(cust.approval_threshold||0);
+      cust.approval_threshold = Number(cust.approval_threshold || 0);
     }
     else {
-      cust.approval_threshold =0;
+      cust.approval_threshold = 0;
     }
     delete cust.currency;
     cust.type_cv = (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
@@ -840,7 +840,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selectedCusCmp.country_code = this.ccForm?.get("country_code")?.value?.code;
       selectedCusCmp.phone = this.ccForm?.get("phone")?.value;
       selectedCusCmp.postal = this.ccForm?.get("postal_code")?.value;
-      selectedCusCmp.approval_threshold = Number(this.ccForm?.get("approval_threshold")?.value||0);
+      selectedCusCmp.approval_threshold = Number(this.ccForm?.get("approval_threshold")?.value || 0);
 
       if (this.ccForm?.get("default_profile")?.value) {
         // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
@@ -1128,7 +1128,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.approval_threshold = Number(this.ccForm?.get("approval_threshold")?.value || 0);
     if (this.ccForm?.get("default_profile")?.value) {
       // let defTank = this.ccForm?.get("default_profile")?.value as TankItem;
-       let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
+      let defTank = this.ccForm?.get("default_profile")?.value as TariffDepotItem;
       cust.def_tank_guid = defTank.guid;
     }
     if (this.ccForm?.get("currency")?.value) {
