@@ -10,6 +10,8 @@ import { SteamJobOrderTaskMonitorComponent } from "./job-order-monitor/job-order
 import { SteamJobOrderTaskDetailsComponent } from "./job-order-task-details/job-order-task-details.component";
 import { JobOrderSteamComponent } from "./job-order/job-order.component";
 import { AuthGuard } from "@core/guard/auth.guard";
+import { SteamEstimateApprovalClientComponent } from "./client-approval/client-approval.component";
+import { SteamEstimateApprovalClientNewComponent } from "./client-approval-new/client-approval-new.component";
 
 export const STEAM_ROUTE: Routes = [
   {
@@ -18,17 +20,29 @@ export const STEAM_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW'] }
   },
-   {
-    path: "estimate-approval/:id",
-    component: SteamEstimateApprovalComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW'] }
-  },
+  // {
+  //   path: "estimate-approval/:id",
+  //   component: SteamEstimateApprovalComponent,
+  //   canActivate: [AuthGuard],
+  //   data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW', 'STEAMING_ESTIMATE_APPROVAL_CLIENT'] }
+  // },
   {
     path: "estimate-approval/new/:id",
     component: SteamEstimateApprovalNewComponent,
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW'] }
+  },
+  {
+    path: "client-approval",
+    component: SteamEstimateApprovalClientComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_CLIENT'] }
+  },
+  {
+    path: "client-approval/new/:id",
+    component: SteamEstimateApprovalClientNewComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_CLIENT'] }
   },
   {
     path: "job-order",

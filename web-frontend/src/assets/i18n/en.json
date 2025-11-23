@@ -241,7 +241,8 @@
         "JOB-ORDER": "Job Order",
         "JOB": "Job",
         "ESTIMATE-NEW": "New Estimate",
-        "ESTIMATE-EDIT": "Edit Estimate"
+        "ESTIMATE-EDIT": "Edit Estimate",
+        "APPROVAL": "Approval"
       }
     },
     "BILLING": {

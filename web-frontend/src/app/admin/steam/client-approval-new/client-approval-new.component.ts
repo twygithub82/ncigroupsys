@@ -1,0 +1,1920 @@
+import { Direction } from '@angular/cdk/bidi';
+import { SelectionModel } from '@angular/cdk/collections';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { _ErrorStateTracker, MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { PackageResidueItem } from 'app/data-sources/package-residue';
+import { PackageSteamingDS } from 'app/data-sources/package-steam';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
+import { ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS, SteamItem, SteamPartRequest, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamPartGO, SteamPartItem } from 'app/data-sources/steam-part';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { UserDS, UserItem } from 'app/data-sources/user';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+@Component({
+  selector: 'app-client-steaming-estimate-approval-new',
+  standalone: true,
+  templateUrl: './client-approval-new.component.html',
+  styleUrl: './client-approval-new.component.scss',
+  imports: [
+    BreadcrumbComponent,
+    MatButtonModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatDatepickerModule,
+    MatAutocompleteModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    MatNativeDateModule,
+    TranslateModule,
+    CommonModule,
+    MatLabel,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatDividerModule,
+    MatMenuModule,
+    MatCardModule,
+    TlxFormFieldComponent,
+    PreventNonNumericDirective,
+    NumericTextDirective
+  ]
+})
+export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  displayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'unit_price',
+    'hour',
+    'cost',
+    'approve_part',
+    'actions'
+  ];
+  labourCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'labourSummaryUnitPrice',
+    'labourSummaryHrs',
+    'labourSummaryCost',
+    'approve_part',
+    'actions'
+  ];
+  totalCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'totalSummaryUnitPrice',
+    'totalSummaryHrs',
+    'totalSummaryCost',
+    'approve_part',
+    'actions'
+  ];
+
+  pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
+  pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
+  breadcrumsMiddleList = [
+    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/client-approval' },
+    { text: 'MENUITEMS.STEAM.LIST.APPROVAL', route: '/admin/steam/client-approval' },
+  ]
+  translatedLangText: any = {}
+  langText = {
+    NEW: 'COMMON-FORM.NEW',
+    EDIT: 'COMMON-FORM.EDIT',
+    HEADER: 'COMMON-FORM.HEADER',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    STATUS: 'COMMON-FORM.STATUS',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    BACK: 'COMMON-FORM.BACK',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    ARE_YOU_SURE_UNDO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
+    DELETE: 'COMMON-FORM.DELETE',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED',
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_YOU_SURE_UNO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    UNDO: 'COMMON-FORM.UNDO',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    EXCEEDED: 'COMMON-FORM.EXCEEDED',
+    OWNER: 'COMMON-FORM.OWNER',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    LAST_TEST: 'COMMON-FORM.LAST-TEST',
+    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
+    GROUP: 'COMMON-FORM.GROUP',
+    SUBGROUP: 'COMMON-FORM.SUBGROUP',
+    DAMAGE: 'COMMON-FORM.DAMAGE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    QTY: 'COMMON-FORM.QTY',
+    HOUR: 'COMMON-FORM.HOUR',
+    PRICE: 'COMMON-FORM.PRICE',
+    MATERIAL: 'COMMON-FORM.MATERIAL',
+    TEMPLATE: 'COMMON-FORM.TEMPLATE',
+    PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
+    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
+    SUBGROUP_NAME: 'COMMON-FORM.SUBGROUP-NAME',
+    LOCATION: 'COMMON-FORM.LOCATION',
+    PART_NAME: 'COMMON-FORM.PART-NAME',
+    DIMENSION: 'COMMON-FORM.DIMENSION',
+    LENGTH: 'COMMON-FORM.LENGTH',
+    PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST$',
+    ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
+    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY',
+    LABOUR: 'COMMON-FORM.LABOUR',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
+    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
+    NET_COST: 'COMMON-FORM.NET-COST',
+    CONVERTED_TO: 'COMMON-FORM.CONVERTED-TO',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    SURVEYOR_NAME: 'COMMON-FORM.SURVEYOR-NAME',
+    RATE: 'COMMON-FORM.RATE',
+    LESSEE: 'COMMON-FORM.LESSEE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    PART: 'COMMON-FORM.PART',
+    FILTER: 'COMMON-FORM.FILTER',
+    DEFAULT: 'COMMON-FORM.DEFAULT',
+    COMMENT: 'COMMON-FORM.COMMENT',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
+    SAVE: 'COMMON-FORM.SAVE',
+    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
+    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
+    BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
+    JOB_REFERENCE: 'COMMON-FORM.JOB-REFERENCE',
+    QUANTITY: 'COMMON-FORM.QTY',
+    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
+    COST: 'COMMON-FORM.COST',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    APPROVE: 'COMMON-FORM.APPROVE',
+    ABORT: 'COMMON-FORM.ABORT',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    DETAILS: 'COMMON-FORM.DETAILS',
+    HOUR_RATE: 'COMMON-FORM.HOUR-RATE',
+    FLAT: 'COMMON-FORM.FLAT',
+    HOURLY: 'COMMON-FORM.HOURLY',
+    BY_HOUR: 'COMMON-FORM.BY-HOUR',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    APPROVED: 'COMMON-FORM.APPROVED',
+    ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
+  }
+
+  clean_statusList: CodeValuesItem[] = [];
+
+  sot_guid?: string | null;
+  steam_guid?: string | null;
+  isSteamRepair?: boolean = true;
+
+  steamEstForm?: UntypedFormGroup;
+  sotForm?: UntypedFormGroup;
+
+  sotItem?: StoringOrderTankItem;
+  steamItem?: SteamItem;
+  flat_rate: boolean = false;
+  rateType: string = '';
+  packageLabourItem?: PackageLabourItem;
+  repList: RepairPartItem[] = [];
+  groupNameCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = []
+  yesnoCvList: CodeValuesItem[] = []
+  soTankStatusCvList: CodeValuesItem[] = []
+  purposeOptionCvList: CodeValuesItem[] = []
+  testTypeCvList: CodeValuesItem[] = []
+  testClassCvList: CodeValuesItem[] = []
+  partLocationCvList: CodeValuesItem[] = []
+  damageCodeCvList: CodeValuesItem[] = []
+  repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = []
+  templateList: MasterTemplateItem[] = []
+  surveyorList: UserItem[] = []
+  billingBranchList: CustomerCompanyItem[] = [];
+  customer_companyList?: CustomerCompanyItem[];
+  packSteamList: PackageRepairItem[] = [];
+  displayPackSteamList: PackageRepairItem[] = [];
+  deList: any[] = [];
+  reSelection = new SelectionModel<ResidueItem>(true, []);
+
+  customerCodeControl = new UntypedFormControl();
+  newDesc = new FormControl(null, [Validators.required]);
+  newQty = new FormControl<number | null>(null, [Validators.required]);
+  newUnitPrice = new FormControl<number | null>(null, [Validators.required]);
+  newHour = new FormControl<number | null>(null);
+
+  sotDS: StoringOrderTankDS;
+  cvDS: CodeValuesDS;
+  ccDS: CustomerCompanyDS;
+  igDS: InGateDS;
+  plDS: PackageLabourDS;
+  packRepDS: PackageRepairDS;
+  repairEstDS: RepairDS;
+  repairEstPartDS: RepairPartDS;
+  steamDS: SteamDS;
+
+  mtDS: MasterEstimateTemplateDS;
+  prDS: PackageRepairDS;
+
+  packSteamDS: PackageSteamingDS;
+
+  userDS: UserDS;
+  isOwner = false;
+
+  isDuplicate = false;
+
+  historyState: any = {};
+  updateSelectedItem: any = undefined;
+  isExportingPDF: boolean = false;
+  labourHour: number = 1;
+  autosteamCost: string = '';
+  autosteamTotalCost: string = '';
+
+  isMobile = false;
+
+  constructor(
+    public httpClient: HttpClient,
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo,
+    private route: ActivatedRoute,
+    private router: Router,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super();
+    this.translateLangText();
+    this.initForm();
+    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.plDS = new PackageLabourDS(this.apollo);
+    this.repairEstDS = new RepairDS(this.apollo);
+    this.repairEstPartDS = new RepairPartDS(this.apollo);
+    this.mtDS = new MasterEstimateTemplateDS(this.apollo);
+    this.prDS = new PackageRepairDS(this.apollo);
+    this.userDS = new UserDS(this.apollo);
+    this.packSteamDS = new PackageSteamingDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
+    this.packRepDS = new PackageRepairDS(this.apollo);
+  }
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  @ViewChild('filter', { static: true }) filter!: ElementRef;
+  @ViewChild(MatMenuTrigger)
+  contextMenu?: MatMenuTrigger;
+  contextMenuPosition = { x: '0px', y: '0px' };
+  ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
+    this.initializeValueChanges();
+    this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 1024;
+    this.displayedColumns = this.isMobile
+      ?
+      [
+        'seq',
+        'desc',
+        'qty',
+        'unit_price',
+        'hour',
+        'cost',
+        'approve_part'
+      ]
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'unit_price',
+        'hour',
+        'cost',
+        'approve_part',
+        'actions'
+      ];
+    this.labourCostDisplayedColumns = this.isMobile
+      ? ['labourSummaryCost']
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'labourSummaryUnitPrice',
+        'labourSummaryHrs',
+        'labourSummaryCost',
+        'approve_part',
+        'actions'
+      ];
+    this.totalCostDisplayedColumns = this.isMobile
+      ? ['totalSummaryCost']
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'totalSummaryUnitPrice',
+        'totalSummaryHrs',
+        'totalSummaryCost',
+        'approve_part',
+        'actions'
+      ];
+  }
+
+  initForm() {
+    this.steamEstForm = this.fb.group({
+      guid: [''],
+      bill_to: [''],
+      // billing_branch: [''],
+      job_no: [''],
+      remarks: [''],
+      last_test: [''],
+      next_test: [''],
+      desc: [''],
+      qty: [''],
+      unit_price: [''],
+      hour: [''],
+      labour: [''],
+      deList: ['']
+    });
+  }
+
+  initializeValueChanges() {
+    this.newDesc?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var desc_value: any = this.newDesc?.value;
+        if (typeof desc_value === 'object' && this.updateSelectedItem === undefined && desc_value) {
+          this.newUnitPrice.setValue(desc_value?.material_cost?.toFixed(2));
+          this.newQty.setValue(1);
+          this.newHour.setValue(desc_value?.labour_hour ? desc_value?.labour_hour : 0)
+        }
+        else if (desc_value) {
+          this.getPackageSteamAlias(desc_value);
+        }
+      })
+    ).subscribe();
+  }
+
+  public loadData() {
+    const queries = [
+      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCvList = data;
+    });
+    this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+      this.soTankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = data;
+    });
+    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+      this.testTypeCvList = data;
+    });
+    this.cvDS.connectAlias('testClassCv').subscribe(data => {
+      this.testClassCvList = data;
+    });
+    this.cvDS.connectAlias('partLocationCv').subscribe(data => {
+      this.partLocationCvList = data;
+    });
+    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+      this.damageCodeCvList = data;
+    });
+    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+      this.repairCodeCvList = data;
+    });
+    this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
+
+    this.sot_guid = this.route.snapshot.paramMap.get('id');
+    this.steam_guid = this.route.snapshot.paramMap.get('steam_est_id');
+
+    this.route.data.subscribe(routeData => {
+      this.isDuplicate = routeData['action'] === 'duplicate';
+      this.loadHistoryState();
+    });
+  }
+
+  getCustomerLabourPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
+      }
+    });
+  }
+
+  getCustomer() {
+    return this.sotItem?.storing_order?.customer_company;
+  }
+
+  getTemplateList(customer_company_guid: string) {
+    let where: any = {
+      or: [
+        {
+          and: [
+            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
+            { type_cv: { eq: "EXCLUSIVE" } }
+          ]
+        },
+        { type_cv: { eq: "GENERAL" } }
+      ]
+    }
+    where = this.mtDS.addDeleteDtCriteria(where);
+    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
+      if (data?.length > 0) {
+        this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
+        const def_guid = this.getCustomer()?.def_template_guid;
+        if (!this.steam_guid) {
+          if (def_guid) {
+            this.steamEstForm?.get('is_default_template')?.setValue(true);
+          }
+
+          const def_template = this.templateList.find(x =>
+            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
+          );
+
+          if (def_guid !== def_template?.guid) {
+            this.getCustomer()!.def_template_guid = def_guid;
+            this.steamEstForm?.get('is_default_template')?.setValue(true);
+          }
+
+          this.steamEstForm?.get('est_template')?.setValue(def_template);
+        }
+      }
+    });
+  }
+
+  getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } },
+        {
+          or: [
+            { tariff_repair_guid: { in: tariff_repair_guid } }
+          ]
+        }
+      ]
+    };
+
+    return this.prDS.getCustomerPackageCost(where);
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
+  }
+
+  selectOwner($event: Event, row: RepairPartItem) {
+    this.stopPropagation($event);
+    row.owner = !(row.owner || false);
+    this.calculateCost();
+  }
+
+  checkCompulsoryEst(fields: string[]) {
+    if (!this.newDesc.value) {
+      this.newDesc.setErrors({ required: true });
+      this.newDesc.markAsTouched();
+    }
+    if (!this.newQty.value) {
+      this.newQty?.setErrors({ required: true });
+      this.newQty?.markAsTouched();
+    }
+    if (!this.newUnitPrice.value) {
+      this.newUnitPrice.setErrors({ required: true });
+      this.newUnitPrice.markAsTouched();
+    }
+    if (!this.newHour.value) {
+      if (this.newHour.value != 0) {
+        this.newHour.setErrors({ required: true });
+        this.newHour.markAsTouched();
+      }
+    }
+  }
+
+  checkDuplicationEst(item: PackageResidueItem, index: number = -1) {
+    var existItems = this.deList.filter(data => data.description === item?.description)
+    if (existItems.length > 0) {
+      if (index == -1 || index != existItems[0].index) {
+        this.newDesc?.setErrors({ duplicated: true });
+        //this.steamEstForm?.get("desc")?.setErrors({ duplicated: true });
+      }
+    }
+  }
+
+  addEstPartDetails() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        steamItem: this.steamItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        index: -1
+      },
+      direction: tempDirection
+    });
+    dialogRef.componentInstance.dataSubject.subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
+    });
+  }
+
+  editEstPartDetails(event: Event, steamPart: SteamPartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    if (!this.isMobile || !this.isSteamRepair) {
+      return;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        item: steamPart,
+        steamItem: this.steamItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        index: index,
+        action: 'edit'
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.index > -1) {
+        this.deList[result.index] = result.item;
+        this.updateData(this.deList);
+      }
+    });
+  }
+
+  addEstDetails(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    if (this.isMobile) {
+      this.addEstPartDetails();
+      return;
+    }
+    var descObject: SteamPartItem;
+
+    if (typeof this.newDesc?.value === "object") {
+      var repItm: RepairPartItem = this.newDesc?.value!;
+
+      descObject = new SteamPartItem();
+      descObject.description = repItm?.tariff_repair?.alias;
+    }
+    else {
+      descObject = new SteamPartItem();
+      descObject.description = this.newDesc?.value;
+    }
+    descObject.cost = this.newUnitPrice?.value!;
+    descObject.labour = this.newHour?.value!;
+    descObject.quantity = this.newQty?.value!;
+
+    this.checkCompulsoryEst(["desc", "qty", "hour", "unit_price"]);
+    var index: number = -1;
+    if (this.updateSelectedItem) {
+      index = this.updateSelectedItem.index;
+    }
+    this.checkDuplicationEst(descObject, index);
+    if (!this.newDesc?.valid || !this.newQty?.valid || !this.newUnitPrice?.valid || !this.newHour?.valid) return;
+    let steamPartItem = new SteamPartItem();
+    if (index == -1) {
+      steamPartItem.action = "NEW";
+    }
+    else {
+      steamPartItem = this.deList[index];
+      steamPartItem.action = steamPartItem.guid ? "EDIT" : "NEW";
+    }
+
+    steamPartItem.description = descObject.description;
+    steamPartItem.quantity = descObject.quantity;
+    steamPartItem.labour = descObject.labour;
+    steamPartItem.cost = descObject.cost;
+
+    if (index === -1) {
+      var newData = [...this.deList, steamPartItem];
+      this.updateData(newData);
+    }
+    this.resetSelectedItemForUpdating();
+  }
+
+  CancelEditEstDetails(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    this.resetSelectedItemForUpdating();
+  }
+
+  editEstDetails(event: Event, row: SteamPartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    if (row.delete_dt) return;
+    var itm = this.deList[index];
+    var IsEditedRow = itm.edited;
+    this.resetSelectedItemForUpdating();
+
+    if (IsEditedRow) {
+      itm.edited = false;
+      return;
+    }
+
+
+    this.updateSelectedItem = {
+      item: this.deList[index],
+      index: index,
+      action: "update",
+
+    }
+    this.updateSelectedItem.item.edited = true;
+
+    var descValues = this.packSteamList.filter(data => data.tariff_repair?.alias === row.description);
+    var descValue: any;
+    if (descValues.length > 0) {
+      descValue = descValues[0];
+    }
+    else {
+      descValue = new SteamPartItem();
+      descValue.guid = row.guid;
+      descValue.description = row.description;
+      descValue.tariff_residue = new TariffResidueItem();
+      descValue.tariff_residue.description = row.description;
+      descValue.cost = Number(row.cost);
+    }
+    this.steamEstForm?.patchValue({
+      desc: descValue,
+      qty: row.quantity,
+      hour: row.labour,
+      unit_price: row.cost
+    });
+  }
+
+  deleteItem(event: Event, row: ResiduePartItem, index: number) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
+      data: {
+        item: row,
+        langText: this.langText,
+        index: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        if (row.guid) {
+          const data: any[] = [...this.deList];
+          const updatedItem = {
+            ...row,
+            delete_dt: Utility.getDeleteDtEpoch(),
+            action: 'cancel'
+          };
+          data[result.index] = updatedItem;
+          this.updateData(data); // Refresh the data source
+        } else {
+          const data = [...this.deList];
+          data.splice(index, 1);
+          this.updateData(data); // Refresh the data source
+        }
+
+        this.resetSelectedItemForUpdating();
+      }
+    });
+  }
+
+  onCancel(event: Event) {
+    this.preventDefault(event);
+    console.log(this.sotItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.steamItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action = "CANCEL";
+        steamStatus.guid = this.steamItem?.guid;
+        steamStatus.sot_guid = this.steamItem?.sot_guid;
+        steamStatus.remarks = this.steamItem?.remarks;
+        this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.updateSteamingStatus);
+          if (result?.data?.updateSteamingStatus > 0) {
+            this.GoBackPrevious(event);
+          }
+        });
+      }
+    });
+  }
+
+  rollbackRow(event: Event) {
+    this.preventDefault(event)
+    const found = false;
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(this.steamItem!);
+    }
+    this.rollbackSelectedRows(event, selectedList)
+  }
+
+  rollbackSelectedRows(event: Event, row: ResidueItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarksWithRequired: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = row.map((item: any) => {
+          const SteamEstimateRequestInput = {
+            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: result?.remarks,
+            sot_guid: item.sot_guid,
+            is_approved: item?.status_cv == "APPROVED"
+          }
+          return SteamEstimateRequestInput;
+        });
+        console.log(reList);
+        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackSteaming: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackSteaming)
+          if (result?.data?.rollbackSteaming > 0) {
+            this.GoBackPrevious(event);
+          }
+        });
+      }
+    });
+  }
+
+  undoTempAction(row: any[], actionToBeRemove: string) {
+    const data: any[] = [...this.repList];
+    row.forEach((newItem: any) => {
+      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+
+      if (index !== -1) {
+        data[index] = {
+          ...data[index],
+          ...newItem,
+          actions: Array.isArray(data[index].actions!)
+            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
+            : []
+        };
+      }
+    });
+    this.updateData(data);
+  }
+
+  addRepairEstPart(result: any) {
+    const data = [...this.repList];
+    const newItem = new RepairPartItem({
+      ...result.item,
+    });
+    data.push(newItem);
+
+    this.updateData(data);
+  }
+
+  // context menu
+  onContextMenu(event: MouseEvent, item: any) {
+    this.preventDefault(event);
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+      this.contextMenu.menuData = { item: item };
+      this.contextMenu.menu.focusFirstItem('mouse');
+      this.contextMenu.openMenu();
+    }
+  }
+
+  onEnterKey(event: Event) {
+    event.preventDefault();
+    // Add any additional logic if needed
+  }
+
+  onFormSubmit() {
+    this.newDesc?.setErrors(null);
+    this.newQty?.setErrors(null);
+    this.newQty?.setErrors(null);
+    this.steamEstForm!.get('deList')?.setErrors(null);
+    this.newHour?.setErrors(null);
+
+    if (!this.isPartValid()) {
+      this.steamEstForm?.get('deList')?.setErrors({ required: true });
+    }
+
+    if (!this.steamEstForm?.valid) return;
+
+
+    if (this.historyState.action === "NEW" || this.historyState.action === "DUPLICATE") {
+      var newSteamItem: any = new SteamItem();
+      var billGuid: string = (this.steamEstForm?.get("bill_to")?.value?.guid);
+      newSteamItem.action = "NEW";
+      newSteamItem.bill_to_guid = billGuid;
+      newSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
+      newSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
+      newSteamItem.status_cv = "PENDING";
+      newSteamItem.sot_guid = this.sotItem?.guid;
+      newSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
+      newSteamItem.est_hour = Utility.convertNumber(this.getTotalLabourHour(), 2);
+      newSteamItem.rate = Utility.convertNumber(this.getRate(), 2); //this.packageLabourItem?.cost;
+      newSteamItem.flat_rate = Boolean(this.flat_rate);//this.sotItem?.tank?.flat_rate;
+      newSteamItem.steaming_part = [];
+      this.deList.forEach(data => {
+        var steamPart: SteamPartItem = new SteamPartItem(data);
+        steamPart.quantity = Utility.convertNumber(steamPart.quantity, 0);
+        steamPart.cost = Utility.convertNumber(steamPart.cost, 2);
+        steamPart.labour = Number(steamPart.labour);
+        steamPart.approve_qty = Utility.convertNumber(steamPart.approve_qty, 0);
+        steamPart.approve_cost = Utility.convertNumber(steamPart.approve_cost, 2);
+        steamPart.approve_labour = Utility.convertNumber(steamPart.approve_labour, 2);
+        newSteamItem.steaming_part?.push(steamPart);
+
+      });
+
+      this.steamDS.addSteam(newSteamItem).subscribe(result => {
+
+        if (result.data.addSteaming > 0) {
+          this.handleSaveSuccess(result.data.addSteaming);
+        }
+      });
+    } else if (this.historyState.action === "UPDATE") {
+      var updSteamItem: any = new SteamItem(this.steamItem);
+      var billGuid: string = (this.steamEstForm.get("bill_to")?.value?.guid);
+      updSteamItem.action = "EDIT";
+      updSteamItem.bill_to_guid = billGuid;
+      updSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
+      updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
+      updSteamItem.sot_guid = this.sotItem?.guid;
+      updSteamItem.steaming_part = [];
+      updSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
+      updSteamItem.est_hour = Utility.convertNumber((this.isSteamRepair) ? this.getTotalLabourHour() : 1, 2);
+      updSteamItem.rate = Utility.convertNumber(this.getRate(), 2);//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
+      updSteamItem.flat_rate = Boolean(this.flat_rate);
+      updSteamItem.total_material_cost = this.getTotalMaterialCost();
+      updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
+      this.deList.forEach(data => {
+        data.labour = Number(data.labour);
+        var steamPart: SteamPartItem = new SteamPartItem(data);
+        steamPart.action = !data.action ? '' : data.action;
+        steamPart.quantity = Utility.convertNumber(steamPart.quantity, 0);
+        steamPart.cost = Utility.convertNumber(steamPart.cost, 2);
+        steamPart.labour = Number(steamPart.labour);
+        steamPart.approve_qty = Utility.convertNumber(steamPart.approve_qty, 0);
+        steamPart.approve_cost = Utility.convertNumber(steamPart.approve_cost, 2);
+        steamPart.approve_labour = Utility.convertNumber(steamPart.approve_labour, 2);
+        updSteamItem.steaming_part?.push(steamPart);
+
+      });
+      delete updSteamItem.storing_order_tank;
+      this.steamDS.updateSteam(updSteamItem).subscribe(result => {
+        if (result.data.updateSteaming > 0) {
+          this.handleSaveSuccess(result.data.updateSteaming);
+        }
+      });
+    }
+  }
+
+  updateData(newData: ResiduePartItem[] | undefined): void {
+    if (newData?.length) {
+      this.deList = newData.map((row, index) => ({
+        ...row,
+        index: index
+      }));
+
+      if (!this.isSteamRepair) this.onFlatRateChanged(false);
+      //this.calculateCost();
+    }
+    else {
+      this.deList = [];
+
+    }
+  }
+
+  handleRollback(event: Event, row: any, index: number): void {
+    this.stopEventTrigger(event);
+    this.preventDefault(event);
+    // this.rollbackSelectedRows(event, row, index);
+  }
+
+  handleDelete(event: Event, row: any, index: number): void {
+    this.stopEventTrigger(event);
+    this.preventDefault(event);
+    this.deleteItem(event, row, index);
+  }
+
+  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
+    //this.stopEventTrigger(event);
+    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
+    newSot.unit_type_guid = row.unit_type_guid;
+    newSot.last_cargo_guid = row.last_cargo_guid;
+    newSot.tariff_cleaning = row.tariff_cleaning;
+    // newSot.purpose_cleaning = row.purpose_cleaning;
+    // newSot.purpose_storage = row.purpose_storage;
+    // newSot.purpose_repair_cv = row.purpose_repair_cv;
+    // newSot.purpose_steam = row.purpose_steam;
+    // newSot.required_temp = row.required_temp;
+    newSot.clean_status_cv = row.clean_status_cv;
+    newSot.certificate_cv = row.certificate_cv;
+    newSot.so_guid = row.so_guid;
+    newSot.eta_dt = row.eta_dt;
+    newSot.etr_dt = row.etr_dt;
+    //this.addEstDetails(event, newSot);
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+        //this.router.navigate(['/admin/master/estimate-template']);
+
+        // Navigate to the route and pass the JSON object
+        this.router.navigate(['/admin/steam/estimate-approval'], {
+          state: this.historyState
+
+        }
+        );
+      });
+    }
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  isAnyItemEdited(): boolean {
+    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+  }
+
+  isOwnerChange() {
+    this.isOwner = !this.isOwner;
+  }
+
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
+  }
+
+  getBadgeClass(action: string): string {
+    switch (action) {
+      case 'new':
+        return 'badge-solid-green';
+      case 'edit':
+        return 'badge-solid-cyan';
+      case 'rollback':
+        return 'badge-solid-blue';
+      case 'cancel':
+        return 'badge-solid-orange';
+      case 'preorder':
+        return 'badge-solid-pink';
+      default:
+        return '';
+    }
+  }
+
+  getYesNoDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
+  }
+
+  getSoStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
+  }
+
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
+
+  getTestClassDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  }
+
+  getDamageCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.damageCodeCvList);
+  }
+
+  getRepairCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
+  }
+
+  getGroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.groupNameCvList);
+  }
+
+  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
+  getGroupSeq(codeVal: string | undefined): number | undefined {
+    const gncv = this.groupNameCvList.filter(x => x.code_val === codeVal);
+    if (gncv.length) {
+      return gncv[0].sequence;
+    }
+    return -1;
+  }
+
+  sortAndGroupByGroupName(repList: any[]): any[] {
+    const groupedRepList: any[] = [];
+    let currentGroup = '';
+
+    const sortedList = repList.sort((a, b) => {
+      if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
+        return a.tariff_repair.sequence - b.tariff_repair.sequence;
+      }
+
+      if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
+        if (!a.tariff_repair.subgroup_name_cv) return 1;
+        if (!b.tariff_repair.subgroup_name_cv) return -1;
+
+        return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
+      }
+
+      return b.create_dt! - a.create_dt!;
+    });
+
+    sortedList.forEach(item => {
+      const groupName = item.tariff_repair.group_name_cv;
+
+      const isGroupHeader = groupName !== currentGroup;
+
+      if (isGroupHeader) {
+        currentGroup = groupName;
+      }
+
+      groupedRepList.push({
+        ...item,
+        isGroupHeader: isGroupHeader,
+        group_name_cv: item.tariff_repair.group_name_cv,
+        subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
+      });
+    });
+
+    return groupedRepList;
+  }
+
+  sortREP(newData: RepairPartItem[]): any[] {
+    newData.sort((a, b) => b.create_dt! - a.create_dt!);
+    return newData;
+  }
+
+  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+      return item.code_cv;
+    }).join('/');
+  }
+
+  displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
+    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+      const codeCv = item.code_cv;
+      const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
+      return description ? description : '';
+    }).join('\n');
+
+    return concate;
+  }
+
+  displayDateTime(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input);
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+
+  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      const testDt = igs.test_dt as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs && igs.next_test_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
+      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
+
+  selectText(event: FocusEvent) {
+    Utility.selectText(event)
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
+
+  calculateCost() {
+
+  }
+
+  filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
+    return (resultList || [])
+      .filter((row: MasterTemplateItem) =>
+        !row.delete_dt && (
+          row.type_cv === 'GENERAL' || (row.type_cv === 'EXCLUSIVE' &&
+            row.template_est_customer?.some(customer =>
+              customer.customer_company_guid === customer_company_guid && !customer.delete_dt
+            ))
+        )
+      );
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  canExport(): boolean {
+    return !!this.steam_guid;
+  }
+
+  getPackageSteamAlias(alias?: string) {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.and = [];
+    where.and.push({ customer_company_guid: { eq: custCompanyGuid } });
+    if (alias) where.and.push({ tariff_repair: { alias: { contains: alias } } });
+    this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
+      this.displayPackSteamList = data;
+    });
+  }
+
+  getPackageSteam() {
+    let where: any = {};
+    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.customer_company_guid = { eq: custCompanyGuid };
+    this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
+      this.packSteamList = data;
+      this.displayPackSteamList = this.packSteamList;
+      this.populateSteamPartList(this.steamItem!);
+    });
+  }
+
+  loadBillingBranch() {
+    this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+      if (cc?.length) {
+        const bill_to = this.steamEstForm?.get('bill_to');
+        this.customer_companyList = cc;
+        if (this.steamItem?.bill_to_guid) {
+          const found = this.customer_companyList?.find(x => x.guid === this.steamItem?.bill_to_guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        } else if (this.customer_companyList?.length) {
+          const found = this.customer_companyList?.find(x => x.guid === this.sotItem?.storing_order?.customer_company?.guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        }
+        if (this.steamItem && !this.steamDS.canApprove(this.steamItem)) {
+          bill_to?.disable();
+        }
+      }
+    });
+    this.patchSteamEstForm(this.steamItem!);
+    // let where: any = {};
+    // let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    // where.main_customer_guid = { eq: custCompanyGuid };
+
+    // this.ccDS.search(where, {}).subscribe(data => {
+    //   var def = this.createDefaultCustomerCompany("--Select--", "");
+
+    //   this.billingBranchList = [def, ...data];;
+
+    //   this.patchSteamEstForm(this.steamItem!);
+    // });
+  }
+
+  loadHistoryState() {
+    this.historyState = history.state;
+    if (this.historyState.selectedRow != null) {
+      this.isDuplicate = this.historyState.action === 'DUPLICATE';
+      this.sotItem = this.historyState.selectedRow;
+      this.steamItem = this.historyState.selectedSteam;
+      this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
+      console.log(this.steamItem)
+      this.labourHour = this.steamItem?.est_hour || 1;
+      if (BusinessLogicUtil.isEstimateApproved(this.steamItem!)) {
+        this.labourHour = this.steamItem?.total_hour || 1;
+      }
+      this.steam_guid = this.steamItem?.guid;
+      this.isSteamRepair = this.steamDS.IsSteamRepair(this.steamItem!);
+      if (!this.isSteamRepair) {
+        this.displayedColumns = this.displayedColumns.filter(col => col !== 'actions');
+        this.labourCostDisplayedColumns = this.labourCostDisplayedColumns.filter(col => col !== 'actions');
+        this.totalCostDisplayedColumns = this.totalCostDisplayedColumns.filter(col => col !== 'actions');
+      }
+      this.getPackageSteam();
+      this.loadBillingBranch();
+      var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
+      this.getCustomerLabourPackage(ccGuid!);
+    }
+  }
+
+  patchSteamEstForm(steam: SteamItem) {
+    let billingGuid = "";
+    if (steam) {
+      billingGuid = steam.bill_to_guid!;
+    }
+
+    this.steamEstForm?.patchValue({
+      job_no: steam?.job_no ? steam.job_no : this.sotItem?.job_no,
+      remarks: steam?.remarks
+    });
+  }
+
+  getBillingBranch(billingGuid: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = this.billingBranchList[0];
+    let ccItems = this.billingBranchList.filter(data => data.guid == billingGuid);
+
+    if (ccItems.length > 0) {
+      ccItem = ccItems[0]!;
+    }
+
+    return ccItem;
+
+  }
+  createDefaultCustomerCompany(code: string, name: string): CustomerCompanyItem {
+    let ccItem: CustomerCompanyItem = new CustomerCompanyItem();
+    ccItem.code = code;
+    ccItem.name = name;
+    return ccItem
+
+  }
+
+  displaySteamPart(cc: any): string {
+    return cc && cc.tariff_repair ? cc.tariff_repair.alias : '';
+  }
+
+  resetValue() {
+
+    this.newDesc = new FormControl(null, [Validators.required]);
+    this.newQty = new FormControl(null, [Validators.required]);
+    this.newUnitPrice = new FormControl(null, [Validators.required]);
+    this.newHour = new FormControl(null, [Validators.required]);
+    this.initializeValueChanges();
+
+    this.steamEstForm?.patchValue({
+      desc: '',
+      qty: '',
+      unit_price: '',
+      hour: ''
+    }, { emitEvent: false });
+    this.steamEstForm?.get('desc')?.setErrors(null);
+    this.steamEstForm?.get('qty')?.setErrors(null);
+    this.steamEstForm?.get('unit_price')?.setErrors(null);
+    this.steamEstForm?.get('hour')?.setErrors(null);
+    this.displayPackSteamList = [...this.packSteamList];
+
+  }
+
+  GoBackPrevious(event: Event) {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/steam/client-approval'], {
+      state: this.historyState
+    });
+  }
+
+  populateSteamPartList(steam: SteamItem) {
+    if (steam) {
+      var dataList = steam.steaming_part?.map(data => {
+        if (this.isDuplicate && data.description) {
+          data.action = 'NEW';
+          // Filter packResidueList for matching tariff_residue_guid
+          // const packSteam = this.packSteamList.find(res => res.tariff_repair?.guid === data.tariff_steaming_guid);
+          // if (packSteam) {
+          //     data.cost = packSteam.cost;
+          // }
+        }
+        return new SteamPartGO(data)
+      });
+      this.updateData(dataList);
+    }
+  }
+
+  resetSelectedItemForUpdating() {
+    if (this.updateSelectedItem) {
+      this.updateSelectedItem.item.edited = false;
+      this.updateSelectedItem = null;
+    }
+    this.resetValue();
+  }
+
+  getFooterBackgroundColor(): string {
+    return '' //'light-green';
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+
+    }
+  }
+
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+      this.router.navigate(['/admin/steam/estimate-approval'], {
+        state: this.historyState
+      });
+    }
+  }
+
+  getTotalLabourHours(): string {
+    let ret = 0;
+    if (this.isSteamRepair) {
+      if (this.deList.length > 0) {
+        this.deList.map(d => {
+
+          if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
+            && (d.approve_part == null || d.approve_part == true)) {
+            if (this.IsApproved()) {
+              ret += Utility.convertNumber(d.approve_labour, 2);
+            }
+            else {
+              ret += Utility.convertNumber(d.labour, 2);
+            }
+          }
+        }
+        );
+      }
+      return String(BusinessLogicUtil.roundUpHour(ret));
+    }
+    else {
+      return '';
+    }
+  }
+
+  getTotalLabourCost(): string {
+    let ret = 0;
+    if (this.deList.length > 0 && this.isSteamRepair) {
+      this.deList.map(d => {
+        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
+          && (d.approve_part == null || d.approve_part == true)) {
+          if (this.IsApproved()) {
+            ret += (d.approve_labour * this.packageLabourItem?.cost!);
+          }
+          else {
+            ret += (d.labour * this.packageLabourItem?.cost!);
+          }
+        }
+      }
+      );
+      return (this.roundUpCost(ret) || 0).toFixed(2);
+    }
+    else {
+      return '-';
+    }
+  }
+
+  getTotalApprovedLabourCost(): number {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
+      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
+          return acc + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
+        }
+        else {
+          return acc + (((row.labour || 0) * (this.packageLabourItem?.cost || 0)));
+        }
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0));
+  }
+
+  getTotalMaterialCost(): number {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
+      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
+          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+        } else {
+          return acc + ((row.quantity || 0) * (row.cost || 0));
+        }
+
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0));
+  }
+
+  getTotalLabourHour(): number {
+    return BusinessLogicUtil.roundUpHour(this.deList.reduce((acc, row) => {
+      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+        if (this.IsApproved()) {
+          return acc + (row.approve_labour || 0);
+        }
+        else {
+          return acc + (row.labour || 0);
+        }
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0));
+  }
+
+  getTotalCost(): number {
+    if (this.isSteamRepair) {
+      var retval = this.deList.reduce((acc, row) => {
+        if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
+          if (this.IsApproved()) {
+            return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)) + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
+          }
+          else {
+            return acc + ((row.quantity || 0) * (row.cost || 0)) + ((row.labour || 0) * (this.packageLabourItem?.cost || 0));
+          }
+        }
+        return acc; // If row is approved, keep the current accumulator value
+      }, 0);
+      return this.roundUpCost(retval);
+    }
+    else {
+      return this.calculateSteamItemCost(this.deList[0]);
+    }
+  }
+
+  undeleteItem(event: Event, row: SteamItem, index: number) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
+      data: {
+        item: row,
+        headerText: this.translatedLangText.ARE_YOU_SURE_UNO,
+        langText: this.langText,
+        index: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        if (row.guid) {
+          const data: any[] = [...this.deList];
+          const updatedItem = {
+            ...row,
+            delete_dt: null,
+            action: ''
+          };
+          data[result.index] = updatedItem;
+          this.updateData(data); // Refresh the data source
+        }
+        this.resetSelectedItemForUpdating();
+      }
+    });
+  }
+
+  isPartValid(): Boolean {
+    if (this.deList.length > 0) {
+      return this.deList.some(row => row.delete_dt === undefined || row.delete_dt === null);
+    }
+    return false;
+  }
+
+  isAllowToSaveSubmit() {
+    var NoDel = this.deList.filter(d => d.action != 'cancel');
+    //return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
+    return (NoDel.length || BusinessLogicUtil.isAutoApproveSteaming(this.steamItem));
+  }
+
+  isDisabled(): boolean {
+    const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
+    return validStatus.includes(this.steamItem?.status_cv!);
+    // ?|| this.isAutoApproveSteaming(this.steamItem);
+  }
+
+  IsApproved() {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(this.steamItem?.status_cv!);
+  }
+
+  updateAction(steamPart: any) {
+    if (steamPart?.action === '' || steamPart?.action === null || steamPart?.action === undefined) {
+      steamPart.action = 'EDIT';
+    }
+  }
+
+  isAutoApproveSteaming(row: any) {
+    return BusinessLogicUtil.isAutoApproveSteaming(row);
+  }
+
+  approveRow(event: Event) {
+    event.preventDefault();
+    const bill_to = (this.steamEstForm?.get("bill_to")?.value?.guid);
+
+    if (bill_to) {
+      let re: any = new SteamItem();
+      re.guid = this.steamItem?.guid;
+      re.sot_guid = this.steamItem?.sot_guid;
+      re.bill_to_guid = bill_to;
+      re.status_cv = this.steamItem?.status_cv;
+      re.action = "APPROVE";
+      re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
+        rep.labour = Number(rep.labour);
+        rep.quantity = Number(rep.quantity);
+        rep.cost = Number(rep.cost);
+        return new SteamPartItem({
+          ...rep,
+          action: (this.steamItem?.status_cv === 'PENDING' ? ((rep.action === undefined || rep.action === null) ? 'EDIT' : rep.action) : (rep.action === undefined ? '' : rep.action)),
+          // tariff_residue: undefined,
+          tariff_steaming_guid: (rep.tariff_steaming_guid ? rep.tariff_steaming_guid : ''),
+          approve_part: (rep.approve_part == null ? true : rep.approve_part),
+          approve_qty: Number(this.IsApproved() ? rep.approve_qty : rep.quantity),
+          approve_cost: Number(this.IsApproved() ? rep.approve_cost : rep.cost),
+          approve_labour: Number(this.IsApproved() ? rep.approve_labour : rep.labour),
+          job_order: undefined
+        })
+      });
+
+      re.total_labour_cost = this.getTotalApprovedLabourCost();
+      re.total_material_cost = this.getTotalMaterialCost();
+      re.total_hour = this.getTotalLabourHour();
+      re.total_cost = this.getTotalCost();
+      re.rate = Number(this.packageLabourItem?.cost);
+      re.flat_rate = Boolean(this.sotItem?.tank?.flat_rate);
+      console.log(re)
+      this.steamDS.approveSteaming(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.approveSteaming);
+      });
+    } else {
+      bill_to?.setErrors({ required: true })
+      bill_to?.markAsTouched();
+      bill_to?.updateValueAndValidity();
+    }
+  }
+
+  calculateSteamItemCost(steamPart: SteamPartItem): number {
+    let calResCost: number = 0;
+
+    if (this.isSteamRepair) {
+      if (this.IsApproved()) {
+        calResCost = steamPart.approve_cost! * steamPart.approve_qty!;
+      }
+      else {
+        calResCost = steamPart.cost! * steamPart.quantity!;
+      }
+    }
+    return calResCost;
+  }
+
+  IsAbleToApprove() {
+    var NoDel = this.deList.filter(d => ((d.delete_dt === null || d.delete_dt === undefined) && (d.approve_part == null || d.approve_part == true)));
+    return (NoDel.length);
+  }
+
+  toggleApprovePart(event: Event, stm: SteamPartItem) {
+    event.stopPropagation(); // Prevents click event from bubbling up
+    if (this.isDisabled()) return;
+    stm.approve_part = stm.approve_part != null ? !stm.approve_part : false;
+    stm.action = 'EDIT';
+  }
+
+  IsApprovePart(stm: SteamPartItem) {
+    return stm.approve_part;
+  }
+
+  checkApprovePart() {
+    return this.deList.some(de => de.approve_part || (de.approve_part === null));
+  }
+
+  canApprove() {
+    return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !BusinessLogicUtil.isAutoApproveSteaming(this.steamItem);
+  }
+
+  onNoAction(event: Event) {
+    this.preventDefault(event);
+    console.log(this.sotItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action = "NA";
+        steamStatus.guid = this.steamItem?.guid;
+        steamStatus.sot_guid = this.steamItem?.sot_guid;
+        steamStatus.remarks = result?.remarks;
+        steamStatus.steamingPartRequests = [];
+        this.deList.forEach(d => {
+          var stmPart: SteamPartRequest = new SteamPartRequest();
+          stmPart.guid = d.guid;
+          stmPart.approve_part = false;
+          steamStatus.steamingPartRequests?.push(stmPart);
+        });
+        this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
+
+          this.handleCancelSuccess(result?.data?.updateSteamingStatus);
+        });
+      }
+    });
+  }
+
+  onExport(event: Event) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.isExportingPDF = true;
+    const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        steam_guid: this.steamItem?.guid,
+        estimate_no: this.steamItem?.estimate_no,
+        packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+    });
+  }
+
+  getSaveButtonText(): string {
+    var retval = this.translatedLangText.SAVE;
+    if ((this.steamItem != null) && !this.isDuplicate) {
+      retval = this.translatedLangText.UPDATE;
+    }
+
+    return retval;
+  }
+
+  getQtyTable_Text(): string {
+    var retval = `${this.translatedLangText.QTY}`;
+    // if(this.isSteamRepair)
+    // {
+    //    retval = `${this.translatedLangText.QTY}`;
+    // }
+    return retval;
+  }
+
+  getResultTable_HourText(): string {
+    var retval = `${this.translatedLangText.HOUR_RATE}`;
+    if (this.isSteamRepair) {
+      retval = `${this.translatedLangText.HOUR}`;
+    }
+    return retval;
+  }
+
+  getRateType(): string {
+    this.steamItem!.flat_rate = this.flat_rate;
+    return this.flat_rate ? this.translatedLangText.FLAT : this.translatedLangText.HOURLY;
+  }
+
+  getLabourCost(): number {
+    if (this.isSteamRepair) {
+      return this.packageLabourItem?.cost || 0;
+    }
+    else {
+      return 0;
+    }
+  }
+
+  getRate(): number {
+    if (this.isSteamRepair) {
+      return this.packageLabourItem?.cost || 0;
+    }
+    else {
+      if (!this.flat_rate) {
+        if (this.IsApproved()) {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
+        }
+        else {
+          return this.packageLabourItem?.cost || 0;
+        }
+      }
+      else {
+        if (this.IsApproved()) {
+          return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
+        }
+        else {
+          return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
+        }
+      }
+    }
+  }
+
+  onFlatRateChanged(newValue: boolean) {
+    var cost = this.getRate();
+    var totalCost = this.parse2Decimal(cost);
+    if (!this.flat_rate) {
+      cost *= this.labourHour;
+      totalCost = this.translatedLangText.BY_HOUR;
+    }
+    this.autosteamCost = this.parse2Decimal(this.roundUpCost(cost));
+    this.autosteamTotalCost = totalCost;
+  }
+
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
+  }
+
+  displayApproveUpdateButton() {
+    return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
+  }
+}

@@ -1,9 +1,11 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Injectable, Injector } from '@angular/core';
 import { JwtPayload } from '@core/models/JwtPayload';
+import { Apollo } from 'apollo-angular';
 import { jwt_mapping } from 'app/api-endpoints';
+import { UserCustomerDS } from 'app/data-sources/user-customer';
 import { decodeToken } from 'app/utilities/jwt-util';
-import { BehaviorSubject, Observable, Subject, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, catchError, forkJoin, map, of, switchMap, throwError } from 'rxjs';
 import { User, UserToken } from '../models/user';
 import { AuthApiService } from './auth-api.service';
 
@@ -15,6 +17,9 @@ export class AuthService {
   private tokenKey = 'userToken';
   private rememberMyKey = 'rememberMe';
   private usernameKey = 'username';
+  private clientCompanyKey = 'clientCompany';
+
+  private userCustomerDS?: UserCustomerDS;
 
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
@@ -25,7 +30,7 @@ export class AuthService {
 
   private regexCache = new Map<string, RegExp>();
 
-  constructor(private http: HttpClient, private authApiService: AuthApiService) {
+  constructor(private http: HttpClient, private authApiService: AuthApiService, private injector: Injector) {
     this.currentUserSubject = new BehaviorSubject<User>(
       JSON.parse(localStorage.getItem(this.userKey) || '{}')
     );
@@ -45,6 +50,9 @@ export class AuthService {
   }
 
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
+    if (!this.userCustomerDS) {
+      this.userCustomerDS = this.injector.get(UserCustomerDS);
+    }
     if (rememberMe) {
       localStorage.setItem(this.rememberMyKey, 'true');
       localStorage.setItem(this.usernameKey, username);
@@ -69,8 +77,44 @@ export class AuthService {
         if (!userId) {
           console.log(`unexpected login token occurred: `, decodedToken)
         }
-        return this.authApiService.getUserClaims(userId).pipe(
-          map(claims => {
+        // return this.authApiService.getUserClaims(userId).pipe(
+        //   map(claims => {
+        //     const usr = new User();
+        //     usr.id = userId;
+        //     usr.name = decodedToken[jwt_mapping.name.key] ?? decodedToken[jwt_mapping.name.value];
+        //     usr.email = decodedToken[jwt_mapping.email.key] ?? decodedToken[jwt_mapping.email.value];
+        //     usr.groupsid = decodedToken[jwt_mapping.groupsid.key] ?? decodedToken[jwt_mapping.groupsid.value];
+        //     usr.role = decodedToken[jwt_mapping.role.key] ?? decodedToken[jwt_mapping.role.value];
+        //     usr.roles = claims.roles ?? [usr.role];
+        //     usr.functions = claims.functions ?? [];
+        //     usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key] ?? decodedToken[jwt_mapping.primarygroupsid.value];
+        //     usr.token = decodedToken;
+        //     usr.plainToken = user.token;
+        //     usr.expiration = user.expiration;
+        //     usr.refreshToken = user.refreshToken;
+        //     usr.isStaff = isStaff;
+        //     usr.userdata = JSON.parse(decodedToken.userdata);
+
+        //     localStorage.setItem(this.userKey, JSON.stringify(usr));
+        //     this.currentUserSubject.next(usr);
+        //     this.tokenRefreshed.next();
+        //     this.userLoggedIn.next();
+
+        //     return user; // or return usr
+        //   }),
+        //   catchError(error => {
+        //     this.logout();
+        //     return throwError(() => error);
+        //   })
+        // );
+        return forkJoin({
+          claims: this.authApiService.getUserClaims(userId),
+          userCustomer: this.userCustomerDS!.getUserCustomerByUserId(userId)
+        }).pipe(
+          map(({ claims, userCustomer }) => {
+            const guids = userCustomer.map(uc => uc.customer_company_guid);
+            localStorage.setItem(this.clientCompanyKey, JSON.stringify(guids));
+
             const usr = new User();
             usr.id = userId;
             usr.name = decodedToken[jwt_mapping.name.key] ?? decodedToken[jwt_mapping.name.value];
@@ -92,7 +136,7 @@ export class AuthService {
             this.tokenRefreshed.next();
             this.userLoggedIn.next();
 
-            return user; // or return usr
+            return user;
           }),
           catchError(error => {
             this.logout();
@@ -288,6 +332,11 @@ export class AuthService {
     const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
     if (!user?.userdata?.length) return null;
     return user.userdata.filter((item: any) => item.department === type).map((item: any) => item.guid) || null;
+  }
+
+  getClientCompany(): string[] {
+    const guids = localStorage.getItem(this.clientCompanyKey);
+    return guids ? JSON.parse(guids) : [];
   }
 
   hasRole(expectedRoles: string[] | undefined): boolean {

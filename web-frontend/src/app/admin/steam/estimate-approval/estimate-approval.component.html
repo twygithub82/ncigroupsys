@@ -356,6 +356,7 @@
 
                       <div class="ms-2 flex-shrink-0">
                         <div class="d-flex justify-content-end">
+                          @if (isAllowAdd()) {
                           @if (copiedSteamEst) {
                           <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
                             (click)="pasteSteamEstimate($event, item, copiedSteamEst)">
@@ -367,6 +368,7 @@
                             (click)="addSteamEstimate($event, item)">
                             <mat-icon class="col-white">add</mat-icon>
                           </button>
+                          }
                           }
                         </div>
                       </div>
@@ -445,26 +447,25 @@
                               </button>
                               }
                               } @else if(IsEnable3Dots(steamRow)) {
-
                               <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                                 <mat-icon>more_vert</mat-icon>
                               </button>
                               }
 
                               <mat-menu #menu="matMenu">
-                                @if (steamDS.canCopy(steamRow)) {
+                                @if (isAllowAdd() && steamDS.canCopy(steamRow)) {
                                 <button mat-menu-item (click)="copySteamEst(steamRow)">
                                   <mat-icon>content_copy</mat-icon>
                                   <span>{{translatedLangText.COPY}}</span>
                                 </button>
                                 }
-                                @if (steamDS.canRollbackEstimate(steamRow)) {
+                                @if (isAllowEdit() && steamDS.canRollbackEstimate(steamRow)) {
                                 <button mat-menu-item (click)="rollbackRow(steamRow)">
                                   <mat-icon>undo</mat-icon>
                                   <span>{{translatedLangText.ROLLBACK}}</span>
                                 </button>
                                 }
-                                @if (steamDS.canCancel(steamRow)) {
+                                @if (isAllowDelete() && steamDS.canCancel(steamRow)) {
                                 <button mat-menu-item (click)="cancelRow(steamRow)">
                                   <mat-icon>delete_forever</mat-icon>
                                   <span>{{translatedLangText.DELETE}}</span>
