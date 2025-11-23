@@ -16,12 +16,20 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryMutation))]
     public class SOMutation
     {
+        private readonly ILogger<SOMutation> _logger;
+
+        public SOMutation(ILogger<SOMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
@@ -40,8 +48,13 @@ namespace IDMS.StoringOrder.GqlTypes
                 soDomain.update_dt = currentDateTime;
                 soDomain.update_by = user;
 
+
+
                 if (soTanks is null || soTanks.Count <= 0)
+                {
+                    _logger.LogWarning("AddStoringOrder failed: no tanks provided for soGuid=null");
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "INVALID_OPERATION"));
+                }
 
                 IList<storing_order_tank> newTankList = new List<storing_order_tank>();
                 foreach (var tnk in soTanks)
@@ -74,14 +87,17 @@ namespace IDMS.StoringOrder.GqlTypes
                 await context.storing_order_tank.AddRangeAsync(newTankList);
                 var res = await context.SaveChangesAsync();
 
+                _logger.LogInformation("AddStoringOrder saved guid={Guid} affected={Affected}", soDomain.guid, res);
+
                 //TODO--Send Notification
-                await NotificationHandling(context, config, EventId.NEW_SOT);
+                await NotificationHandling(context, config, Models.EventId.NEW_SOT);
 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddStoringOrder");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -102,11 +118,13 @@ namespace IDMS.StoringOrder.GqlTypes
                                         .Include(s => s.storing_order_tank).FirstOrDefaultAsync(s => s.guid == so.guid);
                 if (soDomain == null)
                 {
+                    _logger.LogWarning("UpdateStoringOrder failed: storing order not found soGuid={SoGuid}", so?.guid);
                     throw new GraphQLException(new Error("Storing Order not found.", "NOT_FOUND"));
                 }
 
                 if (string.IsNullOrEmpty(soDomain.customer_company_guid))
                 {
+                    _logger.LogWarning("UpdateStoringOrder invalid state: missing customer_company_guid soGuid={SoGuid}", so?.guid);
                     throw new GraphQLException(new Error("customer_company_guid cant be null", "Error"));
                 }
 
@@ -132,11 +150,16 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.tank_status_cv = TankMovementStatus.SO;
                         await context.storing_order_tank.AddAsync(newTank);
                         isSendNotification = true;
+
+                        _logger.LogInformation("Added new storing_order_tank guid={TankGuid} for soGuid={SoGuid}", newTank.guid, soDomain.guid);
                         continue;
                     }
 
                     if (string.IsNullOrEmpty(tnk?.guid) || string.IsNullOrEmpty(tnk.last_cargo_guid))
+                    {
+                        _logger.LogWarning("UpdateStoringOrder missing compulsory fields for tank: guid or last_cargo_guid");
                         throw new GraphQLException(new Error("Compulsory fields sot_guid or last_cargo_guid cant be null", "Error"));
+                    }
 
                     // Find the corresponding existing child entity or add a new one if necessary
                     var existingTank = soDomain.storing_order_tank.FirstOrDefault(t => t.guid == tnk.guid && (t.delete_dt == null || t.delete_dt == 0));
@@ -161,29 +184,33 @@ namespace IDMS.StoringOrder.GqlTypes
                             existingTank.status_cv = SOTankStatus.WAITING;
                             rollbackSOTGuids.Add(tnk.guid);
                             isSendNotification = true;
+
                             continue;
                         }
                         else
+                        {
+                            _logger.LogWarning("Rollback check failed for tank_no={TankNo} soGuid={SoGuid}", tnk.tank_no, so?.guid);
                             throw new GraphQLException(new Error("Tank rollback condition failed", "Error"));
+                        }
                     }
 
                     if (SOTankAction.CANCEL.EqualsIgnore(tnk?.action))
                     {
-                        //existingTank.update_by = user;
-                        //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
                         isSendNotification = true;
 
                         ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime, existingTank.guid);
+
+                        _logger.LogInformation("Canceled storing_order_tank guid={TankGuid} tank_no={TankNo}", existingTank.guid, tnk.tank_no);
                         continue;
                     }
 
                     if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
                     {
-                        //existingTank.update_by = user;
-                        //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.PREORDER;
                         isSendNotification = true;
+
+                        _logger.LogInformation("Set PREORDER for storing_order_tank guid={TankGuid}", existingTank.guid);
                         continue;
                     }
                 }
@@ -217,12 +244,14 @@ namespace IDMS.StoringOrder.GqlTypes
                 soDomain.update_dt = currentDateTime;
                 var res = await context.SaveChangesAsync();
 
+                _logger.LogInformation("UpdateStoringOrder saved soGuid={SoGuid} affected={Affected}", so?.guid, res);
+
                 if (isSendNotification)
                 {
                     //string evtId = EventId.NEW_SOT;
                     //string evtName = EventName.NEW_SOT;
                     //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-                    await NotificationHandling(context, config, EventId.UPDATE_SOT);
+                    await NotificationHandling(context, config, Models.EventId.UPDATE_SOT);
                 }
 
 
@@ -236,7 +265,8 @@ namespace IDMS.StoringOrder.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateStoringOrder soGuid={SoGuid}", so?.guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -256,12 +286,6 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     if (storingOrder != null)
                     {
-                        //if (!(SOStatus.PENDING.EqualsIgnore(storingOrder.status_cv) || SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv)))
-                        //    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
-
-                        //if (SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv) || SOStatus.COMPLETED.EqualsIgnore(storingOrder.status_cv))
-                        //    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
-
                         int tnkAlreadyAcceptedCount = 0;
                         string finalSOStatus = SOStatus.CANCELED;
 
@@ -278,7 +302,6 @@ namespace IDMS.StoringOrder.GqlTypes
                                     tnk.update_dt = currentDateTime;
                                     tnk.update_by = user;
                                 }
-                                //ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
 
                                 if (SOTankStatus.ACCEPTED.EqualsIgnore(tnk.status_cv))
                                     tnkAlreadyAcceptedCount++;
@@ -289,13 +312,18 @@ namespace IDMS.StoringOrder.GqlTypes
 
                             if (tnkAlreadyAcceptedCount > 0 && tnkAlreadyAcceptedCount != tanks.Count())
                                 finalSOStatus = SOStatus.COMPLETED;
-
                         }
-                        //so.status_cv = CANCEL;
+
                         storingOrder.update_dt = currentDateTime;
                         storingOrder.update_by = user;
                         storingOrder.status_cv = finalSOStatus;
                         storingOrder.remarks = soRequest.remarks;
+
+                        _logger.LogInformation("CancelStoringOrder set status={Status} for soGuid={SoGuid}", finalSOStatus, storingOrder.guid);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("CancelStoringOrder: storing order not found soGuid={SoGuid}", soRequest.guid);
                     }
                 }
 
@@ -305,13 +333,14 @@ namespace IDMS.StoringOrder.GqlTypes
                 //string evtId = EventId.NEW_SOT;
                 //string evtName = EventName.NEW_SOT;
                 //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-                await NotificationHandling(context, config, EventId.CANCEL_SOT);
+                await NotificationHandling(context, config, Models.EventId.CANCEL_SOT);
 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in CancelStoringOrder");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -329,7 +358,6 @@ namespace IDMS.StoringOrder.GqlTypes
                                                         .Include(s => s.storing_order_tank);
                 foreach (var so in storingOrders)
                 {
-                    //so.status_cv = CANCEL;
                     so.delete_dt = currentDateTime;
                     so.update_dt = currentDateTime;
                     so.update_by = user;
@@ -351,13 +379,14 @@ namespace IDMS.StoringOrder.GqlTypes
                 //string evtId = EventId.NEW_SOT;
                 //string evtName = EventName.NEW_SOT;
                 //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-                await NotificationHandling(context, config, EventId.DELETE_SOT);
+                await NotificationHandling(context, config, Models.EventId.DELETE_SOT);
                 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteStoringOrder");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -373,68 +402,6 @@ namespace IDMS.StoringOrder.GqlTypes
             GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.SOT_UPDATED, evtId, evtName, count, JsonConvert.SerializeObject(payload));
             return true;    
         }
-
-        //private async Task<int> StoringOrderTankChanges(AppDbContext context, List<StoringOrderTankRequest> sot, bool forCancel)
-        //{
-        //    int res = 0;
-        //    string user = "admin";
-        //    long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //    string[] soGuids = sot.Select(s => s.so_guid).ToArray();
-
-        //    if (soGuids == null)
-        //        throw new GraphQLException(new Error("Storing Order Guid Cannot Null", "INVALID_OPERATION"));
-
-
-        //    if (!soGuids.All(x => x == soGuids[0]))
-        //        throw new GraphQLException(new Error("Storing Order Guid Not Match", "INVALID_OPERATION"));
-
-        //    var storingOrder = context.storing_order.Where(s => s.guid == soGuids.First() && (s.delete_dt == null || s.delete_dt == 0))
-        //             .Include(s => s.storing_order_tank).FirstOrDefault();
-
-        //    if (storingOrder != null)
-        //    {
-        //        string[] sotGuids = sot.Select(s => s.guid).ToArray();
-        //        var tanks = storingOrder?.storing_order_tank?.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0));
-
-        //        foreach (var tnk in tanks)
-        //        {
-        //            tnk.status_cv = forCancel ? SOTankStatus.CANCELED : SOTankStatus.WAITING;
-        //            tnk.remarks = sot.Where(s => s.guid == tnk.guid).Select(s => s.remarks).First();
-        //            tnk.update_by = user;
-        //            tnk.update_dt = currentDateTime;
-        //        }
-
-        //        int tnkAlreadyAcceptedCount = 0;
-        //        var unCancelTanks = storingOrder?.storing_order_tank?.Where(s => s.status_cv != SOTankStatus.CANCELED);
-        //        if (unCancelTanks != null && unCancelTanks.Any())
-        //        {
-        //            foreach (var t in unCancelTanks)
-        //            {
-        //                if (SOTankStatus.ACCEPTED.EqualsIgnore(t.status_cv))
-        //                    tnkAlreadyAcceptedCount++;
-        //            }
-
-        //            if (tnkAlreadyAcceptedCount == 0)
-        //                storingOrder.status_cv = SOStatus.PENDING;
-        //            else if (tnkAlreadyAcceptedCount >= unCancelTanks.Count())
-        //                storingOrder.status_cv = SOStatus.COMPLETED;
-        //            else
-        //                storingOrder.status_cv = SOStatus.PROCESSING;
-        //        }
-        //        else
-        //            //All tank has been cancelled
-        //            storingOrder.status_cv = SOStatus.CANCELED;
-
-        //        storingOrder.update_by = user;
-        //        storingOrder.update_dt = currentDateTime;
-        //        res = await context.SaveChangesAsync();
-
-        //        if (!forCancel)
-        //            VoidInGateEIR(sotGuids, user, currentDateTime, context);
-        //    }
-        //    return res;
-        //}
 
         private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime, ApplicationInventoryDBContext context)
         {
@@ -455,6 +422,8 @@ namespace IDMS.StoringOrder.GqlTypes
                 (t.status_cv.EqualsIgnore(SOTankStatus.CANCELED) ||
                     (t.status_cv.EqualsIgnore(SOTankStatus.ACCEPTED) && !t.tank_status_cv.EqualsIgnore(TankMovementStatus.RO))));
 
+            _logger.LogDebug("RollbackCheckCondition result={Result} for tankNo={TankNo}", res, tankNo);
+
             return res;
         }
 
@@ -468,6 +437,12 @@ namespace IDMS.StoringOrder.GqlTypes
                 sot.status_cv = SOTankStatus.WAITING;
                 sot.update_by = user;
                 sot.update_dt = currentDate;
+
+                _logger.LogInformation("Resolved PREORDER for other SOT guid={Guid} tank_no={TankNo}", sot.guid, tankNo);
+            }
+            else
+            {
+                _logger.LogDebug("No PREORDER SOT found for tank_no={TankNo} excluding guid={CurrentGuid}", tankNo, currentSOTGuid);
             }
 
         }

@@ -11,6 +11,7 @@ using IDMS.StoringOrder.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -20,20 +21,12 @@ namespace IDMS.StoringOrder.GqlTypes
     [ExtendObjectType(typeof(InventoryMutation))]
     public class SOTMutation
     {
-        private async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
-        {
-            try
-            {
-                return await StoringOrderTankChanges(config, httpContextAccessor, context, sot, true);
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-        }
+        private readonly ILogger<SOTMutation> _logger;
 
+        public SOTMutation(ILogger<SOTMutation> logger)
+        {
+            _logger = logger;
+        }
 
         public async Task<int> UpdateStoringOrderTank([Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context,
@@ -44,8 +37,12 @@ namespace IDMS.StoringOrder.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+
                 if (string.IsNullOrEmpty(soTank.guid))
+                {
+                    _logger.LogWarning("UpdateStoringOrderTank failed: missing sot guid");
                     throw new GraphQLException(new Error($"Tank guid cannot be emptry or null", "ERROR"));
+                }
 
                 var sot = new storing_order_tank() { guid = soTank.guid };
                 context.storing_order_tank.Attach(sot);
@@ -53,14 +50,20 @@ namespace IDMS.StoringOrder.GqlTypes
                 //Overwrite handling------------------------
                 if (!string.IsNullOrEmpty(soTank?.action) && soTank.action.EqualsIgnore(TankInfoAction.OVERWRITE))
                 {
+
                     if (string.IsNullOrEmpty(soTank.tank_no))
+                    {
+                        _logger.LogWarning("Overwrite action failed: missing tank_no for sotGuid={SotGuid}", soTank.guid);
                         throw new GraphQLException(new Error($"Tank no cannot be emptry or null", "ERROR"));
+                    }
                     sot.tank_no = soTank.tank_no;
+                    _logger.LogInformation("Overwrote tank_no for sotGuid={SotGuid} to {TankNo}", soTank.guid, soTank.tank_no);
                 }
                 else
                 {
                     sot.tank_note = soTank.tank_note;
                     sot.release_note = soTank.release_note;
+                    _logger.LogDebug("Updated notes for sotGuid={SotGuid}", soTank.guid);
                 }
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
@@ -68,14 +71,25 @@ namespace IDMS.StoringOrder.GqlTypes
                 //Overwrite handling------------------------
                 if (!string.IsNullOrEmpty(soTank?.action) && soTank.action.EqualsIgnore(TankInfoAction.RECUSTOMER))
                 {
+                    _logger.LogDebug("RECUSTOMER action for sotGuid={SotGuid}", soTank.guid);
+
                     if (storingOrder == null)
+                    {
+                        _logger.LogWarning("RECUSTOMER failed: storingOrder is null for sotGuid={SotGuid}", soTank.guid);
                         throw new GraphQLException(new Error($"Storing order object cannot be emptry or null", "ERROR"));
+                    }
 
                     if (string.IsNullOrEmpty(storingOrder.customer_company_guid) || string.IsNullOrEmpty(storingOrder.guid))
+                    {
+                        _logger.LogWarning("RECUSTOMER failed: missing SO guid/customer_guid for sotGuid={SotGuid}", soTank.guid);
                         throw new GraphQLException(new Error($"SO guid/customer_guid cannot be emptry or null", "ERROR"));
+                    }
 
                     if (string.IsNullOrEmpty(tankCompGuid))
+                    {
+                        _logger.LogWarning("RECUSTOMER failed: missing tankCompGuid for sotGuid={SotGuid}", soTank.guid);
                         throw new GraphQLException(new Error($"TankCompGuid cannot be emptry or null", "ERROR"));
+                    }
 
                     var so = new storing_order() { guid = storingOrder.guid };
                     context.storing_order.Attach(so);
@@ -83,16 +97,19 @@ namespace IDMS.StoringOrder.GqlTypes
                     so.update_by = user;
                     so.update_dt = currentDateTime;
 
+                    _logger.LogInformation("RECUSTOMER: invoking OverwriteProcessCostHandling for sotGuid={SotGuid} newCustomer={CustomerGuid}", soTank.guid, storingOrder.customer_company_guid);
                     await OverwriteProcessCostHandling(context, soTank.guid, storingOrder.customer_company_guid, tankCompGuid, user, currentDateTime);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateStoringOrderTank completed for sotGuid={SotGuid} affected={Affected}", soTank.guid, res);
 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateStoringOrderTank for sotGuid={SotGuid}", soTank?.guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -200,12 +217,15 @@ namespace IDMS.StoringOrder.GqlTypes
                             }
                             part.update_by = user;
                             part.update_dt = currentDateTime;
+
+                            _logger.LogDebug("Updated steaming_part id={PartGuid} labour={Labour} cost={Cost}", part.guid, part.labour, part.cost);
                         }
+
+                        _logger.LogInformation("Updated steaming id={SteamingGuid} total_cost={Cost}", steam.guid, steam.total_cost);
                     }
                 }
 
-
-                var repairs = await sotDB?.SelectMany(s => s.repair)?.ToListAsync();
+                var repairs = await sotDB?.SelectMany(s => s.repair)?.ToListAsync();                
                 foreach (var repair in repairs)
                 {
                     if (repair == null || repair.repair_part == null) continue;
@@ -236,15 +256,34 @@ namespace IDMS.StoringOrder.GqlTypes
                     repair.total_labour_cost = repair?.total_hour * labourCost;
                     repair.update_by = user;
                     repair.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Updated repair id={RepairGuid} est_cost={EstCost} labour_cost={LabourCost}", repair.guid, repair.est_cost, repair.labour_cost);
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "Error in OverwriteProcessCostHandling for sotGuid={SotGuid}", sotGuid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
+            _logger.LogInformation("OverwriteProcessCostHandling complete for sotGuid={SotGuid}", sotGuid);
             return 1;
+        }
 
+        private async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
+                [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
+        {
+            _logger.LogDebug("CancelStoringOrderTank called count={Count}", sot?.Count ?? 0);
+            try
+            {
+                return await StoringOrderTankChanges(config, httpContextAccessor, context, sot, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in CancelStoringOrderTank");
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
         }
 
         private async Task<int> StoringOrderTankChanges([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, List<StoringOrderTankRequest> sot, bool forCancel)
@@ -256,11 +295,18 @@ namespace IDMS.StoringOrder.GqlTypes
             string[] soGuids = sot.Select(s => s.so_guid).ToArray();
 
             if (soGuids == null)
+            {
+                _logger.LogWarning("StoringOrderTankChanges: soGuids is null");
                 throw new GraphQLException(new Error("Storing Order Guid Cannot Null", "INVALID_OPERATION"));
+            }
 
 
             if (!soGuids.All(x => x == soGuids[0]))
+            {
+                _logger.LogWarning("StoringOrderTankChanges: soGuids do not match");
                 throw new GraphQLException(new Error("Storing Order Guid Not Match", "INVALID_OPERATION"));
+            }
+
 
             var storingOrder = context.storing_order.Where(s => s.guid == soGuids.First() && (s.delete_dt == null || s.delete_dt == 0))
                      .Include(s => s.storing_order_tank).FirstOrDefault();
@@ -303,8 +349,17 @@ namespace IDMS.StoringOrder.GqlTypes
                 storingOrder.update_dt = currentDateTime;
                 res = await context.SaveChangesAsync();
 
+                _logger.LogInformation("StoringOrderTankChanges saved soGuid={SoGuid} affected={Affected}", storingOrder.guid, res);
+
                 if (!forCancel)
+                {
+                    _logger.LogDebug("StoringOrderTankChanges invoking VoidInGateEIR for sotGuids count={Count}", sotGuids.Length);
                     VoidInGateEIR(sotGuids, user, currentDateTime, context);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("StoringOrderTankChanges: storing order not found for soGuid={SoGuid}", soGuids.FirstOrDefault());
             }
             return res;
         }
@@ -312,13 +367,16 @@ namespace IDMS.StoringOrder.GqlTypes
         private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime, ApplicationInventoryDBContext context)
         {
             var InGates = context.in_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
-            foreach (var ig in InGates)
+            var list = InGates.ToList();
+            _logger.LogInformation("VoidInGateEIR marking {Count} in_gate records deleted for sotGuids", list.Count);
+            foreach (var ig in list)
             {
                 ig.update_dt = currentDateTime;
                 ig.update_by = user;
                 ig.delete_dt = currentDateTime;
             }
             await context.SaveChangesAsync();
+            _logger.LogDebug("VoidInGateEIR completed for {Count} records", list.Count);
         }
     }
 }

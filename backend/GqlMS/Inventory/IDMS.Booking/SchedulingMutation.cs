@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CommonUtil.Core.Service;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
@@ -8,14 +7,22 @@ using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryMutation))]
     public class SchedulingMutation
     {
+
+        private readonly ILogger<SchedulingMutation> _logger;
+
+        public SchedulingMutation(ILogger<SchedulingMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddScheduling(SchedulingRequest scheduling, List<SchedulingSOTRequest> scheduling_SotList, [Service] IHttpContextAccessor httpContextAccessor,
           ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
@@ -53,16 +60,12 @@ namespace IDMS.Booking.GqlTypes
                     newSchedulingSOT.scheduling_dt = sch_sot.scheduling_dt;
 
                     schedulingsSOTList.Add(newSchedulingSOT);
-
-                    //storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
-                    //sot.release_job_no = sch.storing_order_tank.release_job_no;
-                    //sot.update_by = user;
-                    //sot.update_dt = currentDateTime;
                 }
                 context.scheduling.Add(newScheduling);
                 context.scheduling_sot.AddRange(schedulingsSOTList);
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation($"AddScheduling: New scheduling added with GUID: {newScheduling.guid}");
 
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -70,7 +73,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddScheduling");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -82,22 +86,10 @@ namespace IDMS.Booking.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                //var exScheduling = await context.scheduling.Where(s => s.guid == scheduling.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
-                //if (exScheduling == null)
-                //    throw new GraphQLException(new Error($"Scheduling not found, update failed.", "ERROR"));
-
-
                 var exScheduling = new scheduling() { guid =  scheduling.guid };   
                 context.Attach(exScheduling);
                 exScheduling.update_by = user;
                 exScheduling.update_dt = currentDateTime;
-
-                //exScheduling.reference = scheduling.reference;
-                //exScheduling.scheduling_dt = scheduling.scheduling_dt;
-                //if (BookingStatus.CANCELED.EqualsIgnore(scheduling.action))
-                //    exScheduling.status_cv = BookingStatus.CANCELED;
-                //else
-                //    exScheduling.status_cv = scheduling.status_cv;
                 exScheduling.book_type_cv = scheduling.book_type_cv;
                 exScheduling.remarks = scheduling.remarks;
 
@@ -106,12 +98,6 @@ namespace IDMS.Booking.GqlTypes
                 {
                     var exSch = new scheduling_sot() { guid = schSOT.guid };
                     context.Attach(exSch);
-                    //context.Entry(exSch).Property(e=>e.status_cv).IsModified = true;
-
-                    //if (BookingStatus.CANCELED.EqualsIgnore(sch.action))
-                    //    exSch.status_cv = BookingStatus.CANCELED;
-                    //else
-                    //    exSch.status_cv = sch.status_cv;
 
                     exSch.update_by = user;
                     exSch.update_dt = currentDateTime;
@@ -121,6 +107,7 @@ namespace IDMS.Booking.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation($"UpdateScheduling: Scheduling updated with GUID: {scheduling.guid}");
 
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -128,7 +115,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateScheduling");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -162,6 +150,8 @@ namespace IDMS.Booking.GqlTypes
                 }
 
                 res = await context.SaveChangesAsync();
+                _logger.LogInformation($"DeleteScheduling: Scheduling deleted with GUIDs: {string.Join(", ", schedulingGuids)}");
+
                 //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
                 //await topicEventSender.SendAsync(updateCourseTopic, course);
@@ -169,7 +159,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteScheduling");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -194,6 +185,8 @@ namespace IDMS.Booking.GqlTypes
                 }
 
                 res = await context.SaveChangesAsync();
+                _logger.LogInformation($"DeleteSchedulingSOT: Scheduling SOT deleted with GUIDs: {string.Join(", ", schedulingSOTGuids)}");
+
                 //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
                 //await topicEventSender.SendAsync(updateCourseTopic, course);
@@ -201,7 +194,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteSchedulingSOT");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

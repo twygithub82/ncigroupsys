@@ -1,17 +1,25 @@
 ﻿using HotChocolate;
-using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
-using Microsoft.AspNetCore.Http;
+using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Inventory.GqlTypes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class BookingQuery
     {
+        private readonly ILogger<BookingQuery> _logger;
+
+        public BookingQuery(ILogger<BookingQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -30,15 +38,13 @@ namespace IDMS.Booking.GqlTypes
                         .ThenInclude(s => s.storing_order)
                             .ThenInclude(c => c.customer_company);
 
-                //var bookingDetail = context.booking.Where(b => b.delete_dt == null || b.delete_dt == 0)
-                //    .Include(b => b.storing_order_tank);
-
                 return bookingDetail;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error querying bookings");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

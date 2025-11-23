@@ -1,18 +1,26 @@
 ﻿using HotChocolate;
-using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
-using Microsoft.AspNetCore.Http;
-using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Models;
 using IDMS.Inventory.GqlTypes;
+using IDMS.Models;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class ReleaseOrderQuery
     {
+        private readonly ILogger<ReleaseOrderQuery> _logger;
+
+        public ReleaseOrderQuery(ILogger<ReleaseOrderQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -30,7 +38,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error querying release orders");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -50,7 +59,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error querying release order SOTs");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

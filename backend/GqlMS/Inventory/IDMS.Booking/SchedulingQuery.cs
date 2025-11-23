@@ -1,17 +1,26 @@
 ﻿using HotChocolate;
-using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
-using Microsoft.AspNetCore.Http;
+using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Inventory.GqlTypes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class SchedulingQuery
     {
+        private readonly ILogger<SchedulingQuery> _logger;
+
+        public SchedulingQuery(ILogger<SchedulingQuery> logger)
+        {
+            _logger = logger;
+        }
+
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -29,7 +38,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryScheduling");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -51,7 +61,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QuerySchedulingSOT");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

@@ -13,13 +13,20 @@ using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Inventory.GqlTypes;
-
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Survey.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class SurveyQuery
     {
+        private readonly ILogger<SurveyQuery> _logger;
+
+        public SurveyQuery(ILogger<SurveyQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -30,14 +37,16 @@ namespace IDMS.Survey.GqlTypes
             IQueryable<in_gate_survey> query = null;
             try
             {
-
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                                 .Include(i => i.in_gate);
+
+                _logger.LogInformation("QueryInGateSurvey returning queryable for user {User}", user);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryInGateSurvey");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
             return query;
@@ -53,14 +62,16 @@ namespace IDMS.Survey.GqlTypes
             IQueryable<out_gate_survey> query = null;
             try
             {
-
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.out_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                                 .Include(i => i.out_gate);
+
+                _logger.LogInformation("QueryOutGateSurvey returning queryable for user {User}", user);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryOutGateSurvey");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
             return query;

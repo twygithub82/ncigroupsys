@@ -11,12 +11,20 @@ using HotChocolate.Types;
 using Microsoft.Extensions.Configuration;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Booking.GqlTypes.LocaModel;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryMutation))]
     public class BookingMutation
     {
+        private readonly ILogger<BookingMutation> _logger;
+
+        public BookingMutation(ILogger<BookingMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddBooking(BookingRequest booking, [Service] IHttpContextAccessor httpContextAccessor,
             ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
@@ -44,17 +52,21 @@ namespace IDMS.Booking.GqlTypes
                     //newBooking.action_dt = booking.action_dt;
 
                     bookings.Add(newBooking);
+
+                    _logger.LogDebug("Prepared booking guid={BookingGuid} for sot_guid={SotGuid}", newBooking.guid, guid);
                 }
                 context.booking.AddRange(bookings);
                 var res = await context.SaveChangesAsync();
 
+                _logger.LogInformation("AddBooking completed by {User}, inserted={Count}", user, res);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddBooking");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -88,9 +100,16 @@ namespace IDMS.Booking.GqlTypes
                             bk.status_cv = booking.status_cv;
                             bk.booking_dt = booking.booking_dt;
                             bk.remarks = booking.remarks;
+
+                            _logger.LogDebug("Prepared update for booking guid={BookingGuid}", bk.guid);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("UpdateBooking: booking not found guid={BookingGuid}", booking?.guid);
                         }
                     }
                     res = await context.SaveChangesAsync();
+                    _logger.LogInformation("UpdateBooking saved affected={Affected}", res);
                 }
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -98,7 +117,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateBooking");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -120,11 +140,14 @@ namespace IDMS.Booking.GqlTypes
                     bk.update_dt = currentDateTime;
                     bk.update_by = user;
                     bk.status_cv = BookingStatus.CANCELED;
-                    bk.remarks = booking.remarks;   
+                    bk.remarks = booking.remarks;
+
+                    _logger.LogDebug("Marked booking guid={BookingGuid} as CANCELED", booking.guid);
                 }
                 //context.UpdateRange(bookings);
                 res = await context.SaveChangesAsync();
-                
+
+                _logger.LogInformation("CancelBooking saved affected={Affected}", res);
                 //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
                 //await topicEventSender.SendAsync(updateCourseTopic, course);
@@ -132,7 +155,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in CancelBooking");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -154,9 +178,16 @@ namespace IDMS.Booking.GqlTypes
                         bk.update_dt = currentDateTime;
                         bk.update_by = user;
                         bk.delete_dt = currentDateTime;
+
+                        _logger.LogDebug("Marked booking guid={BookingGuid} deleted", bk.guid);
                     }
                     context.UpdateRange(bookings);
                     res = await context.SaveChangesAsync();
+                    _logger.LogInformation("DeleteBooking saved affected={Affected}", res);
+                }
+                else
+                {
+                    _logger.LogWarning("DeleteBooking found no bookings for provided guids");
                 }
 
                 //TODO
@@ -166,7 +197,8 @@ namespace IDMS.Booking.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteBooking");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
