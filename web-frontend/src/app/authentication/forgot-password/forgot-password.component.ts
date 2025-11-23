@@ -107,7 +107,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
             next: (res) => {
               console.log(res)
               this.handleResetSuccess();
-              this.router.navigate(['/authentication/signin-staff']); // or 'signin-staff' if applicable
+              this.router.navigate(['/authentication/signin']); // or 'signin-staff' if applicable
             },
             error: (error) => {
               if (error.message === 'EMAIL_NOT_FOUND') {
