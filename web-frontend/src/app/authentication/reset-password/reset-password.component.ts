@@ -87,7 +87,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
 
       } else {
         this.handleTokenEmailInvalid();
-        this.router.navigate(['/authentication/signin-staff']); // or 'signin-staff' if applicable
+        this.router.navigate(['/authentication/signin']); // or 'signin-staff' if applicable
       }
     });
     this.initValueChange();
@@ -147,7 +147,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
               console.log(res)
               if (res.status == "Success") {
                 this.handleChangePasswordSuccess();
-                this.router.navigate(['/authentication/signin-staff']); // or 'signin-staff' if applicable
+                this.router.navigate(['/authentication/signin']); // or 'signin-staff' if applicable
               } else {
                 this.handleTokenEmailInvalid();
               }

@@ -9,11 +9,19 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models;
 using CommonUtil.Core.Service;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Inventory.GqlTypes
 {
     public class InventoryQuery
     {
+        private readonly ILogger<InventoryQuery> _logger;
+
+        public InventoryQuery(ILogger<InventoryQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -27,7 +35,8 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QueryTank failed");
+                throw new GraphQLException(new Error($"QueryTank failed", "ERROR"));
             }
         }
 
@@ -43,7 +52,8 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QueryTankInfo failed");
+                throw new GraphQLException(new Error($"QueryTankInfo failed", "ERROR"));
             }
         }
 
@@ -59,6 +69,7 @@ namespace IDMS.Inventory.GqlTypes
                                                               (c.delete_dt == null || c.delete_dt == 0));
                 if (retCodeValues.Count() <= 0)
                 {
+                    _logger.LogWarning("QueryCodeValuesByType: no code values found for type {Type}", codeValuesType?.code_val_type);
                     throw new GraphQLException(new Error("Code values type not found.", "NOT_FOUND"));
                 }
 
@@ -66,7 +77,8 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QueryCodeValuesByType failed for type {Type}", codeValuesType?.code_val_type);
+                throw new GraphQLException(new Error($"QueryCodeValuesByType failed for {codeValuesType?.code_val_type}", "ERROR"));
             }
         }
 
@@ -79,12 +91,15 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                var caller = httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "anonymous";
+                _logger.LogInformation("QueryCodeValues invoked by {Caller}", caller);
                 var result = context.code_values.Where(c => c.delete_dt == null || c.delete_dt == 0);
                 return result;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QueryCodeValues failed");
+                throw new GraphQLException(new Error($"QueryCodeValues failed", "ERROR"));
             }
         }
 
@@ -96,11 +111,14 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                var caller = httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "anonymous";
+                _logger.LogInformation("QuerySurveyDetail invoked by {Caller}", caller);
                 return context.survey_detail.Where(t => t.delete_dt == null || t.delete_dt == 0);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QuerySurveyDetail failed");
+                throw new GraphQLException(new Error($"QuerySurveyDetail failed", "ERROR"));
             }
         }
 
@@ -116,7 +134,8 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QueryTransfer failed");
+                throw new GraphQLException(new Error($"QueryTransfer failed", "ERROR"));
             }
         }
 
@@ -141,15 +160,16 @@ namespace IDMS.Inventory.GqlTypes
                                 StoringOrderTank = sot,
                                 SurveyDetail = sd
                             };
-                //var result = await query.Take(rowCount).ToListAsync();
 
                 var result = await query.Select(x => x.SurveyDetail).Take(rowCount).ToListAsync();
+                _logger.LogInformation("QuerySurveyDetailByTankNo returned {Count} records for tank {TankNo}", result?.Count ?? 0, tankNo);
                 return result;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+                _logger.LogError(ex, "QuerySurveyDetailByTankNo failed for tank {TankNo}", tankNo);
+                throw new GraphQLException(new Error($"QuerySurveyDetailByTankNo failed for tank{tankNo}", "ERROR"));
             }
         }
     }

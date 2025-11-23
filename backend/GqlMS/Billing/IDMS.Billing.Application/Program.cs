@@ -4,6 +4,7 @@ using IDMS.Billing.GqlTypes;
 using IDMS.Models.DB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using System.Text;
@@ -16,6 +17,13 @@ namespace IDMS.Billing.Applicaton
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpContextAccessor();
+
+            // Configure logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
@@ -32,8 +40,8 @@ namespace IDMS.Billing.Applicaton
                           maxRetryDelay: TimeSpan.FromSeconds(10),
                           errorNumbersToAdd: null)
                             .ExecutionStrategy(c => new MySqlExecutionStrategy(c));
-                })
-                .LogTo(Console.WriteLine);
+                });
+                //.LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
             });
 
@@ -78,13 +86,30 @@ namespace IDMS.Billing.Applicaton
                 };
             });
 
-            Console.WriteLine(TimeZoneInfo.Local.DisplayName);
-
             var app = builder.Build();
+
+            // Log startup information and protect Run with logging for unhandled exceptions
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Starting Billing GraphQL service");
+            logger.LogInformation(TimeZoneInfo.Local.DisplayName);
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.MapGraphQL();
-            app.Run();
+
+            try
+            {
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, "Host terminated unexpectedly");
+                throw;
+            }
+            finally
+            {
+                logger.LogInformation("Billing GraphQL service stopped");
+            }
         }
     }
 }

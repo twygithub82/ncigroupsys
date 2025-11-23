@@ -11,27 +11,29 @@ using IDMS.Models.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Shared;
 using IDMS.Models.Inventory;
-using IDMS.Models.Notification;
-using System.Data.SqlTypes;
-using System.IO;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using IDMS.Models.Billing;
-using System.Data.Entity.ModelConfiguration.Conventions;
 using IDMS.Models.Package;
-using Microsoft.Extensions.Primitives;
-using IDMS.Models.Tariff;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Inventory.GqlTypes
 {
     public class InventoryMutation
     {
+        private readonly ILogger<InventoryMutation> _logger;
+        const string graphqlErrorCode = "ERROR";
+
+        public InventoryMutation(ILogger<InventoryMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> UpdateTankPurpose(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, TankPurposeRequest tankPurpose)
         {
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTankPurpose invoked by {User} (SOT: {SotGuid}, JobNo: {JobNo})", user, tankPurpose?.storing_order_tank?.guid, tankPurpose?.job_no);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 foreach (var item in tankPurpose.purpose_changes)
@@ -44,8 +46,10 @@ namespace IDMS.Inventory.GqlTypes
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
-                                    throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
-
+                                {
+                                    _logger.LogError("Process guid cannot be null or empty.");
+                                    throw new GraphQLException(ErrorBuilder.New().SetMessage("Process guid cannot be null or empty").SetCode(graphqlErrorCode).Build());
+                                }
                                 await RemoveCleaning(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank, tankPurpose.residue_request ?? null);
                             }
                             break;
@@ -55,7 +59,10 @@ namespace IDMS.Inventory.GqlTypes
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
-                                    throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
+                                {
+                                    _logger.LogError("Process guid cannot be null or empty.");
+                                    throw new GraphQLException(ErrorBuilder.New().SetMessage("Process guid cannot be null or empty").SetCode(graphqlErrorCode).Build());
+                                }
 
                                 await RemoveSteaming(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank);
                             }
@@ -66,7 +73,10 @@ namespace IDMS.Inventory.GqlTypes
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
-                                    throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
+                                {
+                                    _logger.LogError("Process guid cannot be null or empty.");
+                                    throw new GraphQLException(ErrorBuilder.New().SetMessage("Process guid cannot be null or empty").SetCode(graphqlErrorCode).Build());
+                                }
 
                                 await RemoveRepair(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank, tankPurpose.residue_request ?? null);
                             }
@@ -77,7 +87,10 @@ namespace IDMS.Inventory.GqlTypes
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
-                                    throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
+                                {
+                                    _logger.LogError("Process guid cannot be null or empty.");
+                                    throw new GraphQLException(ErrorBuilder.New().SetMessage("Process guid cannot be null or empty").SetCode(graphqlErrorCode).Build());
+                                }
 
                                 await RemoveStorage(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank);
                             }
@@ -87,7 +100,8 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTankPurpose failed for SOT {SotGuid}", tankPurpose?.storing_order_tank?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
 
             return 1;
@@ -97,8 +111,8 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("AddSurveyDetail invoked by {User} (SOT: {SotGuid}, SurveyType: {SurveyType})", user, surveyDetail?.sot_guid, surveyDetail?.survey_type_cv);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var newSuyDetail = new survey_detail();
@@ -125,12 +139,15 @@ namespace IDMS.Inventory.GqlTypes
                             //Update Tank Info
                             var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
                             if (tankInfo == null)
-                                throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                            {
+                                _logger.LogError("Tank info not found.");
+                                throw new GraphQLException(ErrorBuilder.New().SetMessage("Tank info not found.").SetCode(graphqlErrorCode).Build());
+                            }
 
                             tankInfo.last_test_cv = periodicTest.last_test_cv;
                             tankInfo.next_test_cv = periodicTest.next_test_cv;
                             tankInfo.test_class_cv = surveyDetail.test_class_cv;
-                            tankInfo.test_dt = periodicTest.test_dt; //newSuyDetail.survey_dt;
+                            tankInfo.test_dt = periodicTest.test_dt;
                             tankInfo.update_by = user;
                             tankInfo.update_dt = currentDateTime;
                         }
@@ -139,11 +156,17 @@ namespace IDMS.Inventory.GqlTypes
 
                 await context.AddAsync(newSuyDetail);
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddSurveyDetail saved {Count} changes for SOT {SotGuid}", res, surveyDetail?.sot_guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AddSurveyDetail failed for SOT {SotGuid}", surveyDetail?.sot_guid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
         public async Task<int> UpdateSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
@@ -151,8 +174,8 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateSurveyDetail invoked by {User} (SurveyGuid: {SurveyGuid})", user, surveyDetail?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var updateSuyDetail = new survey_detail() { guid = surveyDetail.guid };
@@ -160,7 +183,6 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.update_by = user;
                 updateSuyDetail.update_dt = currentDateTime;
 
-                //updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 updateSuyDetail.sot_guid = surveyDetail.sot_guid;
                 updateSuyDetail.status_cv = surveyDetail.status_cv;
                 updateSuyDetail.remarks = surveyDetail.remarks;
@@ -175,20 +197,28 @@ namespace IDMS.Inventory.GqlTypes
                         //Update Tank Info
                         var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
                         if (tankInfo == null)
+                        {
+                            _logger.LogError("Tank info not found.");
                             throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
-
-                        tankInfo.test_dt = periodicTest.test_dt; //surveyDetail.survey_dt;
+                        }
+                        tankInfo.test_dt = periodicTest.test_dt;
                         tankInfo.update_by = user;
                         tankInfo.update_dt = currentDateTime;
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateSurveyDetail saved {Count} changes for SurveyGuid {SurveyGuid}", res, surveyDetail?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateSurveyDetail failed for SurveyGuid {SurveyGuid}", surveyDetail?.guid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
 
@@ -197,8 +227,8 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("DeleteSurveyDetail invoked by {User} (SurveyGuid: {SurveyGuid})", user, deletedGuid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var deleteSuyDetail = new survey_detail() { guid = deletedGuid };
@@ -214,7 +244,10 @@ namespace IDMS.Inventory.GqlTypes
                         //Update Tank Info
                         var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
                         if (tankInfo == null)
+                        {
+                            _logger.LogError("Tank info not found.");
                             throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+                        }
 
                         tankInfo.test_class_cv = surveyDetail.test_class_cv;
                         tankInfo.test_dt = periodicTest.test_dt;
@@ -226,11 +259,17 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteSurveyDetail deleted SurveyGuid {SurveyGuid} (changes: {Count})", deletedGuid, res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "DeleteSurveyDetail failed for SurveyGuid {SurveyGuid}", deletedGuid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
 
@@ -240,10 +279,14 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTransfer invoked by {User} (TransferGuid: {TransferGuid}, SOT: {SotGuid})", user, transfer?.guid, transfer?.sot_guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (string.IsNullOrEmpty(transfer.sot_guid))
+                {
+                    _logger.LogError("SOT guid cannot be null.");
                     throw new GraphQLException(new Error($"SOT guid cannot be null", "ERROR"));
+                }
 
                 if (string.IsNullOrEmpty(transfer.action))
                 {
@@ -334,7 +377,10 @@ namespace IDMS.Inventory.GqlTypes
                         context.Entry(updateTransfer).Property(p => p.transfer_in_dt).IsModified = true;
 
                         if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                        {
+                            _logger.LogError("SOT & tank_no cannot be null.");
                             throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+                        }
 
                         var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
                         if (tankInfo != null)
@@ -356,7 +402,10 @@ namespace IDMS.Inventory.GqlTypes
                         //if (transfer.transfer_in_dt != null)
                         //{
                         if (transfer?.storing_order_tank == null || string.IsNullOrEmpty(transfer.storing_order_tank.tank_no))
+                        {
+                            _logger.LogError("SOT & tank_no cannot be null.");
                             throw new GraphQLException(new Error($"SOT & tank_no cannot be null", "ERROR"));
+                        }
 
                         var tankInfo = await context.tank_info.Where(t => t.tank_no == transfer.storing_order_tank.tank_no).FirstOrDefaultAsync();
                         if (tankInfo != null)
@@ -371,11 +420,17 @@ namespace IDMS.Inventory.GqlTypes
 
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTransfer completed (TransferGuid: {TransferGuid}, SavedChanges: {Count})", transfer?.guid, res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTransfer failed for TransferGuid {TransferGuid}", transfer?.guid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
             }
         }
 
@@ -385,6 +440,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("AddTank invoked by {User} (TankGuid: {TankGuid})", user, newTank?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var tank = new tank();
@@ -397,11 +453,17 @@ namespace IDMS.Inventory.GqlTypes
 
                 await context.AddAsync(tank);
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddTank saved new tank {TankGuid} (changes: {Count})", tank.guid, res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AddTank failed for TankNo");
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
 
@@ -411,6 +473,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTank invoked by {User} (TankGuid: {TankGuid})", user, updateTank?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var tank = new tank() { guid = updateTank.guid };
@@ -429,11 +492,17 @@ namespace IDMS.Inventory.GqlTypes
                 tank.flat_rate = updateTank.flat_rate;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTank saved changes {Count} for TankGuid {TankGuid}", res, updateTank?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTank failed for TankGuid {TankGuid}", updateTank?.guid);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
 
@@ -443,6 +512,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("DeleteTank invoked by {User} (TankGuid: {TankGuid})", user, tankGuid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var tank = new tank() { guid = tankGuid };
@@ -453,11 +523,17 @@ namespace IDMS.Inventory.GqlTypes
                 tank.delete_dt = currentDateTime;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteTank marked tank {TankGuid} deleted (changes: {Count})", tankGuid, res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "DeleteTank failed for TankGuid {TankGuid}", tankGuid);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
             }
         }
 
@@ -467,6 +543,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateJobNo invoked by {User} (SOT: {SotGuid})", user, sot?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (sot == null || string.IsNullOrEmpty(sot.guid))
@@ -481,18 +558,23 @@ namespace IDMS.Inventory.GqlTypes
                 tank.liftoff_job_no = sot.liftoff_job_no;
                 tank.lifton_job_no = sot.lifton_job_no;
 
-                //tank.takein_job_no = sot.takein_job_no;
                 tank.job_no = sot.job_no;
 
                 tank.release_job_no = sot.release_job_no;
                 tank.job_no_remarks = sot.job_no_remarks;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateJobNo saved changes {Count} for SOT {SotGuid}", res, sot?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateJobNo failed for SOT {SotGuid}", sot?.guid);
+                throw new GraphQLException(
+                                 ErrorBuilder.New()
+                                     .SetMessage(ex.Message)
+                                     .SetCode(graphqlErrorCode)
+                                     .Build());
             }
         }
 
@@ -502,6 +584,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateLastCargo invoked by {User} (SOT: {SotGuid})", user, sot?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (sot == null || string.IsNullOrEmpty(sot.guid))
@@ -516,13 +599,22 @@ namespace IDMS.Inventory.GqlTypes
                 tank.last_cargo_remarks = sot.last_cargo_remarks;
 
                 if (sot.cleaning == null || !sot.cleaning.Any())
+                {
+                    _logger.LogError("Cleaning object cannot be null or empty.");
                     throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+                }
 
                 if (sot.tariff_cleaning == null || string.IsNullOrEmpty(sot.tariff_cleaning.cleaning_category_guid))
+                {
+                    _logger.LogError("Cleaning category guid cannot be null or empty.");
                     throw new GraphQLException(new Error($"Cleaning category guid cannot be null or empty", "ERROR"));
+                }
 
                 if (sot.storing_order == null || string.IsNullOrEmpty(sot.storing_order.customer_company_guid))
+                {
+                    _logger.LogError("Customer company guid cannot be null or empty.");
                     throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+                }
 
                 var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
                 var customerGuid = sot?.storing_order?.customer_company_guid;
@@ -540,11 +632,13 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateLastCargo saved changes {Count} for SOT {SotGuid}", res, sot?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateLastCargo failed for SOT {SotGuid}", sot?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -554,10 +648,14 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateCleanStatus invoked by {User} (SOT: {SotGuid})", user, sot?.guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (sot == null || string.IsNullOrEmpty(sot.guid))
+                {
+                    _logger.LogError("SOT object cannot be null or empty.");
                     throw new GraphQLException(new Error($"SOT object cannot be null or empty", "ERROR"));
+                }
 
                 var tank = new storing_order_tank() { guid = sot.guid };
                 context.Attach(tank);
@@ -568,11 +666,13 @@ namespace IDMS.Inventory.GqlTypes
                 tank.clean_status_remarks = sot.clean_status_remarks;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateCleanStatus saved changes {Count} for SOT {SotGuid}", res, sot?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateCleanStatus failed for SOT {SotGuid}", sot?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -582,6 +682,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTankSummaryDetails invoked by {User}", user);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (tankSummaryRequest.SOT != null && !string.IsNullOrEmpty(tankSummaryRequest?.SOT?.guid ?? ""))
@@ -676,11 +777,13 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTankSummaryDetails saved changes {Count}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTankSummaryDetails failed");
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -690,6 +793,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTankDetails invoked by {User}", user);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (tankDetailRequest != null)
@@ -698,8 +802,11 @@ namespace IDMS.Inventory.GqlTypes
                     if (!string.IsNullOrEmpty(tankDetailRequest?.SOT?.guid ?? ""))
                     {
                         if (string.IsNullOrEmpty(tankDetailRequest?.SOT?.unit_type_guid ?? ""))
+                        {
+                            _logger.LogError("unit_type_guid cannot be null or empty.");
                             throw new GraphQLException(new Error($"unit_type_guid cannot be null or empty", "ERROR"));
-
+                        }
+   
                         var tank = new storing_order_tank() { guid = tankDetailRequest?.SOT?.guid };
                         context.storing_order_tank.Attach(tank);
                         var unit_type_guid = tankDetailRequest?.SOT?.unit_type_guid;
@@ -710,7 +817,10 @@ namespace IDMS.Inventory.GqlTypes
                         //affect steaming, unit_type changes                        
                         var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
                         if (isFlatRate == null)
+                        {
+                            _logger.LogError("The expected FlatRate cannot be found.");
                             throw new GraphQLException(new Error($"The expected FlatRate cannot be found", "ERROR"));
+                        }
 
                         foreach (var item in tankDetailRequest?.Steaming ?? Enumerable.Empty<Steaming>())
                         {
@@ -768,18 +878,27 @@ namespace IDMS.Inventory.GqlTypes
                             igSurvey.tank_comp_guid = igSurveyRequest?.tank_comp_guid;
 
                             if (string.IsNullOrEmpty(tankDetailRequest?.SO?.customer_company_guid ?? ""))
+                            {
+                                _logger.LogError("SO.customer_company_guid cannot be null or empty.");
                                 throw new GraphQLException(new Error($"SO.customer_company_guid cannot be null or empty", "ERROR"));
+                            }
 
                             if (string.IsNullOrEmpty(tankDetailRequest?.Cleaning?.guid ?? ""))
+                            {
+                                _logger.LogError("CleaningGuid cannot be null or empty.");
                                 throw new GraphQLException(new Error($"CleaningGuid cannot be null or empty", "ERROR"));
+                            }
 
                             //affect cleaning, buffer changes
                             var customerGuid = tankDetailRequest?.SO?.customer_company_guid;
                             var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == igSurveyRequest.tank_comp_guid)
                                        .Select(b => b.cost).FirstOrDefaultAsync();
 
-                            if (bufferPrice == null)
+                            if (bufferPrice == null) 
+                            {
+                                _logger.LogError("Buffer cost not found.");
                                 throw new GraphQLException(new Error($"Buffer cost not found", "ERROR"));
+                            }
 
                             var cleaning = new cleaning() { guid = tankDetailRequest?.Cleaning?.guid };
                             context.cleaning.Attach(cleaning);
@@ -795,11 +914,13 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTankDetails saved changes {Count}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTankDetails failed");
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -809,6 +930,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateGateDetails invoked by {User}", user);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (gateDetailRequest.InGateDetail != null)
@@ -900,11 +1022,13 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateGateDetails saved changes {Count}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateGateDetails failed");
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -914,6 +1038,7 @@ namespace IDMS.Inventory.GqlTypes
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateTankInfo invoked by {User}", user);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (tankInfoRequest != null && TankInfoAction.REOWNERSHIP.EqualsIgnore(tankInfoRequest?.action))
@@ -922,7 +1047,11 @@ namespace IDMS.Inventory.GqlTypes
                     if (!string.IsNullOrEmpty(tankInfoRequest?.SOT?.guid ?? ""))
                     {
                         if (string.IsNullOrEmpty(tankInfoRequest?.SOT?.owner_guid ?? ""))
-                            throw new GraphQLException(new Error($"owner_guid cannot be null or empty", "ERROR"));
+                        {
+                            _logger.LogError("Owner_guid cannot be null or empty.");
+                            throw new GraphQLException(new Error($"Owner_guid cannot be null or empty", "ERROR"));
+                        }
+
 
                         var tank = new storing_order_tank() { guid = tankInfoRequest?.SOT?.guid };
                         context.storing_order_tank.Attach(tank);
@@ -933,7 +1062,10 @@ namespace IDMS.Inventory.GqlTypes
 
                         var tankInfoObject = tankInfoRequest?.TankInfo;
                         if (string.IsNullOrEmpty(tankInfoObject?.guid ?? "") || string.IsNullOrEmpty(tankInfoObject?.tank_no ?? ""))
+                        {
+                            _logger.LogError("tank_info guid/tank_no cannot be null or empty.");
                             throw new GraphQLException(new Error($"tank_info guid/tank_no cannot be null or empty", "ERROR"));
+                        }
 
                         var tank_info = await context.tank_info.Where(t => t.guid == tankInfoObject.guid && t.tank_no == tankInfoObject.tank_no
                                                                 && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
@@ -946,7 +1078,10 @@ namespace IDMS.Inventory.GqlTypes
                             tank_info.update_dt = currentDateTime;
                         }
                         else
+                        {
+                            _logger.LogError("tank info not found.");
                             throw new GraphQLException(new Error($"tank info not found", "NOT FOUND"));
+                        }
                     }
                 }
 
@@ -986,15 +1121,20 @@ namespace IDMS.Inventory.GqlTypes
                         oldTankInfo.delete_dt = currentDateTime;
                     }
                     else
+                    {
+                        _logger.LogError("tank info not found.");
                         throw new GraphQLException(new Error($"tank info not found", "NOT FOUND"));
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTankInfo saved changes {Count}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTankInfo failed");
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
 
@@ -1005,6 +1145,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                _logger.LogInformation("RemoveCleaning started (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
                 string currentTankStatus = tank.tank_status_cv;
                 bool hasPendingResidue = false;
 
@@ -1085,7 +1226,10 @@ namespace IDMS.Inventory.GqlTypes
                             sot.purpose_repair_cv = "";
                     }
                     else
+                    {
+                        _logger.LogError("Tank not found.");
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
+                    }
                 }
                 else
                 {
@@ -1095,23 +1239,24 @@ namespace IDMS.Inventory.GqlTypes
                     sot.update_dt = currentDateTime;
                     sot.cleaning_remarks = tank.cleaning_remarks;
                     sot.purpose_cleaning = false;
-                    //var res = await context.SaveChangesAsync();
-                    //return res;
                 }
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.NotificationHandling(config, PurposeType.CLEAN, tank.guid, currentTankStatus);
+                _logger.LogInformation("RemoveCleaning completed (SOT: {SotGuid})", tank?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "RemoveCleaning failed (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
         private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
             {
+                _logger.LogInformation("RemoveSteaming started (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
                 string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
@@ -1152,7 +1297,10 @@ namespace IDMS.Inventory.GqlTypes
                         currentTankStatus = sot.tank_status_cv;
                     }
                     else
+                    {
+                        _logger.LogError("Tank not found.");
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
+                    }
                 }
                 else
                 {
@@ -1167,11 +1315,13 @@ namespace IDMS.Inventory.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, currentTankStatus);
+                _logger.LogInformation("RemoveSteaming completed (SOT: {SotGuid})", tank?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "RemoveSteaming failed (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
         private async Task<int> RemoveRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank, ResidueRequest? residueRequest)
@@ -1182,11 +1332,9 @@ namespace IDMS.Inventory.GqlTypes
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     bool pendingJob = false;
-                    //var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
                     var repairs = await context.repair.Where(r => r.sot_guid == tank.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
                     foreach (var rep in repairs)
                     {
-                        //Process handling
                         rep.update_by = user;
                         rep.update_dt = currentDateTime;
                         rep.na_dt = currentDateTime;
@@ -1225,17 +1373,7 @@ namespace IDMS.Inventory.GqlTypes
                         pendingResidue.update_dt = currentDateTime;
                         pendingResidue.na_dt = currentDateTime;
                         pendingResidue.status_cv = CurrentServiceStatus.NO_ACTION;
-
-                        //foreach (var partGuid in residueRequest.residue_part_guid)
-                        //{
-                        //    var resPart = new residue_part() { guid = partGuid };
-                        //    context.Set<residue_part>().Attach(resPart);
-                        //    resPart.approve_part = false;
-                        //    resPart.update_dt = currentDateTime;
-                        //    resPart.update_by = user;
-                        //}
                     }
-                    //Save the changes before do tank movement check
                     await context.SaveChangesAsync();
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
@@ -1249,7 +1387,10 @@ namespace IDMS.Inventory.GqlTypes
                         currentTankStatus = sot.tank_status_cv;
                     }
                     else
+                    {
+                        _logger.LogError("Tank not found.");
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
+                    }
                 }
                 else
                 {
@@ -1263,12 +1404,14 @@ namespace IDMS.Inventory.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.NotificationHandling(config, PurposeType.REPAIR, tank.guid, currentTankStatus);
+                _logger.LogInformation("RemoveRepair completed (SOT: {SotGuid})", tank?.guid);
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "RemoveRepair failed (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
         private async Task<int> RemoveStorage(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
@@ -1290,7 +1433,10 @@ namespace IDMS.Inventory.GqlTypes
 
                     }
                     else
+                    {
+                        _logger.LogError("Tank not found.");
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
+                    }
                 }
                 else
                 {
@@ -1304,11 +1450,13 @@ namespace IDMS.Inventory.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.NotificationHandling(config, PurposeType.STORAGE, tank.guid, currentTankStatus);
+                _logger.LogInformation("RemoveStorage completed (SOT: {SotGuid})", tank?.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "RemoveStorage failed (ProcessGuid: {ProcessGuid}, SOT: {SotGuid})", processGuid, tank?.guid);
+                throw new GraphQLException(ErrorBuilder.New().SetMessage(ex.Message).SetCode(graphqlErrorCode).Build());
             }
         }
         private async Task<bool> StatusChangeConditionCheck(List<job_order> jobOrders)
@@ -1317,10 +1465,10 @@ namespace IDMS.Inventory.GqlTypes
             allValid = jobOrders.All(jO => jO.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
                     jO.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
 
-            // If all are canceled, set allValid to false
             if (allValid && jobOrders.All(jO => jO.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED)))
                 allValid = false;
 
+            _logger.LogDebug("StatusChangeConditionCheck result: {Result} for {Count} job orders", allValid, jobOrders?.Count ?? 0);
             return allValid;
         }
 

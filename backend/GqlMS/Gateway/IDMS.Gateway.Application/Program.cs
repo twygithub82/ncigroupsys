@@ -42,13 +42,14 @@ app.UseAuthorization();
 //app.MapControllers();
 //app.UseWebSockets();
 
-app.UseCors("AllowAll");
-app.UseRouting()
-          //.UseWebSockets()
-          .UseEndpoints(endpoints =>
-          {
-              endpoints.MapGraphQL();
-          });
+//app.UseCors("AllowAll");
+//app.UseRouting()
+//          //.UseWebSockets()
+//          .UseEndpoints(endpoints =>
+//          {
+//              endpoints.MapGraphQL();
+//          });
+app.MapGraphQL();
 app.Run();
 
 

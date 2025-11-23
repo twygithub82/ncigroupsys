@@ -222,11 +222,11 @@
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.DESCRIPTION}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
                       <span class="mobile-label-value">{{row.description}}</span>
                     </mat-cell>
@@ -434,30 +434,6 @@
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                       <span class="mobile-label"></span>
                       {{this.getTotalLabourCost()}}
-                    </mat-footer-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-0"
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row;"
-                      class="tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
-                      @if (steamDS.canAmend(this.steamItem!)) {
-                      @if (!row.delete_dt){
-                      <button mat-icon-button (click)="handleDelete($event, row, row.index)">
-                        <mat-icon color="warn">delete_forever</mat-icon>
-                      </button>
-                      }
-                      @if (row.delete_dt) {
-                      <button mat-icon-button (click)="undeleteItem($event, row, row.index)">
-                        <mat-icon>undo</mat-icon>
-                      </button>
-                      }
-                      }
-                    </mat-cell>
-                    <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
                   </ng-container>
 

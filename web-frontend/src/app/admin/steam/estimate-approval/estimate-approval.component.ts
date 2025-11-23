@@ -982,7 +982,14 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             }
           }
           else {
-            net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+            var isApproved = true;
+            isApproved = BusinessLogicUtil.isEstimateApproved(stm);
+            if (isApproved) {
+              net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+            }
+            else {
+              net_cost = this.displayNumber(this.steamDS.getTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+            }
           }
 
           return { ...stm, net_cost: net_cost };

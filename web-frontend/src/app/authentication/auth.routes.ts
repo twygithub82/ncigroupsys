@@ -10,7 +10,7 @@ import { ResetPasswordComponent } from "./reset-password/reset-password.componen
 export const AUTH_ROUTE: Route[] = [
   {
     path: "",
-    redirectTo: "signin-staff",
+    redirectTo: "signin",
     pathMatch: "full",
   },
   // {
@@ -18,7 +18,7 @@ export const AUTH_ROUTE: Route[] = [
   //   component: SigninComponent,
   // },
   {
-    path: "signin-staff",
+    path: "signin",
     component: SigninStaffComponent,
   },
   {
