@@ -51,6 +51,8 @@ namespace IDMS.Master.Application
                 var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
                 string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "5";
 
+                Log.Information($"Using connection server: {connectionString.Split(";")[0]}");
+
                 builder.Services.AddPooledDbContextFactory<ApplicationMasterDBContext>(o =>
                 {
                     o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
