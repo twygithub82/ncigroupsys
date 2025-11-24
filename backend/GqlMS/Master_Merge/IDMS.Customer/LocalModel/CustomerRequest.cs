@@ -31,6 +31,7 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public string? def_tank_guid { get; set; }
         public string? main_customer_guid { get; set; }
         public int? approval_threshold { get; set; }
+
         [NotMapped]
         public string? action { get; set; }
     }
