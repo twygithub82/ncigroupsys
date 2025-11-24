@@ -13,6 +13,7 @@ namespace ServiceWarmUpAgent
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddEnvironmentVariables();  // <-- REQUIRED
                 })
                 .ConfigureServices((context, services) =>
                 {
