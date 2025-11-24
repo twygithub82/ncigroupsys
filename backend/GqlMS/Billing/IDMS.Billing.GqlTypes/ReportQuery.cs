@@ -1,17 +1,18 @@
-﻿using HotChocolate.Types;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
+using HotChocolate.Types;
 using IDMS.Billing.Application;
-using IDMS.Models.DB;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Billing.GqlTypes.LocalModel;
-using IDMS.Models.Tariff;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Service;
+using IDMS.Models.DB;
 using IDMS.Models.Parameter;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
-using CommonUtil.Core.Service;
+using IDMS.Models.Tariff;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 
 namespace IDMS.Billing.GqlTypes
@@ -19,6 +20,13 @@ namespace IDMS.Billing.GqlTypes
     [ExtendObjectType(typeof(BillingQuery))]
     public class ReportQuery
     {
+        private readonly ILogger<ReportQuery> _logger;
+
+        public ReportQuery(ILogger<ReportQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -128,7 +136,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryCleaningInventorySummary");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -222,7 +231,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryPeriodicTestDueSummary");   
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -317,7 +327,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryDailyTankSurveySummary");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -427,7 +438,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryDailyInventorySummary");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -538,7 +550,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryDailyInventorySummary");    
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

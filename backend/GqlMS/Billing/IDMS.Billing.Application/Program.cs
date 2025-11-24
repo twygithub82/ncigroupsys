@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
+using System;
 using System.Text;
 
 namespace IDMS.Billing.Applicaton
@@ -29,6 +30,8 @@ namespace IDMS.Billing.Applicaton
             var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
             var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
             var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
+
+            var TimeZoneId = builder.Configuration.GetValue<string>("TimeZoneId");
 
             builder.Services.AddPooledDbContextFactory<ApplicationBillingDBContext>(o =>
             {
@@ -91,7 +94,9 @@ namespace IDMS.Billing.Applicaton
             // Log startup information and protect Run with logging for unhandled exceptions
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Starting Billing GraphQL service");
-            logger.LogInformation(TimeZoneInfo.Local.DisplayName);
+            logger.LogInformation($"System default: {TimeZoneInfo.Local.DisplayName}");
+            logger.LogInformation($"Configured TimeZoneId: {TimeZoneId}");
+            logger.LogInformation($"Database connection: {connectionString.Split(";")[0]}");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

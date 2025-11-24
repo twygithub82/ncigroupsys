@@ -1,23 +1,32 @@
-﻿using HotChocolate.Types;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
-using Microsoft.Extensions.Configuration;
-using IDMS.Models.DB;
-using Microsoft.AspNetCore.Http;
-using IDMS.Models.Billing;
+using HotChocolate.Types;
 using IDMS.Billing.Application;
-using IDMS.Billing.GqlTypes.LocalModel;
-using Microsoft.EntityFrameworkCore;
-using CommonUtil.Core.Service;
-using IDMS.Models.Tariff;
-using IDMS.Models.Parameter;
 using IDMS.Billing.GqlTypes.BillingResult;
+using IDMS.Billing.GqlTypes.LocalModel;
+using IDMS.Models.Billing;
+using IDMS.Models.DB;
+using IDMS.Models.Parameter;
 using IDMS.Models.Shared;
+using IDMS.Models.Tariff;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 
 namespace IDMS.Billing.GqlTypes
 {
     public class BillingQuery
     {
+        private readonly ILogger<BillingQuery> _logger;
+
+        public BillingQuery(ILogger<BillingQuery> logger)
+        {
+            _logger = logger;
+        }
+
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -32,6 +41,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryBilling");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
@@ -50,6 +60,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryBillingSOT");   
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
@@ -68,6 +79,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryStorageDetail");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
