@@ -9,13 +9,15 @@ import { JobOrderAllocationResidueDisposalComponent } from "./job-order-allocati
 import { ResidueJobOrderTaskDetailsComponent } from "./job-order-task-details/job-order-task-details.component";
 import { JobOrderResidueDisposalComponent } from "./job-order/job-order.component";
 import { AuthGuard } from "@core/guard/auth.guard";
+import { ResidueDisposalEstimateApprovalClientComponent } from "./client-approval/client-approval.component";
+import { ResidueDisposalEstimateApprovalClientNewComponent } from "./client-approval-new/client-approval-new.component";
 
 export const RESIDUE_DISPOSAL_ROUTE: Routes = [
   {
     path: "estimate-approval",
     component: ResidueDisposalEstimateApprovalComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'] }
+    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'] }
   },
   //  {
   //   path: "estimate-approval/:id",
@@ -27,7 +29,19 @@ export const RESIDUE_DISPOSAL_ROUTE: Routes = [
     path: "estimate-approval/new/:id",
     component: ResidueDisposalEstimateApprovalNewComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'] }
+    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'] }
+  },
+  {
+    path: "client-approval",
+    component: ResidueDisposalEstimateApprovalClientComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'] }
+  },
+  {
+    path: "client-approval/new/:id",
+    component: ResidueDisposalEstimateApprovalClientNewComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'] }
   },
   {
     path: "job-order",

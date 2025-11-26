@@ -30,7 +30,6 @@ namespace IDMS.Billing.GqlTypes
         }
 
         #region Performance Report
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -647,7 +646,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryCustomerMonthlySalesReport failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -804,7 +803,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryMonthlySalesReport failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -944,7 +943,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryYearlySalesReport failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -957,7 +956,11 @@ namespace IDMS.Billing.GqlTypes
 
                 //List<string> process = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.RESIDUE}" };
                 if (!ProcessType.ProcessList.ContainsIgnore(monthlyProcessRequest.report_type))
+                {
+                    _logger.LogWarning("QueryMonthlyProcessReport failed: Invalid Report Type={ReportType}", monthlyProcessRequest.report_type);
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
+                }
+
 
                 int year = monthlyProcessRequest.year;
                 int month = monthlyProcessRequest.month;
@@ -1047,7 +1050,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryMonthlyProcessReport failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1155,7 +1158,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryYearlyProcessReport failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1255,7 +1258,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "RetriveProcessInventoryResult failed");
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1526,7 +1529,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "RetriveSalesResult failed");
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1689,12 +1692,13 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tr => dailyTeamRevenueRequest.team.Contains(tr.team));
                 }
 
+                _logger.LogInformation("QueryDailyTeamRevenue Completed");
                 return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.approved_date).ToListAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryDailyTeamRevenue failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1789,7 +1793,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryDailyTeamApproval failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1936,12 +1940,13 @@ namespace IDMS.Billing.GqlTypes
 
                 //return result;
 
+                _logger.LogInformation("QueryDailyQCDetail Completed");
                 return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.qc_date).ToListAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryDailyQCDetail failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1962,8 +1967,11 @@ namespace IDMS.Billing.GqlTypes
 
                 // Check if all elements in inputList are within the process list
                 if (!ProcessType.ProcessList.ContainsIgnore(zeroApprovalRequest.report_type))
+                {
+                    _logger.LogWarning("Invalid Report Type");
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
-
+                }
+              
                 int year = zeroApprovalRequest.year;
                 int month = zeroApprovalRequest.month;
 
@@ -2086,7 +2094,7 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "QueryZeroApprovalCost failed");
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

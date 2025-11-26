@@ -1435,6 +1435,113 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE_CLIENT = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        etr_dt
+        guid
+        job_no
+        owner_guid
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        update_by
+        update_dt
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          customer_company {
+            guid
+            code
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+          in_gate_survey {
+            next_test_cv
+            last_test_cv
+            test_class_cv
+            test_dt
+            update_by
+            update_dt
+            delete_dt
+          }
+        }
+        residue(where: { delete_dt: { eq: null }, status_cv: { eq: "PENDING" } }) {
+          estimate_no
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          bill_to_guid
+          complete_by
+          complete_dt
+          delete_dt
+          guid
+          job_no
+          remarks
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          storing_order_tank {
+            storing_order {
+              customer_company_guid
+            }
+          }
+          residue_part {
+            action
+            approve_part
+            approve_cost
+            approve_qty
+            qty_unit_type_cv
+            cost
+            delete_dt
+            description
+            guid
+            quantity
+            tariff_residue_guid
+            tariff_residue {
+              description
+              guid
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -1464,7 +1571,6 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
         tank_status_cv
         update_by
         update_dt
-       
         tank {
           create_by
           create_dt
@@ -1838,7 +1944,6 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
                 type_cv
             }
             storing_order {
-              
               customer_company {
                 code
                 currency_guid
@@ -5022,6 +5127,32 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksResidueEstimateClient(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE_CLIENT,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

@@ -52,7 +52,7 @@ namespace IDMS.Survey.GqlTypes
                     //Add the newly created guid into list for return
                     retGuids.Add(outgateSurvey.guid);
 
-                    _logger.LogDebug("Created out_gate_survey guid={Guid}", outgateSurvey.guid);
+                    _logger.LogInformation("Created out_gate_survey guid={Guid}", outgateSurvey.guid);
 
                     //Outgate handling
                     var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid && i.delete_dt == null).FirstOrDefaultAsync();
@@ -107,7 +107,6 @@ namespace IDMS.Survey.GqlTypes
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-
                     _logger.LogError(ex, "Error in AddOutGateSurvey for OutGateGuid={OutGateGuid}", outGateRequest?.guid);
                     throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
@@ -129,19 +128,22 @@ namespace IDMS.Survey.GqlTypes
                     var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     long currentDateTime = DateTime.Now.ToEpochTime();
 
+                    _logger.LogInformation("User {User} updating out gate survey {OGSurveyGuid}", user, outGateSurveyRequest?.guid);
+
                     out_gate_survey? outgateSurvey = await context.out_gate_survey.Where(i => i.guid == outGateSurveyRequest.guid &&
                                                                                      (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                     if (outgateSurvey == null)
                     {
                         _logger.LogWarning("Outgate survey not found for guid={OGSurveyGuid}", outGateSurveyRequest?.guid);
-                        throw new GraphQLException(new Error("Outgate survey not found.", "ERROR"));
+                        throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
                     }
 
                     if (outgateSurvey.out_gate_guid == null)
                     {
-                        _logger.LogWarning("Outgate guid is null for outgate survey guid={OGSurveyGuid}", outGateSurveyRequest?.guid);
+                        _logger.LogWarning("Outgate survey {OGSurveyGuid} has null out_gate_guid", outGateSurveyRequest?.guid);
                         throw new GraphQLException(new Error("Outgate guid cant be null.", "ERROR"));
                     }
+
 
                     mapper.Map(outGateSurveyRequest, outgateSurvey);
 
@@ -194,6 +196,8 @@ namespace IDMS.Survey.GqlTypes
                     sot.update_dt = currentDateTime;
 
                     retval = await context.SaveChangesAsync();
+
+                    _logger.LogInformation("UpdateOutGateSurvey saved, affected={Affected}", retval);
 
                     //Tank info handling
                     var tankDetail = new TankDetail();
@@ -272,6 +276,8 @@ namespace IDMS.Survey.GqlTypes
                     var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     long currentDateTime = DateTime.Now.ToEpochTime();
 
+                    _logger.LogInformation("User {User} publishing outgate survey for OutGateGuid={OutGateGuid}", user, outGateRequest?.guid);
+
                     var outgate = new out_gate() { guid = outGateRequest.guid };
                     context.Attach(outgate);
 
@@ -341,6 +347,8 @@ namespace IDMS.Survey.GqlTypes
                     tf.update_by = user;
                     tf.update_dt = currentDateTime;
                     await context.AddAsync(tf);
+
+                    _logger.LogInformation("Added new tank_info guid={Guid} tank_no={TankNo}", tf.guid, tf.tank_no);
                 }
                 else
                 {
@@ -354,7 +362,7 @@ namespace IDMS.Survey.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                _logger.LogDebug("AddTankInfo SaveChanges affected={Affected}", res);
+                _logger.LogInformation("AddTankInfo SaveChanges affected={Affected}", res);
                 //return res;
             }
             catch (Exception ex)

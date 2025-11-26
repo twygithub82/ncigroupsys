@@ -1420,7 +1420,6 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
           update_by
           update_dt
           storing_order {
-            
             customer_company {
               code
               name
@@ -1475,6 +1474,68 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
             description
             unit_type
           }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_REPAIR_FOR_CLIENT = gql`
+  query QueryRepair($where: repairFilterInput, $order: [repairSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryRepair(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        complete_dt
+        delete_dt
+        estimate_no
+        guid
+        labour_cost
+        labour_cost_discount
+        material_cost_discount
+        owner_enable
+        remarks
+        sot_guid
+        status_cv
+        total_cost
+        est_cost
+        total_labour_cost
+        total_material_cost
+        update_by
+        update_dt
+        approve_dt
+        storing_order_tank {
+          guid
+          job_no
+          tank_no
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+          in_gate (where: { delete_dt: { eq: null } }) {
+            eir_dt
+            delete_dt
+          }
+        }
+        repair_part {
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          material_cost
+          quantity
+          hour
         }
       }
       pageInfo {
@@ -1790,6 +1851,32 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchRepairForClient(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_FOR_CLIENT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as RepairItem[]); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const resultList = result.resultList || { nodes: [], totalCount: 0 };

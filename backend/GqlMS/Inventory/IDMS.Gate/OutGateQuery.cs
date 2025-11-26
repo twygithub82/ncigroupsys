@@ -1,21 +1,24 @@
-﻿using HotChocolate.Authorization;
-using IDMS.Models;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Identity;
+﻿using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
-using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Inventory.GqlTypes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace IDMS.Gate.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class OutGateQuery
     {
+        private readonly ILogger<OutGateQuery> _logger;
+
+        public OutGateQuery(ILogger<OutGateQuery> logger)
+        {
+            _logger = logger;
+        }
+
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -31,18 +34,10 @@ namespace IDMS.Gate.GqlTypes
                 query = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                         .Where(i => i.tank != null && (i.tank.delete_dt == null || i.tank.delete_dt == 0))
                 .Include(s => s.tank)
-                    //.ThenInclude(t => t.tank_info)
-                //.Include(s => s.tank.storing_order)
-                //    .ThenInclude(c => c.customer_company)
-                //.Include(s => s.tank.tariff_cleaning)
-                //.Include(s => s.tank.tariff_cleaning.cleaning_method)
-                //.Include(s => s.tank.tariff_cleaning.cleaning_category)
-                //.Include(s => s.tank.in_gate)
-                //    .ThenInclude(i => i.in_gate_survey)
-                //.Include(s => s.out_gate_survey)
                 .Include(s => s.tank.release_order_sot)
                     .ThenInclude(r => r.release_order).AsSplitQuery();
 
+                int processed = 0;
                 foreach (var q in query)
                 {
                     if (q.tank != null)
@@ -53,12 +48,15 @@ namespace IDMS.Gate.GqlTypes
                             if (ro != null)
                                 q.haulier = ro.haulier;
                         }
+                    processed++;
                 }
+
+                _logger.LogInformation("QueryInGates and processed {Count} records", processed);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryOutGates");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
             return query;

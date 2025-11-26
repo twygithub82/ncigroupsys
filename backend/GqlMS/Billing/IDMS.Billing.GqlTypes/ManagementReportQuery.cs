@@ -13,6 +13,7 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using TimeZoneConverter;
@@ -22,6 +23,14 @@ namespace IDMS.Billing.GqlTypes
     [ExtendObjectType(typeof(BillingQuery))]
     public class ManagementReportQuery
     {
+        private readonly ILogger<ManagementReportQuery> _logger;
+
+        public ManagementReportQuery(ILogger<ManagementReportQuery> logger)
+        {
+            _logger = logger;
+        }
+
+
         #region InventoryReport
         public async Task<YearlyInventoryResult?> QueryYearlyInventory(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, YearlyInventoryRequest yearlyInventoryRequest)
@@ -120,11 +129,13 @@ namespace IDMS.Billing.GqlTypes
                     }
                 }
 
+                _logger.LogInformation("Successfully queried yearly inventory report.");
                 return yearlyInventoryResult;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryYearlyInventory");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -286,11 +297,14 @@ namespace IDMS.Billing.GqlTypes
                     //    monthlyInventoryResult.gate_in_out_inventory = gateInOutInventoryResult;
                     //}
                 }
+
+                _logger.LogInformation("Successfully queried monthly inventory report.");
                 return monthlyInventoryResult;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryMonthlyInventory");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -771,7 +785,6 @@ namespace IDMS.Billing.GqlTypes
                 long sDate = orderTrackingRequest.start_date;
                 long eDate = orderTrackingRequest.end_date;
 
-
                 IQueryable<OrderTrackingResult> query;
 
                 if (orderTrackingRequest.order_type.EqualsIgnore("ro"))
@@ -881,11 +894,14 @@ namespace IDMS.Billing.GqlTypes
 
                 var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
                 resultList.ForEach(result => result.CompileFinalPurpose());
+
+                _logger.LogInformation($"QueryOrderTracking returned {resultList.Count} records.");
                 return resultList;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryOrderTracking");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1032,11 +1048,13 @@ namespace IDMS.Billing.GqlTypes
                 })
                 .ToList();
 
+                _logger.LogInformation($"QueryDepotPerformance returned {result.Count} records.");
                 return result;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryDepotPerformance");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -1188,10 +1206,12 @@ namespace IDMS.Billing.GqlTypes
 
                 }
 
+                _logger.LogInformation($"QueryMonthlyRevenue returned revenue report for {year}-{month}.");
                 return monthlyRevenueResult;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryMonthlyRevenue");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -1346,11 +1366,13 @@ namespace IDMS.Billing.GqlTypes
                     }
                 }
 
+                _logger.LogInformation($"QueryYearlyRevenue returned revenue report for {year}.");
                 return yearlyRevenueResult;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryYearlyRevenue");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         private async Task<(List<TempRevenueResult>?, List<TempRevenueResult>?)> ProcessRevenueResults(ApplicationBillingDBContext context, IQueryable<TempRevenueResult> query, string inventoryType,

@@ -3,6 +3,7 @@ using gateway_graphql_ms.GqlTypes;
 using HotChocolate.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +54,7 @@ app.MapGraphQL();
 app.Run();
 
 
-void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
+async Task ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
 {
     // Bind configuration to strongly typed class
     bool allowIntrospection = bool.Parse(configuration.GetSection("AllowIntrospection").Value);
@@ -85,8 +86,9 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     {
         try
         {
-            //Task.Run(() => server.AddRemoteSchema(service.Key.ToLower()));
+            //var t = Task.Run(() => server.AddRemoteSchema(service.Key.ToLower()));
             server.AddRemoteSchema(service.Key.ToLower());
+            //await t;
         }
         catch (Exception ex)
         {
@@ -95,7 +97,8 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     }
 
     //localSDL.Add("local", "https://tlxidmsstorage.blob.core.windows.net/files/config/schema.graphql");
-    //server.AddRemoteSchemaFromFile("SDL", "schema.graphql");
+    //server.AddRemoteSchemaFromFile("SDL", "graphql/schema.graphql");
+    //server.AddRemoteSchemaFromFile("SDL", "https://tlxidmsstorage.blob.core.windows.net/files/config/schema.graphql");
     server.InitializeOnStartup(keepWarm: true);
 
     // Add other services and configurations as needed

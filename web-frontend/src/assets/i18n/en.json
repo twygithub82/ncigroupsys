@@ -212,7 +212,8 @@
         "JOB": "Job",
         "JOB-ORDER": "Job Order",
         "JOB-ORDER-ALLOCATION": "Job Order Allocation",
-        "QC-DETAILS": "QC Details"
+        "QC-DETAILS": "QC Details",
+        "CLIENT-APPROVAL": "Approval"
       }
     },
     "CLEANING": {
@@ -229,7 +230,8 @@
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
         "JOB-ORDER": "Job Order",
-        "JOB": "Job"
+        "JOB": "Job",
+        "CLIENT-APPROVAL": "Approval"
       }
     },
     "STEAM": {
@@ -242,7 +244,7 @@
         "JOB": "Job",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate",
-        "APPROVAL": "Approval"
+        "CLIENT-APPROVAL": "Approval"
       }
     },
     "BILLING": {

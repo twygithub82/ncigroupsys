@@ -8,6 +8,8 @@ import { JobOrderAllocationComponent } from "./job-order-allocation/job-order-al
 import { JobOrderTaskDetailsComponent } from "./job-order-task-details/job-order-task-details.component";
 import { JobOrderComponent } from "./job-order/job-order.component";
 import { AuthGuard } from "@core/guard/auth.guard";
+import { RepairApprovalClientComponent } from "./client-approval/client-approval.component";
+import { RepairApprovalClientViewComponent } from "./client-approval-view/client-approval-view.component";
 
 export const REPAIR_ROUTE: Routes = [
   {
@@ -51,6 +53,18 @@ export const REPAIR_ROUTE: Routes = [
     component: RepairApprovalViewComponent,
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
+  },
+  {
+    path: "client-approval",
+    component: RepairApprovalClientComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
+  },
+  {
+    path: "client-approval/view/:id",
+    component: RepairApprovalClientViewComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
   },
   {
     path: "job-order",

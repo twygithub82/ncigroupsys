@@ -8,12 +8,20 @@ using IDMS.StoringOrder.GqlTypes.CustomSorter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class SOQuery
     {
+        private readonly ILogger<SOQuery> _logger;
+
+        public SOQuery(ILogger<SOQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -23,16 +31,16 @@ namespace IDMS.StoringOrder.GqlTypes
         {
             try
             {
-                Console.WriteLine($"{DateTime.Now.ToString("yyyy-MMM-dd HH:mm:ss.ffff")} - QueryStoringOrder");
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-            // _=  await GqlUtils.IsAuthorize_R1(config, httpContextAccessor);
+
                 return context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                      .Include(so => so.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0))
                      .Include(so => so.customer_company);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryStoringOrder");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -51,7 +59,8 @@ namespace IDMS.StoringOrder.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryStoringOrderById for id={Id}", id);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -70,16 +79,10 @@ namespace IDMS.StoringOrder.GqlTypes
                     .Include(tf => tf.tariff_cleaning)
                     .Include(d => d.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0))
                     .Include(bk => bk.booking.Where(b => b.booking_dt == null || b.delete_dt == 0));
-                    
-                //return context.storing_order_tank
-                //    .Where(d => (d.delete_dt == null || d.delete_dt == 0) &&
-                //                (d.tariff_cleaning.delete_dt == null || d.tariff_cleaning.delete_dt == 0))
-                //    .Include(so => so.storing_order)
-                //    .Include(tf => tf.tariff_cleaning)
-                //    .Include(bk => bk.booking);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryStoringOrderTank");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
@@ -99,6 +102,7 @@ namespace IDMS.StoringOrder.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in QueryStoringOrderTankCount");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }

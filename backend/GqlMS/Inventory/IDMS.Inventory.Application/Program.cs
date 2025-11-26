@@ -48,8 +48,10 @@ namespace IDMS.Inventory
                 var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value?.ToString();
                 var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
                 string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
+                var gNotificationUrl = builder.Configuration.GetSection("GlobalNotificationURL").Value ?? "";   
 
                 connectionString += ";ConnectionIdlePingTime=30;";   // 30 seconds
+
 
                 builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
                 {
@@ -148,6 +150,9 @@ namespace IDMS.Inventory
                 var app = builder.Build();
                 logger = app.Services.GetRequiredService<ILogger<Program>>();
                 logger.LogInformation("Application built; starting middleware.");
+
+                logger?.LogInformation($"Dabatase Connection: {connectionString.Split(";")[0]}");
+                logger?.LogInformation($"Notification Url: {gNotificationUrl}");
 
                 //Specially created to solve slow after idle for sometime
                 //GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));

@@ -94,8 +94,7 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     'estimate_no',
     'net_cost',
     'status_cv',
-    'remarks',
-    'actions'
+    'remarks'
   ];
 
   pageTitle = 'MENUITEMS.STEAM.LIST.APPROVAL'
@@ -205,7 +204,7 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
 
   isMobile = false;
 
-  pageStateType = 'SteamEstimateApproval'
+  pageStateType = 'SteamEstimateApprovalClient'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
@@ -273,8 +272,8 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
   private updateView(width: number): void {
     this.isMobile = width < 768;
     this.displayedColumns = this.isMobile
-      ? ['estimate_no', 'status_cv', 'actions']
-      : ['estimate_no', 'net_cost', 'status_cv', 'remarks', 'actions'];
+      ? ['estimate_no', 'status_cv']
+      : ['estimate_no', 'net_cost', 'status_cv', 'remarks'];
   }
 
   refresh() {

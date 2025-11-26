@@ -1,18 +1,13 @@
-﻿using AutoMapper;
-using CommonUtil.Core.Service;
-using HotChocolate.Authorization;
+﻿using CommonUtil.Core.Service;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Models.Shared;
-using IDMS.Survey.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
 
 
 namespace IDMS.Gate.GqlTypes
@@ -20,6 +15,13 @@ namespace IDMS.Gate.GqlTypes
     [ExtendObjectType(typeof(InventoryMutation))]
     public class OutGateMutation
     {
+        private readonly ILogger<OutGateMutation> _logger;
+
+        public OutGateMutation(ILogger<OutGateMutation> logger)
+        {
+            _logger = logger;
+        }
+
         //[Authorize]
         public async Task<Record> AddOutGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,
             out_gate OutGate, release_order ReleaseOrder, bool hasOutSurvey = true)
@@ -33,7 +35,10 @@ namespace IDMS.Gate.GqlTypes
                 {
                     var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     if (OutGate.tank == null || string.IsNullOrEmpty(OutGate.so_tank_guid))
+                    {
+                        _logger.LogError("Storing order tank cannot be null");
                         throw new GraphQLException(new Error("Storing order tank cannot be null", "Error"));
+                    }
 
                     var currentDate = DateTime.Now.ToEpochTime();
                     var newGuid = (string.IsNullOrEmpty(OutGate.guid) ? Util.GenerateGUID() : OutGate.guid);
@@ -56,6 +61,9 @@ namespace IDMS.Gate.GqlTypes
                         vehicle_no = OutGate.vehicle_no,
                         remarks = OutGate.remarks,
                     };
+
+                    _logger.LogDebug("Prepared new out_gate guid={Guid} eir_no={EirNo}", newOutGate.guid, newOutGate.eir_no);
+
                     await context.out_gate.AddAsync(newOutGate);
 
                     //SOT Handling -------------------------------------
@@ -78,10 +86,13 @@ namespace IDMS.Gate.GqlTypes
                             roSOT.status_cv = SOTankStatus.ACCEPTED;
                             roSOT.update_by = user;
                             roSOT.update_dt = currentDate;
+
+                            _logger.LogDebug("Marked release_order_sot guid={RoSotGuid} as ACCEPTED", item.guid);
                         }
                     }
                     //save change before check RO status based on roSOT
                     retval = await context.SaveChangesAsync();
+                    _logger.LogInformation("AddOutGate initial SaveChanges affected={Affected}", retval);
 
                     var RO = new release_order() { guid = ReleaseOrder.guid };
                     context.Attach(RO);
@@ -91,6 +102,7 @@ namespace IDMS.Gate.GqlTypes
                     if (!string.IsNullOrEmpty(OutGate.haulier))
                         RO.haulier = OutGate.haulier;
                     _ = await context.SaveChangesAsync();
+                    _logger.LogInformation("Updated release_order guid={RoGuid} status={Status}", ReleaseOrder.guid, RO.status_cv);
 
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
@@ -98,7 +110,7 @@ namespace IDMS.Gate.GqlTypes
 
                     if (config != null)
                     {
-                        string evtId = EventId.NEW_OUTGATE;
+                        string evtId = Models.EventId.NEW_OUTGATE;
                         string evtName = EventName.NEW_OUTGATE;
 
                         int count = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
@@ -106,13 +118,16 @@ namespace IDMS.Gate.GqlTypes
                         GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
                         string notification_uid = $"out-gate-{newOutGate.eir_no}";
                         GqlUtils.AddAndTriggerStaffNotification(config, 3, "out-gate", "new out-gate was check-out", notification_uid);
+
+                        _logger.LogDebug("Sent notification for new outgate eir_no={EirNo} count={Count}", newOutGate.eir_no, count);
                     }
                 }
                 catch (Exception ex)
                 {
                     // Rollback the transaction if any errors occur
                     await transaction.RollbackAsync();
-                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                    _logger.LogError(ex, "Error in AddOutGate for so_tank_guid={SoTankGuid}", OutGate?.so_tank_guid);
+                    throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
             }
             return record;
@@ -130,6 +145,8 @@ namespace IDMS.Gate.GqlTypes
                     preOrderTank.status_cv = SOTankStatus.WAITING;
                     preOrderTank.update_by = user;
                     preOrderTank.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Preorder storing_order_tank guid={Guid} set to WAITING", preOrderTank.guid);
                 }
 
                 var tankInfo = await context.tank_info.Where(t => t.tank_no == tank.tank_no && t.delete_dt == null).FirstOrDefaultAsync();
@@ -140,13 +157,16 @@ namespace IDMS.Gate.GqlTypes
                     tankInfo.last_release_dt = currentDateTime;
                     tankInfo.update_dt = currentDateTime;
                     tankInfo.update_by = user;
+
+                    _logger.LogInformation("Updated tank_info for tank_no={TankNo} owner={Owner}", tank.tank_no, tank.owner_guid);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "Error in SurveyHandling for tank_no={TankNo}", tank?.tank_no);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -161,6 +181,7 @@ namespace IDMS.Gate.GqlTypes
                 {
                     if (string.IsNullOrEmpty(OutGate.so_tank_guid))
                     {
+                        _logger.LogWarning("UpdateOutGate failed: so_tank_guid is empty");
                         throw new GraphQLException(new Error("Tank guid is empty", "Error"));
                     }
 
@@ -178,8 +199,11 @@ namespace IDMS.Gate.GqlTypes
                     if (!string.IsNullOrEmpty(OutGate.haulier))
                         updatedOutgate.haulier = OutGate.haulier;
 
+                    _logger.LogInformation("Prepared update for out_gate guid={Guid}", OutGate.guid);
+
                     if (OutGate.tank == null)
                     {
+                        _logger.LogWarning("UpdateOutGate failed: OutGate.tank is null");
                         throw new GraphQLException(new Error("Tank object cannot be null", "Error"));
                     }
                     var so_tank = new storing_order_tank() { guid = OutGate.tank.guid };
@@ -197,11 +221,13 @@ namespace IDMS.Gate.GqlTypes
                     RO.update_dt = currentDate;
 
                     retval = await context.SaveChangesAsync();
+                    _logger.LogInformation("UpdateOutGate SaveChanges affected={Affected}", retval);
                 }
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateOutGate for guid={Guid}", OutGate?.guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retval;
         }
@@ -232,6 +258,8 @@ namespace IDMS.Gate.GqlTypes
                     }
                 }
 
+                _logger.LogDebug("CheckAndUpdateROStatus counts roGuid={RoGuid} waiting={Waiting} accepted={Accepted} canceled={Canceled}", guid, nCountWait, nCountAccept, nCountCancel);
+
                 if (nCountWait == 0)
                 {
                     if ((nCountAccept + nCountCancel) == tanks.Count())
@@ -248,12 +276,13 @@ namespace IDMS.Gate.GqlTypes
 
                 }
 
+                _logger.LogInformation("CheckAndUpdateROStatus result roGuid={RoGuid} status={Status}", guid, Status);
                 return Status;
             }
             catch
             {
+                _logger.LogError("Error in CheckAndUpdateROStatus for roGuid={RoGuid}", guid);
                 throw;
-
             }
         }
 
@@ -269,6 +298,9 @@ namespace IDMS.Gate.GqlTypes
                 Pending_Ingate_Count = count,
                 Gate_Out_Count = gateOutCount_Day
             };
+
+            _logger.LogInformation("Dispatching OUTGATE notification eventId={EventId} pendingIngate={PendingIngate} gateOutDay={GateOutDay}", eventId, count, gateOutCount_Day);
+
             GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.OUTGATE_UPDATED, evtId, evtName, count, JsonConvert.SerializeObject(payload));
             return true;
         }

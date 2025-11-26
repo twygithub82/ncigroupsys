@@ -48,6 +48,7 @@ namespace IDMS.Customer.GqlTypes
                 newCustomer.create_by = user;
                 newCustomer.update_dt = currentDateTime;
                 newCustomer.update_by = user;
+                newCustomer.approval_threshold = customer.approval_threshold ?? 0;
 
                 await context.customer_company.AddAsync(newCustomer);
 

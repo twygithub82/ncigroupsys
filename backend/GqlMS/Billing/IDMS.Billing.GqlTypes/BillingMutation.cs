@@ -1,6 +1,7 @@
 ﻿using HotChocolate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using IDMS.Billing.Application;
 using CommonUtil.Core.Service;
 using IDMS.Models.Billing;
@@ -14,6 +15,13 @@ namespace IDMS.Billing.GqlTypes
 {
     public class BillingMutation
     {
+        private readonly ILogger<BillingMutation> _logger;
+
+        public BillingMutation(ILogger<BillingMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddBilling(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, billing newBilling, List<BillingEstimateRequest> billingEstimateRequests, List<StorageDetailRequest>? storageDetail)
         {
@@ -30,9 +38,12 @@ namespace IDMS.Billing.GqlTypes
                 newBill.update_by = user;
                 newBill.update_dt = currentDateTime;
                 await context.billing.AddAsync(newBill);
+                _logger.LogInformation("New billing created with guid {Guid}", newBill.guid);
 
                 if (storageDetail != null)
+                {
                     await StorageDetailHandling(context, user, currentDateTime, newBill.guid, storageDetail);
+                }
 
                 if (billingEstimateRequests != null && billingEstimateRequests.Any())
                 {
@@ -47,17 +58,22 @@ namespace IDMS.Billing.GqlTypes
 
                     var existingGuid = billingEstimateRequests?.First().existing_billing_guid ?? "";
                     if (!string.IsNullOrEmpty(existingGuid))
+                    {
+                        _logger.LogInformation("Orphan invoice handling for existing billing guid {ExistingGuid}", existingGuid);
                         await OrphanInvoiceHandling(context, user, currentDateTime, existingGuid);
+                    }
 
                 }
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddBilling completed: saved {Changes} changes for billing {Guid}", res, newBill.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddBilling: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -72,8 +88,11 @@ namespace IDMS.Billing.GqlTypes
                 if (updateBilling != null)
                 {
                     if (string.IsNullOrEmpty(updateBilling.guid))
+                    {
+                        _logger.LogError("Billing guid is null or empty in UpdateBilling");
                         throw new GraphQLException(new Error($"Billing guid cannot be null or empty", "ERROR"));
-
+                    }
+  
                     var updateBill = new billing() { guid = updateBilling.guid };
                     context.billing.Attach(updateBill);
                     updateBill.update_by = user;
@@ -109,15 +128,19 @@ namespace IDMS.Billing.GqlTypes
                             billingEstimateList.Add(item);
                         }
                     }
+                    _logger.LogInformation("Processing {Count} billing estimate requests", billingEstimateList.Count);
                     await EstimateHandling(context, user, currentDateTime, billingEstimateList);
 
                     var existingGuid = billingEstimateRequests?.First()?.existing_billing_guid ?? "";
                     if (!string.IsNullOrEmpty(existingGuid))
+                    {
+                        _logger.LogDebug("Orphan invoice handling for existing billing guid {ExistingGuid}", existingGuid);
                         await OrphanInvoiceHandling(context, user, currentDateTime, existingGuid);
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
-
+                _logger.LogInformation("UpdateBilling completed: saved {Changes} changes for billing {Guid}", res, updateBilling?.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -125,7 +148,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateBilling: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -142,7 +166,10 @@ namespace IDMS.Billing.GqlTypes
                     foreach (var item in billingInvoices)
                     {
                         if (string.IsNullOrEmpty(item.guid))
+                        {
+                            _logger.LogError("Billing guid is null or empty in UpdateBillingInvoices");
                             throw new GraphQLException(new Error($"Billing guid cannot be null or empty", "ERROR"));
+                        }
 
                         var updateBill = new billing() { guid = item.guid };
                         context.billing.Attach(updateBill);
@@ -161,7 +188,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateBillingInvoices: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
         }
@@ -296,7 +324,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in EstimateHandling: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -328,6 +357,7 @@ namespace IDMS.Billing.GqlTypes
                         newSD.remarks = item.remarks;
 
                         context.storage_detail.Add(newSD);
+                        _logger.LogInformation("Added new storage_detail {Guid} for billing {BillingGuid}", newSD.guid, billingGuid);
                     }
                     else if (item.action.EqualsIgnore(ObjectAction.EDIT))
                     {
@@ -362,12 +392,14 @@ namespace IDMS.Billing.GqlTypes
                         deleteSD.update_by = user;
                         deleteSD.update_dt = currentDateTime;
                         deleteSD.delete_dt = currentDateTime;
+                        _logger.LogDebug("Marked storage_detail {Guid} as deleted", item.guid);
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in StorageDetailHandling: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -425,11 +457,17 @@ namespace IDMS.Billing.GqlTypes
                     result.BillingEntity.delete_dt = currentDateTime;
                     result.BillingEntity.update_by = user;
                     result.BillingEntity.update_dt = currentDateTime;
+                    _logger.LogInformation("Orphan invoice {BillingGuid} marked deleted", billingGuid);
+                }
+                else
+                {
+                    _logger.LogInformation("Orphan invoice {BillingGuid} has linked records and was not deleted", billingGuid);
                 }
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in OrphanInvoiceHandling: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -476,9 +514,11 @@ namespace IDMS.Billing.GqlTypes
                         updateBS.gate_out_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.gate_out_cost);
                         updateBS.depot_cost_remarks = updateBillingSOT.depot_cost_remarks;
                     }
+                    _logger.LogInformation("BillingSOT {Guid} updated", updateBillingSOT.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateBillingSOT completed: saved {Changes} changes for billing_sot {Guid}", res, updateBillingSOT.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -486,7 +526,8 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateBillingSOT: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -513,7 +554,9 @@ namespace IDMS.Billing.GqlTypes
                 updateBS.storage_cal_cv = updateBillingSOT.storage_cal_cv;
                 updateBS.remarks = updateBillingSOT.remarks;
 
+
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateDepotCost completed: saved {Changes} changes for billing_sot {Guid}", res, updateBillingSOT.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -521,6 +564,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in UpdateDepotCost: {Message}", ex.Message);
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
@@ -549,6 +593,7 @@ namespace IDMS.Billing.GqlTypes
                     newSD.remaining_free_storage = storageDetails.remaining_free_storage;
 
                     await context.AddAsync(newSD);
+
                 }
                 else
                 {
@@ -560,15 +605,18 @@ namespace IDMS.Billing.GqlTypes
                     updateSD.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(storageDetails.total_cost);
                     updateSD.remaining_free_storage = storageDetails.remaining_free_storage;
                     updateSD.state_cv = storageDetails.state_cv;
+
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateStorageDetail completed: saved {Changes} changes for storage_detail {Guid}", res, storageDetails.guid);
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateStorageDetail: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

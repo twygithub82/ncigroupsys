@@ -1,16 +1,14 @@
 ﻿using CommonUtil.Core.Service;
-using HotChocolate.Authorization;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Billing;
-using IDMS.Models.DB;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Package;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 
@@ -19,6 +17,13 @@ namespace IDMS.Gate.GqlTypes
     [ExtendObjectType(typeof(InventoryMutation))]
     public class InGateMutation
     {
+        private readonly ILogger<InGateMutation> _logger;
+
+        public InGateMutation(ILogger<InGateMutation> logger)
+        {
+            _logger = logger;
+        }
+
         //[Authorize]
         public async Task<int> AddInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, in_gate InGate)
@@ -46,42 +51,57 @@ namespace IDMS.Gate.GqlTypes
                     so_tank_guid = InGate.so_tank_guid,
                     vehicle_no = InGate.vehicle_no,
                     yard_cv = InGate.yard_cv,
-
                 };
+
                 if (string.IsNullOrEmpty(InGate.so_tank_guid))
+                {
+                    _logger.LogWarning("AddInGate failed: Tank guid is null or empty");
                     throw new GraphQLException(new Error("Tank guid cannot be null or empty", "NOT FOUND"));
+                }
 
                 var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                 if (so_tank == null)
+                {
+                    _logger.LogWarning("AddInGate failed: storing_order_tank not found for guid={SoTankGuid}", InGate.so_tank_guid);
                     throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
+                }
 
                 var so = so_tank.storing_order;
                 if (so == null)
+                {
+                    _logger.LogWarning("AddInGate failed: storing_order not found for sot guid={SoTankGuid}", InGate.so_tank_guid);
                     throw new GraphQLException(new Error("Storing Order not found", "NOT FOUND"));
+                }
 
                 if (so.haulier != InGate.haulier)
+                {
+                    _logger.LogDebug("Updating SO haulier from {OldHaulier} to {NewHaulier} for soGuid={SoGuid}", so.haulier, InGate.haulier, so.guid);
                     so.haulier = InGate.haulier;
+                }
                 so.update_by = uid;
                 so.update_dt = currentDate;
 
                 if (InGate.tank != null)
                 {
-                    //string tankStatusGuid =$"{config["CodeValuesSetting:TankStatusGuid"]}";
-
                     if (SOTankStatus.WAITING != so_tank.status_cv)
+                    {
+                        _logger.LogWarning("AddInGate failed: tank status is not WAITING for sotGuid={SoTankGuid} status={Status}", so_tank.guid, so_tank.status_cv);
                         throw new GraphQLException(new Error("Tank status is not waiting", "ERROR"));
+                    }
 
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = SOTankStatus.ACCEPTED;
                     so_tank.tank_status_cv = TankMovementStatus.INGATE_SURVEY;
                     so_tank.owner_guid = InGate.tank.owner_guid;
                     so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
-                    //so_tank.purpose_storage = InGate.tank.purpose_storage;
                     so_tank.update_by = uid;
                     so_tank.update_dt = currentDate;
                     so_guid = so_tank.so_guid;
+
+                    _logger.LogInformation("Accepted tank sotGuid={SotGuid} job_no={JobNo}", so_tank.guid, so_tank.job_no);
                 }
+
                 newInGate.eir_no = $"{so.so_no}";
                 context.in_gate.Add(newInGate);
 
@@ -91,27 +111,32 @@ namespace IDMS.Gate.GqlTypes
                 }
 
                 retval = context.SaveChanges();
+                _logger.LogInformation("AddInGate saved guid={Guid} affected={Affected}", newInGate.guid, retval);
+
                 //added this after ingate done
                 await AddBillingSOT(context, uid, currentDate, InGate);
 
                 if (config != null)
                 {
-                    string evtId = EventId.NEW_INGATE;
+                    string evtId = Models.EventId.NEW_INGATE;
                     string evtName = EventName.NEW_INGATE;
                     int count = await context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                    .Include(s => s.tank).Where(i => i.tank != null)
                    .Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).CountAsync();
 
                     //GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
-                    await NotificationHandling(context, config, EventId.NEW_INGATE);
+                    await NotificationHandling(context, config, Models.EventId.NEW_INGATE);
 
                     string notification_uid = $"in-gate-{newInGate.eir_no}";
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
+
+                    _logger.LogDebug("Notification triggered for new in_gate eir_no={EirNo} count={Count}", newInGate.eir_no, count);
                 }
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddInGate for so_tank_guid={SoTankGuid}", InGate?.so_tank_guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retval;
         }
@@ -142,14 +167,23 @@ namespace IDMS.Gate.GqlTypes
                     var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                     if (string.IsNullOrEmpty(InGate.so_tank_guid))
+                    {
+                        _logger.LogWarning("UpdateInGate failed: so_tank_guid is null or empty");
                         throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
+                    }
 
                     if (so_tank == null)
+                    {
+                        _logger.LogWarning("UpdateInGate failed: storing_order_tank not found for guid={SoTankGuid}", InGate.so_tank_guid);
                         throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
+                    }
 
                     var so = so_tank.storing_order;
                     if (so == null)
+                    {
+                        _logger.LogWarning("UpdateInGate failed: storing_order not found for sot guid={SoTankGuid}", InGate.so_tank_guid);
                         throw new GraphQLException(new Error("Storing Order not found", "NOT FOUND"));
+                    }
 
                     if (!string.IsNullOrEmpty(InGate.haulier) & so.haulier != InGate.haulier)
                         so.haulier = InGate.haulier;
@@ -163,25 +197,32 @@ namespace IDMS.Gate.GqlTypes
                         so_tank.job_no = InGate.tank.job_no;
                         so_tank.status_cv = SOTankStatus.ACCEPTED; //"ACCEPTED";
                         so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
-                        //so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;
                         so_guid = so_tank.so_guid;
+
+                        _logger.LogInformation("UpdateInGate accepted sotGuid={SotGuid} job_no={JobNo}", so_tank.guid, so_tank.job_no);
                     }
 
                     if (!string.IsNullOrEmpty(so_guid))
+                    {
+                        _logger.LogDebug("UpdateInGate calling CheckAndUpdateSOStatus for soGuid={SoGuid}", so_guid);
                         CheckAndUpdateSOStatus(context, so_guid);
+                    }
 
                     retval = await context.SaveChangesAsync();
 
-                    await NotificationHandling(context, config, EventId.UPDATE_INGATE);
+                    _logger.LogInformation("UpdateInGate saved guid={Guid} affected={Affected}", InGate.guid, retval);
+
+                    await NotificationHandling(context, config, Models.EventId.UPDATE_INGATE);
                 }
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in UpdateInGate for guid={Guid}", InGate?.guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retval;
         }
@@ -212,12 +253,19 @@ namespace IDMS.Gate.GqlTypes
                         delInGateSurvey.update_by = uid;
                         delInGateSurvey.update_dt = epochNow;
                     }
+
                     retval = context.SaveChanges(true);
+                    _logger.LogInformation("DeleteInGate marked guid={Guid} deleted affected={Affected}", InGate_guid, retval);
+                }
+                else
+                {
+                    _logger.LogWarning("DeleteInGate: in_gate not found for guid={Guid}", InGate_guid);
                 }
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in DeleteInGate for guid={Guid}", InGate_guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return retval;
         }
@@ -226,6 +274,8 @@ namespace IDMS.Gate.GqlTypes
         {
             try
             {
+                _logger.LogDebug("CheckAndUpdateSOStatus start for soGuid={SoGuid}", guid);
+
                 var tanks = context.storing_order_tank.Where(t => t.so_guid == guid);
                 var Status = "PROCESSING";
                 int nCountCancel = 0;
@@ -247,6 +297,8 @@ namespace IDMS.Gate.GqlTypes
                     }
                 }
 
+                _logger.LogDebug("CheckAndUpdateSOStatus counts for soGuid={SoGuid} waiting={Waiting} accepted={Accepted} canceled={Canceled}", guid, nCountWait, nCountAccept, nCountCancel);
+
                 if (nCountWait == 0)
                 {
                     if ((nCountAccept + nCountCancel) == tanks.Count())
@@ -266,11 +318,13 @@ namespace IDMS.Gate.GqlTypes
                 if (so != null)
                 {
                     so.status_cv = Status;
+                    _logger.LogInformation("SO status updated for soGuid={SoGuid} status={Status}", guid, Status);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "Error in CheckAndUpdateSOStatus for soGuid={SoGuid}", guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -310,7 +364,8 @@ namespace IDMS.Gate.GqlTypes
                     existingBS.free_storage = packageDepot.free_storage;
                     existingBS.preinspection_cost = packageDepot.preinspection_cost;
                     existingBS.storage_cal_cv = packageDepot.storage_cal_cv;
-                   
+
+                    _logger.LogInformation("Updated billing_sot for sotGuid={SotGuid}", existingBS.sot_guid);
                 }
                 else
                 {
@@ -339,21 +394,26 @@ namespace IDMS.Gate.GqlTypes
                     newBS.gate_out = tankUnitType.gate_out;
 
                     await context.billing_sot.AddAsync(newBS);
+
+                    _logger.LogInformation("Inserted new billing_sot guid={Guid} for sotGuid={SotGuid}", newBS.guid, newBS.sot_guid);
                 }
 
-
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddBillingSOT completed for sotGuid={SotGuid} affected={Affected}", sotGuid, res);
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in AddBillingSOT for sotGuid={SotGuid}", inGate?.so_tank_guid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
         public async Task<bool> NotificationHandling(ApplicationInventoryDBContext context, [Service]IConfiguration config, string eventId)
         {
+            _logger.LogDebug("NotificationHandling start eventId={EventId}", eventId);
+
             string evtId = eventId;
             string evtName = SotNotificationType.onPendingIngate_Survey.ToString();
             int pendingIngateCount = await GqlUtils.GetWaitingSOTCount(context);
@@ -363,106 +423,11 @@ namespace IDMS.Gate.GqlTypes
                 Pending_Ingate_Count = pendingIngateCount,
                 Pending_Ingate_Survey_Count = pendingSurveyCount
             };
+
+            _logger.LogInformation("Dispatching notification eventId={EventId} pendingIngate={PendingIngate} pendingSurvey={PendingSurvey}", eventId, pendingIngateCount, pendingSurveyCount);
+
             GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.INGATE_UPDATED, evtId, evtName, pendingIngateCount, JsonConvert.SerializeObject(payload));
             return true;
         }
-
-        //For Testing only
-        //public async Task<int> GetGateCountOfDay(ApplicationInventoryDBContext context, string gate)
-        //{
-
-        //    try
-        //    {
-        //        long sDate = GqlUtils.GetStartOfDayEpoch(DateTime.Now);
-        //        long eDate = GqlUtils.GetEndOfDayEpochSeconds(DateTime.Now);
-
-        //        if (gate.EqualsIgnore("IN"))
-        //        {
-        //            var count = context.storing_order_tank.Where(s => s.delete_dt == null || s.delete_dt == 0)
-        //                                                   .Where(s => s.in_gate.Any(ig => ig.delete_dt == null &&
-        //                                                               ig.eir_status_cv.ToUpper() == EirStatus.PUBLISHED &&
-        //                                                               ig.eir_dt >= sDate &&
-        //                                                               ig.eir_dt <= eDate))
-        //                                                   .Select(s => s.guid)
-        //                                                   .Distinct()
-        //                                                   .Count();
-        //            return count;
-        //        }
-        //        else
-        //        {
-        //            var count = context.storing_order_tank.Where(s => s.tank_status_cv.ToUpper() == TankMovementStatus.RELEASED && (s.delete_dt == null || s.delete_dt == 0))
-        //                                                   .Where(s => s.out_gate.Any(ig => ig.delete_dt == null &&
-        //                                                               ig.eir_dt >= sDate &&
-        //                                                               ig.eir_dt <= eDate))
-        //                                                   .Select(s => s.guid)
-        //                                                   .Distinct()
-        //                                                   .Count();
-        //            return count;
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //private async Task<int> AddBillingSOT(ApplicationInventoryDBContext context, string user, long currentDateTime, in_gate inGate)
-        //{
-        //    try
-        //    {
-        //        var newBS = new billing_sot();
-        //        newBS.guid = Util.GenerateGUID();
-        //        newBS.create_by = user;
-        //        newBS.create_dt = currentDateTime;
-        //        newBS.sot_guid = inGate?.so_tank_guid;
-
-        //        var customerGuid = inGate?.tank?.storing_order?.customer_company_guid;
-        //        var tariffDepotGuid = await context.tank.Where(t => t.guid == inGate.tank.unit_type_guid)
-        //                                    .Select(t => t.tariff_depot.guid).FirstOrDefaultAsync();
-
-        //        if (string.IsNullOrEmpty(tariffDepotGuid))
-        //            throw new GraphQLException(new Error($"Tariff depot guid not found", "ERROR"));
-
-        //        var packageDepot = await context.Set<package_depot>().Where(b => b.customer_company_guid == customerGuid && b.tariff_depot_guid == tariffDepotGuid).FirstOrDefaultAsync();
-        //        if (packageDepot == null)
-        //            throw new GraphQLException(new Error($"Package depot object not found", "ERROR"));
-
-        //        newBS.tariff_depot_guid = tariffDepotGuid;
-        //        newBS.lift_on_cost = packageDepot.lolo_cost;
-        //        newBS.lift_off_cost = packageDepot.lolo_cost;
-        //        newBS.storage_cost = packageDepot.storage_cost;
-        //        newBS.gate_in_cost = packageDepot.gate_in_cost;
-        //        newBS.gate_out_cost = packageDepot.gate_out_cost;
-        //        newBS.free_storage = packageDepot.free_storage;
-        //        newBS.preinspection_cost = packageDepot.preinspection_cost;
-        //        newBS.storage_cal_cv = packageDepot.storage_cal_cv;
-
-        //        newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
-        //        if (inGate.lolo_cv.EqualsIgnore("BOTH"))
-        //        {
-        //            newBS.lift_on = true;
-        //            newBS.lift_off = true;
-        //        }
-        //        else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
-        //        {
-        //            newBS.lift_on = true;
-        //            newBS.lift_off = false;
-        //        }
-        //        else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
-        //        {
-        //            newBS.lift_on = false;
-        //            newBS.lift_off = true;
-        //        }
-
-        //        await context.billing_sot.AddAsync(newBS);
-        //        var res = await context.SaveChangesAsync();
-        //        return res;
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
     }
 }

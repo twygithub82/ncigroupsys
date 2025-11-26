@@ -9,18 +9,18 @@ using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Inventory.GqlTypes;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Gate.GqlTypes
 {
     [ExtendObjectType(typeof(InventoryQuery))]
     public class InGateQuery
     {
-        private async void Ping(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        private readonly ILogger<InGateQuery> _logger;
+
+        public InGateQuery(ILogger<InGateQuery> logger)
         {
-            if (context != null)
-            {
-                context.in_gate.First();
-            }
+            _logger = logger;
         }
 
         // [Authorize]
@@ -43,18 +43,23 @@ namespace IDMS.Gate.GqlTypes
                     .Include(s => s.tank.tariff_cleaning.cleaning_method)
                     .Include(s => s.tank.tariff_cleaning.cleaning_category)
                     .Include(s => s.in_gate_survey);
-                // .Include(s=>s.tank.tariff_cleaning.cleaning_method);
+
+                int processed = 0;
                 foreach (var q in query)
                 {
                     if (q.tank != null)
                         if (q.tank.storing_order != null)
                             q.haulier = q.tank.storing_order.haulier;
+
+                    processed++;
                 }
+
+                _logger.LogInformation("QueryInGates and processed {Count} records", processed);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryInGates");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
             return query;
@@ -71,13 +76,15 @@ namespace IDMS.Gate.GqlTypes
 
             try
             {
-                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("User {User} requested in-gates count", user);
+
                 query = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error in QueryInGatesCount");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
             return query;
         }
