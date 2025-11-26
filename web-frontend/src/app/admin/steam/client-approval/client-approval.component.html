@@ -95,7 +95,7 @@
                             <mat-date-range-picker #approval_picker></mat-date-range-picker>
                           </mat-form-field>
                         </div> -->
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                           <mat-select multiple formControlName="est_status_cv" (selectionChange)="AutoSearch()">
@@ -108,7 +108,7 @@
                             }
                           </mat-select>
                         </mat-form-field>
-                      </div>
+                      </div> -->
                     </div>
                   </mat-expansion-panel>
                 </mat-accordion>
@@ -210,19 +210,6 @@
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let steamRow" class="">
                               <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{steamRow.remarks}}
-                            </mat-cell>
-                          </ng-container>
-                          <ng-container matColumnDef="actions">
-                            <mat-header-cell
-                              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                              *matHeaderCellDef></mat-header-cell>
-                            <mat-cell *matCellDef="let steamRow; let i=index;"
-                              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                              @if (isMobile) {
-                              } @else if(IsEnable3Dots(steamRow)) {
-                              }
-                              <mat-menu #menu="matMenu">
-                              </mat-menu>
                             </mat-cell>
                           </ng-container>
                           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

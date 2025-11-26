@@ -25,35 +25,32 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '@core/service/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { TableFooter, TableGroup, TlxTableCardComponent } from '@shared/components/tlx-table-card/tlx-table-card.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
-import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { SearchStateService } from 'app/services/search-criteria.service';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SearchStateService } from 'app/services/search-criteria.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
+import { AuthService } from '@core/service/auth.service';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
-  selector: 'app-client-steaming-estimate-approval',
+  selector: 'app-estimate',
   standalone: true,
   templateUrl: './client-approval.component.html',
   styleUrl: './client-approval.component.scss',
@@ -83,13 +80,12 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatDividerModule,
     MatCardModule,
     TlxCardListComponent,
-    TlxTableCardComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
-  ],
+  ]
 })
-export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ResidueDisposalEstimateApprovalClientComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'estimate_no',
     'net_cost',
@@ -97,9 +93,9 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     'remarks'
   ];
 
-  pageTitle = 'MENUITEMS.STEAM.LIST.APPROVAL'
+  pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE-APPROVAL'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/client-approval' },
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/estimate-approval' },
   ]
 
   translatedLangText: any = {};
@@ -118,7 +114,6 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -155,7 +150,9 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
+    RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
     APPROVE: 'COMMON-FORM.APPROVE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
@@ -163,32 +160,32 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
   }
 
   availableTankStatus: string[] = [
-    'STEAM',
+    'CLEANING',
     'STORAGE'
   ]
 
   availableProcessStatus: string[] = [
-    'ASSIGNED',
-    //'PARTIAL_ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
     'PENDING',
-    'NO_ACTION'
+    // 'COMPLETED',
+    // 'NO_ACTION',
+    // 'ASSIGNED',
+    // 'PARTIAL_ASSIGNED',
   ]
   searchForm?: UntypedFormGroup;
 
-  pckRepDS: PackageRepairDS;
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  steamDS: SteamDS;
+  residueDS: ResidueDS;
+  // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  reSelection = new SelectionModel<SteamItem>(true, []);
+  reSelection = new SelectionModel<ResidueItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -200,28 +197,26 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  copiedSteamEst?: SteamItem;
+  copiedResidueEst?: ResidueItem;
 
   isMobile = false;
 
-  pageStateType = 'SteamEstimateApprovalClient'
+  pageStateType = 'ResidueDisposalEstimateApprovalClient'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order: { so_no: "ASC" } };
+  lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor: any;
 
-  pagedSteamDataFull: { [guid: string]: any[][] } = {};
-  pagedSteamData: { [guid: string]: any[] } = {};
-  currentSteamIndex: { [guid: string]: number } = {};
+  pagedResidueDataFull: { [guid: string]: any[][] } = {};
+  pagedResidueData: { [guid: string]: any[] } = {};
+  currentResidueIndex: { [guid: string]: number } = {};
   currentIndex = 0;
   touchStartX = 0;
-
-  plDS: PackageLabourDS;
 
   constructor(
     private route: ActivatedRoute,
@@ -246,11 +241,8 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.steamDS = new SteamDS(this.apollo);
-    this.pckRepDS = new PackageRepairDS(this.apollo);
-    this.plDS = new PackageLabourDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
   }
-
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -263,7 +255,6 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     window.addEventListener('resize', () => {
       this.updateView(window.innerWidth);
     });
-
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
@@ -288,18 +279,34 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
+      bill_completed_cv: [''],
       status_cv: [''],
       eir_no: [''],
-      job_no: [''],
-      est_dt: [''],
+      residue_job_no: [''],
+      repair_type_cv: [''],
+      est_dt_start: [''],
+      est_dt_end: [''],
+      approval_dt_start: [''],
+      approval_dt_end: [''],
       est_status_cv: [''],
       current_status_cv: [''],
-      tank_status: [['STEAM']]
+      tank_status: [['CLEANING', 'STORAGE']],
     });
   }
 
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
+  }
+
+  toggleRow(row: ResidueItem) {
+    // this.reSelection.toggle(row);
+    // const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    // if (this.reSelection.isSelected(row)) {
+    //   selectedItems.add(row.guid!);
+    // } else {
+    //   selectedItems.delete(row.guid!);
+    // }
+    // this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Update selection for the current page */
@@ -313,7 +320,7 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     // });
   }
 
-  cancelRow(row: SteamItem) {
+  cancelRow(row: ResidueItem) {
     // const found = this.reSelection.selected.some(x => x.guid === row.guid);
     // let selectedList = [...this.reSelection.selected];
     // if (!found) {
@@ -323,7 +330,7 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     this.cancelSelectedRows(row)
   }
 
-  cancelSelectedRows(row: SteamItem) {
+  cancelSelectedRows(row: ResidueItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -333,7 +340,8 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         action: 'cancel',
-        dialogTitle: this.translatedLangText.CONFIRM_CANCEL,
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        // item: [...row],
         allowRemarks: true,
         translatedLangText: this.translatedLangText
       },
@@ -341,31 +349,34 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
-        steamStatus.action = "CANCEL";
-        steamStatus.guid = row?.guid;
-        steamStatus.sot_guid = row?.sot_guid;
-        steamStatus.remarks = result.remarks;
-        this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
-
-          this.handleCancelSuccess(result?.data?.UpdateSteamStatus)
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "CANCEL";
+        residueStatus.guid = row?.guid;
+        residueStatus.sot_guid = row?.sot_guid;
+        residueStatus.remarks = result.remarks;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
+        //  this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
+        //    this.handleCancelSuccess(result?.data?.cancelResidue)
+        //    this.performSearch(this.pageSize, 0, this.pageSize);
+        //  });
       }
     });
   }
 
-  rollbackRow(row: SteamItem) {
+  rollbackRow(row: ResidueItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
       // this.toggleRow(row);
       selectedList.push(row);
     }
-    this.rollbackSelectedRows(selectedList)
+    this.rollbackSelectedRows(selectedList);
   }
 
-  rollbackSelectedRows(row: SteamItem[]) {
+  rollbackSelectedRows(row: ResidueItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -373,41 +384,40 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      //width: '1000px',
       data: {
         headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        allowRemarks: true
+        allowRemarks: true,
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = [...row].map((item: any) => {
-          const SteamEstimateRequestInput = {
+          const ResidueEstimateRequestInput = {
             customer_guid: item?.storing_order_tank?.storing_order?.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
-            remarks: item.remarks,
+            remarks: result?.remarks,
             sot_guid: item.sot_guid,
             is_approved: item?.status_cv == "APPROVED"
           }
-          return SteamEstimateRequestInput;
+          return ResidueEstimateRequestInput;
         });
         console.log(reList);
-        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackSteaming: any; }; }) => {
-          this.handleRollbackSuccess(result?.data?.rollbackSteaming)
+        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackResidue)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
   }
 
-  copySteamEst(steamEst: SteamItem) {
-    this.copiedSteamEst = steamEst;
+  copyResidueEst(residueEst: ResidueItem) {
+    this.copiedResidueEst = residueEst;
   }
 
   clearCopiedRepairEst() {
-    this.copiedSteamEst = undefined;
+    this.copiedResidueEst = undefined;
   }
 
   public loadData() {
@@ -427,30 +437,49 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
       this.processStatusCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    var actionId = this.route.snapshot.paramMap.get('id');
+    if (!actionId) {
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
+
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
     }
+    else if (actionId === "pending") {
+      const where = {
+        and: [
+          { purpose_cleaning: { eq: true } },
+          { tank_status_cv: { eq: "CLEANING" } },
+          { residue: { some: { status_cv: { in: ["JOB_IN_PROGRESS", "APPROVED"] } } } }
+        ]
+      };
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
-
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
-
-    if (!savedCriteria && !savedPagination) {
-      this.search();
+      this.lastSearchCriteria = where;
+      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+        this.updatePageSelection();
+      });
+      console.log("search pending records");
     }
   }
 
@@ -500,30 +529,28 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
 
   constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: ['STEAM'] },
-      purpose_steam: { eq: true },
+      tank_status_cv: { in: ['CLEANING', 'STORAGE'] },
       storing_order: { customer_company_guid: { in: this.authService.getClientCompany() } },
-      steaming: { some: { status_cv: { eq: "PENDING" } } },
+      purpose_cleaning: { eq: true },
+      residue: { some: { status_cv: { eq: "PENDING" } } },
     };
 
-    // if (this.searchForm!.value['tank_status']) {
-    //   where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
-    // }
-    // else {
-    //   where.tank_status_cv = { in: ['STEAM', 'STORAGE'] }
-    // }
-
-    if (this.searchForm!.value['tank_no']) {
-      const tankNo = this.searchForm!.get('tank_no')?.value
-      where.or = [
-        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-      ]
+    if (this.searchForm!.value['tank_status']) {
+      where.tank_status_cv = { in: this.searchForm!.value['tank_status'] };
     }
 
-    if (this.lastCargoControl?.value) {
+    if (this.searchForm!.get('tank_no')?.value) {
+      const or = [];
+      const tankNo = this.searchForm!.get('tank_no')?.value;
+      or.push({ tank_no: { contains: Utility.formatContainerNumber(tankNo) } });
+      or.push({ tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } });
+      where.and = where.and || [];
+      where.and.push({ or: or });
+    }
+
+    if (this.searchForm!.value['last_cargo']) {
       if (!where.tariff_cleaning) where.tariff_cleaning = {};
-      where.tariff_cleaning.cargo = { contains: this.lastCargoControl?.value?.cargo };
+      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
     if (this.searchForm!.value['eir_no']) {
@@ -538,19 +565,62 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
       where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) } } };
     }
 
-    if (this.searchForm!.value['est_dt']) {
-      const estDt = this.searchForm!.value['est_dt']?.clone();
-      if (!where.steaming) where.steaming = {};
-      if (!where.steaming.some) where.steaming.some = {};
-      where.steaming.some.create_dt = { gte: Utility.convertDate(estDt), lte: Utility.convertDate(estDt, true) };
+    if (this.searchForm!.value['customer_code']) {
+      if (!where.storing_order) where.storing_order = {};
+      where.storing_order.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
-    if (this.searchForm!.value['est_status_cv'].length) {
-      if (!where.steaming) where.steaming = {};
-      if (!where.steaming.some) where.steaming.some = {};
-      where.steaming.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
+    if (this.searchForm!.value['part_name']) {
+      if (!where.residue) where.residue = {};
+      where.residue.some = { residue_part: { some: { description: { contains: this.searchForm!.value['part_name'] } } } };
     }
 
+    if (this.searchForm!.value['residue_job_no']) {
+      if (!where.residue) where.residue = {};
+      where.residue = { some: { job_no: { contains: this.searchForm!.value['job_no'] } } };
+    }
+
+    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+    }
+
+    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end']) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+    }
+
+    if (this.searchForm!.value['est_status_cv'] !== undefined && this.searchForm!.value['est_status_cv'].length > 0) {
+      if (!where.residue) where.residue = {};
+      if (!where.residue.some) where.residue.some = {};
+      where.residue.some.status_cv = { in: this.searchForm!.value['est_status_cv'] };
+    } else {
+      if (!where.or) where.or = [];
+      const residue = {
+        residue: {
+          some: {
+            status_cv: {
+              in: this.availableProcessStatus
+            }
+          }
+        }
+      }
+      const tank_status = {
+        tank_status_cv: {
+          in: ['CLEANING', 'STORAGE']
+        },
+        cleaning: {
+          all: { status_cv: { in: ["APPROVED", "JOB_IN_PROGRESS", "ASSIGNED"] } }
+        }
+      }
+      where.or.push(residue);
+      where.or.push(tank_status);
+      // if (!where.residue) where.residue = {};
+      // if (!where.residue.some) where.residue.some = {};
+      // where.residue.some.status_cv = { in: this.availableProcessStatus };
+    }
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
   }
 
@@ -572,57 +642,68 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
       before
     });
     console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimateClient(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimateClient(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         if (data) {
-          const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
+          var residueStatusFilter = this.searchForm!.value['est_status_cv'];
           this.sotList = data.map(sot => {
-            sot.steaming = (sot.steaming || []).map(stm => {
-              const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
-
-              if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
-                // this.calculateNetCost_r1(stm);
-                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
-
-              } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
-                // this.calculateNetCost_r1(stm);
-                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
+            sot.residue = (sot.residue || []).map(res => {
+              if (residueStatusFilter.length) {
+                if (residueStatusFilter.includes(res.status_cv)) {
+                  var res_part = [...res.residue_part!];
+                  res.residue_part = res_part?.filter(data => !data.delete_dt);
+                  return { ...res, net_cost: this.calculateNetCost(res) }
+                } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                  return { ...res, net_cost: this.calculateNetCost(res) };
+                }
+                return {};
               }
+              else {
+                if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                  var res_part = [...res.residue_part!];
+                  res.residue_part = res_part?.filter(data => !data.delete_dt);
+                  return { ...res, net_cost: this.calculateNetCost(res) }
+                } else {
+                  return []
+                }
+              }
+            })
 
-              return {};
-            }).filter(stm => Object.keys(stm).length > 0);
+            this.sotList = this.sotList.map(sot => {
+              sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
+              return sot;
+            });
 
             return sot;
           });
 
           if (this.isMobile) {
             const chunkSize = 1;
-            this.pagedSteamDataFull = {};
-            this.pagedSteamData = {};
-            this.currentSteamIndex = {};
+            this.pagedResidueDataFull = {};
+            this.pagedResidueData = {};
+            this.currentResidueIndex = {};
 
             this.sotList.forEach((sot: any) => {
-              const steaming = sot.steaming || [];
+              const residue = sot.residue || [];
               const chunks: any[][] = [];
 
-              for (let i = 0; i < steaming.length; i += chunkSize) {
-                chunks.push(steaming.slice(i, i + chunkSize));
+              for (let i = 0; i < residue.length; i += chunkSize) {
+                chunks.push(residue.slice(i, i + chunkSize));
               }
 
-              this.pagedSteamDataFull[sot.guid] = chunks;
-              this.currentSteamIndex[sot.guid] = 0;
-              this.pagedSteamData[sot.guid] = chunks[0] || [];
+              this.pagedResidueDataFull[sot.guid] = chunks;
+              this.currentResidueIndex[sot.guid] = 0;
+              this.pagedResidueData[sot.guid] = chunks[0] || [];
             });
           } else {
             // Reset if not in mobile view
-            this.pagedSteamDataFull = {};
-            this.pagedSteamData = {};
-            this.currentSteamIndex = {};
+            this.pagedResidueDataFull = {};
+            this.pagedResidueData = {};
+            this.currentResidueIndex = {};
           }
           this.cardListComponent?.resetExpanded();
         }
 
-        this.RefreshSotNetCost();
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -665,20 +746,40 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     });
   }
 
+
+
+
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {
-    this.lastCargoControl.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
         } else {
+          searchCriteria = value || '';
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+    this.lastCargoControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -702,62 +803,20 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCostWithLabourCost(steam: SteamItem, LabourCost: number): any {
-    let isApproved = this.IsApproved(steam);
-    let total = this.IsApproved(steam) ? this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.steamDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
-    const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
-    if (isAutoSteam) {
-      total.total_mat_cost = steam.rate;
-      if (!steam?.flat_rate) {
-        total.total_mat_cost *= isApproved ? (steam?.total_hour || 1) : 1;
-      }
-    }
-    return Utility.formatNumberDisplay(total.total_mat_cost);
+  calculateNetCost(residue: ResidueItem): any {
+
+
+    const total = this.IsApproved(residue) ? this.residueDS.getApproveTotal(residue?.residue_part) : this.residueDS.getTotal(residue?.residue_part)
+
+    return total.total_mat_cost.toFixed(2);
   }
 
-  calculateNetCost(steam: SteamItem): any {
-    let isApproved = this.IsApproved(steam);
-    let total = isApproved ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part);
-    const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
-    if (isAutoSteam) {
-      total.total_mat_cost = steam.rate;
-      if (!steam?.flat_rate) {
-        total.total_mat_cost *= isApproved ? (steam?.total_hour || 1) : 1;
-      }
-    }
-    return Utility.formatNumberDisplay(total.total_mat_cost);
-  }
-
-  calculateNetCost_r1(row: any) {
-    const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company_guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data.length > 0) {
-        var guid = row.guid;
-        var cost: number = data[0].cost;
-        var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
-        if (isAutoApproveSteaming) {
-          row.net_cost = this.displayNumber(row.rate || 0);
-          if (!row.flat_rate) {
-            row.net_cost = this.displayNumber(row.total_hour * row.rate)
-          }
-        }
-        else {
-          row.net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
-        }
-      }
-    });
-  }
-
-  IsApproved(steam: SteamItem) {
-    //const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
-    return BusinessLogicUtil.isEstimateApproved(steam);
+  IsApproved(residueItem: ResidueItem) {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(residueItem!.status_cv!);
 
   }
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
@@ -778,18 +837,29 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     this.search();
   }
 
+  getMaxDate() {
+    return new Date();
+  }
+
   resetForm() {
     this.searchForm?.patchValue({
       tank_no: '',
+      customer_code: '',
+      last_cargo: '',
       eir_dt_start: '',
       eir_dt_end: '',
       part_name: '',
+      bill_completed_cv: '',
       status_cv: '',
       eir_no: '',
-      est_dt: '',
+      residue_job_no: '',
+      est_dt_start: '',
+      est_dt_end: '',
+      approval_dt_start: '',
+      approval_dt_end: '',
       est_status_cv: '',
       current_status_cv: '',
-      tank_status: ['STEAM']
+      tank_status: ['CLEANING', 'STORAGE'],
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -812,16 +882,16 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     event.preventDefault(); // Prevents the form submission
   }
 
-  addSteamEstimate(event: Event, row: StoringOrderItem) {
+  addResidueEstimate(event: Event, row: StoringOrderItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate-approval/new/', row.guid], {
+    this.router.navigate(['/admin/residue-disposal/estimate-approval/new/', row.guid], {
       state: {
         id: '',
         action: "NEW",
-        selectedSteam: undefined,
+        selectedResidue: undefined,
         selectedRow: row,
-        type: 'steam-estimate',
+        type: 'residue-estimate',
         pagination: {
           where: this.lastSearchCriteria,
           pageSize: this.pageSize,
@@ -830,22 +900,24 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
+
           showResult: this.sotDS.totalCount > 0
+
         }
       }
     });
   }
 
-  pasteSteamEstimate(event: Event, sot: StoringOrderItem, row: SteamItem) {
+  pasteResidueEstimate(event: Event, sot: StoringOrderItem, row: ResidueItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate-approval/new/', row.guid], {
+    this.router.navigate(['/admin/residue-disposal/estimate/new/', row.guid], {
       state: {
         id: '',
         action: "DUPLICATE",
-        selectedSteam: row,
+        selectedResidue: row,
         selectedRow: sot,
-        type: 'steam-estimate',
+        type: 'residue-estimate',
         pagination: {
           where: this.lastSearchCriteria,
           pageSize: this.pageSize,
@@ -854,21 +926,23 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
+
           showResult: this.sotDS.totalCount > 0
+
         }
       }
     });
   }
-  updateSteamEstimate(event: Event, sot: StoringOrderItem, row: SteamItem) {
+  updateResidueEstimate(event: Event, sot: StoringOrderItem, row: ResidueItem) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/client-approval/new/', row.guid], {
+    this.router.navigate(['/admin/residue-disposal/client-approval/new/', row.guid], {
       state: {
         id: '',
         action: "UPDATE",
-        selectedSteam: row,
+        selectedResidue: row,
         selectedRow: sot,
-        type: 'steam-estimate',
+        type: 'residue-estimate',
         pagination: {
           where: this.lastSearchCriteria,
           pageSize: this.pageSize,
@@ -877,121 +951,108 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.sotDS.totalCount > 0
-
         }
       }
     });
   }
 
-  approveRow(event: Event, row: SteamItem) {
-    event.preventDefault();
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+    }
+  }
 
-    let re: any = new SteamItem();
-    re.guid = row?.guid;
-    re.sot_guid = row?.sot_guid;
-    re.bill_to_guid = row?.storing_order_tank?.storing_order?.customer_company_guid;;
-    re.status_cv = row?.status_cv;
+  approveRow(event: Event, row: ResidueItem) {
+    const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(row);
+    }
+    this.onApprove(event, row);
+  }
 
-    re.action = "APPROVE";
-    re.steaming_part = row.steaming_part?.map((rep: SteamPartItem) => {
-      return new SteamPartItem({
-        ...rep,
-        action: 'EDIT',
-        tariff_steaming_guid: (rep.tariff_steaming_guid ? rep.tariff_steaming_guid : ''),
-        approve_part: (rep.approve_part == null ? true : rep.approve_part),
-        approve_qty: Number(this.IsApproved(row) ? rep.approve_qty : rep.quantity),
-        approve_cost: Number(this.IsApproved(row) ? rep.approve_cost : rep.cost),
-        approve_labour: Number(this.IsApproved(row) ? rep.approve_labour : rep.labour),
-        // approve_qty: row rep.quantity,
-        // approve_cost:rep.cost,
-        // approve_labour:rep.labour,
-        job_order: undefined
-      })
+  onNoAction(event: Event, row: ResidueItem) {
+    this.preventDefault(event);
+
+
+    let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+    residueStatus.action = "NA";
+    residueStatus.guid = row?.guid;
+    residueStatus.sot_guid = row?.sot_guid;
+    residueStatus.remarks = '';
+    residueStatus.residuePartRequests = [];
+    row.residue_part?.forEach(d => {
+      var resPart: ResiduePartRequest = new ResiduePartRequest();
+      resPart.guid = d.guid;
+      resPart.approve_part = false;
+      residueStatus.residuePartRequests?.push(resPart);
     });
-    console.log(re)
-    this.steamDS.approveSteaming(re).subscribe(result => {
+    this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+
       console.log(result)
       this.search();
     });
   }
 
-  getCustomerLabourPackage(sot: StoringOrderTankItem) {
-    const customer_company_guid = sot.storing_order?.customer_company?.guid;
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    };
-    this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data.length > 0) {
-        var cost: number = data[0].cost;
-        sot.steaming = sot.steaming?.map(stm => {
-          var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
-          var net_cost = "";
-          if (isAutoApproveSteaming) {
-            net_cost = this.displayNumber(stm.rate || 0);
-            if (!stm.flat_rate) {
-              net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
-            }
-          }
-          else {
-            var isApproved = true;
-            isApproved = BusinessLogicUtil.isEstimateApproved(stm);
-            if (isApproved) {
-              net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
-            }
-            else {
-              net_cost = this.displayNumber(this.steamDS.getTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
-            }
-          }
+  onApprove(event: Event, row: ResidueItem) {
+    event.preventDefault();
+    let re: ResidueItem = new ResidueItem(row);
 
-          return { ...stm, net_cost: net_cost };
-        });
-        // var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
-        // if (isAutoApproveSteaming) {
-        //   row.net_cost = this.displayNumber(row.rate || 0);
-        //   if (!row.flat_rate) {
-        //     row.net_cost = this.displayNumber(row.total_hour * row.rate) 
-        //   }
-        // }
-        // else {
-        //   row.net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
-        // }
-      }
-      // if (data.length > 0) {
-      //   const cost = data[0].cost;
-      //   sot.steaming = sot.steaming?.map(stm => {
-      //     var stm_part = [...stm.steaming_part!];
-      //     stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
-      //     return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm, cost) };
-      //   });
-      // }
+    re.guid = row?.guid;
+    re.sot_guid = row?.sot_guid;
+    re.bill_to_guid = row?.storing_order_tank?.storing_order?.customer_company_guid;
+    re.status_cv = row?.status_cv;
+    var total_cost: number = 0;
+    re.residue_part?.forEach((rep: any) => {
+      rep.action = 'EDIT';
+      rep.approve_qty = (this.IsApproved(row) ? rep.approve_qty : rep.quantity);
+      rep.approve_cost = (this.IsApproved(row) ? rep.approve_cost : rep.cost);
+      rep.approve_part = (rep.approve_part == null || rep.approve_part ? true : false);
+      if (rep.approve_part == 1) total_cost += rep.approve_qty * rep.approve_cost;
+    })
+
+    re.residue_part = re.residue_part?.map((rep: ResiduePartItem) => {
+      return new ResiduePartItem({
+        ...rep,
+        tariff_residue: undefined,
+        approve_part: rep.approve_part,
+        approve_qty: rep.approve_qty,
+        approve_cost: rep.approve_cost
+      })
     });
-
-  }
-
-  RefreshSotNetCost() {
-    this.sotList.map(sot => {
-      this.getCustomerLabourPackage(sot);
+    re.total_cost = total_cost;
+    delete re.storing_order_tank;
+    console.log(re)
+    this.residueDS.approveResidue(re).subscribe(result => {
+      console.log(result)
+      this.search();
+      this.handleSaveSuccess(result?.data?.approveResidue);
     });
   }
 
-  canApprove(steamItem: SteamItem) {
-    return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
+  IsEnable3Dots(residueRow: any): boolean {
+    var bRetval: boolean = false;
+
+    bRetval = this.residueDS.canApprove(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canCopy(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canRollback(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canCancel(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canNoAction(residueRow);
+    if (bRetval) return bRetval;
+
+    return bRetval;
   }
 
-  getMaxDate() {
-    return new Date();
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
   }
-
-  // IsApproved(steamItem:SteamItem):boolean
-  // {
-  //   const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
-  //   return validStatus.includes(steamItem?.status_cv!);
-
-  // }
 
   @ViewChild(TlxCardListComponent) cardListComponent!: TlxCardListComponent;
   onTouchStart(event: TouchEvent): void {
@@ -1011,19 +1072,19 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
 
   goToPage(item: any, index: number): void {
     const guid = item.guid;
-    const allPages = this.pagedSteamDataFull[guid] || [];
+    const allPages = this.pagedResidueDataFull[guid] || [];
     const total = allPages.length;
 
     if (index >= 0 && index < total) {
-      this.currentSteamIndex[guid] = index;
-      this.pagedSteamData[guid] = allPages[index];
+      this.currentResidueIndex[guid] = index;
+      this.pagedResidueData[guid] = allPages[index];
     }
   }
 
   goToNextPage(item: any): void {
     const guid = item.guid;
-    const current = this.currentSteamIndex[guid];
-    const max = this.pagedSteamDataFull[guid]?.length || 0;
+    const current = this.currentResidueIndex[guid];
+    const max = this.pagedResidueDataFull[guid]?.length || 0;
 
     if (current < max - 1) {
       this.goToPage(item, current + 1);
@@ -1032,59 +1093,14 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
 
   goToPrevPage(item: any): void {
     const guid = item.guid;
-    const current = this.currentSteamIndex[guid];
+    const current = this.currentResidueIndex[guid];
 
     if (current > 0) {
       this.goToPage(item, current - 1);
     }
   }
 
-  groupedRepairs: TableGroup[] = [];
-
-  footers: TableFooter[] = [
-    { content: 'Total Material Cost: $318.34', colspan: 7, class: 'text-end' },
-    { content: 'Total Price: $238.39', colspan: 7, class: 'text-end fw-bold' }
-  ];
-
-  onRepairClick(event: { item: any, index: number, group?: TableGroup }): void {
-    console.log('Repair clicked:', event.item);
-    console.log('Index:', event.index);
-    console.log('Group:', event.group?.groupLabel);
-  }
-
-  onUserClick(event: { item: any, index: number }): void {
-    console.log('User clicked:', event.item.name);
-  }
-
-  onGroupToggle(group: TableGroup): void {
-    console.log(`Group "${group.groupLabel}" ${group.isExpanded ? 'expanded' : 'collapsed'}`);
-  }
-
-  onPageChange(page: number): void {
-    console.log('Page changed to:', page + 1);
-  }
-
-  getFooterWidth(footer: TableFooter): string {
-    return footer.colspan ? (footer.colspan * 11.11) + '%' : '100%';
-  }
-
-  IsEnable3Dots(steamRow: any): boolean {
-    var bRetval: boolean = false;
-
-    return bRetval;
-  }
-
-  AutoSearch() {
-    if (Utility.IsAllowAutoSearch()) {
-      this.search();
-    }
-  }
-
-  displayNumber(value: number) {
-    return Utility.formatNumberDisplay(value);
-  }
-
   isAllowClientApproval() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_CLIENT']);
+    return this.modulePackageService.hasFunctions(['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT']);
   }
 }

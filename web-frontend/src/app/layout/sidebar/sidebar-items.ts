@@ -529,7 +529,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/steam/client-approval",
-        title: "MENUITEMS.STEAM.LIST.APPROVAL",
+        title: "MENUITEMS.STEAM.LIST.CLIENT-APPROVAL",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -610,7 +610,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         visible: true,
         modulePackage: ['growth', 'customized'],
-        expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'],
+        expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'],
         submenu: [],
       },
       {
@@ -626,6 +626,20 @@ export const ROUTES: RouteInfo[] = [
         modulePackage: ['growth', 'customized'],
         expectedFunctions: ['RESIDUE_DISPOSAL_JOB_ALLOCATION_EDIT', 'RESIDUE_DISPOSAL_JOB_ALLOCATION_DELETE', 'RESIDUE_DISPOSAL_JOB_ALLOCATION_VIEW', 'RESIDUE_DISPOSAL_JOBS_VIEW', 'RESIDUE_DISPOSAL_JOBS_DELETE', 'RESIDUE_DISPOSAL_JOBS_EDIT'],
         submenu: [],
+      },
+      {
+        path: "admin/residue-disposal/client-approval",
+        title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.CLIENT-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        visible: true,
+        modulePackage: ['growth', 'customized'],
+        expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_CLIENT'],
+        submenu: []
       }
     ].filter(item => item.visible !== false),
   },
@@ -667,7 +681,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         visible: true,
         modulePackage: ['starter', 'growth', 'customized'],
-        expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'],
+        expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW'],
         submenu: [],
       },
       {
@@ -683,6 +697,20 @@ export const ROUTES: RouteInfo[] = [
         modulePackage: ['starter', 'growth', 'customized'],
         expectedFunctions: ['REPAIR_JOB_ALLOCATION_DELETE', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_VIEW', 'REPAIR_JOBS_DELETE', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_VIEW', 'REPAIR_QC_DELETE', 'REPAIR_QC_EDIT', 'REPAIR_QC_VIEW'],
         submenu: [],
+      },
+      {
+        path: "admin/repair/client-approval",
+        title: "MENUITEMS.REPAIR.LIST.CLIENT-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        visible: true,
+        modulePackage: ['growth', 'customized'],
+        expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_CLIENT'],
+        submenu: []
       }
     ]
   },
