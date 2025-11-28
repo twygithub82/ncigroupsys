@@ -39,6 +39,7 @@ import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -206,6 +207,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     private route: ActivatedRoute,
     private router: Router,
     private fileManagerService: FileManagerService,
+    private searchStateService: SearchStateService,
   ) {
     super();
     this.translateLangText();
@@ -514,6 +516,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
+      this.searchStateService.clearOtherPagesKeys([]);
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
