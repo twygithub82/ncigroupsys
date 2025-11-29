@@ -1,22 +1,30 @@
-﻿using HotChocolate;
-using IDMS.Models.Service.GqlTypes.DB;
-using IDMS.Models.Master;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using CommonUtil.Core.Service;
-using IDMS.Models.Service;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Repair.GqlTypes.LocalModel;
-using HotChocolate.Types;
-using IDMS.Service.GqlTypes;
-using IDMS.Models.Inventory;
+﻿using CommonUtil.Core.Service;
+using HotChocolate;
 using HotChocolate.Data.Projections;
+using HotChocolate.Types;
+using IDMS.Models.Inventory;
+using IDMS.Models.Master;
+using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
+using IDMS.Repair.GqlTypes.LocalModel;
+using IDMS.Service.GqlTypes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Repair.GqlTypes
 {
     [ExtendObjectType(typeof(ServiceMutation))]
     public class RepairMutation
     {
+        private readonly ILogger<RepairMutation> _logger;
+
+        public RepairMutation(ILogger<RepairMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair, customer_company? customerCompany)
         {
@@ -78,12 +86,18 @@ namespace IDMS.Repair.GqlTypes
                     cust.def_template_guid = customerCompany.def_template_guid;
                     cust.update_by = user;
                     cust.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Customer default template updated for customer_company_guid: {CustomerCompanyGuid}", customerCompany.guid);
                 }
 
 
                 //Handing of SOT movement status
                 if (string.IsNullOrEmpty(repair.sot_guid))
+                {
+                    _logger.LogError("SOT guid is null or empty");
                     throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                }
+
                 var sot = new storing_order_tank() { guid = repair.sot_guid };
                 context.storing_order_tank.Attach(sot);
                 sot.tank_status_cv = TankMovementStatus.REPAIR;
@@ -92,6 +106,7 @@ namespace IDMS.Repair.GqlTypes
 
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("New repair added with guid: {RepairGuid}", newRepair.guid);
 
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -100,7 +115,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AddRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> ApproveRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -136,6 +152,7 @@ namespace IDMS.Repair.GqlTypes
                         appvRepair.status_cv = CurrentServiceStatus.APPROVED;
                         appvRepair.approve_by = user;
                         appvRepair.approve_dt = currentDateTime;
+                        _logger.LogInformation("Repair with guid: {RepairGuid} approved", repair.guid);
                     }
 
                     if (repair.repair_part != null)
@@ -153,6 +170,8 @@ namespace IDMS.Repair.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                         }
+
+                        _logger.LogInformation("Repair parts updated for repair guid: {RepairGuid}", repair.guid);
                     }
 
                     //JobOrder Handling
@@ -161,11 +180,14 @@ namespace IDMS.Repair.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("ApproveRepair completed for repair guid: {RepairGuid}", repair.guid);
+
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "ApproveRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> UpdateRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -177,15 +199,20 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (string.IsNullOrEmpty(repair.guid))
+                {
+                    _logger.LogError("Repair guid used for update cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair guid used for update cannot be null or empty", "ERROR"));
+                }
 
                 var updateRepair = await context.repair.Where(t => t.guid == repair.guid && (t.delete_dt == null || t.delete_dt == 0))
                                                           .Include(t => t.repair_part)
                                                             .ThenInclude(tp => tp.rp_damage_repair)
                                                           .FirstOrDefaultAsync();
-
                 if (updateRepair == null)
+                {
+                    _logger.LogError("Repair not found for guid: {RepairGuid}", repair.guid);
                     throw new GraphQLException(new Error($"Repair not found", "ERROR"));
+                }
 
                 updateRepair.update_by = user;
                 updateRepair.update_dt = currentDateTime;
@@ -201,6 +228,7 @@ namespace IDMS.Repair.GqlTypes
                 {
                     updateRepair.bill_to_guid = repair.bill_to_guid;
                     updateRepair.overwrite_remarks = repair.overwrite_remarks;
+                    _logger.LogInformation("Repair with guid: {RepairGuid} OVERWRITE", repair.guid);
                 }
                 else
                 {
@@ -211,6 +239,8 @@ namespace IDMS.Repair.GqlTypes
                     updateRepair.total_hour = repair.total_hour;
                     updateRepair.estimate_no = repair.estimate_no;
                     updateRepair.remarks = repair.remarks;
+
+                    _logger.LogInformation("Repair with guid: {RepairGuid} UPDATED", repair.guid);
                 }
 
                 if (repair.repair_part != null)
@@ -228,18 +258,20 @@ namespace IDMS.Repair.GqlTypes
                             newRepairPart.repair_guid = updateRepair.guid;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part);
                             await context.repair_part.AddAsync(newRepairPart);
+                            _logger.LogInformation("Repair part with guid: {RepairPartGuid} ADDED", newRepairPart.guid);
                             continue;
                         }
 
 
                         var existingPart = updateRepair.repair_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
                         if (existingPart == null)
+                        {
+                            _logger.LogError("Repair_part not found for guid: {RepairPartGuid}", part.guid);
                             throw new GraphQLException(new Error($"Repair_part guid used for update cannot be null or empty", "ERROR"));
+                        }
 
                         if (ObjectAction.EDIT.EqualsIgnore(part.action))
                         {
-                            //var existingPart = new repair_est_part() { guid = part.guid };
-                            //context.Attach(existingPart);
                             existingPart.update_by = user;
                             existingPart.update_dt = currentDateTime;
                             existingPart.tariff_repair_guid = part.tariff_repair_guid;
@@ -253,6 +285,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.remarks = part.remarks;
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
+                            _logger.LogInformation("Repair part with guid: {RepairPartGuid} EDITED", part.guid);
                             continue;
                         }
 
@@ -266,6 +299,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.update_by = user;
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
+                            _logger.LogInformation("Repair part with guid: {RepairPartGuid} CANCELLED", part.guid);
                             continue;
                         }
 
@@ -276,6 +310,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(part.approve_cost);
                             existingPart.approve_hour = part.approve_hour;
                             existingPart.owner = part.owner;
+                            _logger.LogInformation("Repair part with guid: {RepairPartGuid} OVERWRITE", part.guid);
+                            continue;
                         }
                     }
                 }
@@ -289,9 +325,11 @@ namespace IDMS.Repair.GqlTypes
                     cust.def_template_guid = customerCompany.def_template_guid;
                     cust.update_by = user;
                     cust.update_dt = currentDateTime;
+                    _logger.LogInformation("Customer default template updated for customer_company_guid: {CustomerCompanyGuid}", customerCompany.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Repair with guid: {RepairGuid} update completed", repair.guid);
 
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -300,7 +338,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> AbortRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -312,7 +351,10 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
+                {
+                    _logger.LogError("Repair object used for abort cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                }
 
                 //repair handling
                 var abortRepair = new repair() { guid = repJobOrder.guid };
@@ -331,10 +373,16 @@ namespace IDMS.Repair.GqlTypes
                 {
                     abortRepair.status_cv = CurrentServiceStatus.COMPLETED;
                     abortRepair.complete_dt = currentDateTime;
+                    _logger.LogInformation("Repair with guid: {RepairGuid} ABORTED to COMPLETED", repJobOrder.guid);
                 }
                 else
+                {
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                    _logger.LogInformation("Repair with guid: {RepairGuid} ABORTED to NO_ACTION", repJobOrder.guid);
+                }
+
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AbortRepair completed for repair guid: {RepairGuid}", repJobOrder.guid);
 
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid, repJobOrder.guid);
 
@@ -342,7 +390,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AbortRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> UpdateRepairStatus(ApplicationServiceDBContext context, [Service] IConfiguration config,
@@ -355,7 +404,11 @@ namespace IDMS.Repair.GqlTypes
                 bool tankMovementCheck = false;
 
                 if (repair == null)
+                {
+                    _logger.LogError("Repair object used for status update cannot be null or empty");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
+
 
                 var updateRepair = new repair() { guid = repair.guid };
                 context.repair.Attach(updateRepair);
@@ -367,31 +420,35 @@ namespace IDMS.Repair.GqlTypes
                 {
                     case ObjectAction.IN_PROGRESS:
                         if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.JOB_IN_PROGRESS))
+                        {
                             updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                            _logger.LogInformation("Repair with guid: {RepairGuid} status updated to IN_PROGRESS", repair.guid);
+                        }
                         break;
-                    //case ObjectAction.JOB_COMPLETE:
-                    //    if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.JOB_COMPLETED))
-                    //        updateRepair.status_cv = CurrentServiceStatus.JOB_COMPLETED;
-                    //    break;
                     case ObjectAction.PARTIAL:
                         updateRepair.status_cv = CurrentServiceStatus.PARTIAL;
+                        _logger.LogError("Repair with guid: {RepairGuid} status updated to PARTIAL", repair.guid);
                         break;
                     case ObjectAction.ASSIGN:
                         updateRepair.status_cv = CurrentServiceStatus.ASSIGNED;
+                        _logger.LogInformation("Repair with guid: {RepairGuid} status updated to ASSIGNED", repair.guid);
                         break;
                     case ObjectAction.CANCEL:
                         updateRepair.status_cv = CurrentServiceStatus.CANCELED;
+                        _logger.LogInformation("Repair with guid: {RepairGuid} status updated to CANCELED", repair.guid);
                         break;
                     case ObjectAction.COMPLETE:
                         if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.COMPLETED))
                         {
                             updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
                             updateRepair.complete_dt = currentDateTime;
+                            _logger.LogInformation("Repair with guid: {RepairGuid} status updated to COMPLETED", repair.guid);
                         }
                         break;
                     case ObjectAction.NA:
                         updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateRepair.na_dt = currentDateTime;
+                        _logger.LogInformation("Repair with guid: {RepairGuid} status updated to NO_ACTION", repair.guid);
 
                         foreach (var item in repair.repairPartRequests)
                         {
@@ -404,13 +461,16 @@ namespace IDMS.Repair.GqlTypes
 
                         //Tank handling
                         if (string.IsNullOrEmpty(repair.sot_guid))
+                        {
+                            _logger.LogError("Tank guid used for NA status update cannot be null or empty");
                             throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
-
+                        }
                         tankMovementCheck = true;
                         break;
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateRepairStatus completed for repair guid: {RepairGuid}", repair.guid);
 
                 if (tankMovementCheck)
                     await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repair.sot_guid);
@@ -420,7 +480,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateRepairStatus failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> CompleteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -432,7 +493,10 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
+                {
+                    _logger.LogError("Repair object used for QC completion cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in repJobOrder)
                 {
@@ -456,7 +520,10 @@ namespace IDMS.Repair.GqlTypes
                 var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
                 var processGuid = string.Join(",", repJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
                 if (string.IsNullOrEmpty(sotGuid))
+                {
+                    _logger.LogError("Tank guid used for QC completion cannot be null or empty");
                     throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+                }
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, sotGuid);
@@ -466,7 +533,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "CompleteQCRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -483,12 +551,12 @@ namespace IDMS.Repair.GqlTypes
                 {
                     if (item != null && !string.IsNullOrEmpty(item.guid))
                     {
-                        //var rollbackRepair = new repair() { guid = item.guid };
-                        //context.repair.Attach(rollbackRepair);
-
                         var rollbackRepair = await context.repair.FindAsync(item.guid);
                         if (rollbackRepair == null)
+                        {
+                            _logger.LogError("Reapir estimate not found for guid: {RepairGuid}", item.guid);
                             throw new GraphQLException(new Error($"Reapir estimate not found", "ERROR"));
+                        }
 
                         rollbackRepair.update_by = user;
                         rollbackRepair.update_dt = currentDateTime;
@@ -501,7 +569,10 @@ namespace IDMS.Repair.GqlTypes
                         linkSotGuid = rollbackRepair.sot_guid;
 
                         if (string.IsNullOrEmpty(item.customer_guid))
+                        {
+                            _logger.LogError("Customer company guid used for repair rollback cannot be null or empty");
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+                        }
 
                         var customerGuid = item.customer_guid;
                         var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
@@ -517,6 +588,7 @@ namespace IDMS.Repair.GqlTypes
                                 part.approve_hour = part.hour;
                                 part.approve_qty = part.quantity;
                             }
+                            _logger.LogInformation("RollbackRepair: Repair with guid: {RepairGuid} rolled back to pending approval", item.guid);
                         }
                         else//if the repair still pending, rollback the repair
                         {
@@ -529,11 +601,13 @@ namespace IDMS.Repair.GqlTypes
                                 part.update_dt = currentDateTime;
                                 part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
                             }
+                            _logger.LogInformation("RollbackRepair: Repair with guid: {RepairGuid} rolled back to package repair costs", item.guid);
                         }
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackRepair completed for repair guids: {RepairGuids}", string.Join(", ", repair.Select(r => r.guid)));
 
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, linkSotGuid, "");
 
@@ -541,7 +615,8 @@ namespace IDMS.Repair.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> RollbackQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -553,7 +628,11 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
+                {
+                    _logger.LogError("Repair object used for QC rollback cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                }
+                    
 
                 foreach (var item in repJobOrder)
                 {
@@ -566,11 +645,24 @@ namespace IDMS.Repair.GqlTypes
                     rollbackQCRepair.remarks = item.remarks;
 
                     //job_orders handling
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    //var jobRemark = item.job_order.Select(j => j.remarks).First();
-                    string sql = $"UPDATE job_order SET qc_dt = NULL, update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
-                    context.Database.ExecuteSqlRaw(sql);
+                    var jobIds = item?.job_order?.Select(j => j.guid).ToList();
+                    var jobOrders = await context.job_order.Where(j => jobIds.Contains(j.guid)).ToListAsync();
+
+                    foreach (var job in jobOrders)
+                    {
+                        job.qc_dt = null;
+                        context.Entry(job).Property(e => e.qc_dt).IsModified = true;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+                    }
+
+                    _logger.LogInformation("RollbackQCRepair: Updated repair and jobs for GUID {Guid}", item?.guid);
+
+                    //var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    ////var jobRemark = item.job_order.Select(j => j.remarks).First();
+                    //string sql = $"UPDATE job_order SET qc_dt = NULL, update_dt = {currentDateTime}, " +
+                    //             $"update_by = '{user}' WHERE guid IN ({guids})";
+                    //context.Database.ExecuteSqlRaw(sql);
                 }
 
                 //Tank handling
@@ -584,15 +676,18 @@ namespace IDMS.Repair.GqlTypes
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                     sot.tank_status_cv = TankMovementStatus.REPAIR;
+                    _logger.LogInformation("RollbackQCRepair: Updated tank status to REPAIR for SOT GUID {SotGuid}", sotGuid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackQCRepair completed for repair guids: {RepairGuids}", string.Join(", ", repJobOrder.Select(r => r.guid)));
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackQCRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> OverwriteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -604,7 +699,10 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
+                {
+                    _logger.LogError("Repair object used for QC overwrite cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in repJobOrder)
                 {
@@ -629,12 +727,14 @@ namespace IDMS.Repair.GqlTypes
                     }
                 }
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("OverwriteQCRepair completed for repair guids: {RepairGuids}", string.Join(", ", repJobOrder.Select(r => r.guid)));
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "OverwriteQCRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> RollbackCompletedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -646,7 +746,10 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
-                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                {
+                    _logger.LogError("Repair object used for rollback cannot be null or empty");
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));   
+                }
 
                 foreach (var item in repJobOrder)
                 {
@@ -664,45 +767,48 @@ namespace IDMS.Repair.GqlTypes
                     var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIdList.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
                     {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                     $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        job.status_cv = JobStatus.IN_PROGRESS;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+
+                        var remark = item.job_order
+                            .FirstOrDefault(x => x.guid == job.guid)?.remarks;
+
+                        if (!string.IsNullOrWhiteSpace(remark))
+                            job.remarks = remark;
                     }
-                    else
-                    {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                     $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                    }
 
-                    context.Database.ExecuteSqlRaw(sql);
-
-
-                    //var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
-                    //foreach (var tt in timeTables)
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
                     //{
-                    //    tt.stop_time = null;
-                    //    tt.update_by = user;
-                    //    tt.update_dt = currentDateTime;
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //                 $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                     //}
+                    //else
+                    //{
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //                 $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
+
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
                                                              .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
-
                     if (timeTables != null)
                     {
                         timeTables.stop_time = null;
                         timeTables.update_by = user;
                         timeTables.update_dt = currentDateTime;
                     }
+                    _logger.LogInformation("RollbackCompletedRepair: Updated repair, jobs, timetable for GUID {Guid}", item.guid);  
                 }
 
                 //Tank handling
                 var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
                 var tankStatus = repJobOrder.Select(r => r.sot_status).FirstOrDefault();
-                //var sot = await context.storing_order_tank.FindAsync(sotGuid);
-                //context.storing_order_tank.Attach(sot);
-                //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+
                 var sot = new storing_order_tank() { guid = sotGuid };
                 context.storing_order_tank.Attach(sot);
                 sot.update_by = user;
@@ -716,14 +822,18 @@ namespace IDMS.Repair.GqlTypes
                     if (jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.REPAIR;
                 }
+                _logger.LogInformation("RollbackCompletedRepair: Updated tank status for SOT GUID {SotGuid} to {TankStatus}", sotGuid, sot.tank_status_cv);
+
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackCompletedRepair completed for repair guids: {RepairGuids}", string.Join(", ", repJobOrder.Select(r => r.guid)));
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackCompletedRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> RollbackJobInProgressRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -735,40 +845,63 @@ namespace IDMS.Repair.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (repJobOrder == null)
+                {
+                    _logger.LogError("Repair object used for rollback cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in repJobOrder)
                 {
                     //Repair handling
                     var rollbackRepair = await context.repair.FindAsync(item.guid);
                     if (rollbackRepair == null)
+                    {
+                        _logger.LogError("Repair estimate not found for guid: {RepairGuid}", item.guid);
                         throw new GraphQLException(new Error($"Repair estimate not found", "ERROR"));
+                    }
 
                     rollbackRepair.update_by = user;
                     rollbackRepair.update_dt = currentDateTime;
                     if (!string.IsNullOrEmpty(item.remarks))
                         rollbackRepair.remarks = item.remarks;
                     if (rollbackRepair.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                    {
                         rollbackRepair.status_cv = CurrentServiceStatus.ASSIGNED;
+                        _logger.LogInformation("RollbackJobInProgressRepair change status to ASSIGNED");
+                    }
 
                     //job_orders handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
                     var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIdList.Contains(j.guid)).ToListAsync();
+
+                    foreach (var job in jobOrders)
                     {
-                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                              $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
-                    }
-                    else
-                    {
-                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                              $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                        job.status_cv = JobStatus.PENDING;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+
+                        var remark = item.job_order
+                            .FirstOrDefault(x => x.guid == job.guid)?.remarks;
+
+                        if (!string.IsNullOrWhiteSpace(remark))
+                            job.remarks = remark;
                     }
 
-                    context.Database.ExecuteSqlRaw(sql);
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
+                    //{
+                    //    sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //          $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //else
+                    //{
+                    //    sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //          $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
@@ -778,14 +911,19 @@ namespace IDMS.Repair.GqlTypes
                         tt.update_by = user;
                         tt.update_dt = currentDateTime;
                     }
+
+                    _logger.LogInformation("RollbackJobInProgressRepair: Updated repair, jobs, timetable for GUID {Guid}", item.guid);
+
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackJobInProgressRepair completed for repair guids: {RepairGuids}", string.Join(", ", repJobOrder.Select(r => r.guid)));
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackJobInProgressRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> RollbackAssignedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -805,11 +943,16 @@ namespace IDMS.Repair.GqlTypes
                         .Where(r => r.guid == item).FirstOrDefaultAsync();
 
                     if (rollbackRepair == null)
-                        throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+                    {
+                        _logger.LogError("Repair estimate not found for guid: {RepairGuid}", item);
+                        throw new GraphQLException(new Error($"Repair estimate not found", "ERROR"));
+                    }
 
                     rollbackRepair.update_by = user;
                     rollbackRepair.update_dt = currentDateTime;
                     rollbackRepair.status_cv = CurrentServiceStatus.APPROVED;
+                    _logger.LogInformation("RollbackAssignedRepair change status to APPROVED");
+
                     if (!string.IsNullOrEmpty(remark))
                         rollbackRepair.remarks = remark;
 
@@ -832,15 +975,18 @@ namespace IDMS.Repair.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                         }
+                        _logger.LogInformation("RollbackAssignedRepair processed for repair parts count: {RepairPartCount}", repairarts.Count());
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackAssignedRepair completed for repair guids: {RepairGuids}", string.Join(", ", repairGuid));
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackAssignedRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

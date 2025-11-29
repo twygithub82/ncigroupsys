@@ -1,18 +1,27 @@
-﻿using HotChocolate.Types;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
-using Microsoft.AspNetCore.Http;
+using HotChocolate.Types;
+using IDMS.Models;
+using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Shared;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Service;
-using Microsoft.Extensions.Configuration;
-using IDMS.Models;
 using IDMS.Service.GqlTypes.LocalModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Service.GqlTypes
 {
     public class ServiceQuery
     {
+        private readonly ILogger<ServiceQuery> _logger;
+
+        public ServiceQuery(ILogger<ServiceQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -28,11 +37,13 @@ namespace IDMS.Service.GqlTypes
                                 .Include(j => j.repair_part).ThenInclude(p => p.repair)
                                 .Where(d => d.delete_dt == null || d.delete_dt == 0);
 
+                _logger.LogInformation("QueryJobOrder called.");
                 return jobOrders;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryJobOrder failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -43,15 +54,18 @@ namespace IDMS.Service.GqlTypes
         [UseSorting]
         public IQueryable<team> QueryTeams(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
+
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var teamDetails = context.team.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                _logger.LogInformation("QueryTeams called.");
                 return teamDetails;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.StackTrace}", "ERROR"));
+                _logger.LogError(ex, "QueryTeams failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -74,12 +88,14 @@ namespace IDMS.Service.GqlTypes
                                                          t.job_order.Where(j => j.delete_dt == null).Count(),
                                       })
                                       .AsQueryable();
+                _logger.LogInformation("QueryTeamsWithCount called.");
                 return result;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.StackTrace}", "ERROR"));
+                _logger.LogError(ex, "QueryTeamsWithCount failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -93,11 +109,13 @@ namespace IDMS.Service.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var user = context.aspnetusers.AsSplitQuery(); //.Include(a => a.aspnetuserroles);
+                _logger.LogInformation("QueryUsers called.");
                 return user;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryUsers failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -107,15 +125,18 @@ namespace IDMS.Service.GqlTypes
         [UseSorting]
         public IQueryable<role> QueryRoles(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
+
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var roles = context.role.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                _logger.LogInformation("QueryRoles called.");
                 return roles;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryRoles failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -125,15 +146,18 @@ namespace IDMS.Service.GqlTypes
         [UseSorting]
         public IQueryable<functions> QueryFunctions(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
+
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var functions = context.Set<functions>().Where(d => d.delete_dt == null || d.delete_dt == 0);
+                _logger.LogInformation("QueryFunctions called.");
                 return functions;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryFunctions failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

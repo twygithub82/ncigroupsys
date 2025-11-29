@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.ServiceMS
 {
@@ -23,7 +24,14 @@ namespace IDMS.ServiceMS
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpContextAccessor();
 
+            // Configure logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.SetMinimumLevel(LogLevel.Information);
+
             string connectionString = builder.Configuration.GetConnectionString("default");
+            string notificationUrl = builder.Configuration.GetSection("GlobalNotificationURL").Value.ToString();
+
             // Add services to the container.
             var JWT_validAudience = builder.Configuration.GetSection("JWT").GetSection("VALIDAUDIENCE").Value.ToString();
             var JWT_validIssuer = builder.Configuration.GetSection("JWT").GetSection("VALIDISSUER").Value.ToString();
@@ -39,7 +47,7 @@ namespace IDMS.ServiceMS
                                           maxRetryDelay: TimeSpan.FromSeconds(10),
                                           errorNumbersToAdd: null)
                             .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
-                            ).LogTo(Console.WriteLine);
+                            );//.LogTo(Console.WriteLine);
             });
 
 
@@ -51,11 +59,6 @@ namespace IDMS.ServiceMS
 
             IMapper mapper = mappingConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
-
-            //builder.Services.AddControllers();
-            //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            //builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen();
 
             builder.Services.AddGraphQLServer()
                        .InitializeOnStartup(keepWarm: true)
@@ -109,14 +112,38 @@ namespace IDMS.ServiceMS
             //    app.UseSwaggerUI();
             //}
             var app = builder.Build();
+
+            // Resolve logger and log startup information
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Application starting up.");
+            logger.LogInformation("GraphQL server initializing. Environment: {env}", app.Environment.EnvironmentName);
+            logger.LogInformation($"Using database connection string: {connectionString}");
+            logger.LogInformation($"Global Notification URL: {notificationUrl}");
+
+
             //Specially created to solve slow after idle for sometime
-            GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
+            //GqlUtils.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
+            GqlUtils.Initialize(app.Services.GetRequiredService<ILoggerFactory>());
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             //app.UseWebSockets();//Subscription using websockets, must add this middleware
             app.MapGraphQL();
-            app.Run();
+
+            try
+            {
+                logger.LogInformation("Listening and serving GraphQL requests.");
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(ex, "Host terminated unexpectedly.");
+                throw;
+            }
+            finally
+            {
+                logger.LogInformation("Application shutdown complete.");
+            }
         }
     }
 }

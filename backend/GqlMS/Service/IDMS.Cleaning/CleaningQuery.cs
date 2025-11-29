@@ -5,12 +5,19 @@ using Microsoft.Extensions.Configuration;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using IDMS.Service.GqlTypes;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Cleaning.GqlTypes
 {
     [ExtendObjectType(typeof(ServiceQuery))]
     public class CleaningQuery
     {
+        private readonly ILogger<CleaningQuery> _logger;
+
+        public CleaningQuery(ILogger<CleaningQuery> logger)
+        {
+            _logger = logger;
+        }
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -21,12 +28,14 @@ namespace IDMS.Cleaning.GqlTypes
             IQueryable<cleaning> query = null;
             try
             {
+                _logger.LogInformation("QueryCleaning called");
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryCleaning failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
 
             return query;

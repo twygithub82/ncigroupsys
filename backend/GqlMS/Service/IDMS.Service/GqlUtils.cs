@@ -2,12 +2,14 @@
 using HotChocolate;
 using IDMS.Models;
 using IDMS.Models.Notification;
+using IDMS.Models.Package;
 using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,6 +21,14 @@ namespace IDMS.Service.GqlTypes
 {
     public static class GqlUtils
     {
+        private static ILogger? _logger;
+
+        public static void Initialize(ILoggerFactory factory)
+        {
+            _logger = factory.CreateLogger(nameof(GqlUtils));
+        }
+
+
         public static async void PingThread(IServiceScope scope, int duration)
         {
             Thread t = new Thread(async () =>
@@ -98,12 +108,14 @@ namespace IDMS.Service.GqlTypes
                     uid = authUser.FindFirst("name").Value;
                 if (primarygroupSid != "s1")
                 {
+                    _logger?.LogError("Unauthorized access attempt by user: {UserId}", uid);
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
 
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
+                _logger?.LogError(ex, "Authorization failed");  
                 throw new Exception("Unauthorized - " + ex.Message);
             }
             return uid;
@@ -230,6 +242,110 @@ namespace IDMS.Service.GqlTypes
             {
                 if (ObjectAction.APPROVE.EqualsIgnore(action))
                 {
+                    //string partTableName = "";
+                    //string processGuidName = "";
+
+                    var pt = processType.ToLowerInvariant();
+
+                    IQueryable<job_order>? query = pt switch
+                    {
+                        "cleaning" =>
+                            from jo in context.job_order
+                            join c in context.cleaning on jo.guid equals c.job_order_guid
+                            where jo.delete_dt == null
+                                  && c.delete_dt == null
+                                  && c.guid == processGuid
+                            select jo,
+
+                        "steaming" =>
+                            from jo in context.job_order
+                            join s in context.steaming_part on jo.guid equals s.job_order_guid
+                            where jo.delete_dt == null
+                                  && s.delete_dt == null
+                                  && s.steaming_guid == processGuid
+                                  && s.approve_part == true
+                            select jo,
+
+                        "residue" =>
+                            from jo in context.job_order
+                            join r in context.residue_part on jo.guid equals r.job_order_guid
+                            where jo.delete_dt == null
+                                  && r.delete_dt == null
+                                  && r.residue_guid == processGuid
+                                  && r.approve_part == true
+                            select jo,
+
+                        "repair" =>
+                            from jo in context.job_order
+                            join rp in context.repair_part on jo.guid equals rp.job_order_guid
+                            where jo.delete_dt == null
+                                  && rp.delete_dt == null
+                                  && rp.repair_guid == processGuid
+                                  && rp.approve_part == true
+                            select jo,
+
+                        _ => null
+                    };
+
+
+                    if (query is null)
+                    {
+                        _logger?.LogError("Invalid process type provided: {ProcessType}", processType);
+                        throw new Exception($"Invalid process type: {processType}");
+                    }
+
+                    // Distinct in case of accidental duplicates due to data issues
+                    var jobOrderList = await query.Distinct().ToListAsync();
+                    foreach (var item in jobOrderList)
+                    {
+                        if (item != null && JobStatus.CANCELED.EqualsIgnore(item.status_cv))
+                        {
+                            item.status_cv = JobStatus.PENDING;
+                            item.update_by = user;
+                            item.update_dt = currentDateTime;
+                        }
+                    }
+
+                }
+                else if (ObjectAction.CANCEL.EqualsIgnore(action))
+                {
+                    foreach (var item in jobOrders)
+                    {
+                        if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                        {
+                            var job_order = new job_order() { guid = item.guid };
+                            context.job_order.Attach(job_order);
+                            job_order.status_cv = JobStatus.CANCELED;
+                            job_order.update_by = user;
+                            job_order.update_dt = currentDateTime;
+                        }
+                    }
+                }
+                else if (ObjectAction.ROLLBACK.EqualsIgnore(action))
+                {
+                    foreach (var item in jobOrders)
+                    {
+                        var job_order = new job_order() { guid = item.guid };
+                        context.job_order.Attach(job_order);
+                        job_order.status_cv = JobStatus.PENDING;
+                        job_order.update_by = user;
+                        job_order.update_dt = currentDateTime;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "JobOrderHandling failed for processType: {ProcessType}, action: {Action}", processType, action);
+                throw;
+            }
+        }
+
+        public static async Task JobOrderHandling_Bk(ApplicationServiceDBContext context, string processType, string user, long currentDateTime, string action, string? processGuid = "", List<job_order>? jobOrders = null)
+        {
+            try
+            {
+                if (ObjectAction.APPROVE.EqualsIgnore(action))
+                {
                     string partTableName = "";
                     string processGuidName = "";
 
@@ -323,7 +439,7 @@ namespace IDMS.Service.GqlTypes
             return result;
         }
 
-        public static async Task<bool> StatusChangeConditionCheck(ApplicationServiceDBContext context, string processType, string processGuid, string newStatus)
+        public static async Task<bool> StatusChangeConditionCheck_BK(ApplicationServiceDBContext context, string processType, string processGuid, string newStatus)
         {
             try
             {
@@ -367,7 +483,9 @@ namespace IDMS.Service.GqlTypes
                     }
 
                     var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToListAsync();
-                    //if (jobOrderList != null & jobOrderList?.Count > 0 & !jobOrderList.Any(j => j == null))
+                    
+
+
                     if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
                     {
                         bool allValid = false;
@@ -399,7 +517,93 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid, string processGuid = "")
+        public static async Task<bool> StatusChangeConditionCheck(ApplicationServiceDBContext context, string processType, string processGuid, string newStatus)
+        {
+            try
+            {
+                //string partTableName = "";
+                //string processGuidName = "";
+
+                var pt = processType.ToLowerInvariant();
+                IQueryable<job_order>? query = pt switch
+                {
+                    "cleaning" =>
+                        from jo in context.job_order.AsNoTracking()
+                        join c in context.cleaning.AsNoTracking() on jo.guid equals c.job_order_guid
+                        where jo.delete_dt == null
+                              && c.delete_dt == null
+                              && c.guid == processGuid
+                        select jo,
+
+                    "steaming" =>
+                        from jo in context.job_order.AsNoTracking()
+                        join s in context.steaming_part.AsNoTracking() on jo.guid equals s.job_order_guid
+                        where jo.delete_dt == null
+                              && s.delete_dt == null
+                              && s.steaming_guid == processGuid
+                              && s.approve_part == true  // bool? comparison; null treated as not approved
+                        select jo,
+
+                    "residue" =>
+                        from jo in context.job_order.AsNoTracking()
+                        join r in context.residue_part.AsNoTracking() on jo.guid equals r.job_order_guid
+                        where jo.delete_dt == null
+                              && r.delete_dt == null
+                              && r.residue_guid == processGuid
+                              && r.approve_part == true
+                        select jo,
+
+                    "repair" =>
+                        from jo in context.job_order.AsNoTracking()
+                        join rp in context.repair_part.AsNoTracking() on jo.guid equals rp.job_order_guid
+                        where jo.delete_dt == null
+                              && rp.delete_dt == null
+                              && rp.repair_guid == processGuid
+                              && rp.approve_part == true
+                        select jo,
+
+                    _ => null
+                };
+
+                if (query is null)
+                {
+                    _logger?.LogError("Invalid process type provided: {ProcessType}", processType);
+                    throw new Exception($"Invalid process type: {processType}");
+                }
+
+                var jobOrderList = await query.Distinct().ToListAsync();
+                if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
+                {
+                    bool allValid = false;
+                    if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                    {
+                        allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+                                                        jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+                    }
+                    else if (newStatus.EqualsIgnore(CurrentServiceStatus.COMPLETED))
+                    {
+                        allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+                            jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
+
+                        // If all are canceled, set allValid to false
+                        if (allValid && jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED)))
+                        {
+                            allValid = false;
+                        }
+                    }
+                    return allValid;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "StatusChangeConditionCheck failed for processType: {ProcessType}, processGuid: {ProcessGuid}, newStatus: {NewStatus}", processType, processGuid, newStatus);
+                throw;
+            }
+        }
+
+        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid, string processGuid = "", ILogger? logger = null)
         {
 
             //first check tank purpose
@@ -475,12 +679,30 @@ namespace IDMS.Service.GqlTypes
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 var ret = await context.SaveChangesAsync();
+                _logger?.LogInformation("TankMovementConditionCheck updated tank {SotGuid} to status {TankStatus}", sotGuid, tank.tank_status_cv);
                 return true;
             }
             return false;
         }
 
         private static bool AnyJobInProgress(ApplicationServiceDBContext context, string processGuid)
+        {
+            if (string.IsNullOrWhiteSpace(processGuid))
+                return false;
+
+            return context.job_order
+                 .AsNoTracking()
+                 .Where(j => j.delete_dt == null)
+                 .Where(j => context.repair_part
+                     .Any(rp =>
+                         rp.repair_guid == processGuid &&
+                         rp.approve_part == true &&
+                         rp.delete_dt == null &&
+                         rp.job_order_guid == j.guid))
+                 .Any(j => j.status_cv.Equals(CurrentServiceStatus.JOB_IN_PROGRESS));
+        }
+
+        private static bool AnyJobInProgress_bk(ApplicationServiceDBContext context, string processGuid)
         {
             string sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
                                         SELECT distinct job_order_guid FROM repair_part 
