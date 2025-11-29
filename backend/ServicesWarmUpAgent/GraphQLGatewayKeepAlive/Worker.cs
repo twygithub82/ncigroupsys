@@ -8,9 +8,6 @@ using System.Text;
 using System.Text.Json;
 
 
-
-
-
 namespace ServiceWarmUpAgent
 {
     public class KeepAliveWorker : BackgroundService
@@ -19,6 +16,8 @@ namespace ServiceWarmUpAgent
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
         private bool _disposed=false;
+        private bool _oneTimeRun = false;
+
         public KeepAliveWorker(ILogger<KeepAliveWorker> logger, IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _logger = logger;
@@ -30,7 +29,7 @@ namespace ServiceWarmUpAgent
         {
             var loginUrl = _config["KeepAliveSettings:LoginUrl"];
             var gqlUrl = _config["KeepAliveSettings:GraphQlUrl"];
-            //var frontendUrl = _config["KeepAliveSettings:FrontendUrl"];
+            _oneTimeRun = _config.GetValue<bool>("KeepAliveSettings:OneTimeRun");
             var username = _config["KeepAliveSettings:Username"];
             var password = _config["KeepAliveSettings:Password"];
             var intervalMinutes = double.Parse(_config["KeepAliveSettings:IntervalMinutes"] ?? "5");
@@ -43,10 +42,13 @@ namespace ServiceWarmUpAgent
             };
 
             _logger.LogInformation("KeepAlive service started.");
+            _logger.LogInformation($"loginUrl: {loginUrl}");
+            _logger.LogInformation($"gatewayUrl: {gqlUrl}");
+
             int maxSecs= Convert.ToInt16( intervalMinutes * 60);
             int counter = 0;
 
-            while (!_disposed)
+            while (!_disposed && !stoppingToken.IsCancellationRequested)
             {
                 try
                 {
@@ -83,11 +85,19 @@ namespace ServiceWarmUpAgent
                     _logger.LogError(ex, "Error during keep-alive cycle");
                 }
 
+
+                if(_oneTimeRun)
+                {
+                    _logger.LogInformation("One-time run configured, exiting after first cycle.");
+                    break;
+                }
+
                 try
                 {
                     int interval = 30;
                     _logger.LogInformation($"Waiting... {counter} seconds remaining until next cycle - {DateTime.Now} ");
-                    System.Threading.Thread.Sleep((interval*1000));
+                    //System.Threading.Thread.Sleep((interval*1000));
+                    await Task.Delay(TimeSpan.FromSeconds(interval), stoppingToken);
                     counter -= interval;
                   
                     //await Task.Delay(TimeSpan.FromMinutes(intervalMinutes), stoppingToken);
@@ -238,6 +248,19 @@ namespace ServiceWarmUpAgent
             }
 
                 _logger.LogInformation("GraphQL query executed successfully");
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _disposed = true;
+            _logger.LogInformation("KeepAlive service stopping.");
+            return base.StopAsync(cancellationToken);
+        }
+
+        public override void Dispose()
+        {
+            _disposed = true;
+            base.Dispose();
         }
 
         private async Task FetchUrlWithBearerTokenAsync(string url, string bearerToken)
