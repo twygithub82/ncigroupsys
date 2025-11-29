@@ -624,8 +624,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.LEFT_REMARKS, surveyForm?.get('frame_type.leftRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.leftRemarks')?.value) {
                                 *
                                 }
@@ -659,8 +658,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.REAR_REMARKS, surveyForm?.get('frame_type.rearRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rearRemarks')?.value) {
                                 *
                                 }
@@ -694,8 +692,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.RIGHT_REMARKS, surveyForm?.get('frame_type.rightRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rightRemarks')?.value) {
                                 *
                                 }
@@ -729,8 +726,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.TOP_REMARKS, surveyForm?.get('frame_type.topRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.topRemarks')?.value) {
                                 *
                                 }
@@ -833,8 +829,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.FRONT_REMARKS, surveyForm?.get('frame_type.frontRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.frontRemarks')?.value) {
                                 *
                                 }
@@ -868,8 +863,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.BOTTOM_REMARKS, surveyForm?.get('frame_type.bottomRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.bottomRemarks')?.value) {
                                 *
                                 }
@@ -916,10 +910,10 @@
                               }
                               @if (!(igDS.loading$ | async)) {
                               <div class="row">
-                              </div>
-                              <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
                                   <div class="image-previews-tank">
+                                    @for (frameType of frameTypeSeq; track frameType) {
+                                    @if(frameType === 'LEFT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -961,6 +955,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'REAR_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1002,6 +998,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'RIGHT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1043,6 +1041,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'TOP_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1084,6 +1084,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'FRONT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1125,6 +1127,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'BOTTOM_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1166,6 +1170,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    }
                                   </div>
                                 </div>
                               </div>

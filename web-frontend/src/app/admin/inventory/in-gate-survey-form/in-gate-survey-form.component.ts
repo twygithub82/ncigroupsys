@@ -312,6 +312,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   last_test_desc?: string = "";
   next_test_desc?: string = "";
 
+  frameTypeSeq = ['LEFT_SIDE', 'REAR_SIDE', 'RIGHT_SIDE', 'TOP_SIDE', 'FRONT_SIDE', 'BOTTOM_SIDE'];
+
   isMobile = false;
 
   // Stepper
@@ -426,6 +428,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   private updateView(width: number): void {
     this.isMobile = width < 768;
+    if (this.isMobile) {
+      this.frameTypeSeq = ['REAR_SIDE', 'LEFT_SIDE', 'RIGHT_SIDE', 'BOTTOM_SIDE', 'FRONT_SIDE', 'TOP_SIDE'];
+    }
   }
 
   initForm() {
