@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
-//Dictionary<string, string> localSDL = new Dictionary<string, string>();
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddCors(options =>
 {
@@ -37,19 +41,12 @@ ConfigureServices(builder.Services, builder.Configuration);
 //server.AddLocalSchema("local");
 
 var app = builder.Build();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application starting up.");
+logger.LogInformation("GraphQL server initializing. Environment: {env}", app.Environment.EnvironmentName);
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
-
-//app.MapControllers();
-//app.UseWebSockets();
-
-//app.UseCors("AllowAll");
-//app.UseRouting()
-//          //.UseWebSockets()
-//          .UseEndpoints(endpoints =>
-//          {
-//              endpoints.MapGraphQL();
-//          });
 app.MapGraphQL();
 app.Run();
 
