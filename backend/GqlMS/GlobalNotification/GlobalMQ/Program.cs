@@ -50,7 +50,7 @@ var app = builder.Build();
 // Resolve a typed logger for the Program to use during startup
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Application starting up");
-logger.LogInformation("Using connection string: {connStr}", builder.Configuration.GetConnectionString("DefaultConnection"));    
+logger.LogInformation($"Using connection string: {builder.Configuration.GetConnectionString("DefaultConnection")?.Split(";")[0]}");    
 
 // Initialize the database connection
 using (var scope = app.Services.CreateScope())
