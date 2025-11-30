@@ -16,6 +16,12 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+
 string connectionString = builder.Configuration.GetConnectionString("default");
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
@@ -126,9 +132,14 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application starting up.");
+logger.LogInformation("GraphQL server initializing. Environment: {env}", app.Environment.EnvironmentName);
+logger.LogInformation($"Using database connection string: {connectionString?.Split(";")[0]}");
+
 //app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -136,9 +147,9 @@ var app = builder.Build();
 
 app.Use(async (context, next) =>
 {
-    Console.WriteLine("Request Path: " + context.Request.Path);
+    logger.LogInformation("Request Path: " + context.Request.Path);
     await next();
-    Console.WriteLine("Response Headers: " + string.Join(", ", context.Response.Headers.Select(h => h.Key + "=" + h.Value)));
+    logger.LogInformation("Response Headers: " + string.Join(", ", context.Response.Headers.Select(h => h.Key + "=" + h.Value)));
 });
 
 //app.UseCors(builder =>
