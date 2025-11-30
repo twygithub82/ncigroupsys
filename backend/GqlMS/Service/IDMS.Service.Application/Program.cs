@@ -117,7 +117,7 @@ namespace IDMS.ServiceMS
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Application starting up.");
             logger.LogInformation("GraphQL server initializing. Environment: {env}", app.Environment.EnvironmentName);
-            logger.LogInformation($"Using database connection string: {connectionString}");
+            logger.LogInformation($"Using database connection string: {connectionString.Split(";")[0]}");
             logger.LogInformation($"Global Notification URL: {notificationUrl}");
 
 
