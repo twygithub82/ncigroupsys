@@ -928,7 +928,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.leftImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
+                                          alt="Image Preview" class="preview-img border-0" >
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -942,7 +942,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -971,7 +971,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.rearImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
+                                          alt="Image Preview" class="preview-img border-0" >
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -985,7 +985,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1028,7 +1028,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1071,7 +1071,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1114,7 +1114,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1157,7 +1157,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1208,14 +1208,16 @@
                                     @for (img of dmgImages().controls; track img; let index = $index) {
                                     <div [formGroupName]="index">
                                       <div class="image-preview">
-                                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img">
+                                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img"
+                                          (click)="img.get('preview')?.value?previewImagesDialog($event, index + 6): null"
+                                        >
                                         @if (img.get('preview')?.value) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">
