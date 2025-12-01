@@ -1173,11 +1173,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.natureTypeCvList = data || [];
       this.detectChanges();
     });
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
-      this.unit_typeList = data || [];
+    // this.subs.sink = this.tDS.loadItems().subscribe(data => {
+    this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
+      // this.unit_typeList = data || [];
+       this.unit_typeList = data.sort((a, b) =>
+        a.unit_type!.trim().localeCompare(
+          b.unit_type!.trim(),
+          undefined,
+          { numeric: true, sensitivity: 'base' }
+        )
+      );
       this.detectChanges();
     });
-
+      
+    
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
       // EDIT

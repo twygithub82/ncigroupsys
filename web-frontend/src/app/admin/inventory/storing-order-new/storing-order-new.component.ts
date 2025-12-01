@@ -322,7 +322,14 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      this.unit_typeList = data
+      // this.unit_typeList = data
+      this.unit_typeList = data.sort((a, b) =>
+        a.unit_type!.trim().localeCompare(
+          b.unit_type!.trim(),
+          undefined,
+          { numeric: true, sensitivity: 'base' }
+        )
+      );
     });
 
     this.cvDS.connectAlias('repairCv').subscribe(data => {
