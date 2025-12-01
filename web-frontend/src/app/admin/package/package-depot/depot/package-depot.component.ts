@@ -140,6 +140,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   separatorKeysCodes: number[] = [ENTER, COMMA];
   selectedPackEst?: PackageDepotItem;
   allowSelectedAll: boolean = false;
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -257,6 +258,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tariffDepotDS = new TariffDepotDS(this.apollo);
@@ -388,7 +390,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '60vw',
+        width: this.isMobile?'600px':'60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -420,7 +422,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '60vw',
+       width: this.isMobile?'600px':'60vw',
       //height: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -983,5 +985,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     return retval
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
 

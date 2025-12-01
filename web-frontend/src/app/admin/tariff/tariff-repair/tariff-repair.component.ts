@@ -43,7 +43,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 
 import { debounceTime, startWith, tap } from 'rxjs';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -497,7 +497,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     const tariffRepair = this.selection.selected.map(x => x.tariff_repair);
 
-    const wdth =this.isMobile?'95vw':'65vw';
+    const wdth =this.isMobile?MOBILE_DIALOG_WIDTH:'65vw';
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: wdth,
@@ -529,7 +529,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
     var rows: TariffRepairItem[] = [];
     rows.push(row);
-     const wdth =this.isMobile?'95vw':'65vw';
+     const wdth =this.isMobile?MOBILE_DIALOG_WIDTH:'65vw';
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: wdth,

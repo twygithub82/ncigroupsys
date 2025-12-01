@@ -34,7 +34,7 @@ import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -308,7 +308,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
        autoFocus: false,
       disableClose: true,
       data: {
@@ -339,7 +339,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
        autoFocus: false,
       disableClose: true,
       data: {

@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -73,16 +73,16 @@
                         {{row.cleaning_category.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gender">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.CUSTOMER_COST
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CUSTOMER_COST
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
+                      <mat-cell *matCellDef="let row" [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COST }}:</span>
                         {{row.adjusted_price.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.TARIFF_COST}} $
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
+                      <mat-cell *matCellDef="let row" [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST}} $</span>
                         {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
                     </ng-container>

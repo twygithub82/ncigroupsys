@@ -37,7 +37,7 @@ import { PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -130,7 +130,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   selectedCustomers: any[] = [];
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
-
+  isMobile = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -246,6 +246,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
@@ -259,6 +260,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     this.initializeFilterCustomerCompany();
     this.loadData();
     this.translateLangText();
@@ -303,7 +305,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       //height: 'auto',
@@ -362,7 +364,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '55vw',
+     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -396,7 +398,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       //width: '600px',
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH: '55vw',
       height: 'auto',
       autoFocus: false,
       disableClose: true,
@@ -885,5 +887,15 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   displayNumber(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+     getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
+      let centerClass = isEnd ? 'justify-content-end ' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
 

@@ -127,7 +127,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   widthDiadmeterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
   customerCompanyControl = new UntypedFormControl();
-
+  isMobile: boolean = false;
   selectedTariffRepair?: TariffRepairItem;
  separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
@@ -217,6 +217,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   UpdateInProgress: boolean = false;
  selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
+  
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -228,6 +229,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   ) {
     // Set the defaults
     super();
+    this.isMobile=Utility.isMobile();
     this.selectedItems = data.selectedItems;
     this.trDS = new TariffRepairDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -736,4 +738,16 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.selected(fakeEvent);
 
   }
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

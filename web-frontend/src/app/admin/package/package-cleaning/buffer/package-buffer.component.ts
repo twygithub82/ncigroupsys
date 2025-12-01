@@ -41,7 +41,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -138,6 +138,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {};
   allowSelectedAll: boolean = false;
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -265,6 +266,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     this.loadData();
     this.displayColumnChanged();
     this.translateLangText();
@@ -364,7 +366,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       disableClose: true,
       //height: '80vh',
       data: {
@@ -393,7 +395,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       //maxHeight: '80vh',
@@ -951,4 +953,10 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_DELETE']);
   }
+
+  
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

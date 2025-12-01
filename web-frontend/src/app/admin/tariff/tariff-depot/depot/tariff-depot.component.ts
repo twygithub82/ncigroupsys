@@ -35,7 +35,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -506,7 +506,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       autoFocus: false,
       disableClose: true,
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
       height: '90vh',
       data: {
         action: 'view',
@@ -535,7 +535,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
       height: '90vh',
       data: {
         action: 'edit',
