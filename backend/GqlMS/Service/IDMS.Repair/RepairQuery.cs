@@ -6,12 +6,21 @@ using IDMS.Service.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Repair
 {
     [ExtendObjectType(typeof(ServiceQuery))]
     public class RepairQuery
     {
+
+        private readonly ILogger<RepairQuery> _logger;
+
+        public RepairQuery(ILogger<RepairQuery> logger)
+        {
+            _logger = logger;
+        }
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -27,11 +36,13 @@ namespace IDMS.Repair
                     .Include(d => d.storing_order_tank)
                         .ThenInclude(p => p.in_gate).AsSplitQuery();
 
+                _logger.LogInformation("QueryRepair called.");
                 return repair;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "QueryRepair failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
     }

@@ -374,8 +374,5 @@ namespace IDMS.UserAuthentication.Controllers
 
             return Ok(model);
         }
-
-
-
     }
 }

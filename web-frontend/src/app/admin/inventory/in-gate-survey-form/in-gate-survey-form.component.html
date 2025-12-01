@@ -624,8 +624,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.LEFT_REMARKS, surveyForm?.get('frame_type.leftRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.leftRemarks')?.value) {
                                 *
                                 }
@@ -659,8 +658,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.REAR_REMARKS, surveyForm?.get('frame_type.rearRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rearRemarks')?.value) {
                                 *
                                 }
@@ -694,8 +692,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.RIGHT_REMARKS, surveyForm?.get('frame_type.rightRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rightRemarks')?.value) {
                                 *
                                 }
@@ -729,8 +726,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.TOP_REMARKS, surveyForm?.get('frame_type.topRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.topRemarks')?.value) {
                                 *
                                 }
@@ -833,8 +829,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.FRONT_REMARKS, surveyForm?.get('frame_type.frontRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.frontRemarks')?.value) {
                                 *
                                 }
@@ -868,8 +863,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.BOTTOM_REMARKS, surveyForm?.get('frame_type.bottomRemarks'))"
-                                class="font-bold"
-                                [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
+                                class="font-bold" [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.bottomRemarks')?.value) {
                                 *
                                 }
@@ -916,10 +910,10 @@
                               }
                               @if (!(igDS.loading$ | async)) {
                               <div class="row">
-                              </div>
-                              <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
                                   <div class="image-previews-tank">
+                                    @for (frameType of frameTypeSeq; track frameType) {
+                                    @if(frameType === 'LEFT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -934,7 +928,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.leftImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
+                                          alt="Image Preview" class="preview-img border-0" >
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -948,7 +942,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -961,6 +955,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'REAR_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -975,7 +971,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.rearImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
+                                          alt="Image Preview" class="preview-img border-0" >
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -989,7 +985,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1002,6 +998,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'RIGHT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1030,7 +1028,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1043,6 +1041,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'TOP_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1071,7 +1071,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1084,6 +1084,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'FRONT_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1112,7 +1114,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1125,6 +1127,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    @else if(frameType === 'BOTTOM_SIDE') {
                                     <div>
                                       <div class="row">
                                         <div
@@ -1153,7 +1157,7 @@
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           @if (isAllowEdit()) {
@@ -1166,6 +1170,8 @@
                                         }
                                       </div>
                                     </div>
+                                    }
+                                    }
                                   </div>
                                 </div>
                               </div>
@@ -1202,14 +1208,16 @@
                                     @for (img of dmgImages().controls; track img; let index = $index) {
                                     <div [formGroupName]="index">
                                       <div class="image-preview">
-                                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img">
+                                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img"
+                                          (click)="img.get('preview')?.value?previewImagesDialog($event, index + 6): null"
+                                        >
                                         @if (img.get('preview')?.value) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)">
+                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)" hidden>
                                             <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                           </button>
                                           <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">

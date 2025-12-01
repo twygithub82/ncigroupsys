@@ -11,6 +11,11 @@ builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+
 builder.Services.AddDbContextPool<ApplicationNotificationDBContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -45,6 +50,7 @@ var app = builder.Build();
 // Resolve a typed logger for the Program to use during startup
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Application starting up");
+logger.LogInformation($"Using connection string: {builder.Configuration.GetConnectionString("DefaultConnection")?.Split(";")[0]}");    
 
 // Initialize the database connection
 using (var scope = app.Services.CreateScope())

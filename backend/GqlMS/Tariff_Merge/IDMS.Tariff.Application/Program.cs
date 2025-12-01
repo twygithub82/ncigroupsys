@@ -33,6 +33,8 @@ try
     var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
     string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
 
+    Log.Information($"Use database connection: {connectionString.Split(";")[0]}");
+
     builder.Services.AddPooledDbContextFactory<ApplicationTariffDBContext>(o =>
     {
         o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
@@ -86,8 +88,6 @@ try
           });
 
     var app = builder.Build();
-
-    //dbWrapper.PingThread(app.Services.CreateScope(), int.Parse(pingDurationMin));
 
     app.UseHttpsRedirection();
     app.UseAuthentication();

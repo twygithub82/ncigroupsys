@@ -1,16 +1,17 @@
-﻿using HotChocolate;
+﻿using CommonUtil.Core.Service;
+using HotChocolate;
 using HotChocolate.Types;
-using IDMS.Models.Service.GqlTypes.DB;
-using IDMS.Models.Service;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using CommonUtil.Core.Service;
-using IDMS.Service.GqlTypes;
-using IDMS.Residue.GqlTypes.LocalModel;
-using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
-using System.Globalization;
+using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Repair.GqlTypes.LocalModel;
+using IDMS.Residue.GqlTypes.LocalModel;
+using IDMS.Service.GqlTypes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 
 namespace IDMS.Residue.GqlTypes
@@ -18,13 +19,23 @@ namespace IDMS.Residue.GqlTypes
     [ExtendObjectType(typeof(ServiceMutation))]
     public class ResidueMutation
     {
+        private readonly ILogger<ResidueMutation> _logger;
+
+        public ResidueMutation(ILogger<ResidueMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, residue residue)
         {
             try
             {
                 if (residue == null)
+                {
+                    _logger.LogError("AddResidue failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -64,7 +75,11 @@ namespace IDMS.Residue.GqlTypes
 
                 //Handing of SOT movement status
                 if (string.IsNullOrEmpty(residue.sot_guid))
+                {
+                    _logger.LogError("AddResidue failed: SOT guid is null or empty");
                     throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                }
+
                 var sot = new storing_order_tank() { guid = residue.sot_guid };
                 context.storing_order_tank.Attach(sot);
                 sot.tank_status_cv = TankMovementStatus.CLEANING;
@@ -72,6 +87,7 @@ namespace IDMS.Residue.GqlTypes
                 sot.update_dt = currentDateTime;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddResidue succeeded: Residue added with guid {Guid}", newResidue.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -79,7 +95,8 @@ namespace IDMS.Residue.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AddResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -89,7 +106,10 @@ namespace IDMS.Residue.GqlTypes
             try
             {
                 if (residue == null)
-                    throw new GraphQLException(new Error($"Residue object cannot be null for update", "ERROR"));
+                {
+                    _logger.LogError("UpdateResidue failed: Residue object is null");
+                    throw new GraphQLException(new Error($"Residue object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -126,7 +146,10 @@ namespace IDMS.Residue.GqlTypes
                     else if (ObjectAction.EDIT.EqualsIgnore(item.action))
                     {
                         if (string.IsNullOrEmpty(item.guid))
+                        {
+                            _logger.LogError("UpdateResidue failed: Residue part guid is null or empty for update");
                             throw new GraphQLException(new Error($"Residue part guid cannot be null or empty for update", "ERROR"));
+                        }
 
                         var part = new residue_part() { guid = item.guid };
                         context.residue_part.Attach(part);
@@ -138,6 +161,8 @@ namespace IDMS.Residue.GqlTypes
                         part.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
                         part.description = item.description;
                         part.tariff_residue_guid = item.tariff_residue_guid;
+
+                        _logger.LogInformation("UpdateResidue succeeded: Residue part with guid {Guid} updated", item.guid);
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
                     {
@@ -146,6 +171,8 @@ namespace IDMS.Residue.GqlTypes
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
+
+                        _logger.LogInformation("UpdateResidue succeeded: Residue part with guid {Guid} canceled", item.guid);
                     }
                     else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action))
                     {
@@ -158,17 +185,21 @@ namespace IDMS.Residue.GqlTypes
                         part.approve_qty = item.approve_qty;
                         part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         part.qty_unit_type_cv = item.qty_unit_type_cv;
+
+                        _logger.LogInformation("UpdateResidue succeeded: Residue part with guid {Guid} overwritten", item.guid);
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateResidue succeeded: Residue with guid {Guid} updated", residue.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -200,6 +231,8 @@ namespace IDMS.Residue.GqlTypes
                         approveResidue.status_cv = CurrentServiceStatus.APPROVED;
                         approveResidue.approve_by = user;
                         approveResidue.approve_dt = currentDateTime;
+
+                        _logger.LogInformation("ApproveResidue: Residue with guid {Guid} approved", residue.guid);
                     }
 
                     if (residue.residue_part != null)
@@ -222,6 +255,8 @@ namespace IDMS.Residue.GqlTypes
                                 part.qty_unit_type_cv = item.qty_unit_type_cv;
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
+
+                                _logger.LogInformation("ApproveResidue: Residue part with guid {Guid} updated", item.guid);
                             }
                             else if (item.action.EqualsIgnore(ObjectAction.NEW))
                             {
@@ -242,6 +277,8 @@ namespace IDMS.Residue.GqlTypes
                                 newPart.approve_part = true;
                                 newPart.qty_unit_type_cv = item.qty_unit_type_cv;
                                 await context.residue_part.AddAsync(newPart);
+
+                                _logger.LogInformation("ApproveResidue: New residue part with guid {Guid} added and approved", newPart.guid);
                             }
                             else if (item.action.EqualsIgnore(ObjectAction.CANCEL))
                             {
@@ -250,6 +287,8 @@ namespace IDMS.Residue.GqlTypes
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
                                 part.delete_dt = currentDateTime;
+
+                                _logger.LogError("ApproveResidue: Residue part with guid {Guid} canceled", item.guid);
                             }
                         }
                     }
@@ -258,11 +297,13 @@ namespace IDMS.Residue.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("ApproveResidue succeeded: Residue with guid {Guid} processed", residue.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "ApproveResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -287,7 +328,10 @@ namespace IDMS.Residue.GqlTypes
                         rollbackResidue.remarks = item.remarks;
 
                         if (string.IsNullOrEmpty(item.customer_guid))
+                        {
+                            _logger.LogError("RollbackResidue failed: Customer company guid is null or empty for residue guid {Guid}", item.guid);
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+                        }
 
                         var customerGuid = item.customer_guid;
                         var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid &&
@@ -304,6 +348,7 @@ namespace IDMS.Residue.GqlTypes
                                 part.approve_cost = part.cost;
                                 part.approve_qty = part.quantity;
                             }
+                            _logger.LogInformation("RollbackResidue: Residue parts for residue guid {Guid} rolled back to unapproved state", item.guid);
                         }
                         else
                         {
@@ -319,16 +364,20 @@ namespace IDMS.Residue.GqlTypes
                                 part.update_dt = currentDateTime;
                                 part.cost = packageResidue.Where(r => r.tariff_residue_guid == part.tariff_residue_guid).Select(r => r.cost).First();
                             }
+
+                            _logger.LogInformation("RollbackResidue: Residue parts for residue guid {Guid} rolled back to estimated state", item.guid);
                         }
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackResidue succeeded: Residues rolled back successfully");
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -342,7 +391,10 @@ namespace IDMS.Residue.GqlTypes
                 bool tankMovementCheck = false;
 
                 if (residue == null)
+                {
+                    _logger.LogError("UpdateResidueStatus failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
 
                 var updateResidue = new residue() { guid = residue.guid };
                 context.residue.Attach(updateResidue);
@@ -355,34 +407,48 @@ namespace IDMS.Residue.GqlTypes
                     case ObjectAction.IN_PROGRESS:
                         if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.JOB_IN_PROGRESS))
                             updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+
+                        _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as JOB_IN_PROGRESS", residue.guid);
                         break;
                     case ObjectAction.CANCEL:
                         updateResidue.status_cv = CurrentServiceStatus.CANCELED;
+                        _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as CANCELED", residue.guid);
                         break;
                     case ObjectAction.PARTIAL:
                         updateResidue.status_cv = CurrentServiceStatus.PARTIAL;
+                        _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as PARTIAL_ASSIGNED", residue.guid);
                         break;
                     case ObjectAction.ASSIGN:
                         updateResidue.status_cv = CurrentServiceStatus.ASSIGNED;
+                        _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as ASSIGNED", residue.guid);
                         break;
                     case ObjectAction.COMPLETE:
                         if (string.IsNullOrEmpty(residue.sot_guid))
+                        {
+                            _logger.LogError("UpdateResidueStatus failed: SOT guid is null or empty for residue guid {Guid}", residue.guid);
                             throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                        }
 
                         if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.COMPLETED))
                         {
                             updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
                             updateResidue.complete_by = user;
                             updateResidue.complete_dt = currentDateTime;
+                            _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as COMPLETED", residue.guid);
                         }
+
                         tankMovementCheck = true;
                         break;
                     case ObjectAction.NA:
                         if (string.IsNullOrEmpty(residue.sot_guid))
+                        {
+                            _logger.LogError("UpdateResidueStatus failed: SOT guid is null or empty for residue guid {Guid}", residue.guid);
                             throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                        }
 
                         updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateResidue.na_dt = currentDateTime;
+                        _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as NO_ACTION", residue.guid);
 
                         foreach (var item in residue.residuePartRequests)
                         {
@@ -397,6 +463,7 @@ namespace IDMS.Residue.GqlTypes
                         break;
                 }
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateResidueStatus succeeded: Residue with guid {Guid} status updated", residue.guid);
 
                 if (tankMovementCheck)
                     await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residue.sot_guid);
@@ -405,7 +472,8 @@ namespace IDMS.Residue.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateResidueStatus failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -418,7 +486,10 @@ namespace IDMS.Residue.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (residueJobOrder == null)
+                {
+                    _logger.LogError("AbortResidue failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
 
                 var abortResidue = new residue() { guid = residueJobOrder.guid };
                 context.residue.Attach(abortResidue);
@@ -438,17 +509,24 @@ namespace IDMS.Residue.GqlTypes
                 {
                     abortResidue.status_cv = CurrentServiceStatus.COMPLETED;
                     abortResidue.complete_dt = currentDateTime;
+                    _logger.LogInformation("AbortResidue: Residue with guid {Guid} marked as COMPLETED", residueJobOrder.guid);
                 }
                 else
+                {
                     abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+                    _logger.LogInformation("AbortResidue: Residue with guid {Guid} marked as NO_ACTION", residueJobOrder.guid);
+                }
 
                 res = res + await context.SaveChangesAsync();
+                _logger.LogInformation("AbortResidue succeeded: Residue with guid {Guid} aborted", residueJobOrder.guid);
+
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residueJobOrder.sot_guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AbortResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -461,7 +539,11 @@ namespace IDMS.Residue.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (residueJobOrder == null)
+                {
+                    _logger.LogError("CompleteQCResidue failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
+
 
                 foreach (var item in residueJobOrder)
                 {
@@ -475,26 +557,42 @@ namespace IDMS.Residue.GqlTypes
                     completedResidue.remarks = item.remarks;
 
                     //job_orders handling
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
-                            $"update_by = '{user}' WHERE guid IN ({guids})";
-                    context.Database.ExecuteSqlRaw(sql);
+                    var jobIds = item.job_order.Select(j => j.guid).ToList();
+                    var jobOrders = await context.job_order.Where(j => jobIds.Contains(j.guid)).ToListAsync();
+
+                    foreach (var job in jobOrders)
+                    {
+                        job.qc_dt = currentDateTime;
+                        job.qc_by = user;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+                    }
+                    _logger.LogInformation("Updated {Count} job_order rows for residue GUID {Guid}", jobOrders.Count, item.guid);
+                    //var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                    //        $"update_by = '{user}' WHERE guid IN ({guids})";
+                    //context.Database.ExecuteSqlRaw(sql);
                 }
 
                 //Tank handling
                 var sotGuid = residueJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                //var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
                 if (string.IsNullOrEmpty(sotGuid))
+                {
+                    _logger.LogError("CompleteQCResidue failed: Tank guid is null or empty");
                     throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+                }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("CompleteQCResidue succeeded: Residue QC completed");
+
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, sotGuid);
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "CompleteQCResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -507,7 +605,11 @@ namespace IDMS.Residue.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (residueJobOrder == null)
+                {
+                    _logger.LogError("RollbackCompletedResidue failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
+
 
                 foreach (var item in residueJobOrder)
                 {
@@ -522,20 +624,35 @@ namespace IDMS.Residue.GqlTypes
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
-                    var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobIds = item.job_order.Select(j => j.guid).ToList();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIds.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
                     {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        job.complete_dt = null;
+                        job.status_cv = JobStatus.IN_PROGRESS;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+
+                        var remark = item.job_order.FirstOrDefault(x => x.guid == job.guid)?.remarks;
+                        if (!string.IsNullOrWhiteSpace(remark))
+                            job.remarks = remark;
                     }
-                    else
-                    {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                    }
-                    context.Database.ExecuteSqlRaw(sql);
+                    _logger.LogInformation("RollbackCompletedResidue: Updated residue, job_order, timetable for GUID {Guid}", item.guid);
+
+                    //var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
+                    //{
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //else
+                    //{
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
@@ -547,6 +664,7 @@ namespace IDMS.Residue.GqlTypes
                         timeTables.update_by = user;
                         timeTables.update_dt = currentDateTime;
                     }
+                    _logger.LogInformation("Rolled back job_order and timetable for residue GUID {Guid}", item.guid);
                 }
 
                 //Tank handling
@@ -566,14 +684,17 @@ namespace IDMS.Residue.GqlTypes
                     if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.CLEANING;
                 }
+                _logger.LogInformation("Updated storing_order_tank with guid {Guid} to status {Status}", sotGuid, sot.tank_status_cv);
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackCompletedResidue succeeded: Residue rolled back from completed state");
                 return res;
 
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackCompletedResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -586,41 +707,65 @@ namespace IDMS.Residue.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (residueJobOrder == null)
+                {
+                    _logger.LogError("RollbackJobInProgressResidue failed: Residue object is null");
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in residueJobOrder)
                 {
                     //Residue handling
                     var rollbackResidue = await context.residue.FindAsync(item.guid);
                     if (rollbackResidue == null)
+                    {
+                        _logger.LogError("RollbackJobInProgressResidue failed: Residue estimate not found for guid {Guid}", item.guid);
                         throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+                    }
 
                     rollbackResidue.update_by = user;
                     rollbackResidue.update_dt = currentDateTime;
                     if (!string.IsNullOrEmpty(item.remarks))
                         rollbackResidue.remarks = item.remarks;
                     if (rollbackResidue.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                    {
                         rollbackResidue.status_cv = CurrentServiceStatus.ASSIGNED;
+                        _logger.LogInformation("RollbackJobInProgressResidue: Residue with guid {Guid} rolled back to ASSIGNED status", item.guid);
+                    }
+
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
-                    var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobIdList = item.job_order.Select(j => j.guid).ToList();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIdList.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
                     {
-                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        job.status_cv = JobStatus.PENDING;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+
+                        var remark = item.job_order
+                            .FirstOrDefault(x => x.guid == job.guid)?.remarks;
+
+                        if (!string.IsNullOrWhiteSpace(remark))
+                            job.remarks = remark;
                     }
-                    else
-                    {
-                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                    }
-                    context.Database.ExecuteSqlRaw(sql);
+
+                    //var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
+                    //{
+                    //    sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //else
+                    //{
+                    //    sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
-                    var jobIdList = item.job_order.Select(j => j.guid).ToList();
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
                     foreach (var tt in timeTables)
                     {
@@ -628,14 +773,19 @@ namespace IDMS.Residue.GqlTypes
                         tt.update_by = user;
                         tt.update_dt = currentDateTime;
                     }
+
+                    _logger.LogInformation("RollbackJobInProgressResidue: Updated residue, jobs, timetable for GUID {Guid}", item.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackJobInProgressResidue succeeded: Residue rolled back from job in progress state");
+
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackJobInProgressResidue failed");    
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -708,7 +858,10 @@ namespace IDMS.Residue.GqlTypes
                         .Where(r => r.guid == item).FirstOrDefaultAsync();
 
                     if (rollbackResidue == null)
+                    {
+                        _logger.LogError("RollbackAssignedResidue failed: Residue estimate not found for guid {Guid}", item);
                         throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+                    }
 
                     rollbackResidue.update_by = user;
                     rollbackResidue.update_dt = currentDateTime;
@@ -736,24 +889,17 @@ namespace IDMS.Residue.GqlTypes
                             part.update_dt = currentDateTime;
                         }
                     }
-
-                    //Job Order Handling
-                    //var residueParts = rollbackResidue.residue_part;
-                    //var jobGuidString = string.Join(",", residueParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
-
-                    //string sql = "";
-                    //sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
-                    //        $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-
-                    //context.Database.ExecuteSqlRaw(sql);
+                    _logger.LogInformation("RollbackAssignedResidue: Residue with guid {Guid} rolled back to APPROVED status", item);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("RollbackAssignedResidue succeeded: Residues");
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "RollbackAssignedResidue failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

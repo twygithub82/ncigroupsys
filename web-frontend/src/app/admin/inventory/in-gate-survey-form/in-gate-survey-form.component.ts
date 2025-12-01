@@ -28,7 +28,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatStepper, MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -55,7 +55,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import * as moment from 'moment';
 import { Moment } from 'moment';
-import { Observable, Subject, merge } from 'rxjs';
+import { Observable, Subject, merge, Subscription } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -63,6 +63,7 @@ import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 import { EmailApiService } from '@core/service/email-api.service';
+
 
 @Component({
   selector: 'app-in-gate',
@@ -257,6 +258,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
   private destroy$ = new Subject<void>();
 
+
   in_gate_guid: string | null | undefined;
   in_gate: InGateItem | null | undefined;
 
@@ -312,6 +314,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   last_test_desc?: string = "";
   next_test_desc?: string = "";
 
+  frameTypeSeq = ['LEFT_SIDE', 'REAR_SIDE', 'RIGHT_SIDE', 'TOP_SIDE', 'FRONT_SIDE', 'BOTTOM_SIDE'];
+
   isMobile = false;
 
   // Stepper
@@ -353,6 +357,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
+  routerSubscription?: Subscription;
 
   allowToUpdateInGateSurveyStatusList = [
     'SO_GENERATED',
@@ -422,10 +427,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   override ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   private updateView(width: number): void {
     this.isMobile = width < 768;
+    if (this.isMobile) {
+      this.frameTypeSeq = ['REAR_SIDE', 'LEFT_SIDE', 'RIGHT_SIDE', 'BOTTOM_SIDE', 'FRONT_SIDE', 'TOP_SIDE'];
+    }
+
   }
 
   initForm() {
@@ -1160,10 +1173,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.natureTypeCvList = data || [];
       this.detectChanges();
     });
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
+    // this.subs.sink = this.tDS.loadItems().subscribe(data => {
+    this.tDS.search({ tariff_depot_guid: { neq: null } }, { "unit_type": "ASC" }, 100).subscribe(data => {
       this.unit_typeList = data || [];
       this.detectChanges();
     });
+
 
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
@@ -1607,6 +1622,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             if (wantPublish) {
               this.onPublish();
             }
+            //   this.preventBackButton();
           }
         });
       } else {
@@ -1623,6 +1639,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             //   this.onDownload(record.guid[0], record.residue_guid);
             // }
             this.onDownload(record.guid[0], record.residue_guid);
+            //this.preventBackButton();
           }
         });
       }
@@ -2272,14 +2289,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         complete: () => {
           console.log('Upload process completed.');
           if (redirect) {
-            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
           }
         }
       });
     } else {
       this.handleSaveSuccess(1);
       if (redirect) {
-        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
       }
     }
   }
@@ -2414,6 +2431,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (!previewVal) {
       inputRef.click();
     }
+    else {
+      var index = this.getImagePreviewIndex(formPath!);
+      this.previewImagesDialog(new Event('click'), index);
+    }
+  }
+
+  getImagePreviewIndex(imgType: string) {
+    switch (imgType) {
+      case 'frame_type.leftImage': return 0;
+      case 'frame_type.rearImage': return 1;
+      case 'frame_type.rightImage': return 2;
+      case 'frame_type.topImage': return 3;
+      case 'frame_type.frontImage': return 4;
+      case 'frame_type.bottomImage': return 5;
+      default: return -1;
+    }
   }
 
   validateAllControlsRaw(form: UntypedFormGroup): boolean {
@@ -2434,4 +2467,43 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     return emails;
   }
+
+
+  preventBackButton() {
+    // Clear existing history
+    // history.replaceState(null, '', window.location.href);
+
+    // Add current page to history
+
+    history.pushState(null, '', window.location.href);
+
+    // Handle back button press
+    window.addEventListener('popstate', (event) => {
+      history.pushState(null, '', window.location.href);
+      // You can also show a custom modal or message here
+      this.showBackButtonWarning();
+    });
+  }
+  private showBackButtonWarning() {
+    // Custom implementation - show modal, toast, etc.
+    console.warn('Back navigation is disabled');
+    this.router.navigate([], { replaceUrl: true });
+    this.router.navigate(
+      ['/admin/inventory/in-gate-main'],
+      { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true }
+    );
+  }
+
+  disableBackButton() {
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        // Prevent navigation if it's a back action
+        if (event.navigationTrigger === 'popstate') {
+          this.router.navigate([this.router.url]);
+        }
+      }
+    });
+  }
+
+
 }

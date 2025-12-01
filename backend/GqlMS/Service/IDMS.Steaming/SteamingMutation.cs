@@ -9,12 +9,20 @@ using IDMS.Steaming.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Steaming.GqlTypes
 {
     [ExtendObjectType(typeof(ServiceMutation))]
     public class SteamingMutation
     {
+        private readonly ILogger<SteamingMutation> _logger;
+
+        public SteamingMutation(ILogger<SteamingMutation> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> AddSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, steaming steaming)
         {
@@ -47,6 +55,7 @@ namespace IDMS.Steaming.GqlTypes
                     item.steaming_guid = newSteaming.guid;
                 }
 
+                _logger.LogInformation("Adding new steaming record with GUID: {Guid}", newSteaming.guid);
                 await context.AddAsync(newSteaming);
 
                 //Handing of SOT movement status
@@ -59,14 +68,15 @@ namespace IDMS.Steaming.GqlTypes
                 sot.update_dt = currentDateTime;
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogError("New steaming record added successfully with GUID: {Guid}", newSteaming.guid);
 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error AddingSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
-
         }
 
         public async Task<int> ApproveSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
@@ -78,11 +88,19 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steaming == null || string.IsNullOrEmpty(steaming.guid))
+                {
+                    _logger.LogError("Steaming object or guid cannot be null");
                     throw new GraphQLException(new Error($"Steaming object or guid cannot be null", "ERROR"));
+                }
+
 
                 var approveSteam = await context.steaming.FindAsync(steaming.guid);
                 if (approveSteam == null)
+                {
+                    _logger.LogError("Steaming object not found for GUID: {Guid}", steaming.guid);
                     throw new GraphQLException(new Error($"Steaming object not found", "ERROR"));
+                }
+
 
                 approveSteam.update_by = user;
                 approveSteam.update_dt = currentDateTime;
@@ -100,6 +118,8 @@ namespace IDMS.Steaming.GqlTypes
                     approveSteam.status_cv = CurrentServiceStatus.APPROVED;
                     approveSteam.approve_by = user;
                     approveSteam.approve_dt = currentDateTime;
+
+                    _logger.LogInformation("Steaming record approved for GUID: {Guid}", steaming.guid);
                 }
 
                 if (steaming.steaming_part != null)
@@ -123,6 +143,7 @@ namespace IDMS.Steaming.GqlTypes
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
                             }
+                            _logger.LogInformation("Steaming part updated for GUID: {Guid}", item.guid);
 
                         }
                         else if (item.action.EqualsIgnore(ObjectAction.NEW))
@@ -146,6 +167,8 @@ namespace IDMS.Steaming.GqlTypes
                             newPart.approve_qty = item.approve_qty;
                             newPart.approve_part = true;
                             await context.steaming_part.AddAsync(newPart);
+
+                            _logger.LogInformation("New steaming part added with GUID: {Guid}", newPart.guid);
                         }
                         else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
                         {
@@ -154,18 +177,23 @@ namespace IDMS.Steaming.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                             part.delete_dt = currentDateTime;
+
+                            _logger.LogInformation("Steaming part canceled for GUID: {Guid}", item.guid);
                         }
                     }
                 }
 
                 await GqlUtils.JobOrderHandling(context, "steaming", user, currentDateTime, ObjectAction.APPROVE, processGuid: steaming.guid);
 
+
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming approval process completed for GUID: {Guid}", steaming.guid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error ApproveSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -175,7 +203,10 @@ namespace IDMS.Steaming.GqlTypes
             try
             {
                 if (steaming == null || string.IsNullOrEmpty(steaming.guid))
-                    throw new GraphQLException(new Error($"Steaming object cannot be null for update", "ERROR"));
+                {
+                    _logger.LogError("Steaming object or guid cannot be null for update");
+                    throw new GraphQLException(new Error($"Steaming object or guid cannot be null for update", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -196,6 +227,8 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.rate = steaming.rate;
                     updateSteaming.flat_rate = steaming.flat_rate;
                     updateSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
+
+                    _logger.LogInformation("Steaming record OVERWRITE for GUID: {Guid}", steaming.guid);
                 }
                 else
                 {   //For normal update
@@ -209,6 +242,8 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_labour_cost);
                     if (steaming.total_material_cost != null)
                         updateSteaming.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_material_cost);
+
+                    _logger.LogInformation("Steaming record UPDATE for GUID: {Guid}", steaming.guid);
                 }
                 //Handling For steaming_part
                 foreach (var item in steaming.steaming_part)
@@ -222,11 +257,15 @@ namespace IDMS.Steaming.GqlTypes
                         item.update_dt = currentDateTime;
                         item.steaming_guid = steaming.guid;
                         await context.steaming_part.AddAsync(item);
+                        _logger.LogInformation("New steaming part added with GUID: {Guid}", item.guid);
                     }
                     else if (ObjectAction.EDIT.EqualsIgnore(item.action))
                     {
                         if (string.IsNullOrEmpty(item.guid))
+                        {
+                            _logger.LogError("Steaming part guid cannot be null or empty for update");
                             throw new GraphQLException(new Error($"Steaming part guid cannot be null or empty for update", "ERROR"));
+                        }
 
                         var part = await context.steaming_part.FindAsync(item.guid);
                         if (part != null)
@@ -243,6 +282,7 @@ namespace IDMS.Steaming.GqlTypes
                             part.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
                             part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         }
+                        _logger.LogInformation("Steaming part updated for GUID: {Guid}", item.guid);
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
                     {
@@ -251,6 +291,8 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
+
+                        _logger.LogInformation("Steaming part CANCEL for GUID: {Guid}", item.guid);
                     }
                     else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action))
                     {
@@ -263,16 +305,20 @@ namespace IDMS.Steaming.GqlTypes
                         part.approve_qty = item.approve_qty;
                         part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         part.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
+
+                        _logger.LogInformation("Steaming part OVERWRITE for GUID: {Guid}", item.guid);
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming record updated successfully for GUID: {Guid}", steaming.guid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error UpdateSteaming record");
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
@@ -302,14 +348,20 @@ namespace IDMS.Steaming.GqlTypes
                             if (rollbackSteaming.create_by.EqualsIgnore("system") || rollbackSteaming.estimate_no.StartsWith("SE"))
                             {
                                 rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                                _logger.LogInformation("Steaming record rolled back to APPROVED for GUID: {Guid}", item.guid);
                             }
                             else
+                            {
                                 rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
-
+                                _logger.LogInformation("Steaming record rolled back to PENDING for GUID: {Guid}", item.guid);
+                            }
                         }
 
                         if (string.IsNullOrEmpty(item.customer_guid))
+                        {
+                            _logger.LogError("Customer company guid cannot be null or empty for steaming GUID: {Guid}", item.guid);
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+                        }
 
                         var customerGuid = item.customer_guid;
                         var steamingPart = await context.steaming_part.Where(r => r.steaming_guid == item.guid &&
@@ -347,6 +399,7 @@ namespace IDMS.Steaming.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming rollback process completed successfully.");
 
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, linkSotGuid, "");
 
@@ -354,7 +407,8 @@ namespace IDMS.Steaming.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error RollbackSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -370,7 +424,10 @@ namespace IDMS.Steaming.GqlTypes
                 if (ObjectAction.NEW.EqualsIgnore(action))
                 {
                     if (string.IsNullOrEmpty(steamingTemp.job_order_guid))
+                    {
+                        _logger.LogError("Job Order guid cannot be null or empty");
                         throw new GraphQLException(new Error($"Job Order guid cannot be null or empty", "ERROR"));
+                    }
 
                     //handling of steaming_temp table
                     steamingTemp.guid = Util.GenerateGUID();
@@ -392,11 +449,15 @@ namespace IDMS.Steaming.GqlTypes
                         steam.update_by = user;
                         steam.update_dt = currentDateTime;
                     }
+                    _logger.LogInformation("New steaming_temp record added with GUID: {Guid}", steamingTemp.guid);
                 }
                 else if (ObjectAction.EDIT.EqualsIgnore(action))
                 {
                     if (string.IsNullOrEmpty(steamingTemp.guid))
+                    {
+                        _logger.LogError("Steaming_temp guid cannot be null for update");
                         throw new GraphQLException(new Error($"Steaming_temp guid cannot be null for update", "ERROR"));
+                    }
 
                     var updateSteamTemp = new steaming_temp() { guid = steamingTemp.guid };
                     context.Attach(updateSteamTemp);
@@ -407,11 +468,16 @@ namespace IDMS.Steaming.GqlTypes
                     updateSteamTemp.meter_temp = steamingTemp.meter_temp;
                     updateSteamTemp.remarks = steamingTemp.remarks;
                     updateSteamTemp.report_dt = steamingTemp.report_dt;
+
+                    _logger.LogInformation("Steaming_temp record updated for GUID: {Guid}", steamingTemp.guid);
                 }
                 else if (ObjectAction.CANCEL.EqualsIgnore(action))
                 {
                     if (string.IsNullOrEmpty(steamingTemp.guid))
+                    {
+                        _logger.LogError("Steaming_temp guid cannot be null for cancel");
                         throw new GraphQLException(new Error($"Steaming_temp guid cannot be null for cancel", "ERROR"));
+                    }
 
                     var updateSteamTemp = new steaming_temp() { guid = steamingTemp.guid };
                     context.Attach(updateSteamTemp);
@@ -419,6 +485,8 @@ namespace IDMS.Steaming.GqlTypes
                     updateSteamTemp.update_dt = currentDateTime;
                     updateSteamTemp.delete_dt = currentDateTime;
                     updateSteamTemp.remarks = steamingTemp.remarks;
+
+                    _logger.LogInformation("Steaming_temp record canceled for GUID: {Guid}", steamingTemp.guid);
                 }
 
                 //handling of job_order table
@@ -429,14 +497,19 @@ namespace IDMS.Steaming.GqlTypes
                     jobOrder.start_dt = currentDateTime;
                     jobOrder.update_by = user;
                     jobOrder.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Job order status updated to IN_PROGRESS for GUID: {Guid}", jobOrder.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming temperature record processed successfully.");
+
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error RecordSteamingTemp record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -450,7 +523,10 @@ namespace IDMS.Steaming.GqlTypes
                 bool tankMovementCheck = false;
 
                 if (steaming == null)
+                {
+                    _logger.LogError("Steaming object cannot be null or empty for status update");
                     throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+                }
 
                 var updateSteaming = new steaming() { guid = steaming.guid };
                 context.steaming.Attach(updateSteaming);
@@ -483,8 +559,10 @@ namespace IDMS.Steaming.GqlTypes
                         }
 
                         if (string.IsNullOrEmpty(steaming.sot_guid))
+                        {
+                            _logger.LogError("Steaming object cannot be null or empty for status update");
                             throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
-
+                        }
                         tankMovementCheck = true;
                         break;
                     case ObjectAction.NA:
@@ -502,13 +580,17 @@ namespace IDMS.Steaming.GqlTypes
                         }
 
                         if (string.IsNullOrEmpty(steaming.sot_guid))
+                        {
+                            _logger.LogError("Steaming object cannot be null or empty for status update");
                             throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
-
+                        }
                         tankMovementCheck = true;
                         break;
                 }
+                _logger.LogInformation("Updating steaming status to {Status} for GUID: {Guid}", updateSteaming.status_cv, steaming.guid);
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming status updated successfully for GUID: {Guid}", steaming.guid);
 
                 if (tankMovementCheck)
                     await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, steaming.sot_guid);
@@ -517,7 +599,8 @@ namespace IDMS.Steaming.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error UpdateSteamingStatus record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -530,7 +613,10 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingJobOrder == null)
+                {
+                    _logger.LogError("Steaming object cannot be null or empty for abort");
                     throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+                }
 
                 var abortSteaming = new steaming() { guid = steamingJobOrder.guid };
                 context.steaming.Attach(abortSteaming);
@@ -550,18 +636,25 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     abortSteaming.status_cv = CurrentServiceStatus.COMPLETED;
                     abortSteaming.complete_dt = currentDateTime;
+                    _logger.LogInformation("Steaming abort process marked as COMPLETED for GUID: {Guid}", steamingJobOrder.guid);
                 }
                 else
+                {
                     abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
+                    _logger.LogInformation("Steaming abort process marked as NO_ACTION for GUID: {Guid}", steamingJobOrder.guid);
+                }
 
                 res = res + await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming abort process completed successfully for GUID: {Guid}", steamingJobOrder.guid);
+
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, steamingJobOrder.sot_guid);
 
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error AbortSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -574,7 +667,10 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingJobOrder == null)
+                {
+                    _logger.LogError("Steaming object cannot be null or empty for QC completion");
                     throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in steamingJobOrder)
                 {
@@ -588,25 +684,42 @@ namespace IDMS.Steaming.GqlTypes
                     completedSteaming.remarks = item.remarks;
 
                     //job_orders handling
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
-                    context.Database.ExecuteSqlRaw(sql);
+                    //var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var guids = item.job_order?.Select(j => j.guid).ToList();
+
+                    var jobOrders = await context.job_order.Where(j => guids.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
+                    {
+                        job.qc_dt = currentDateTime;
+                        job.qc_by = user;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+                    }
+                    _logger.LogInformation("Updated {Count} job_order entries for steaming {Guid}", jobOrders.Count, item.guid);
+
+                    //string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                    //             $"update_by = '{user}' WHERE guid IN ({guids})";
+                    //context.Database.ExecuteSqlRaw(sql);
                 }
 
                 //Tank handling
                 var sotGuid = steamingJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                //var processGuid = string.Join(",", steamingJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
                 if (string.IsNullOrEmpty(sotGuid))
+                {
+                    _logger.LogError("Tank guid cannot be null or empty for QC completion");
                     throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+                }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("QC completion process completed successfully.");
+
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, sotGuid);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error CompleteQCSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -620,13 +733,20 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingJobOrder == null)
+                {
+                    _logger.LogError("Steaming object cannot be null or empty for rollback");
                     throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+                }
+
 
                 foreach (var item in steamingJobOrder)
                 {
                     steaming? rollbackSteaming = await context.steaming.FindAsync(item.guid);
                     if (rollbackSteaming == null)
+                    {
+                        _logger.LogError("Steaming object not found for GUID: {Guid}", item.guid);
                         throw new GraphQLException(new Error($"Steaming object not found", "ERROR"));
+                    }
 
                     //Steaming handling
                     //var rollbabkSteaming = new steaming() { guid = item.guid };
@@ -639,17 +759,19 @@ namespace IDMS.Steaming.GqlTypes
                         rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
                         if (rollbackSteaming.flat_rate == true)
                             rollbackSteaming.total_hour = 1.0;
-                        else 
+                        else
                         {
                             rollbackSteaming.total_hour = null;
                             context.Entry(rollbackSteaming).Property(x => x.total_hour).IsModified = true;
                         }
-
+                        _logger.LogInformation("Steaming record rolled back to APPROVED for GUID: {Guid}", item.guid);
                     }
                     else
                     {
                         if (rollbackSteaming.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
                             rollbackSteaming.status_cv = CurrentServiceStatus.ASSIGNED;
+
+                        _logger.LogInformation("Steaming record rolled back to ASSIGNED for GUID: {Guid}", item.guid);
                     }
 
                     if (!string.IsNullOrEmpty(item.remarks))
@@ -657,36 +779,53 @@ namespace IDMS.Steaming.GqlTypes
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
-                    var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobIds = item.job_order.Select(j => j.guid).ToList();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIds.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
                     {
+                        job.status_cv = JobStatus.PENDING;
+                        job.update_by = user;
+                        job.update_dt = currentDateTime;
+
+                        if (!string.IsNullOrWhiteSpace(jobRemark))
+                            job.remarks = jobRemark;
+
                         if (rollbackSteaming.create_by.EqualsIgnore("system"))
-                        {
-                            sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                    $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
-                        }
-                        else
-                        {
-                            sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                    $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
-                        }
+                            job.team_guid = null; // reset team only when created by system
                     }
-                    else
-                    {
-                        if (rollbackSteaming.create_by.EqualsIgnore("system"))
-                        {
-                            sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                    $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                        }
-                        else
-                        {
-                            sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                    $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                        }
-                    }
-                    context.Database.ExecuteSqlRaw(sql);
+                    _logger.LogInformation("Updated {Count} job_order records for steaming GUID {Guid}", jobOrders.Count, item.guid);
+
+
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
+                    //{
+                    //    if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                    //    {
+                    //        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    //    }
+                    //    else
+                    //    {
+                    //        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                    //    {
+                    //        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //    }
+                    //    else
+                    //    {
+                    //        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                    //                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    //    }
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
@@ -700,11 +839,13 @@ namespace IDMS.Steaming.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming rollback process completed successfully.");
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error RollbackJobInProgressSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -717,7 +858,10 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingJobOrder == null)
+                {
+                    _logger.LogError("Steaming object cannot be null or empty for rollback of completed steaming");
                     throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+                }
 
                 foreach (var item in steamingJobOrder)
                 {
@@ -732,20 +876,34 @@ namespace IDMS.Steaming.GqlTypes
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    var jobIds = item.job_order.Select(j => j.guid).ToList();
 
-                    string sql = "";
-                    if (!string.IsNullOrEmpty(jobRemark))
+                    var jobOrders = await context.job_order.Where(j => jobIds.Contains(j.guid)).ToListAsync();
+                    foreach (var job in jobOrders)
                     {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({guids})";
+                        job.complete_dt = null;
+                        job.status_cv = JobStatus.IN_PROGRESS;
+                        job.update_dt = currentDateTime;
+                        job.update_by = user;
+
+                        if (!string.IsNullOrWhiteSpace(jobRemark))
+                            job.remarks = jobRemark;
                     }
-                    else
-                    {
-                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({guids})";
-                    }
-                    context.Database.ExecuteSqlRaw(sql);
+                    _logger.LogInformation("Updated {Count} job_order rows for steaming GUID {Guid}", jobOrders.Count, item.guid);
+
+                    //string sql = "";
+                    //if (!string.IsNullOrEmpty(jobRemark))
+                    //{
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({guids})";
+                    //}
+                    //else
+                    //{
+                    //    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                    //            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    //}
+                    //context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
@@ -759,6 +917,7 @@ namespace IDMS.Steaming.GqlTypes
                         timeTables.update_by = user;
                         timeTables.update_dt = currentDateTime;
                     }
+                    _logger.LogInformation("Updated timetable for job orders associated with steaming GUID {Guid}", item.guid);
                 }
 
                 var sotGuid = steamingJobOrder.Select(r => r.sot_guid).FirstOrDefault();
@@ -777,13 +936,16 @@ namespace IDMS.Steaming.GqlTypes
                     if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.STEAM;
                 }
+                _logger.LogInformation("Updated tank status to {Status} for SOT GUID: {Guid}", sot.tank_status_cv, sotGuid);
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming rollback of completed process completed successfully.");
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error RollbackCompletedSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -796,8 +958,10 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingGuid == null || !steamingGuid.Any())
+                {
+                    _logger.LogError("Steaming guid cannot be null or empty");
                     throw new GraphQLException(new Error($"Steaming guid cannot be null or emptry", "ERROR"));
-
+                }
 
                 foreach (var item in steamingGuid)
                 {
@@ -808,13 +972,18 @@ namespace IDMS.Steaming.GqlTypes
                         .Where(r => r.guid == item).FirstOrDefaultAsync();
 
                     if (rollbackSteaming == null)
+                    {
+                        _logger.LogError("Steaming estimate not found for GUID: {Guid}", item);
                         throw new GraphQLException(new Error($"Steaming estimate not found", "ERROR"));
+                    }
 
                     rollbackSteaming.update_by = user;
                     rollbackSteaming.update_dt = currentDateTime;
                     rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
                     if (!string.IsNullOrEmpty(remark))
                         rollbackSteaming.remarks = remark;
+
+                    _logger.LogInformation("Steaming record rolled back to APPROVED for GUID: {Guid}", item);
 
                     //Parts handking
                     var steamParts = rollbackSteaming.steaming_part;
@@ -835,15 +1004,18 @@ namespace IDMS.Steaming.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                         }
+                        _logger.LogInformation($"Cleared job orders for {steamParts.Count()} steaming parts for steaming GUID: {item}" );  
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("Steaming rollback of assigned process completed successfully.");
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "Error RollbackAssignedSteaming record");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 

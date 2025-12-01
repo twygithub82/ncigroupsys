@@ -134,6 +134,8 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
       this.selectedTabIndex = index >= 0 ? index : 0;
     });
+
+    this.lockBackButton();
   }
 
   onTabChange(index: number): void {
@@ -160,4 +162,20 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       this.translatedLangText = translations;
     });
   }
+
+ lockBackButton() {
+  // Push exactly ONE dummy state
+  history.pushState(null, '', location.href);
+
+  window.addEventListener('popstate', () => {
+    // User tries to go back → force stay on In-Gate Main
+    this.router.navigate(
+      ['/admin/inventory/in-gate-main'],
+      { queryParams: { tabIndex: 'app-in-gate-survey' }, replaceUrl: true }
+    );
+
+    // Re-push the dummy state so Back never escapes
+    history.pushState(null, '', location.href);
+  });
+}
 }

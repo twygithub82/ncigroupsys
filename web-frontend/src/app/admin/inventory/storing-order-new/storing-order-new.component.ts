@@ -162,7 +162,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
-    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL'
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -321,7 +322,14 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      this.unit_typeList = data
+      // this.unit_typeList = data
+      this.unit_typeList = data.sort((a, b) =>
+        a.unit_type!.trim().localeCompare(
+          b.unit_type!.trim(),
+          undefined,
+          { numeric: true, sensitivity: 'base' }
+        )
+      );
     });
 
     this.cvDS.connectAlias('repairCv').subscribe(data => {

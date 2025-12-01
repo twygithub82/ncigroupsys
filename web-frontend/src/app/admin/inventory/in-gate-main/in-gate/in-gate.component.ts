@@ -128,7 +128,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    
+
   ) {
     super();
     this.translateLangText();
@@ -152,7 +152,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   initSearchForm() {
     this.searchForm = this.fb.group({
       search_field: [''],
-      status_cv:['']
+      status_cv: ['']
     });
   }
 
@@ -161,49 +161,39 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   public loadData() {
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    // var actionId= this.route.snapshot.paramMap.get('id');
-    // if(actionId==="pending")
-    // {
-    //   this.loadData_Pending();
-    // }
-    // else
-    {
-        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
 
-        if (savedCriteria) {
-          this.searchForm?.patchValue(savedCriteria);
-          this.constructSearchCriteria();
-        }
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
 
-        if (savedPagination) {
-          this.pageIndex = savedPagination.pageIndex;
-          this.pageSize = savedPagination.pageSize;
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
 
-          this.performSearch(
-            savedPagination.pageSize,
-            savedPagination.pageIndex,
-            savedPagination.first,
-            savedPagination.after,
-            savedPagination.last,
-            savedPagination.before
-          );
-        }
-
-        if (!savedCriteria && !savedPagination) {
-          this.search();
-        }
-      }
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
-  public loadData_Pending()
-  {
-       const where :any = { status_cv: { in: ["WAITING"] } }
+  public loadData_Pending() {
+    const where: any = { status_cv: { in: ["WAITING"] } }
 
-       this.lastSearchCriteria = where;
-       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
-      console.log("search pending records");
+    this.lastSearchCriteria = where;
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+    console.log("search pending records");
   }
   // export table data in excel file
   exportExcel() {
@@ -237,7 +227,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   constructSearchCriteria() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
-    var status_cv = this.searchForm?.get('status_cv')?.value||["WAITING"];
+    var status_cv = this.searchForm?.get('status_cv')?.value || ["WAITING"];
 
     const where: any = {
       and: [

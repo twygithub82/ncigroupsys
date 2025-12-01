@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -64,6 +65,7 @@ export class EmptyFormConfirmationDialogComponent {
   description?: string[];
 
   previousRemarks?: string;
+  isMobile: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<EmptyFormConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -72,6 +74,7 @@ export class EmptyFormConfirmationDialogComponent {
     this.action = data.action!;
     this.dialogTitle = data.dialogTitle || '';
     this.description = data.confirmForm;
+    this.isMobile = Utility.isMobile();
   }
 
   submit() {

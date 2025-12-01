@@ -1,23 +1,27 @@
-﻿using HotChocolate;
-using IDMS.Models.Service.GqlTypes.DB;
-using IDMS.Models.Service;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using CommonUtil.Core.Service;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Service.GqlTypes.LocalModel;
+﻿using CommonUtil.Core.Service;
+using HotChocolate;
 using IDMS.Models.Notification;
-using System.Globalization;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Shared;
-using System.Configuration;
+using IDMS.Service.GqlTypes.LocalModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Data.SqlClient;
 
 namespace IDMS.Service.GqlTypes
 {
     public class ServiceMutation
     {
+        private readonly ILogger<ServiceMutation> _logger;
+
+        public ServiceMutation(ILogger<ServiceMutation> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Assign part to Job, Update Job Order status to Pending
         /// </summary>
@@ -55,6 +59,7 @@ namespace IDMS.Service.GqlTypes
                             newJobOrder.update_by = user;
                             newJobOrder.update_dt = currentDateTime;
                             await context.AddAsync(newJobOrder);
+                            _logger.LogInformation("Created job_order {JobOrderGuid} by {User}", newJobOrder.guid, user);
                         }
                         else
                         {
@@ -70,6 +75,8 @@ namespace IDMS.Service.GqlTypes
                             updateJobOrder.remarks = item.remarks;
                             updateJobOrder.update_by = user;
                             updateJobOrder.update_dt = currentDateTime;
+
+                            _logger.LogInformation("Updated job_order {JobOrderGuid} by {User}", item.guid, user);
                         }
 
                         await AssignPartToJob(context, currentDateTime, user, item.job_type_cv, currentJobOrderGuid, item.part_guid, item.process_guid);
@@ -78,20 +85,23 @@ namespace IDMS.Service.GqlTypes
                     var res = await context.SaveChangesAsync();
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
+                    _logger.LogInformation("AssignJobOrder transaction committed by {User}; saved {Changes} changes", user, res);
                     //TODO
                     //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                     return res;
                 }
-                catch
+                catch (Exception txEx)
                 {
                     // Rollback in case of an error
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
+                    _logger.LogError(txEx, "AssignJobOrder transaction failed");
                     throw;
                 }
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AssignJobOrder failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
         public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -103,6 +113,7 @@ namespace IDMS.Service.GqlTypes
                     throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("UpdateJobOrder authorized user {User}; items {Count}", user, jobOrderRequest.Count);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 foreach (var item in jobOrderRequest)
@@ -135,13 +146,15 @@ namespace IDMS.Service.GqlTypes
 
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateJobOrder saved {Changes} changes by {User}", res, user);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateJobOrder failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -154,7 +167,11 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (jobOrderRequest == null)
+                {
+                    _logger.LogError("CompleteJobOrder called with null jobOrderRequest");
                     throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+                }
+
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -177,6 +194,8 @@ namespace IDMS.Service.GqlTypes
                     jobNotification.complete_dt = currentDateTime;
                     jobNotification.job_status = JobStatus.COMPLETED;
                     notificationList.Add(jobNotification);
+
+                    _logger.LogInformation("Marked job_order {JobOrderGuid} as COMPLETED by {User}", item.guid, user);
                 }
 
                 //handling steaming process for total hour
@@ -187,9 +206,11 @@ namespace IDMS.Service.GqlTypes
                     steam.total_hour = steaming.total_hour;
                     steam.update_by = user;
                     steam.update_dt = currentDateTime;
+                    _logger.LogInformation("Updated steaming {SteamingGuid} total_hour by {User}", steaming.guid, user);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("CompleteJobOrder saved {Changes} changes by {User}", res, user);
                 //TODO
                 foreach (var item in notificationList)
                 {
@@ -200,7 +221,8 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "CompleteJobOrder failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -218,12 +240,14 @@ namespace IDMS.Service.GqlTypes
                 string sql = $"UPDATE {tableName} SET delete_dt = {currentDateTime}, update_dt = {currentDateTime}, update_by = '{user}' WHERE guid IN ({guids})";
 
                 var ret = context.Database.ExecuteSqlRaw(sql);
+                _logger.LogInformation("DeleteJobOrder executed SQL for {Count} guids by {User}", jobOrderGuid?.Count ?? 0, user);
                 //var res = await context.SaveChangesAsync();
                 return ret;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "DeleteJobOrder failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -236,7 +260,11 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (timeTable == null)
+                {
+                    _logger.LogError("StartJobTimer called with null timeTable");
                     throw new GraphQLException(new Error($"Time table object cannot be null", "ERROR"));
+                }
+
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -247,7 +275,10 @@ namespace IDMS.Service.GqlTypes
                 foreach (var item in timeTable)
                 {
                     if (item.job_order_guid == null)
+                    {
+                        _logger.LogError("StartJobTimer called with null job_order_guid");
                         throw new GraphQLException(new Error($"Job order guid cannot be null", "ERROR"));
+                    }
 
                     //handling of time_table 
                     var startTimeTable = new time_table();
@@ -262,7 +293,10 @@ namespace IDMS.Service.GqlTypes
 
                     //handling of job_order
                     if (item.job_order == null)
+                    {
+                        _logger.LogError("StartJobTimer called with null job_order object");
                         throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+                    }
 
                     var job_order = new job_order() { guid = item.job_order_guid };
                     context.job_order.Attach(job_order);
@@ -284,6 +318,8 @@ namespace IDMS.Service.GqlTypes
                     jobNotification.start_time = startTimeTable.start_time;
                     jobNotification.stop_time = startTimeTable.stop_time;
                     notificationList.Add(jobNotification);
+
+                    _logger.LogInformation("Started timer {TimeTableGuid} for job_order {JobOrderGuid} by {User}", startTimeTable.guid, item.job_order_guid, user);
                 }
 
                 await context.time_table.AddRangeAsync(newTimeTableList);
@@ -297,11 +333,13 @@ namespace IDMS.Service.GqlTypes
                     await GqlUtils.SendJobNotification(config, item, JobNotificationType.onJobStarted.ToString());
                 }
 
+                _logger.LogInformation("StartJobTimer saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "StartJobTimer failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -311,7 +349,10 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (timeTable == null)
+                {
+                    _logger.LogError("StopJobTimer called with null timeTable");
                     throw new GraphQLException(new Error($"Time table object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -322,7 +363,11 @@ namespace IDMS.Service.GqlTypes
                 foreach (var item in timeTable)
                 {
                     if (item.job_order_guid == null)
+                    {
+                        _logger.LogError("StopJobTimer called with null job_order_guid");
                         throw new GraphQLException(new Error($"Job order guid cannot be null", "ERROR"));
+                    }
+
 
                     var stopTimeTable = new time_table() { guid = item.guid };
                     context.time_table.Attach(stopTimeTable);
@@ -342,6 +387,8 @@ namespace IDMS.Service.GqlTypes
                     jobNotification.start_time = item.start_time;
                     jobNotification.stop_time = stopTimeTable.stop_time;
                     notificationList.Add(jobNotification);
+
+                    _logger.LogInformation("Stopped timer {TimeTableGuid} for job_order {JobOrderGuid}", item.guid, item.job_order_guid);
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -354,20 +401,21 @@ namespace IDMS.Service.GqlTypes
                 {
                     await GqlUtils.SendJobNotification(config, item, JobNotificationType.onJobStopped.ToString());
                 }
+                _logger.LogInformation("StopJobTimer saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "StopJobTimer failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
-        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+        private async Task<int> AssignPartToJob_Bk(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
             string partTableName = "";
             string processTableName = "";
-            //bool needAllocateBy = false;
 
             try
             {
@@ -398,20 +446,111 @@ namespace IDMS.Service.GqlTypes
                 string sql = $"UPDATE {partTableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
                 var ret = context.Database.ExecuteSqlRaw(sql);
 
+                _logger.LogInformation("AssignPartToJob updated {Count} parts in {Table} for jobOrder {JobOrderGuid}", partGuid?.Count ?? 0, partTableName, jobOrderGuid);
+
+
                 if (!string.IsNullOrEmpty(processGuid))
                 {
                     string sql1 = sql1 = $"UPDATE {processTableName} SET allocate_by = '{user}', allocate_dt = {currentDateTime}, " +
                                          $"update_by = '{user}', update_dt = {currentDateTime} WHERE guid = '{processGuid}'";
                     var res = context.Database.ExecuteSqlRaw(sql1);
+                    _logger.LogInformation("AssignPartToJob updated process {ProcessGuid} in {Table}", processGuid, processTableName);
                 }
 
                 return ret;
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "AssignPartToJob failed for jobOrder {JobOrderGuid}", jobOrderGuid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
+
+        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+                                             string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
+        {
+            string partTableName = "";
+            string processTableName = "";
+
+            try
+            {
+                if (partGuid == null || partGuid.Count == 0)
+                {
+                    _logger.LogError("AssignPartToJob called with null or empty partGuids");
+                    throw new GraphQLException("partGuids cannot be null or empty.");
+                }
+
+                // Resolve table names
+                var (partTable, processTable) = jobType.ToUpper() switch
+                {
+                    JobType.REPAIR => ("repair_part", "repair"),
+                    JobType.CLEANING => ("cleaning", "cleaning"),
+                    JobType.RESIDUE => ("residue_part", "residue"),
+                    JobType.STEAM => ("steaming_part", "steaming"),
+                    _ => throw new GraphQLException($"Invalid job type: {jobType}")
+                };
+
+                // Parameterized PART update
+                var partParams = new List<object>
+                {
+                    new SqlParameter("@update_dt", currentDateTime),
+                    new SqlParameter("@update_by", user),
+                    new SqlParameter("@job_order_guid", jobOrderGuid)
+                };
+
+                var partGuidInList = string.Join(", ", partGuid.Select((g, i) =>
+                {
+                    partParams.Add(new SqlParameter($"@p{i}", g ?? string.Empty));
+                    return $"@p{i}";
+                }));
+
+
+                var partSql = $@"
+                UPDATE {partTable}
+                SET update_dt = @update_dt,
+                update_by = @update_by,
+                job_order_guid = @job_order_guid
+                WHERE guid IN ({partGuidInList});
+                ";
+                int updatedParts = await context.Database.ExecuteSqlRawAsync(partSql, partParams.ToArray());
+                _logger.LogInformation("AssignPartToJob updated {Count} parts in {Table} for jobOrder {JobOrderGuid}", updatedParts, partTable, jobOrderGuid);
+
+
+                if (!string.IsNullOrEmpty(processGuid))
+                {
+                    var processSql = $@"
+                    UPDATE {processTable}
+                    SET allocate_by = @user,
+                    allocate_dt = @dt,
+                    update_by = @user,
+                    update_dt = @dt
+                    WHERE guid = @guid;
+                    ";
+
+                    var processParams = new[]
+                    {
+                        new SqlParameter("@user", user),
+                        new SqlParameter("@dt", currentDateTime),
+                        new SqlParameter("@guid", processGuid)
+                    };
+
+                    await context.Database.ExecuteSqlRawAsync(processSql, processParams);
+
+                    _logger.LogInformation(
+                        "AssignPartToJob updated process {ProcessGuid} in {Table}", processGuid, processTable);
+                }
+
+                return updatedParts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AssignPartToJob failed for jobOrder {JobOrderGuid}", jobOrderGuid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try
@@ -427,6 +566,8 @@ namespace IDMS.Service.GqlTypes
                     jobOrdr.working_hour = Math.Round(((double)totalTime / 3600.0), 2);
                     jobOrdr.update_by = user;
                     jobOrdr.update_dt = currentDateTime;
+
+                    _logger.LogInformation("UpdateAccumalateHour updated working_hour for jobOrder {JobOrderGuid} to {WorkingHour}", j_guid, jobOrdr.working_hour);
                 }
 
                 await context.SaveChangesAsync();
@@ -434,7 +575,8 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError(ex, "UpdateAccumalateHour failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -445,7 +587,10 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (rolesRequest == null)
+                {
+                    _logger.LogError("AddRole called with null rolesRequest");
                     throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -481,14 +626,18 @@ namespace IDMS.Service.GqlTypes
                             await context.Set<role_functions>().AddAsync(newRF);
                         }
                     }
+
+                    _logger.LogInformation("Added role {RoleGuid}", newRole.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddRole saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "AddRole failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -498,7 +647,11 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (rolesRequest == null)
+                {
+                    _logger.LogError("UpdateRole called with null rolesRequest");
                     throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
+                }
+
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -532,6 +685,7 @@ namespace IDMS.Service.GqlTypes
                                 newRF.functions_guid = rf.functions_guid;
 
                                 await context.Set<role_functions>().AddAsync(newRF);
+                                _logger.LogInformation("Added role_functions {RFGuid} for role {RoleGuid}", newRF.guid, newRF.role_guid);
                             }
 
                             if ((ObjectAction.CANCEL).EqualsIgnore(rf.action))
@@ -541,17 +695,20 @@ namespace IDMS.Service.GqlTypes
                                 deleteRF.update_by = user;
                                 deleteRF.update_dt = currentDateTime;
                                 deleteRF.delete_dt = currentDateTime;
+                                _logger.LogInformation("Marked role_functions {RFGuid} as deleted", rf.guid);
                             }
                         }
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateRole saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateRole failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -561,7 +718,10 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (rolesGuid == null)
+                {
+                    _logger.LogError("DeleteRole called with null rolesGuid");
                     throw new GraphQLException(new Error($"Roles guid cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -574,14 +734,18 @@ namespace IDMS.Service.GqlTypes
                     deleteRole.update_by = user;
                     deleteRole.update_dt = currentDateTime;
                     deleteRole.delete_dt = currentDateTime;
+
+                    _logger.LogInformation("Marked role {RoleGuid} as deleted", guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteRole saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "DeleteRole failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -591,7 +755,10 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (teamsRequest == null)
+                {
+                    _logger.LogError("AddTeam called with null teamsRequest");
                     throw new GraphQLException(new Error($"Team object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -608,15 +775,19 @@ namespace IDMS.Service.GqlTypes
                     newTeam.create_dt = currentDateTime;
 
                     await context.team.AddAsync(newTeam);
+
+                    _logger.LogInformation("Added team {TeamGuid}", newTeam.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddTeam saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "AddTeam failed");
                 //throw;
-                throw new GraphQLException(new Error($"{ex.Message + ex.InnerException}--{ex.StackTrace}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -626,7 +797,11 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (teamRequest == null)
+                {
+                    _logger.LogError("UpdateTeam called with null teamRequest");
                     throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
+                }
+
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -640,14 +815,18 @@ namespace IDMS.Service.GqlTypes
 
                     updateTeam.update_by = user;
                     updateTeam.update_dt = currentDateTime;
+
+                    _logger.LogInformation("Updated team {TeamGuid}", item.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateTeam saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateTeam failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -657,7 +836,11 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (teamsGuid == null)
+                {
+                    _logger.LogError("DeleteTeam called with null teamsGuid");
                     throw new GraphQLException(new Error($"Teams guid cannot be null", "ERROR"));
+                }
+
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -670,14 +853,18 @@ namespace IDMS.Service.GqlTypes
                     deleteTeam.update_by = user;
                     deleteTeam.update_dt = currentDateTime;
                     deleteTeam.delete_dt = currentDateTime;
+
+                    _logger.LogInformation("Marked team {TeamGuid} as deleted", guid);
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("DeleteTeam saved {Changes}", res);
                 return res;
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "DeleteTeam failed");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -687,7 +874,10 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (userRequest == null)
+                {
+                    _logger.LogError("UpdateUser called with null userRequest");
                     throw new GraphQLException(new Error($"User object cannot be null", "ERROR"));
+                }
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
@@ -704,7 +894,10 @@ namespace IDMS.Service.GqlTypes
                     if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
                     {
                         if (string.IsNullOrEmpty(item?.guid))
+                        {
+                            _logger.LogError("UpdateUser called with null role guid");
                             throw new GraphQLException(new Error($"Role guid cannot be null or empty", "ERROR"));
+                        }
 
                         var newUserRole = new user_role();
                         newUserRole.guid = Util.GenerateGUID();
@@ -715,6 +908,8 @@ namespace IDMS.Service.GqlTypes
                         newUserRole.create_dt = currentDateTime;
                         newUserRole.update_dt = currentDateTime;
                         await context.Set<user_role>().AddAsync(newUserRole);
+
+                        _logger.LogInformation("Added user_role {UserRoleGuid} for user {TargetId}", newUserRole.guid, userRequest.Id);
                     }
 
                     if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
@@ -725,6 +920,8 @@ namespace IDMS.Service.GqlTypes
                             delUserRole.update_by = user;
                             delUserRole.update_dt = currentDateTime;
                             delUserRole.delete_dt = currentDateTime;
+
+                            _logger.LogInformation("Marked user_role {UserRoleGuid} as deleted for user {TargetId}", delUserRole.guid, userRequest.Id);
                         }
                     }
                 }
@@ -732,7 +929,11 @@ namespace IDMS.Service.GqlTypes
                 foreach (var item1 in teamsRequest)
                 {
                     if (string.IsNullOrEmpty(item1?.guid))
+                    {
+                        _logger.LogError("UpdateUser called with null team guid");
                         throw new GraphQLException(new Error($"Team guid cannot be null or empty", "ERROR"));
+                    }
+
 
                     if (ObjectAction.NEW.EqualsIgnore(item1?.action ?? ""))
                     {
@@ -745,6 +946,8 @@ namespace IDMS.Service.GqlTypes
                         newUserTeam.create_dt = currentDateTime;
                         newUserTeam.update_dt = currentDateTime;
                         await context.team_user.AddAsync(newUserTeam);
+
+                        _logger.LogInformation("Added team_user {UserTeamGuid} for user {TargetId}", newUserTeam.guid, userRequest.Id);
                     }
 
                     if (ObjectAction.CANCEL.EqualsIgnore(item1?.action ?? ""))
@@ -755,6 +958,8 @@ namespace IDMS.Service.GqlTypes
                             delUserTeam.update_by = user;
                             delUserTeam.update_dt = currentDateTime;
                             delUserTeam.delete_dt = currentDateTime;
+
+                            _logger.LogInformation("Marked team_user {UserTeamGuid} as deleted for user {TargetId}", delUserTeam.guid, userRequest.Id);
                         }
                     }
                 }
@@ -762,7 +967,11 @@ namespace IDMS.Service.GqlTypes
                 foreach (var item2 in functionsRequest)
                 {
                     if (string.IsNullOrEmpty(item2?.guid))
+                    {
+                        _logger.LogError("UpdateUser called with null function guid");
                         throw new GraphQLException(new Error($"Function guid cannot be null or empty", "ERROR"));
+                    }
+
 
                     if (ObjectAction.NEW.EqualsIgnore(item2?.action ?? ""))
                     {
@@ -777,6 +986,8 @@ namespace IDMS.Service.GqlTypes
                         newUserFunctions.create_dt = currentDateTime;
                         newUserFunctions.update_dt = currentDateTime;
                         await context.Set<user_functions>().AddAsync(newUserFunctions);
+
+                        _logger.LogInformation("Added user_functions {UserFunctionsGuid} for user {TargetId}", newUserFunctions.guid, userRequest.Id);
                     }
 
 
@@ -789,6 +1000,8 @@ namespace IDMS.Service.GqlTypes
                             updateUserFunctions.remarks = item2.remarks;
                             updateUserFunctions.update_by = user;
                             updateUserFunctions.update_dt = currentDateTime;
+
+                            _logger.LogInformation("Edited user_functions {UserFunctionsGuid} for user {TargetId}", item2.guid, userRequest.Id);
                         }
                     }
 
@@ -803,17 +1016,21 @@ namespace IDMS.Service.GqlTypes
                             delUserFunctions.update_by = user;
                             delUserFunctions.update_dt = currentDateTime;
                             delUserFunctions.delete_dt = currentDateTime;
+
+                            _logger.LogInformation("Marked user_functions {UserFunctionsGuid} as deleted for user {TargetId}", item2.guid, userRequest.Id);
                         }
                     }
                 }
 
                 var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateUser saved {Changes} changes for user {TargetId}", res, userRequest.Id);
                 return res;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                _logger.LogError(ex, "UpdateUser failed");
+                //Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -889,20 +1106,6 @@ namespace IDMS.Service.GqlTypes
                 //check if tank have any repair purpose
                 if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
                 {
-                    //Else, check if tank have any residue estimate already created but pending
-                    //var res = context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
-                    // (
-                    //     (!qcCompletedStatuses.Contains(t.status_cv))
-                    // ))
-                    // .Select(t => t.guid)
-                    // .Distinct()
-                    // .ToList();
-
-                    //if (res.Any())
-                    //{
-                    //    tank.tank_status_cv = TankMovementStatus.REPAIR;
-                    //    goto ProceesUpdate;
-                    //}
                     var res = await context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
@@ -932,8 +1135,10 @@ namespace IDMS.Service.GqlTypes
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 var ret = await context.SaveChangesAsync();
+                _logger.LogInformation("TankMovementConditionCheck updated tank {SotGuid} status to {Status}", sotGuid, tank.tank_status_cv);
                 return true;
             }
+            _logger.LogDebug("TankMovementConditionCheck found no tank for {SotGuid}", sotGuid);
             return false;
         }
     }

@@ -262,6 +262,7 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
             return data;
         }
+
         public static string IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             string uid = "";

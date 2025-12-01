@@ -1,3 +1,29 @@
+##See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#
+#FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+#USER app
+#WORKDIR /app
+#EXPOSE 8080
+#EXPOSE 8081
+#
+#FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+#ARG BUILD_CONFIGURATION=Release
+#WORKDIR /src
+#COPY ["DWMS.UserAuthentication.csproj", "."]
+#RUN dotnet restore "./DWMS.UserAuthentication.csproj"
+#COPY . .
+#WORKDIR "/src/."
+#RUN dotnet build "./DWMS.UserAuthentication.csproj" -c $BUILD_CONFIGURATION -o /app/build
+#
+#FROM build AS publish
+#ARG BUILD_CONFIGURATION=Release
+#RUN dotnet publish "./DWMS.UserAuthentication.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+#
+#FROM base AS final
+#WORKDIR /app
+#COPY --from=publish /app/publish .
+#ENTRYPOINT ["dotnet", "DWMS.UserAuthentication.dll"]
+
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
@@ -8,18 +34,21 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
 WORKDIR /src
-COPY ["DWMS.UserAuthentication.csproj", "."]
-RUN dotnet restore "./DWMS.UserAuthentication.csproj"
-COPY . .
+COPY ./ ./
+
+#COPY ["DWMS.UserAuthentication.csproj", "."]
+RUN dotnet restore "./IDMS.UserAuthentication.sln"
+
 WORKDIR "/src/."
-RUN dotnet build "./DWMS.UserAuthentication.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./IDMS.UserAuthentication.sln" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./DWMS.UserAuthentication.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./IDMS.User.Management.Service/IDMS.User.Authentication.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DWMS.UserAuthentication.dll"]
+ENTRYPOINT ["dotnet", "IDMS.User.Authentication.API.dll"]

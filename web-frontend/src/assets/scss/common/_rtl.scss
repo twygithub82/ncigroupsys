@@ -821,7 +821,7 @@
     direction: rtl;
   }
   .ng-scroll-viewport {
-    --native-scrollbar-size: 1px !important;
+    --native-scrollbar-size: 0px !important;
   }
 }
 
