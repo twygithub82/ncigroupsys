@@ -28,7 +28,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatStepper, MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router ,NavigationStart, NavigationEnd} from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -55,7 +55,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import * as moment from 'moment';
 import { Moment } from 'moment';
-import { Observable, Subject, merge,Subscription  } from 'rxjs';
+import { Observable, Subject, merge, Subscription } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -257,7 +257,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     CONFIRM_RESET: 'COMMON-FORM.RESET',
   }
   private destroy$ = new Subject<void>();
-   
+
 
   in_gate_guid: string | null | undefined;
   in_gate: InGateItem | null | undefined;
@@ -420,7 +420,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
     this.loadData();
-    
+
     // this.stepper.selectedIndex = this.calculateInitialStepIndex();
   }
 
@@ -438,7 +438,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.isMobile) {
       this.frameTypeSeq = ['REAR_SIDE', 'LEFT_SIDE', 'RIGHT_SIDE', 'BOTTOM_SIDE', 'FRONT_SIDE', 'TOP_SIDE'];
     }
-     
+
   }
 
   initForm() {
@@ -1174,19 +1174,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     // this.subs.sink = this.tDS.loadItems().subscribe(data => {
-    this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
-      // this.unit_typeList = data || [];
-       this.unit_typeList = data.sort((a, b) =>
-        a.unit_type!.trim().localeCompare(
-          b.unit_type!.trim(),
-          undefined,
-          { numeric: true, sensitivity: 'base' }
-        )
-      );
+    this.tDS.search({ tariff_depot_guid: { neq: null } }, { "unit_type": "ASC" }, 100).subscribe(data => {
+      this.unit_typeList = data || [];
       this.detectChanges();
     });
-      
-    
+
+
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
       // EDIT
@@ -1629,7 +1622,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             if (wantPublish) {
               this.onPublish();
             }
-         //   this.preventBackButton();
+            //   this.preventBackButton();
           }
         });
       } else {
@@ -2296,14 +2289,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         complete: () => {
           console.log('Upload process completed.');
           if (redirect) {
-            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex },replaceUrl: true });
+            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
           }
         }
       });
     } else {
       this.handleSaveSuccess(1);
       if (redirect) {
-        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex },replaceUrl: true });
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
       }
     }
   }
@@ -2438,16 +2431,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (!previewVal) {
       inputRef.click();
     }
-    else
-    {
+    else {
       var index = this.getImagePreviewIndex(formPath!);
       this.previewImagesDialog(new Event('click'), index);
     }
   }
 
   getImagePreviewIndex(imgType: string) {
-    switch(imgType)
-    {
+    switch (imgType) {
       case 'frame_type.leftImage': return 0;
       case 'frame_type.rearImage': return 1;
       case 'frame_type.rightImage': return 2;
@@ -2481,11 +2472,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   preventBackButton() {
     // Clear existing history
     // history.replaceState(null, '', window.location.href);
-   
+
     // Add current page to history
 
-     history.pushState(null, '', window.location.href);
-    
+    history.pushState(null, '', window.location.href);
+
     // Handle back button press
     window.addEventListener('popstate', (event) => {
       history.pushState(null, '', window.location.href);
@@ -2493,14 +2484,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.showBackButtonWarning();
     });
   }
-   private showBackButtonWarning() {
+  private showBackButtonWarning() {
     // Custom implementation - show modal, toast, etc.
     console.warn('Back navigation is disabled');
-     this.router.navigate([], { replaceUrl: true });
+    this.router.navigate([], { replaceUrl: true });
     this.router.navigate(
-    ['/admin/inventory/in-gate-main'],
-    { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true }
-   );
+      ['/admin/inventory/in-gate-main'],
+      { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true }
+    );
   }
 
   disableBackButton() {
