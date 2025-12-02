@@ -351,7 +351,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   initForm() {
     this.steamForm = this.fb.group({
-     time: ['', Validators.required],
+      time: ['', Validators.required],
       thermometer: ['', Validators.required],
       top: ['', Validators.required],
       bottom: ['', Validators.required],
@@ -1051,9 +1051,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   addEstDetails(event: Event) {
     this.preventDefault(event);
-     this.steamForm?.markAllAsTouched(); // show validation errors
+    this.steamForm?.markAllAsTouched(); // show validation errors
     if (this.steamForm?.invalid) {
-     
+
       return;
     }
     let guid = null;
@@ -1179,7 +1179,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
 
             if (result.data.recordSteamingTemp) {
-              this.deList=[steamTemp, ...this.deList];
+              this.deList = [steamTemp, ...this.deList];
               this.completeSteamJobWithoutConfirm(event!);
             }
           });
@@ -1188,7 +1188,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     } else {
       this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
         if (result.data.recordSteamingTemp) {
-        
+
           this.resetSelectedItemForUpdating();
           this.QuerySteamTemp();
           //this.resetSelectedItemForUpdating();
@@ -1205,14 +1205,12 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   }
   QuerySteamTemp() {
     this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp => {
-      if (temp?.length) 
-        {
+      if (temp?.length) {
         console.log(temp);
         this.updateData(temp);
       }
-      else
-      {
-        this.deList=[];
+      else {
+        this.deList = [];
       }
     });
   }
@@ -1241,7 +1239,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       remarks: '',
     }, { emitEvent: false });
     this.steamForm?.markAsPristine();
-  this.steamForm?.markAsUntouched();
+    this.steamForm?.markAsUntouched();
     // this.steamForm?.get('time')?.setErrors(null);
     // this.steamForm?.get('thermometer')?.setErrors(null);
     // this.steamForm?.get('top')?.setErrors(null);
@@ -1343,7 +1341,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       }
 
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        width: '490px',
         disableClose: true,
         data: {
           action: 'confirm',
@@ -1397,7 +1394,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         else {
           this.resetSelectedItemForUpdating();
           this.QuerySteamTemp();
-          
         }
       });
     }
@@ -1415,13 +1411,13 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       const minItem = this.deList.reduce((minItem, item) =>
         item.report_dt < minItem.report_dt ? item : minItem
       );
-        const maxItem = this.deList.reduce((maxItem, item) =>
+      const maxItem = this.deList.reduce((maxItem, item) =>
         item.report_dt > maxItem.report_dt ? item : maxItem
       );
       steaming = new SteamGO(this.steamItem);
       steaming.action = "EDIT";
       var startTime = minItem?.report_dt || 0;
-      var endTime = maxItem?.report_dt||0;
+      var endTime = maxItem?.report_dt || 0;
       // var endTime = Math.floor(Date.now() / 1000);
       // Calculate time difference in seconds
       const timeDiffSeconds = endTime - startTime;
