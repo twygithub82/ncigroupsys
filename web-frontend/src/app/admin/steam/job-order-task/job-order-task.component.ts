@@ -491,8 +491,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canToggleJob(jobOrderItem: JobOrderItem | undefined) {
-    var retval
-    retval = (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid === null);
+    var retval;
+    retval = (jobOrderItem?.steaming_part?.[0]?.create_by!="system");
+    // retval = (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid === null);
     return retval;
   }
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
