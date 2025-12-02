@@ -131,24 +131,24 @@
             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
             @if(canToggleJob(row))
             {
-            @if (canStartJob(row) && !isStarted(row)) {
-            <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-              <mat-icon
-                [ngClass]="{'yellow-timer-icon': row.time_table?.length, 'red-timer-icon': !row.time_table?.length}">
-                timer
-              </mat-icon>
-            </button>
-            }
-            @if (canCompleteJob(row)) {
-            <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-              <mat-icon class="green-timer-icon">check_box</mat-icon>
-            </button>
-            }
+              @if (canStartJob(row) && !isStarted(row)) {
+              <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
+                <mat-icon
+                  [ngClass]="{'yellow-timer-icon': row.time_table?.length, 'red-timer-icon': !row.time_table?.length}">
+                  timer
+                </mat-icon>
+              </button>
+              }
+              @if (canCompleteJob(row)) {
+              <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+                <mat-icon class="green-timer-icon">check_box</mat-icon>
+              </button>
+              }
             }
             @else
             {
             <button mat-icon-button (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
-              <i class="material-icons card1-icon fas fa-fire"></i>
+              <i class="  fas fa-fire large-fire-icon"></i>
             </button>
             }
           </mat-cell>
