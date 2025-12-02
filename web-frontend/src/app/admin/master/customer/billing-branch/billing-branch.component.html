@@ -100,7 +100,7 @@
                     <input matInput formControlName="contact_person" type="text">
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
                     <mat-select formControlName="default_profile" [compareWith]="compareObjects"
@@ -136,45 +136,45 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm ',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{row.customer_company?.main_customer_company?.code || '-'}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-start'">{{this.translatedLangText.BRANCH
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">{{this.translatedLangText.BRANCH
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-start'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm ',false,!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.BRANCH
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+                [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl'"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row"
+              <mat-cell [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile) " *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{getDepotProfileName(row.customer_company?.def_tank_guid)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="bDate">
               <mat-header-cell *matHeaderCellDef mat-sort-header="bDate" disableClear
-                [ngClass]="'tbl-col-width-per-2-xl'">{{this.translatedLangText.LAST_UPDATE
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
@@ -182,10 +182,10 @@
             <!-- actions -->
             <ng-container matColumnDef="actions">
               <mat-header-cell
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
-                [ngClass]="'justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',false,!isMobile,false,isMobile)">
                 @if (isShowDeleteIcon(row)) {
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.customer_company)"
                   [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">

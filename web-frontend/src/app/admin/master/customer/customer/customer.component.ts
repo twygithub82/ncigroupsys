@@ -260,7 +260,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+  isMobile:boolean = false;
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     this.countryCodes = Utility.getCountryCodes("country", true);
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
@@ -856,6 +858,13 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   refresCustomerList() {
     const existingValue = this.pcForm?.get('customer_code')?.value;
     this.pcForm?.get('customer_code')?.setValue(existingValue);
+  }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,Padding:boolean=false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(Padding) centerClass +=  'left-padding-cell ' ;
+    return `${baseClasses} ${centerClass}`.trim();
   }
 }
 

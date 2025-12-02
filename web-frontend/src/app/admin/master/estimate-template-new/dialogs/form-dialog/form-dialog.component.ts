@@ -32,6 +32,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { Utility } from 'app/utilities/utility';
 
 export interface DialogData {
   action?: string;
@@ -93,6 +94,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   currentParts: TemplateEstPartItem[] = [];
+  isMobile: boolean = false;
   //popupPartSelectionDialog:boolean=true;
 
   @Output() InsertEstimationPartEvent = new EventEmitter<any>();
@@ -108,6 +110,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     super();
     // Set the defaults
+    this.isMobile = Utility.isMobile();
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -698,4 +701,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       : '';
     return concludeLength;
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true ,Padding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center' : '';
+      centerClass += Padding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

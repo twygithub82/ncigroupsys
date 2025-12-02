@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -34,14 +34,14 @@
               </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row justify-content-center">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex justify-content-end">
                     <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="gate_in"
                       labelPosition="before">{{translatedLangText.GATE_IN
                       }}</mat-slide-toggle>
                   </div>
-                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                  <div class="d-none d-sm-block col-sm-1 col-md-1 col-lg-1 col-xl-1 mb-1">
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex">
                     <mat-slide-toggle class="scaled-toggle" color="primary"
                       formControlName="gate_out">{{translatedLangText.GATE_OUT
                       }}</mat-slide-toggle>
@@ -50,14 +50,14 @@
               </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row justify-content-center">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex justify-content-end">
                     <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="lift_on"
                       labelPosition="before">{{translatedLangText.LIFT_ON
                       }}</mat-slide-toggle>
                   </div>
-                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                   <div class="d-none d-sm-block col-sm-1 col-md-1 col-lg-1 col-xl-1 mb-1">
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex">
                     <mat-slide-toggle class="scaled-toggle" color="primary"
                       formControlName="lift_off">{{translatedLangText.LIFT_OFF
                       }}</mat-slide-toggle>
@@ -66,14 +66,14 @@
               </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row justify-content-center">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex justify-content-end">
                     <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="preinspect"
                       labelPosition="before">{{translatedLangText.PREINSPECT
                       }}</mat-slide-toggle>
                   </div>
-                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                   <div class="d-none d-sm-block col-sm-1 col-md-1 col-lg-1 col-xl-1 mb-1">
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex">
                     <mat-slide-toggle class="scaled-toggle" color="primary"
                       formControlName="iso_format">{{translatedLangText.ISO_FORMAT
                       }}</mat-slide-toggle>
@@ -83,13 +83,13 @@
               @if(modulePackageService.isCustomizedPackage() || modulePackageService.isGrowthPackage()){
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row justify-content-center">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
+                  <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex justify-content-end">
                     <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="flat_rate"
                       labelPosition="before">{{translatedLangText.FLAT_RATE_ONLY}}</mat-slide-toggle>
                   </div>
-                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                   <div class="d-none d-sm-block col-sm-1 col-md-1 col-lg-1 col-xl-1 mb-1">
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                   <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-1 d-flex">
                   </div>
                 </div>
               </div>

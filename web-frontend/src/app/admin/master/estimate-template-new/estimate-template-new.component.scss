@@ -68,3 +68,130 @@ mat-chip-row[color="primary"] {
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
  display:none
 }
+
+/* Compact table header */
+.table-header-compact th {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  height: 25px; /* Adjust this value as needed */
+}
+
+/* Alternatively, you can use: */
+.table thead th {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  line-height: 1.2;
+}
+
+/* Ensure mat-form-field in table cells is compact */
+.table td .mat-form-field {
+  margin: -8px 0 !important;
+}
+
+.table td .mat-form-field .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.table td .mat-form-field .mat-form-field-infix {
+  padding: 0.25em 0 !important;
+  border-top: 0 !important;
+  min-height: unset !important;
+}
+
+.table td .mat-form-field .mat-input-element {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 24px !important;
+  line-height: 24px !important;
+}
+
+/* Keep external table borders thin */
+.thick-inner-lines {
+  border: 1px solid #dee2e6 !important;
+}
+
+/* Make ALL inner borders thicker */
+.thick-inner-lines th,
+.thick-inner-lines td {
+  border: 2px solid #dee2e6 !important;
+}
+
+/* Reset external borders to thin */
+.thick-inner-lines {
+  border-width: 1px !important;
+}
+
+.thick-inner-lines thead th:first-child,
+.thick-inner-lines tbody td:first-child {
+  border-left-width: 1px !important;
+}
+
+.thick-inner-lines thead th:last-child,
+.thick-inner-lines tbody td:last-child {
+  border-right-width: 1px !important;
+}
+
+.thick-inner-lines thead tr:first-child th {
+  border-top-width: 1px !important;
+}
+
+.thick-inner-lines tbody tr:last-child td {
+  border-bottom-width: 1px !important;
+}
+
+/* Alternative: Use a class on inner cells only */
+.thick-inner-border {
+  border: 3px solid #dee2e6 !important;
+}
+
+/* Reset external borders when using thick-inner-border class */
+table.table-bordered {
+  border: 1px solid #dee2e6 !important;
+}
+
+table.table-bordered th:first-child,
+table.table-bordered td:first-child {
+  border-left-width: 1px !important;
+}
+
+table.table-bordered th:last-child,
+table.table-bordered td:last-child {
+  border-right-width: 1px !important;
+}
+
+table.table-bordered thead tr:first-child th {
+  border-top-width: 1px !important;
+}
+
+table.table-bordered tbody tr:last-child td {
+  border-bottom-width: 1px !important;
+}
+
+/* More specific approach */
+.thick-inner-lines > thead > tr > th,
+.thick-inner-lines > tbody > tr > td {
+  border: 2px solid #dee2e6 !important;
+}
+
+/* Reset outer borders */
+.thick-inner-lines {
+  border: 1px solid #dee2e6 !important;
+}
+
+.thick-inner-lines > thead > tr > th:first-child,
+.thick-inner-lines > tbody > tr > td:first-child {
+  border-left: 1px solid #dee2e6 !important;
+}
+
+.thick-inner-lines > thead > tr > th:last-child,
+.thick-inner-lines > tbody > tr > td:last-child {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+.thick-inner-lines > thead > tr:first-child > th {
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.thick-inner-lines > tbody > tr:last-child > td {
+  border-bottom: 1px solid #dee2e6 !important;
+}

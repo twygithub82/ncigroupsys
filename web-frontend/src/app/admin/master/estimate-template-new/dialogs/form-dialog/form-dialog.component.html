@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -157,18 +157,18 @@
           </mat-form-field>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
+      <div mat-dialog-actions class="mb-1  d-flex justify-content-end flex-nowrap align-items-center">
         @if (canAddAnother()) {
-        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">
+        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)" class="me-1 text-nowrap">
           <mat-icon>add</mat-icon>
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(false)"  class="m-l-5 ">
+        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(false)"  class="me-1 text-nowrap">
           <mat-icon>
             save
           </mat-icon>
           {{buttonContent}}</button>
-        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" class=" text-nowrap">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>
