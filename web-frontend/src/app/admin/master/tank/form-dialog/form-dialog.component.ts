@@ -429,8 +429,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
-     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 }
