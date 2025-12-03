@@ -928,7 +928,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.leftImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0" >
+                                          alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -971,7 +971,7 @@
                                         @if (!(isImageLoading$ | async)) {
                                         <img
                                           [src]="surveyForm?.get('frame_type.rearImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0" >
+                                          alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
                                         <div class="tbl-spinner">
@@ -1209,8 +1209,7 @@
                                     <div [formGroupName]="index">
                                       <div class="image-preview">
                                         <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img"
-                                          (click)="img.get('preview')?.value?previewImagesDialog($event, index + 6): null"
-                                        >
+                                          (click)="img.get('preview')?.value?previewImagesDialog($event, index + 6): null">
                                         @if (img.get('preview')?.value) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
