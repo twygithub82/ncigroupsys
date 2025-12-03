@@ -89,6 +89,7 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   catDS: CleaningCategoryDS;
+  isMobile: boolean=false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -148,7 +149,7 @@ export class FormDialogComponent {
     public modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
-
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
 
     this.pcForm = this.createCleaningCategory();
@@ -346,4 +347,14 @@ export class FormDialogComponent {
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_DELETE']);
   }
+
+  
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

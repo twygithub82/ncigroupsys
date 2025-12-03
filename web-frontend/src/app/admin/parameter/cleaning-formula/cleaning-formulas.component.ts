@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility, maxLengthDisplaySingleSelectedItem, pageSizeInfo } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, Utility, maxLengthDisplaySingleSelectedItem, pageSizeInfo } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -167,7 +167,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isMobile : boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -178,6 +178,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     public modulePackageService: ModulePackageService,
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.mthDS = new CleaningMethodDS(this.apollo);
@@ -398,7 +399,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     }
     var row = new CleaningMethodItem();
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50vw',
+      // width: '50vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH: '50vw',
       //maxWidth: '600px',
       disableClose: true,
       data: {
@@ -672,4 +674,9 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     const existingValue = this.searchForm?.get('description')?.value;
     this.searchForm?.get('description')?.setValue(existingValue);
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

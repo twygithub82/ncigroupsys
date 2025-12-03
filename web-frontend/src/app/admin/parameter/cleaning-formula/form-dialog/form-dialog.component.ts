@@ -127,7 +127,7 @@ export class FormDialogComponent {
   };
 
   selectedItem: CleaningFormulaItem;
-
+  isMobile: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -138,6 +138,7 @@ export class FormDialogComponent {
     private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.pcForm = this.createCleaningFormula();
     this.fmlDS = new CleaningFormulaDS(this.apollo);
@@ -254,4 +255,13 @@ export class FormDialogComponent {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_ADD']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

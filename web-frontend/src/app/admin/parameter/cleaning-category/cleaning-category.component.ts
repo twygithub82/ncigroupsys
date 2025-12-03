@@ -38,7 +38,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -158,7 +158,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isMobile : boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -169,6 +169,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     public modulePackageService: ModulePackageService,
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.catDS = new CleaningCategoryDS(this.apollo);
@@ -417,7 +418,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     var row = new CleaningCategoryItem();
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50vw',
+      // width: '50vw',
+       width: this.isMobile?MOBILE_DIALOG_WIDTH: '50vw',
       disableClose: true,
       data: {
         action: 'new',
@@ -782,4 +784,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
     this.search();
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
