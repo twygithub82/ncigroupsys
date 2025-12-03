@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MySqlConnector;
 using System.Data.SqlClient;
 
 namespace IDMS.Service.GqlTypes
@@ -473,82 +474,82 @@ namespace IDMS.Service.GqlTypes
             string partTableName = "";
             string processTableName = "";
 
-        //    try
-        //    {
-        //        if (partGuid == null || partGuid.Count == 0)
-        //        {
-        //            _logger.LogError("AssignPartToJob called with null or empty partGuids");
-        //            throw new GraphQLException("partGuids cannot be null or empty.");
-        //        }
+            try
+            {
+                if (partGuid == null || partGuid.Count == 0)
+                {
+                    _logger.LogError("AssignPartToJob called with null or empty partGuids");
+                    throw new GraphQLException("partGuids cannot be null or empty.");
+                }
 
-        //        // Resolve table names
-        //        var (partTable, processTable) = jobType.ToUpper() switch
-        //        {
-        //            JobType.REPAIR => ("repair_part", "repair"),
-        //            JobType.CLEANING => ("cleaning", "cleaning"),
-        //            JobType.RESIDUE => ("residue_part", "residue"),
-        //            JobType.STEAM => ("steaming_part", "steaming"),
-        //            _ => throw new GraphQLException($"Invalid job type: {jobType}")
-        //        };
+                // Resolve table names
+                var (partTable, processTable) = jobType.ToUpper() switch
+                {
+                    JobType.REPAIR => ("repair_part", "repair"),
+                    JobType.CLEANING => ("cleaning", "cleaning"),
+                    JobType.RESIDUE => ("residue_part", "residue"),
+                    JobType.STEAM => ("steaming_part", "steaming"),
+                    _ => throw new GraphQLException($"Invalid job type: {jobType}")
+                };
 
-        //        // Parameterized PART update
-        //        var partParams = new List<object>
-        //        {
-        //            new SqlParameter("@update_dt", currentDateTime),
-        //            new SqlParameter("@update_by", user),
-        //            new SqlParameter("@job_order_guid", jobOrderGuid)
-        //        };
+                // Parameterized PART update
+                var partParams = new List<object>
+                {
+                    new MySqlParameter("@update_dt", currentDateTime),
+                    new MySqlParameter("@update_by", user),
+                    new MySqlParameter("@job_order_guid", jobOrderGuid)
+                };
 
-        //        var partGuidInList = string.Join(", ", partGuid.Select((g, i) =>
-        //        {
-        //            partParams.Add(new SqlParameter($"@p{i}", g ?? string.Empty));
-        //            return $"@p{i}";
-        //        }));
-
-
-        //        var partSql = $@"
-        //        UPDATE {partTable}
-        //        SET update_dt = @update_dt,
-        //        update_by = @update_by,
-        //        job_order_guid = @job_order_guid
-        //        WHERE guid IN ({partGuidInList});
-        //        ";
-        //        int updatedParts = await context.Database.ExecuteSqlRawAsync(partSql, partParams.ToArray());
-        //        _logger.LogInformation("AssignPartToJob updated {Count} parts in {Table} for jobOrder {JobOrderGuid}", updatedParts, partTable, jobOrderGuid);
+                var partGuidInList = string.Join(", ", partGuid.Select((g, i) =>
+                {
+                    partParams.Add(new MySqlParameter($"@p{i}", g ?? string.Empty));
+                    return $"@p{i}";
+                }));
 
 
-        //        if (!string.IsNullOrEmpty(processGuid))
-        //        {
-        //            var processSql = $@"
-        //            UPDATE {processTable}
-        //            SET allocate_by = @user,
-        //            allocate_dt = @dt,
-        //            update_by = @user,
-        //            update_dt = @dt
-        //            WHERE guid = @guid;
-        //            ";
+                var partSql = $@"
+                UPDATE {partTable}
+                SET update_dt = @update_dt,
+                update_by = @update_by,
+                job_order_guid = @job_order_guid
+                WHERE guid IN ({partGuidInList});
+                ";
+                int updatedParts = await context.Database.ExecuteSqlRawAsync(partSql, partParams.ToArray());
+                _logger.LogInformation("AssignPartToJob updated {Count} parts in {Table} for jobOrder {JobOrderGuid}", updatedParts, partTable, jobOrderGuid);
 
-        //            var processParams = new[]
-        //            {
-        //                new SqlParameter("@user", user),
-        //                new SqlParameter("@dt", currentDateTime),
-        //                new SqlParameter("@guid", processGuid)
-        //            };
 
-        //            await context.Database.ExecuteSqlRawAsync(processSql, processParams);
+                if (!string.IsNullOrEmpty(processGuid))
+                {
+                    var processSql = $@"
+                    UPDATE {processTable}
+                    SET allocate_by = @user,
+                    allocate_dt = @dt,
+                    update_by = @user,
+                    update_dt = @dt
+                    WHERE guid = @guid;
+                    ";
 
-        //            _logger.LogInformation(
-        //                "AssignPartToJob updated process {ProcessGuid} in {Table}", processGuid, processTable);
-        //        }
+                    var processParams = new[]
+                    {
+                        new MySqlParameter("@user", user),
+                        new MySqlParameter("@dt", currentDateTime),
+                        new MySqlParameter("@guid", processGuid)
+                    };
 
-        //        return updatedParts;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "AssignPartToJob failed for jobOrder {JobOrderGuid}", jobOrderGuid);
-        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
-        //    }
-        //}
+                    await context.Database.ExecuteSqlRawAsync(processSql, processParams);
+
+                    _logger.LogInformation(
+                        "AssignPartToJob updated process {ProcessGuid} in {Table}", processGuid, processTable);
+                }
+
+                return updatedParts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AssignPartToJob failed for jobOrder {JobOrderGuid}", jobOrderGuid);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
 
 
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
