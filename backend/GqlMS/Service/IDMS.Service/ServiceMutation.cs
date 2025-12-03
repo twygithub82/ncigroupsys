@@ -411,7 +411,7 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+        public async Task<int> AssignPartToJob_Bk(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
             string partTableName = "";
@@ -467,11 +467,11 @@ namespace IDMS.Service.GqlTypes
         }
 
 
-        //private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
-        //                                     string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
-        //{
-        //    string partTableName = "";
-        //    string processTableName = "";
+        public async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+                                             string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
+        {
+            string partTableName = "";
+            string processTableName = "";
 
         //    try
         //    {

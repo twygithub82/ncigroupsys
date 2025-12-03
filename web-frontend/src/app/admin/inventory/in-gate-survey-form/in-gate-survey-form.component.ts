@@ -1898,19 +1898,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    event.preventDefault(); // Prevent default dragging behavior
-    if (!this.canEdit()) return;
-    this.isDrawing = true;
-    const target = this.getEventTarget(event) as HTMLElement;
-    const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
-      const cellIndex = +dataIndex;
-      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
-      this.highlightCellWalkway(highlightedCells, damageCells, event);
-    }
-  }
-
   draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     if (this.isDrawing) {
       this.highlightCell(highlightedCells, event);
@@ -1930,9 +1917,27 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
+
+    if (dataIndex !== null && target) {
       const cellIndex = +dataIndex;
-      highlightedCells[cellIndex] = this.toggleState;
+
+      // Find which row this cell belongs to
+      const parentRow = target.closest('.grid-top-row, .grid-middle-row, .grid-bottom-row');
+
+      // Determine which array this cell should belong to based on its parent row
+      let correctArray: boolean[] | null = null;
+      if (parentRow?.classList.contains('grid-top-row')) {
+        correctArray = this.highlightedCellsWalkwayTop;
+      } else if (parentRow?.classList.contains('grid-middle-row')) {
+        correctArray = this.highlightedCellsWalkwayMiddle;
+      } else if (parentRow?.classList.contains('grid-bottom-row')) {
+        correctArray = this.highlightedCellsWalkwayBottom;
+      }
+
+      // Only highlight if the cell belongs to the array we're supposed to be drawing on
+      if (correctArray === highlightedCells) {
+        highlightedCells[cellIndex] = this.toggleState;
+      }
     }
   }
 
@@ -1965,7 +1970,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
-      return event.target;
+      return document.elementFromPoint(event.clientX, event.clientY);
     } else if (event instanceof TouchEvent) {
       return document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
     }
