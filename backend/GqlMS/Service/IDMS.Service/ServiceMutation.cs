@@ -412,7 +412,7 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public async Task<int> AssignPartToJob_Bk(ApplicationServiceDBContext context, long currentDateTime, string user,
+        private async Task<int> AssignPartToJob_Bk(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
             string partTableName = "";
@@ -468,7 +468,7 @@ namespace IDMS.Service.GqlTypes
         }
 
 
-        public async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
                                              string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
             string partTableName = "";
@@ -512,8 +512,8 @@ namespace IDMS.Service.GqlTypes
                 SET update_dt = @update_dt,
                 update_by = @update_by,
                 job_order_guid = @job_order_guid
-                WHERE guid IN ({partGuidInList});
-                ";
+                WHERE guid IN ({partGuidInList});";
+
                 int updatedParts = await context.Database.ExecuteSqlRawAsync(partSql, partParams.ToArray());
                 _logger.LogInformation("AssignPartToJob updated {Count} parts in {Table} for jobOrder {JobOrderGuid}", updatedParts, partTable, jobOrderGuid);
 
@@ -526,8 +526,7 @@ namespace IDMS.Service.GqlTypes
                     allocate_dt = @dt,
                     update_by = @user,
                     update_dt = @dt
-                    WHERE guid = @guid;
-                    ";
+                    WHERE guid = @guid;";
 
                     var processParams = new[]
                     {
