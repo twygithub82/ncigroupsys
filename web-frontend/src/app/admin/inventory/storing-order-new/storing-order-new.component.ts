@@ -189,7 +189,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
-
+  isMobile:boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -218,6 +218,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     this.initializeFilter();
     this.loadData();
     this.displayColumnChanged();
@@ -970,4 +971,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   isAllowView() {
     return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
   }
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
