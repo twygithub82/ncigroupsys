@@ -1550,9 +1550,8 @@ export class ResidueDisposalEstimateApprovalClientNewComponent extends Unsubscri
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate-approval'], {
+    this.router.navigate(['/admin/residue-disposal/client-approval'], {
       state: this.historyState
-
     }
     );
   }
@@ -1620,9 +1619,8 @@ export class ResidueDisposalEstimateApprovalClientNewComponent extends Unsubscri
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
 
-      this.router.navigate(['/admin/residue-disposal/estimate-approval'], {
+      this.router.navigate(['/admin/residue-disposal/client-approval'], {
         state: this.historyState
-
       }
       );
     }
