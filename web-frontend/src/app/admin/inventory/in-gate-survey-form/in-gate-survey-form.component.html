@@ -936,15 +936,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.leftImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.leftImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.leftImage'), $event)">
@@ -979,15 +977,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.rearImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.rearImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.rearImage'), $event)">
@@ -1022,15 +1018,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.rightImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.rightImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.rightImage'), $event)">
@@ -1065,15 +1059,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.topImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.topImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.topImage'), $event)">
@@ -1108,15 +1100,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.frontImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.frontImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.frontImage'), $event)">
@@ -1151,15 +1141,13 @@
                                           </mat-progress-spinner>
                                         </div>
                                         }
-                                        @if (surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value) {
+                                        @if (surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value &&
+                                        isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           @if (isAllowEdit()) {
                                           <button mat-menu-item
                                             (click)="deleteDialog(surveyForm?.get('frame_type.bottomImage'), $event)">
@@ -1209,16 +1197,13 @@
                                     <div [formGroupName]="index">
                                       <div class="image-preview">
                                         <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img"
-                                          (click)="img.get('preview')?.value?previewImagesDialog($event, index + 6): null">
-                                        @if (img.get('preview')?.value) {
+                                          (click)="img.get('preview')?.value ? previewImagesDialog($event, index + 6) : null">
+                                        @if (img.get('preview')?.value && isAllowEdit()) {
                                         <button [matMenuTriggerFor]="menu" class="link-button menu-button"
                                           (click)="$event.stopPropagation()">
                                           <mat-icon>more_vert</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)" hidden>
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
                                           <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">
                                             <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                           </button>

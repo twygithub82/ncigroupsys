@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -54,6 +54,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -204,7 +205,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
-    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED'
+    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
+    PHOTOS: 'COMMON-FORM.PHOTOS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -250,6 +252,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   repairEstimatePdf: any;
   isDuplicate = false;
+  isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
   isExportingPDF: boolean = false;
 
@@ -291,6 +294,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isImageLoading$ = this.fileManagerService.loading$;
     this.updateView(window.innerWidth);
 
     window.addEventListener('resize', () => {
@@ -387,7 +391,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       net_owner_cost_est: [0],
       net_lessee_cost_est: [0],
       net_cost_est: [0],
-      repList: ['']
+      repList: [''],
+      repairImages: this.fb.array([]),
     });
   }
 
@@ -546,6 +551,23 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepair(this.sot_guid).subscribe(data => {
           if (this.sotDS.totalCount > 0) {
             this.sotItem = data[0];
+            if (this.repair_guid) {
+              this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid]).subscribe({
+                next: (response) => {
+                  console.log('Files retrieved successfully:', response);
+                  if (response?.length) {
+                    this.populateImages(response)
+                  }
+                },
+                error: (error) => {
+                  console.error('Error retrieving files:', error);
+                },
+                complete: () => {
+                  console.log('File retrieval process completed.');
+                }
+              });
+            }
+
             this.populateRepair(this.sotItem.repair, this.isDuplicate);
             this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
             if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
@@ -1001,12 +1023,17 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         if (re.guid) {
           this.repairDS.updateRepair(re, cc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepair);
+            this.uploadImages(re.guid!, true);
+            // this.handleSaveSuccess(result?.data?.updateRepair);
+            // this.router.navigate(['/admin/repair/estimate']);
           });
         } else {
           this.repairDS.addRepair(re, cc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepair);
+            const record = result.data.addRepair
+            this.uploadImages(record.guid[0], true);
+            // this.handleSaveSuccess(result?.data?.addRepair);
+            // this.router.navigate(['/admin/repair/estimate']);
           });
         }
       }
@@ -1061,8 +1088,18 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/estimate']);
     }
+  }
+
+  handleDeleteSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar)
+    }
+  }
+
+  handleSaveError() {
+    const successMsg = this.translatedLangText.SAVE_ERROR;
+    ComponentUtil.showNotification('snackbar-error', successMsg, 'top', 'center', this.snackBar);
   }
 
   translateLangText() {
@@ -1427,6 +1464,163 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       this.router.navigate(['/admin/repair/estimate']); // default route if no referrer
     }
+  }
+
+  triggerFileInputIfAllowed(inputRef: HTMLInputElement, event: Event): void {
+    if (!this.canEdit()) return;
+    event.preventDefault(); // Prevents the form submission
+    inputRef.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const preview = reader.result as string | ArrayBuffer;
+          this.repairImages().push(this.createImageForm('', preview, file));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    input.value = '';
+  }
+
+  repairImages(): UntypedFormArray {
+    return this.repairForm?.get('repairImages') as UntypedFormArray;
+  }
+
+  createImageForm(side: string, preview: string | ArrayBuffer, file: File | undefined): UntypedFormGroup {
+    return this.fb.group({
+      file: [file],
+      preview: [preview],
+      side: [side],
+    })
+  }
+
+  deleteDialogDmgImg(imgForm: any, index: number, event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    const url = imgForm.get('preview')?.value;
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        if (Utility.isBase64Url(url)) {
+          this.repairImages().removeAt(index);
+          this.handleDeleteSuccess(1);
+        } else if (Utility.isUrl(url)) {
+          this.fileManagerService.deleteFile([url]).subscribe({
+            next: (response) => {
+              console.log('Files delete successfully:', response);
+              this.repairImages().removeAt(index);
+              this.handleDeleteSuccess(response);
+            },
+            error: (error) => {
+              console.error('Error delete files:', error);
+              this.handleSaveError();
+            },
+            complete: () => {
+              console.log('Delete process completed.');
+            }
+          });
+        } else {
+          console.log('Unknown format');
+        }
+      }
+    });
+  }
+
+  previewImagesDialog(event: Event, index: number) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const headerText = this.translatedLangText.PREVIEW_PHOTOS;
+    const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
+      data: {
+        headerText: headerText,
+        previewImages: this.getImages(),
+        focusIndex: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  getImages() {
+    const images: any[] = [];
+    this.repairImages().controls.forEach(x => {
+      images.push(x?.get('preview')?.value)
+    })
+
+    return images;
+  }
+
+  uploadImages(guid: string, redirect: boolean) {
+    const repairImages = this.repairImages().controls
+      .filter(preview => preview.get('file')?.value)
+      .map(preview => {
+        const file = preview.get('file')?.value;
+        return {
+          file: file, // The actual file object
+          metadata: {
+            TableName: 'repair',
+            FileType: 'img',
+            GroupGuid: guid,
+            Description: 'REPAIR_DMG' // Use the file name or custom description
+          }
+        };
+      });
+    const allImages = repairImages;
+    // Call the FileManagerService to upload files
+    if (allImages.length) {
+      this.fileManagerService.uploadFiles(allImages).subscribe({
+        next: (response) => {
+          console.log('Files uploaded successfully:', response);
+          this.handleSaveSuccess(1);
+          if (redirect) {
+            this.router.navigate(['/admin/repair/estimate']);
+          }
+        },
+        error: (error) => {
+          console.error('Error uploading files:', error);
+          this.handleSaveError();
+        },
+        complete: () => {
+          console.log('Upload process completed.');
+        }
+      });
+    } else {
+      this.handleSaveSuccess(1);
+      if (redirect) {
+        this.router.navigate(['/admin/repair/estimate']);
+      }
+    }
+  }
+
+  populateImages(files: any[]) {
+    files.forEach(dmgFile => {
+      this.repairImages().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
+    });
   }
 
   canEdit() {

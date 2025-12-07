@@ -404,6 +404,60 @@
         </div>
       </div>
       <div class="row clearfix">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header header-custom-padding">
+              <h2 class="d-flex">
+                {{translatedLangText.PHOTOS}}
+                <div class="m-l-10">
+                  <button mat-mini-fab class="bg-purple msr-2 smaller-btn" type="button"
+                    (click)="triggerFileInputIfAllowed(fileInput, $event)">
+                    <i class="material-icons">attach_file</i>
+                  </button>
+                  <input type="file" #fileInput class="default d-none" multiple accept="image/*"
+                    (change)="onFileSelected($event)">
+                </div>
+              </h2>
+            </div>
+            <div class="body">
+              @if (isImageLoading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @else {
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="image-previews" formArrayName="repairImages">
+                    @for (img of repairImages().controls; track img; let index = $index) {
+                    <div [formGroupName]="index">
+                      <div class="image-preview">
+                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img"
+                          (click)="img.get('preview')?.value ? previewImagesDialog($event, index) : null">
+                        @if (img.get('preview')?.value) {
+                        <button [matMenuTriggerFor]="menu" class="link-button menu-button" type="button"
+                          (click)="$event.stopPropagation(); $event.preventDefault()">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                          <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">
+                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                          </button>
+                        </mat-menu>
+                        }
+                      </div>
+                    </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card modal-card">
             <div class="header header-custom-padding">
@@ -874,13 +928,16 @@
                   }
                   }
                   @if (canEdit()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.actionLoading$ | async)">
+                  <button mat-flat-button color="primary"
+                   [class.auth-spinner]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)"
+                   [disabled]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)">
                     <mat-icon>
-                      @if (!(repairDS.actionLoading$ | async)) {
+                      save
+                      <!-- @if (!(repairDS.actionLoading$ | async)) {
                       save
                       } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
+                      } -->
                     </mat-icon>
                     <!-- {{translatedLangText.SAVE_AND_SUBMIT}} -->
                     {{ repair_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
