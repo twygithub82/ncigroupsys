@@ -51,7 +51,280 @@ type Query {
     where: billing_sotFilterInput
     order: [billing_sotSortInput!]
   ): QueryBillingSOTConnection
-  queryTank(where: tankFilterInput, order: [tankSortInput!]): [tank!]!
+  queryStorageDetail(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: storage_detailFilterInput
+    order: [storage_detailSortInput!]
+  ): QueryStorageDetailConnection
+  queryCleanerPerformance(
+    cleanerPerformanceRequest: CleanerPerformanceRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: CleanerPerformanceFilterInput
+    order: [CleanerPerformanceSortInput!]
+  ): QueryCleanerPerformanceConnection
+  querySteamPerformance(
+    steamPerformanceRequest: SteamPerformanceRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: SteamPerformanceFilterInput
+    order: [SteamPerformanceSortInput!]
+  ): QuerySteamPerformanceConnection
+  querySurveyorPerformanceSummary(surveyorPerfSummaryRequest: SurveyorPerformanceSummaryRequestInput!): SurveyorPerformanceSummary
+  querySurveyorPerformanceDetail(
+    surveyorPerfDetailRequest: SurveyorPerformanceDetailRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: SurveyorPerformanceDetailFilterInput
+    order: [SurveyorPerformanceDetailSortInput!]
+  ): QuerySurveyorPerformanceDetailConnection
+  queryCustomerMonthlySalesReport(customerMonthlySalesRequest: CustomerMonthlySalesRequestInput!): CustomerMonthlySales!
+  queryMonthlySalesReport(monthlySalesRequest: MonthlySalesRequestInput!): MonthlySalesList!
+  queryYearlySalesReport(yearlySalesRequest: YearlySalesRequestInput!): YearlySalesList!
+  queryMonthlyProcessReport(monthlyProcessRequest: MonthlyProcessRequestInput!): MonthlyRevenue!
+  queryYearlyProcessReport(yearlyProcessRequest: YearlyProcessRequestInput!): YearlyRevenue!
+  queryDailyTeamRevenue(
+    dailyTeamRevenueRequest: DailyTeamRevenuRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: DailyTeamRevenueFilterInput
+    order: [DailyTeamRevenueSortInput!]
+  ): QueryDailyTeamRevenueConnection
+  queryDailyTeamApproval(
+    dailyTeamApprovalRequest: DailyTeamApprovalRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: DailyTeamApprovalFilterInput
+    order: [DailyTeamApprovalSortInput!]
+  ): QueryDailyTeamApprovalConnection
+  queryDailyQCDetail(
+    dailyQCDetailRequest: DailyQCDetailRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: DailyQCDetailFilterInput
+    order: [DailyQCDetailSortInput!]
+  ): QueryDailyQCDetailConnection
+  queryZeroApprovalCost(
+    zeroApprovalRequest: ZeroApprovalRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: ZeroApprovalCostFilterInput
+    order: [ZeroApprovalCostSortInput!]
+  ): QueryZeroApprovalCostConnection
+  queryYearlyInventory(yearlyInventoryRequest: YearlyInventoryRequestInput!): YearlyInventoryResult
+  queryMonthlyInventory(monthlyInventoryRequest: MonthlyInventoryRequestInput!): MonthlyInventoryResult!
+  queryOrderTracking(
+    orderTrackingRequest: OrderTrackingRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: OrderTrackingResultFilterInput
+    order: [OrderTrackingResultSortInput!]
+  ): QueryOrderTrackingConnection
+  queryDepotPerformance(
+    depotPerformanceRequest: DepotPerformanceRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: DepotPerformanceResultFilterInput
+    order: [DepotPerformanceResultSortInput!]
+  ): QueryDepotPerformanceConnection
+  queryMonthlyRevenue(monthlyRevenueRequest: MonthlyRevenueRequestInput!): MonthlyRevenueResult
+  queryYearlyRevenue(yearlyRevenueRequest: YearlyRevenueRequestInput!): YearlyRevenueManagementResult
+  queryCleaningInventorySummary(
+    cleaningInventoryRequest: CleaningInventoryRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: CleaningInventorySummaryFilterInput
+    order: [CleaningInventorySummarySortInput!]
+  ): QueryCleaningInventorySummaryConnection
+  queryPeriodicTestDueSummary(
+    periodicTestDueRequest: PeriodicTestDueRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: PeriodicTestDueSummaryFilterInput
+    order: [PeriodicTestDueSummarySortInput!]
+  ): QueryPeriodicTestDueSummaryConnection
+  queryDailyTankSurveySummary(
+    dailyTankSurveyRequest: DailyTankSurveyRequestInput!
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: DailyTankSurveySummaryFilterInput
+    order: [DailyTankSurveySummarySortInput!]
+  ): QueryDailyTankSurveySummaryConnection
+  queryDailyInventorySummary(dailyInventoryRequest: DailyInventoryRequestInput!): [DailyInventorySummary!]!
+  queryDailyInventorySummary1(dailyInventoryRequest: DailyInventoryRequestInput!): [DailyInventorySummary!]!
+  queryTank(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: tankFilterInput
+    order: [tankSortInput!]
+  ): QueryTankConnection
   queryTankInfo(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -121,6 +394,7 @@ type Query {
     where: transferFilterInput
     order: [transferSortInput!]
   ): QueryTransferConnection
+  querySurveyDetailByTankNo(tankNo: String!, rowCount: Int!): [survey_detail]
   queryStoringOrder(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -377,6 +651,23 @@ type Query {
     where: customer_companyFilterInput
     order: [customer_companySortInput!]
   ): QueryCustomerCompanyConnection
+  queryCustomerCompanyWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: CustomerCompanyResultFilterInput
+    order: [CustomerCompanyResultSortInput!]
+  ): QueryCustomerCompanyWithCountConnection
   queryContactPerson(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -411,6 +702,7 @@ type Query {
     where: currencyFilterInput
     order: [currencySortInput!]
   ): QueryCurrencyConnection
+  queryCanDeleteCustomer(guid: String!): Boolean!
   queryPackageDepot(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -496,6 +788,23 @@ type Query {
     where: package_bufferFilterInput
     order: [package_bufferSortInput!]
   ): QueryPackageBufferConnection
+  queryPackageRepairWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: PackageRepairResultFilterInput
+    order: [PackageRepairResultSortInput!]
+  ): QueryPackageRepairWithCountConnection
   queryPackageRepair(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -564,6 +873,40 @@ type Query {
     where: cleaning_categoryFilterInput
     order: [cleaning_categorySortInput!]
   ): QueryCleaningCategoryConnection
+  queryCleaningFormula(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: cleaning_formulaFilterInput
+    order: [cleaning_formulaSortInput!]
+  ): QueryCleaningFormulaConnection
+  queryCleaningMethodFormula(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: cleaning_method_formulaFilterInput
+    order: [cleaning_method_formulaSortInput!]
+  ): QueryCleaningMethodFormulaConnection
   queryJobOrder(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -598,6 +941,23 @@ type Query {
     where: teamFilterInput
     order: [teamSortInput!]
   ): QueryTeamsConnection
+  queryTeamsWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TeamResultFilterInput
+    order: [TeamResultSortInput!]
+  ): QueryTeamsWithCountConnection
   queryUsers(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -615,6 +975,40 @@ type Query {
     where: aspnetusersFilterInput
     order: [aspnetusersSortInput!]
   ): QueryUsersConnection
+  queryRoles(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: roleFilterInput
+    order: [roleSortInput!]
+  ): QueryRolesConnection
+  queryFunctions(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: functionsFilterInput
+    order: [functionsSortInput!]
+  ): QueryFunctionsConnection
   queryRepair(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -700,23 +1094,6 @@ type Query {
     where: steaming_tempFilterInput
     order: [steaming_tempSortInput!]
   ): QuerySteamingTempConnection
-  queryTariffDepot(
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come after the specified cursor."""
-    after: String
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-    where: tariff_depotFilterInput
-    order: [tariff_depotSortInput!]
-  ): QueryTariffDepotConnection
   queryTariffCleaning(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -734,6 +1111,23 @@ type Query {
     where: tariff_cleaningFilterInput
     order: [tariff_cleaningSortInput!]
   ): QueryTariffCleaningConnection
+  queryTariffDepot(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: tariff_depotFilterInput
+    order: [tariff_depotSortInput!]
+  ): QueryTariffDepotConnection
   queryTariffLabour(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -819,6 +1213,108 @@ type Query {
     where: tariff_steamingFilterInput
     order: [tariff_steamingSortInput!]
   ): QueryTariffSteamingConnection
+  queryTariffCleaningWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffCleaningResultFilterInput
+    order: [TariffCleaningResultSortInput!]
+  ): QueryTariffCleaningWithCountConnection
+  queryTariffResidueWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffResidueResultFilterInput
+    order: [TariffResidueResultSortInput!]
+  ): QueryTariffResidueWithCountConnection
+  queryTariffSteamingWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffSteamingResultFilterInput
+    order: [TariffSteamingResultSortInput!]
+  ): QueryTariffSteamingWithCountConnection
+  queryTariffRepairWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffRepairResultFilterInput
+    order: [TariffRepairResultSortInput!]
+  ): QueryTariffRepairWithCountConnection
+  queryTariffDepotWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffDepotResultFilterInput
+    order: [TariffDepotResultSortInput!]
+  ): QueryTariffDepotWithCountConnection
+  queryTariffBufferWithCount(
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+    where: TariffBufferResultFilterInput
+    order: [TariffBufferResultSortInput!]
+  ): QueryTariffBufferWithCountConnection
   querySteamingExclusive(
     """Returns the first _n_ elements from the list."""
     first: Int
@@ -838,25 +1334,37 @@ type Query {
   ): QuerySteamingExclusiveConnection
   queryUNClassByNo(unNo: String!, where: un_numberFilterInput, order: [un_numberSortInput!]): [un_number]!
   queryDistinctClassNo: [String]!
-  queryDistinctPartName(groupName: String, subgroupName: String): [String]!
+  queryDistinctPartName(groupName: String, subgroupName: String, part_name: String, isPartNameOnly: Boolean = false): [String]!
   queryDistinctDimension(partName: String): [String]!
   queryDistinctLength(partName: String, dimension: String): [LengthWithUnit!]!
 }
 
 type Mutation {
-  addBilling(newBilling: billingInput!, billingEstimateRequests: [BillingEstimateRequestInput!]!): Int!
-  updateBilling(updateBilling: billingInput, billingEstimateRequests: [BillingEstimateRequestInput!]!): Int!
+  addBilling(newBilling: billingInput!, billingEstimateRequests: [BillingEstimateRequestInput!]!, storageDetail: [StorageDetailRequestInput!]): Int!
+  updateBilling(updateBilling: billingInput, billingEstimateRequests: [BillingEstimateRequestInput], storageDetail: [StorageDetailRequestInput]): Int!
   updateBillingInvoices(billingInvoices: [billingInput!]!): Int!
   updateBillingSOT(updateBillingSOT: billing_sotInput!): Int!
+  updateStorageDetail(storageDetails: storage_detailInput!): Int!
   updateTankPurpose(tankPurpose: TankPurposeRequestInput!): Int!
   addSurveyDetail(surveyDetail: survey_detailInput!, periodicTest: PeriodicTestRequestInput): Int!
-  updateSurveyDetail(surveyDetail: survey_detailInput!): Int!
+  updateSurveyDetail(surveyDetail: survey_detailInput!, periodicTest: PeriodicTestRequestInput): Int!
+  deleteSurveyDetail(deletedGuid: String!, surveyDetail: survey_detailInput!, periodicTest: PeriodicTestRequestInput): Int!
   updateTransfer(transfer: transferInput!): Int!
+  addTank(newTank: tankInput!): Int!
+  updateTank(updateTank: tankInput!): Int!
+  deleteTank(tankGuid: String!): Int!
+  updateJobNo(sot: storing_order_tankInput!): Int!
+  updateLastCargo(sot: storing_order_tankInput!): Int!
+  updateCleanStatus(sot: storing_order_tankInput!): Int!
+  updateTankSummaryDetails(tankSummaryRequest: TankSummaryRequestInput!): Int!
+  updateTankDetails(tankDetailRequest: TankDetailRequestInput!): Int!
+  updateGateDetails(gateDetailRequest: GateDetailRequestInput!): Int!
+  updateTankInfo(tankInfoRequest: TankInfoRequestInput!): Int!
   addStoringOrder(so: StoringOrderRequestInput!, soTanks: [StoringOrderTankRequestInput!]!): Int!
   updateStoringOrder(so: StoringOrderRequestInput!, soTanks: [StoringOrderTankRequestInput!]!): Int!
   cancelStoringOrder(so: [StoringOrderRequestInput!]!): Int!
   deleteStoringOrder(soGuids: [String!]!): Int!
-  updateStoringOrderTank(soTank: StoringOrderTankRequestInput!): Int!
+  updateStoringOrderTank(soTank: StoringOrderTankRequestInput!, storingOrder: StoringOrderRequestInput, tankCompGuid: String = ""): Int!
   addScheduling(scheduling: SchedulingRequestInput!, scheduling_SotList: [SchedulingSOTRequestInput!]!): Int!
   updateScheduling(scheduling: SchedulingRequestInput!, scheduling_SotList: [SchedulingSOTRequestInput!]!): Int!
   deleteScheduling(schedulingGuids: [String!]!): Int!
@@ -871,38 +1379,41 @@ type Mutation {
   addInGate(inGate: in_gateInput!): Int!
   updateInGate(inGate: in_gateInput!): Int!
   deleteInGate(inGate_guid: String!): Int!
-  addOutGate(outGate: out_gateInput!, releaseOrder: release_orderInput!): Record!
+  notificationHandling(eventId: String!): Boolean!
+  addOutGate(outGate: out_gateInput!, releaseOrder: release_orderInput!, hasOutSurvey: Boolean! = true): Record!
   updateOutGate(outGate: out_gateInput!, releaseOrder: release_orderInput!): Int!
   addInGateSurvey(inGateSurveyRequest: InGateSurveyRequestInput!, inGateRequest: in_gateInput!): Record!
   updateInGateSurvey(inGateSurveyRequest: InGateSurveyRequestInput!, inGateRequest: in_gateInput!): Int!
   deleteInGateSurvey(igSurvey_guid: String!): Int!
-  publishIngateSurvey(inGateRequest: in_gateInput!): Int!
+  publishIngateSurvey(inGateRequest: in_gateInput!): Record!
   addOutGateSurvey(outGateSurveyRequest: OutGateSurveyRequestInput!, outGateRequest: OutGateRequestInput!): Record!
   updateOutGateSurvey(outGateSurveyRequest: OutGateSurveyRequestInput!, outGateRequest: OutGateRequestInput!): Int!
   deleteOutGateSurvey(ogSurvey_guid: String!): Int!
-  publishOutgateSurvey(outGate_guid: String!): Int!
+  publishOutgateSurvey(outGateRequest: OutGateRequestInput!): Int!
   addTemplateEstimation(newTemplateEstimate: template_estInput!): Int!
   updateTemplateEstimation(editTemplateEsimate: template_estInput!): Int!
+  deleteTemplateEstimation(templateEsimateGuid: String!): Int!
   addCustomerCompany(customer: CustomerRequestInput!, contactPersons: [customer_company_contact_personInput], billingBranches: [BillingBranchRequestInput]): Int!
   updateCustomerCompany(customer: CustomerRequestInput!, contactPersons: [customer_company_contact_personInput], billingBranches: [BillingBranchRequestInput]): Int!
   deleteCustomerCompany(customerGuids: [String!]!): Int!
-  updatePackageCleans(updatePackageClean_guids: [String!]!, remarks: String!, adjusted_price: Float!): Int!
+  updatePackageCleans(updatePackageClean_guids: [String!]!, remarks: String!, adjusted_price: Float!, price_percentage: Float): Int!
   updatePackageClean(updatePackageClean: customer_company_cleaning_categoryInput!): Int!
-  updatePackageDepots(updatePackageDepot_guids: [String!]!, free_storage: Int!, lolo_cost: Float!, preinspection_cost: Float!, storage_cost: Float!, gate_in_cost: Float!, gate_out_cost: Float!, remarks: String!, storage_cal_cv: String!): Int!
+  updatePackageDepots(updatePackageDepot_guids: [String!]!, free_storage: Int!, lolo_cost: Float!, preinspection_cost: Float!, storage_cost: Float!, gate_in_cost: Float!, gate_out_cost: Float!, remarks: String!, storage_cal_cv: String!, costPercentage: CostPercentageInput): Int!
   updatePackageDepot(updatePackageDepot: package_depotInput!): Int!
   deletePackageDepot(deletePackageDepot_guids: [String!]!): Int!
-  updatePackageLabours(updatePackageLabour_guids: [String!]!, cost: Float!, remarks: String!): Int!
+  updatePackageLabours(updatePackageLabour_guids: [String!]!, cost: Float!, remarks: String!, cost_percentage: Float): Int!
   updatePackageLabour(updatePackageLabour: package_labourInput!): Int!
   deletePackageLabour(deletePackageLabour_guids: [String!]!): Int!
   updatePackageResidues(updatePackageResidue_guids: [String!]!, cost: Float!, remarks: String!): Int!
   updatePackageResidue(updatePackageResidue: package_residueInput!): Int!
   deletePackageResidue(deletePackageResidue_guids: [String!]!): Int!
-  updatePackageBuffers(updatePackageBuffer_guids: [String!]!, cost: Float!, remarks: String!): Int!
+  updatePackageBuffers(updatePackageBuffer_guids: [String!]!, cost: Float!, remarks: String!, cost_percentage: Float): Int!
   updatePackageBuffer(updatePackageBuffer: package_bufferInput!): Int!
   deletePackageBuffer(deletePackageBuffer_guids: [String!]!): Int!
   updatePackageRepairs(updatePackageRepair_guids: [String!]!, material_cost: Float!, labour_hour: Float!, remarks: String!): Int!
   updatePackageRepair(updatePackageRepair: package_repairInput!): Int!
   deletePackageRepair(deletePackageRepair_guids: [String!]!): Int!
+  updatePackageRepair_ByPercentage(package_repair_guid: [String!]!, material_cost_percentage: Float!, labour_hour_percentage: Float!): Int!
   updatePackageRepair_MaterialCost(group_name_cv: String, subgroup_name_cv: String, part_name: String, dimension: String, length: Int, tariff_repair_guid: String, customer_company_guids: [String!], material_cost_percentage: Float!, labour_hour_percentage: Float!): Int!
   updatePackageSteamings(updatePackageSteaming_guids: [String!]!, cost: Float!, labour: Float!, remarks: String!): Int!
   updatePackageSteaming(updatePackageSteaming: package_steamingInput!): Int!
@@ -917,34 +1428,47 @@ type Mutation {
   updateCleaningCategory(updateCleanCategory: cleaning_categoryInput!): Int!
   deleteCleaningCategory(deleteCleanCategory_guids: [String!]!): Int!
   syncUpCustomerCompaniesWithCleaningCategories: Int!
+  addCleaningFormula(newCleanFormula: cleaning_formulaInput!): Int!
+  updateCleaningFormula(updateCleanFormula: cleaning_formulaInput!): Int!
+  deleteCleaningFormula(deleteCleanFormula_guids: [String!]!): Int!
+  deleteCleaningMethodFormula(deleteCleanMethodFormula_guids: [String!]!): Int!
   assignJobOrder(jobOrderRequest: [JobOrderRequestInput!]!): Int!
   updateJobOrder(jobOrderRequest: [UpdateJobOrderRequestInput!]!): Int!
-  completeJobOrder(jobOrderRequest: [UpdateJobOrderRequestInput!]!): Int!
+  completeJobOrder(jobOrderRequest: [UpdateJobOrderRequestInput!]!, steaming: steamingInput): Int!
   deleteJobOrder(jobOrderGuid: [String!]!): Int!
   startJobTimer(timeTable: [time_tableInput!]!, processGuid: String): Int!
   stopJobTimer(timeTable: [time_tableInput!]!): Int!
+  addRole(rolesRequest: [roleInput!]!): Int!
+  updateRole(rolesRequest: [roleInput!]!): Int!
+  deleteRole(rolesGuid: [String!]!): Int!
+  addTeam(teamsRequest: [teamInput!]!): Int!
+  updateTeam(teamRequest: [teamInput!]!): Int!
+  deleteTeam(teamsGuid: [String!]!): Int!
+  updateUser(userRequest: aspnetusersInput!, rolesRequest: [roleInput]!, teamsRequest: [teamInput]!, functionsRequest: [FunctionsRequestInput]!): Int!
   addRepair(repair: repairInput!, customerCompany: customer_companyInput): Int!
   approveRepair(repair: repairInput!): Int!
   updateRepair(repair: repairInput!, customerCompany: customer_companyInput): Int!
-  rollbackRepair(repair: [RepairRequestInput!]!): Int!
   abortRepair(repJobOrder: RepJobOrderRequestInput!): Int!
   updateRepairStatus(repair: RepairStatusRequestInput!): Int!
   completeQCRepair(repJobOrder: [RepJobOrderRequestInput!]!): Int!
+  rollbackRepair(repair: [RepairRequestInput!]!): Int!
   rollbackQCRepair(repJobOrder: [RepJobOrderRequestInput!]!): Int!
   overwriteQCRepair(repJobOrder: [RepJobOrderRequestInput!]!): Int!
   rollbackCompletedRepair(repJobOrder: [RepJobOrderRequestInput!]!): Int!
   rollbackJobInProgressRepair(repJobOrder: [RepJobOrderRequestInput!]!): Int!
+  rollbackAssignedRepair(repairGuid: [String!], remark: String): Int!
   addResidue(residue: residueInput!): Int!
   updateResidue(residue: residueInput!): Int!
   approveResidue(residue: residueInput!): Int!
-  rollbackResidue(residue: [ResidueRequestInput!]!): Int!
+  rollbackResidue(residue: [RollbackResidueRequestInput!]!): Int!
   updateResidueStatus(residue: ResidueStatusRequestInput!): Int!
   abortResidue(residueJobOrder: ResJobOrderRequestInput!): Int!
   completeQCResidue(residueJobOrder: [ResJobOrderRequestInput!]!): Int!
   rollbackCompletedResidue(residueJobOrder: [ResJobOrderRequestInput!]!): Int!
   rollbackJobInProgressResidue(residueJobOrder: [ResJobOrderRequestInput!]!): Int!
+  rollbackAssignedResidue(residueGuid: [String!], remark: String): Int!
   addCleaning(cleaning: cleaningInput!): Int!
-  updateCleaning(cleaning: cleaningInput!): Int!
+  updateCleaning(cleaning: cleaningInput!, inGateSurvey: in_gate_surveyInput): Int!
   abortCleaning(cleaningJobOrder: CleaningJobOrderInput!): Int!
   rollbackCompletedCleaning(cleaningJobOrder: CleaningJobOrderInput!): Int!
   rollbackJobInProgressCleaning(cleaningJobOrder: CleaningJobOrderInput!): Int!
@@ -958,6 +1482,7 @@ type Mutation {
   completeQCSteaming(steamingJobOrder: [SteamJobOrderRequestInput!]!): Int!
   rollbackJobInProgressSteaming(steamingJobOrder: [SteamJobOrderRequestInput!]!): Int!
   rollbackCompletedSteaming(steamingJobOrder: [SteamJobOrderRequestInput!]!): Int!
+  rollbackAssignedSteaming(steamingGuid: [String!], remark: String): Int!
   addTariffDepot(newTariffDepot: tariff_depotInput!): Int!
   updateTariffDepot(updateTariffDepot: tariff_depotInput!): Int!
   deleteTariffDepot(deleteTariffDepot_guids: [String!]!): Int!
@@ -977,13 +1502,265 @@ type Mutation {
   addTariffRepair(newTariffRepair: tariff_repairInput!): Int!
   updateTariffRepair(updateTariffRepair: tariff_repairInput!): Int!
   updateTariffRepairs(updatedTariffRepair_guids: [String!]!, group_name_cv: String!, subgroup_name_cv: String!, dimension: String!, height_diameter: Float!, height_diameter_unit_cv: String!, width_diameter: Float!, width_diameter_unit_cv: String!, labour_hour: Float!, length: Float!, length_unit_cv: String!, material_cost: Float!, part_name: String!, alias: String!, thickness: Float!, thickness_unit_cv: String!, remarks: String!): Int!
-  updateTariffRepair_MaterialCost(group_name_cv: String, subgroup_name_cv: String, part_name: String, dimension: String, length: Int, guid: String, material_cost_percentage: Float!, labour_hour_percentage: Float!): Int!
-  calculateMaterialCostRoundedUp(materialCost: Float!, materialCostPercentage: Float!): Float!
+  updateTariffRepair_MaterialCost(group_name_cv: [String!], subgroup_name_cv: [String!], part_name: String, dimension: String, length: Int, guid: [String], material_cost_percentage: Float!, labour_hour_percentage: Float!): Int!
   deleteTariffRepair(deleteTariffRepair_guids: [String!]!): Int!
   addTariffSteaming(newTariffSteaming: tariff_steamingInput!): Int!
   updateTariffSteaming(updateTariffSteaming: tariff_steamingInput!): Int!
   deleteTariffSteaming(deleteTariffSteam_guids: [String!]!): Int!
   addUN_Number(unNumber: un_numberInput!): Int!
+}
+
+type Bottom {
+  begin_temp: Float
+  close_temp: Float
+}
+
+type CleanerPerformance {
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  eir_dt: Long
+  last_cargo: String
+  complete_dt: Long
+  cost: Float
+  method: String
+  bay: String
+  cleaner_name: String
+  duration: Float
+}
+
+type CleaningInventorySummary {
+  count: Int!
+  code: String
+  name: String
+}
+
+type CustomerMonthlySales {
+  customer_sales: [CustomerSales!]!
+  total_tank_in: Int!
+  total_steam_count: Int!
+  total_steam_cost: Float!
+  total_clean_count: Int!
+  total_clean_cost: Float!
+  total_residue_count: Int!
+  total_residue_cost: Float!
+  total_in_service_count: Int!
+  total_in_service_cost: Float!
+  total_offhire_count: Int!
+  total_offhire_cost: Float!
+}
+
+type CustomerSales {
+  code: String!
+  name: String!
+  tank_in_count: Int!
+  clean_count: Int!
+  clean_cost: Float!
+  steam_count: Int!
+  steam_cost: Float!
+  residue_count: Int!
+  residue_cost: Float!
+  in_service_count: Int!
+  in_service_cost: Float!
+  offhire_count: Int!
+  offhire_cost: Float!
+}
+
+type DailyInventorySummary {
+  code: String
+  name: String
+  in_gate_count: Int
+  out_gate_count: Int
+  opening_balance: [OpeningBalance]
+}
+
+type DailyQCDetail {
+  estimate_date: Long
+  qc_by: String
+  appv_hour: Float
+  appv_material_cost: Float
+  team: String
+  estimate_no: String
+  tank_no: String
+  code: String
+  repair_type: String
+  repair_cost: Float
+}
+
+type DailyTankSurveySummary {
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  surveryor: String
+  status: String
+  survey_type: String
+  visit: String
+  clean_dt: Long
+  survey_dt: Long
+}
+
+type DailyTeamApproval {
+  status: String
+  estimate_no: String
+  tank_no: String
+  code: String
+  repair_type: String
+  repair_cost: Float
+}
+
+type DailyTeamRevenue {
+  estimate_date: Long
+  qc_by: String
+  eir_no: String
+  team: String
+  estimate_no: String
+  tank_no: String
+  code: String
+  repair_type: String
+  repair_cost: Float
+}
+
+type DepotPerformanceResult {
+  week_of_year: Int!
+  cleaning_count: Int!
+  repair_count: Int!
+  gate_in_count: Int!
+  gate_out_count: Int!
+  depot_count: Int!
+  total_gate_count: Int!
+  average_gate_count: Int!
+}
+
+type InventoryPerMonth {
+  key: String!
+  name: String
+  count: Int!
+  percentage: Float!
+}
+
+type MonthlyCleaningInventory {
+  date: String!
+  day: String!
+  approved_count: Float!
+  completed_count: Float!
+}
+
+type MonthlyGateInOutInventory {
+  lolo_inventory: [MonthlyLoloInventory!]
+  gate_inventory: [MonthlyGateInventory!]
+}
+
+type MonthlyGateInventory {
+  date: String!
+  day: String!
+  gate_in_count: Float!
+  gate_out_count: Float!
+}
+
+type MonthlyInventoryResult {
+  residue_inventory: [MonthlyResiueInventory!]
+  cleaning_inventory: [MonthlyCleaningInventory!]
+  steaming_inventory: [MonthlySteamingInventory!]
+  repair_inventory: [MonthlyRepairInventory!]
+  gate_in_out_inventory: MonthlyGateInOutInventory
+}
+
+type MonthlyLoloInventory {
+  date: String!
+  day: String!
+  lift_off_count: Float!
+  lift_on_count: Float!
+}
+
+type MonthlyRepairInventory {
+  date: String!
+  day: String!
+  approved_hour: Float!
+  completed_hour: Float!
+}
+
+type MonthlyResiueInventory {
+  date: String!
+  day: String!
+  approved_count: Float!
+  completed_count: Float!
+}
+
+type MonthlyRevenue {
+  result_per_day: [ResultPerDay!]!
+  total: Int!
+  average: Int!
+}
+
+type MonthlyRevenueResult {
+  preinspection_monthly_revenue: MonthlySales
+  lolo_monthly_revenue: MonthlySales
+  storage_monthly_revenue: MonthlySales
+  gate_monthly_revenue: MonthlySales
+  steam_monthly_revenue: MonthlySales
+  residue_monthly_revenue: MonthlySales
+  cleaning_monthly_revenue: MonthlySales
+  repair_monthly_revenue: MonthlySales
+}
+
+type MonthlySales {
+  result_per_day: [ResultPerDay!]!
+  total_count: Int!
+  average_count: Int!
+  total_cost: Float!
+  average_cost: Float!
+}
+
+type MonthlySalesList {
+  preinspection_monthly_sales: MonthlySales
+  lolo_monthly_sales: MonthlySales
+  storage_monthly_sales: MonthlySales
+  gate_monthly_sales: MonthlySales
+  cleaning_monthly_sales: MonthlySales
+  residue_monthly_sales: MonthlySales
+  steaming_monthly_sales: MonthlySales
+  repair_monthly_sales: MonthlySales
+}
+
+type MonthlySteamingInventory {
+  date: String!
+  day: String!
+  approved_count: Float!
+  completed_count: Float!
+}
+
+type MonthlySummary {
+  month: String
+  monthly_total_est_count: Int!
+  monthly_total_est_cost: Float
+  monthly_total_appv_cost: Float
+  monthly_total_diff_cost: Float
+  monthly_total_average: Float
+  monthly_total_rejected: Float
+  surveyorList: [SurveyorList!]
+}
+
+type OpeningBalance {
+  open_balance: Int!
+  in_count: Int!
+  out_count: Int!
+  yard: String!
+}
+
+type OrderTrackingResult {
+  tank_no: String
+  eir_no: String
+  eir_date: Long
+  release_date: Long
+  customer_code: String
+  customer_name: String
+  last_cargo: String
+  order_no: String
+  order_date: Long
+  cancel_date: Long
+  cancel_remarks: String
+  status: String
+  purpose: String
 }
 
 """Information about pagination in a connection."""
@@ -1003,6 +1780,22 @@ type PageInfo {
 
   """When paginating forwards, the cursor to continue."""
   endCursor: String
+}
+
+type PeriodicTestDueSummary {
+  customer_code: String
+  customer_name: String
+  owner_code: String
+  tank_no: String
+  eir_no: String
+  eir_dt: Long
+  class_cv: String
+  last_test_type: String
+  next_test_type: String
+  test_dt: Long
+  next_test_dt: Long
+  due_type: String
+  due_days: String
 }
 
 """A connection to a list of items."""
@@ -1053,17 +1846,474 @@ type QueryBillingSOTEdge {
   node: billing_sot!
 }
 
-type aspnetroles {
-  id: String
-  Role: String
-  aspnetuserroles(where: aspnetuserrolesFilterInput): [aspnetuserroles]
+"""A connection to a list of items."""
+type QueryCleanerPerformanceConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryCleanerPerformanceEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [CleanerPerformance!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
 }
 
-type aspnetuserroles {
-  userID: String!
-  roleID: String!
-  aspnetusers(where: aspnetusersFilterInput): aspnetusers
-  aspnetroles(where: aspnetrolesFilterInput): aspnetroles
+"""An edge in a connection."""
+type QueryCleanerPerformanceEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: CleanerPerformance!
+}
+
+"""A connection to a list of items."""
+type QueryCleaningInventorySummaryConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryCleaningInventorySummaryEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [CleaningInventorySummary!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryCleaningInventorySummaryEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: CleaningInventorySummary!
+}
+
+"""A connection to a list of items."""
+type QueryDailyQCDetailConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryDailyQCDetailEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [DailyQCDetail!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryDailyQCDetailEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: DailyQCDetail!
+}
+
+"""A connection to a list of items."""
+type QueryDailyTankSurveySummaryConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryDailyTankSurveySummaryEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [DailyTankSurveySummary!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryDailyTankSurveySummaryEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: DailyTankSurveySummary!
+}
+
+"""A connection to a list of items."""
+type QueryDailyTeamApprovalConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryDailyTeamApprovalEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [DailyTeamApproval!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryDailyTeamApprovalEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: DailyTeamApproval!
+}
+
+"""A connection to a list of items."""
+type QueryDailyTeamRevenueConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryDailyTeamRevenueEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [DailyTeamRevenue!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryDailyTeamRevenueEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: DailyTeamRevenue!
+}
+
+"""A connection to a list of items."""
+type QueryDepotPerformanceConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryDepotPerformanceEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [DepotPerformanceResult!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryDepotPerformanceEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: DepotPerformanceResult!
+}
+
+"""A connection to a list of items."""
+type QueryOrderTrackingConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryOrderTrackingEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [OrderTrackingResult!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryOrderTrackingEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: OrderTrackingResult!
+}
+
+"""A connection to a list of items."""
+type QueryPeriodicTestDueSummaryConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryPeriodicTestDueSummaryEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [PeriodicTestDueSummary!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryPeriodicTestDueSummaryEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: PeriodicTestDueSummary!
+}
+
+"""A connection to a list of items."""
+type QuerySteamPerformanceConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QuerySteamPerformanceEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [SteamPerformance!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QuerySteamPerformanceEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: SteamPerformance!
+}
+
+"""A connection to a list of items."""
+type QueryStorageDetailConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryStorageDetailEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [storage_detail!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryStorageDetailEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: storage_detail!
+}
+
+"""A connection to a list of items."""
+type QuerySurveyorPerformanceDetailConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QuerySurveyorPerformanceDetailEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [SurveyorPerformanceDetail!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QuerySurveyorPerformanceDetailEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: SurveyorPerformanceDetail!
+}
+
+"""A connection to a list of items."""
+type QueryZeroApprovalCostConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryZeroApprovalCostEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [ZeroApprovalCost!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryZeroApprovalCostEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: ZeroApprovalCost!
+}
+
+type ResultPerDay {
+  count: Int!
+  cost: Float!
+  day: String!
+  date: String!
+}
+
+type ResultPerMonth {
+  count: Int!
+  month: String!
+  cost: Float!
+}
+
+type RevenuePerMonth {
+  count: Int!
+  key: String!
+  name: String
+  cost: Float!
+}
+
+type SteamPerformance {
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  eir_dt: Long
+  last_cargo: String
+  duration: String
+  complete_dt: Long
+  cost: Float
+  require_temp: Float
+  bay: String
+  themometer: Themometer
+  top: Top
+  bottom: Bottom
+}
+
+type SurveyorDetail {
+  tank_no: String
+  eir_no: String
+  eir_date: Long
+  est_type: String
+  est_no: String
+  est_status: String
+  est_date: Long
+  est_cost: Float
+  appv_date: Long
+  appv_cost: Float
+}
+
+type SurveyorList {
+  surveyor_name: String
+  est_count: Int!
+  est_cost: Float
+  appv_cost: Float
+  diff_cost: Float
+  average: Float
+  rejected: Float
+}
+
+type SurveyorPerformanceDetail {
+  surveyor: String
+  surveyor_details: [SurveyorDetail!]
+  total_est_cost: Float
+  total_appv_cost: Float
+}
+
+type SurveyorPerformanceSummary {
+  monthly_summary: [MonthlySummary!]!
+  grand_total_est_count: Int!
+  grand_total_est_cost: Float
+  grand_total_appv_cost: Float
+  grand_total_diff_cost: Float
+  grand_total_average: Float
+  grand_total_rejected: Float
+}
+
+type Themometer {
+  begin_temp: Float
+  close_temp: Float
+}
+
+type Top {
+  begin_temp: Float
+  close_temp: Float
+}
+
+type YearlyInventory {
+  inventory_per_month: [InventoryPerMonth!]!
+  total_count: Int!
+  average_count: Int!
+}
+
+type YearlyInventoryResult {
+  residue_yearly_inventory: YearlyInventory
+  cleaning_yearly_inventory: YearlyInventory
+  steaming_yearly_inventory: YearlyInventory
+  repair_yearly_inventory: YearlyInventory
+  depot_yearly_inventory: YearlyInventory
+  gate_in_inventory: YearlyInventory
+  gate_out_inventory: YearlyInventory
+}
+
+type YearlyRevenue {
+  result_per_month: [ResultPerMonth!]!
+  total: Int!
+  average: Int!
+}
+
+type YearlyRevenueManagement {
+  revenue_per_month: [RevenuePerMonth!]!
+  total_count: Int!
+  average_count: Int!
+  total_cost: Float!
+  average_cost: Float!
+}
+
+type YearlyRevenueManagementResult {
+  preinspection_yearly_revenue: YearlyRevenueManagement
+  lolo_yearly_revenue: YearlyRevenueManagement
+  storage_yearly_revenue: YearlyRevenueManagement
+  gate_yearly_revenue: YearlyRevenueManagement
+  steam_yearly_revenue: YearlyRevenueManagement
+  residue_yearly_revenue: YearlyRevenueManagement
+  cleaning_yearly_revenue: YearlyRevenueManagement
+  repair_yearly_revenue: YearlyRevenueManagement
+}
+
+type YearlySales {
+  result_per_month: [ResultPerMonth!]!
+  total_count: Int!
+  average_count: Int!
+  total_cost: Float!
+  average_cost: Float!
+}
+
+type YearlySalesList {
+  preinspection_yearly_sales: YearlySales
+  lolo_yearly_sales: YearlySales
+  storage_yearly_sales: YearlySales
+  gate_yearly_sales: YearlySales
+  cleaning_yearly_sales: YearlySales
+  residue_yearly_sales: YearlySales
+  steaming_yearly_sales: YearlySales
+  repair_yearly_sales: YearlySales
+}
+
+type ZeroApprovalCost {
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  eir_dt: Long
+  customer_name: String
+  complete_dt: Long
+  approve_dt: Long
+  est_cost: Float
+  estimate_no: String
 }
 
 type aspnetusers {
@@ -1072,7 +2322,9 @@ type aspnetusers {
   userName: String
   email: String
   phoneNumber: String
-  aspnetuserroles(where: aspnetuserrolesFilterInput): [aspnetuserroles]
+  user_role(where: user_roleFilterInput): [user_role]
+  team_user(where: team_userFilterInput): [team_user]
+  user_functions(where: user_functionsFilterInput): [user_functions]
 }
 
 type billing {
@@ -1082,6 +2334,7 @@ type billing {
   invoice_no: String!
   invoice_dt: Long!
   invoice_due: Long
+  invoice_type: String
   status_cv: String!
   remarks: String
   currency: currency
@@ -1091,10 +2344,13 @@ type billing {
   residue(where: residueFilterInput): [residue]
   repair_customer(where: repairFilterInput): [repair]
   repair_owner(where: repairFilterInput): [repair]
-  lolo_billing_sot(where: billing_sotFilterInput): [billing_sot]
+  lon_billing_sot(where: billing_sotFilterInput): [billing_sot]
+  loff_billing_sot(where: billing_sotFilterInput): [billing_sot]
   preinsp_billing_sot(where: billing_sotFilterInput): [billing_sot]
   storage_billing_sot(where: billing_sotFilterInput): [billing_sot]
-  gateio_billing_sot(where: billing_sotFilterInput): [billing_sot]
+  gin_billing_sot(where: billing_sotFilterInput): [billing_sot]
+  gout_billing_sot(where: billing_sotFilterInput): [billing_sot]
+  storage_detail(where: storage_detailFilterInput): [storage_detail]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1106,13 +2362,17 @@ type billing_sot {
   guid: String
   sot_guid: String!
   tariff_depot_guid: String!
-  lolo_billing_guid: String
+  loff_billing_guid: String
+  lon_billing_guid: String
   preinsp_billing_guid: String
   storage_billing_guid: String
-  gateio_billing_guid: String
+  gin_billing_guid: String
+  gout_billing_guid: String
   preinspection: Boolean
   lift_on: Boolean
   lift_off: Boolean
+  gate_in: Boolean
+  gate_out: Boolean
   storage_cal_cv: String
   preinspection_cost: Float
   lift_on_cost: Float
@@ -1122,12 +2382,16 @@ type billing_sot {
   gate_out_cost: Float
   free_storage: Int
   remarks: String
+  depot_cost_remarks: String
+  action: String
   storing_order_tank(where: storing_order_tankFilterInput): storing_order_tank
   tariff_depot(where: tariff_depotFilterInput): tariff_depot
-  lolo_billing: billing
+  lon_billing: billing
+  loff_billing: billing
   preinsp_billing: billing
   storage_billing: billing
-  gateio_billing: billing
+  gin_billing: billing
+  gout_billing: billing
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1159,6 +2423,8 @@ type cleaning {
   job_order_guid: String
   cleaning_cost: Float
   buffer_cost: Float
+  est_cleaning_cost: Float
+  est_buffer_cost: Float
   status_cv: String
   remarks: String
   job_no: String
@@ -1171,6 +2437,7 @@ type cleaning {
   na_dt: Long
   customer_billing_guid: String
   owner_billing_guid: String
+  overwrite_remarks: String
   action: String!
   storing_order_tank(where: storing_order_tankFilterInput): storing_order_tank
   customer_company(where: customer_companyFilterInput): customer_company
@@ -1190,6 +2457,19 @@ type cleaning_category {
   sequence: Int
   cost: Float
   tariff_cleanings: [tariff_cleaning!]
+  cleaning_method(where: cleaning_methodFilterInput): [cleaning_method!]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type cleaning_formula {
+  guid: String
+  description: String
+  duration: Float
+  cleaning_method_formula(where: cleaning_method_formulaFilterInput): [cleaning_method_formula]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1199,10 +2479,28 @@ type cleaning_category {
 
 type cleaning_method {
   guid: String
+  category_guid: String
   name: String
   sequence: Int
   description: String
-  tariff_cleanings: [tariff_cleaning!]
+  tariff_cleanings(where: tariff_cleaningFilterInput): [tariff_cleaning!]
+  cleaning_method_formula(where: cleaning_method_formulaFilterInput): [cleaning_method_formula]
+  cleaning_category(where: cleaning_categoryFilterInput): cleaning_category
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type cleaning_method_formula {
+  guid: String
+  method_guid: String
+  formula_guid: String
+  sequence: Int
+  cleaning_method(where: cleaning_methodFilterInput): cleaning_method
+  cleaning_formula(where: cleaning_formulaFilterInput): cleaning_formula
+  action: String
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1237,6 +2535,7 @@ type customer_company {
   country: String
   postal: String
   phone: String
+  country_code: String
   email: String
   website: String
   effective_dt: Long
@@ -1245,7 +2544,7 @@ type customer_company {
   def_template_guid: String
   def_tank_guid: String
   main_customer_guid: String
-  tank: tank
+  tariff_depot(where: tariff_depotFilterInput): tariff_depot
   currency: currency
   template_est(where: template_estFilterInput): template_est
   repair(where: repairFilterInput): [repair!]
@@ -1258,6 +2557,7 @@ type customer_company {
   package_repair: [package_repair!]
   template_est_customer: [template_est_customer!]
   tank_info(where: tank_infoFilterInput): [tank_info]
+  main_customer_company: customer_company
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1277,6 +2577,22 @@ type customer_company_contact_person {
   phone: String
   email_alert: Int
   action: String
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type functions {
+  guid: String
+  module: String
+  submodule: String
+  action: String
+  code: String
+  opt: String
+  role_functions(where: role_functionsFilterInput): [role_functions!]
+  user_functions(where: user_functionsFilterInput, order: [user_functionsSortInput!]): [user_functions!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1320,7 +2636,6 @@ type in_gate_survey {
   test_class_cv: String
   dom_dt: Long
   inspection_dt: Long
-  last_release_dt: Long
   manufacturer_cv: String
   cladding_cv: String
   max_weight_cv: String
@@ -1371,6 +2686,15 @@ type in_gate_survey {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
   in_gate: in_gate
   tariff_buffer: tariff_buffer
   delete_dt: Long
@@ -1417,6 +2741,7 @@ type out_gate {
   eir_dt: Long
   eir_status_cv: String
   vehicle_no: String
+  yard_cv: String
   driver_name: String
   remarks: String
   publish_by: String
@@ -1493,6 +2818,15 @@ type out_gate_survey {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
   out_gate: out_gate
   delete_dt: Long
   create_dt: Long
@@ -1628,18 +2962,23 @@ type repair {
   labour_cost_discount: Float
   material_cost_discount: Float
   labour_cost: Float
+  est_cost: Float
   total_cost: Float
+  total_hour: Float
+  total_material_cost: Float
+  total_labour_cost: Float
   remarks: String
   owner_enable: Boolean
   status_cv: String
   job_no: String
-  total_hour: Float
   complete_dt: Long
   na_dt: Long
   approve_by: String
   approve_dt: Long
   allocate_by: String
   allocate_dt: Long
+  overwrite_remarks: String
+  action: String
   bill_to_guid: String
   customer_billing_guid: String
   owner_billing_guid: String
@@ -1701,8 +3040,12 @@ type residue {
   complete_dt: Long
   na_dt: Long
   estimate_no: String
+  total_cost: Float
+  est_cost: Float
+  overwrite_remarks: String
   customer_billing_guid: String
   owner_billing_guid: String
+  action: String
   customer_company(where: customer_companyFilterInput): customer_company
   storing_order_tank(where: storing_order_tankFilterInput): storing_order_tank
   residue_part(where: residue_partFilterInput): [residue_part]
@@ -1731,6 +3074,35 @@ type residue_part {
   tariff_residue(where: tariff_residueFilterInput): tariff_residue
   job_order(where: job_orderFilterInput): job_order
   action: String
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type role {
+  guid: String
+  department: String
+  position: String
+  code: String
+  description: String
+  action: String
+  role_functions: [role_functions!]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type role_functions {
+  guid: String
+  functions_guid: String
+  role_guid: String
+  action: String
+  functions(where: functionsFilterInput): functions
+  role(where: roleFilterInput): role
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1789,6 +3161,7 @@ type steaming {
   remarks: String
   job_no: String
   total_cost: Float
+  est_cost: Float
   estimate_no: String
   estimate_by: String
   estimate_dt: Long
@@ -1799,13 +3172,18 @@ type steaming {
   complete_by: String
   complete_dt: Long
   na_dt: Long
-  invoice_by: String
-  invoice_dt: Long
   allocate_by: String
   allocate_dt: Long
+  overwrite_remarks: String
   bill_to_guid: String
   customer_billing_guid: String
   owner_billing_guid: String
+  total_material_cost: Float
+  total_labour_cost: Float
+  est_hour: Float
+  total_hour: Float
+  flat_rate: Boolean
+  rate: Float
   action: String!
   customer_company(where: customer_companyFilterInput): customer_company
   storing_order_tank(where: storing_order_tankFilterInput): storing_order_tank
@@ -1878,6 +3256,25 @@ type steaming_temp {
   update_by: String
 }
 
+type storage_detail {
+  guid: String
+  sot_guid: String!
+  billing_guid: String!
+  start_dt: Long!
+  end_dt: Long!
+  total_cost: Float!
+  remaining_free_storage: Int!
+  state_cv: String!
+  remarks: String
+  storing_order_tank(where: storing_order_tankFilterInput): storing_order_tank
+  billing(where: billingFilterInput): billing
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
 type storing_order {
   guid: String
   so_no: String
@@ -1929,11 +3326,15 @@ type storing_order_tank {
   repair_remarks: String
   storage_remarks: String
   last_release_dt: Long
+  job_no_remarks: String
+  last_cargo_remarks: String
+  clean_status_remarks: String
   storing_order: storing_order
   tariff_cleaning: tariff_cleaning
   customer_company: customer_company
   tank_info: tank_info
   tank(where: tankFilterInput): tank
+  billing_sot(where: billing_sotFilterInput): billing_sot
   in_gate(where: in_gateFilterInput): [in_gate!]
   out_gate(where: out_gateFilterInput): [out_gate!]
   booking(where: bookingFilterInput): [booking!]
@@ -1945,7 +3346,7 @@ type storing_order_tank {
   steaming(where: steamingFilterInput): [steaming]
   survey_detail(where: survey_detailFilterInput): [survey_detail]
   transfer(where: transferFilterInput, order: [transferSortInput!]): [transfer]
-  billing_sot(where: billing_sotFilterInput): [billing_sot]
+  storage_detail(where: storage_detailFilterInput): [storage_detail]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -1975,7 +3376,15 @@ type tank {
   tariff_depot_guid: String
   unit_type: String
   description: String
+  preinspect: Boolean
+  lift_on: Boolean
+  lift_off: Boolean
+  gate_in: Boolean
+  gate_out: Boolean
+  iso_format: Boolean
+  flat_rate: Boolean
   tariff_depot: tariff_depot
+  sot: [storing_order_tank!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2004,8 +3413,12 @@ type tank_info {
   last_notify_dt: Long
   last_release_dt: Long
   yard_cv: String
+  previous_tank_no: String
+  previous_owner_guid: String
+  last_eir_no: String
   tank(where: tankFilterInput): tank
   customer_company(where: customer_companyFilterInput): customer_company
+  previous_customer_company(where: customer_companyFilterInput): customer_company
   tariff_buffer(where: tariff_bufferFilterInput): tariff_buffer
   storing_order_tank(where: storing_order_tankFilterInput): [storing_order_tank]
   delete_dt: Long
@@ -2110,6 +3523,7 @@ type tariff_residue {
   cost: Float
   remarks: String
   package_residue(where: package_residueFilterInput): [package_residue!]
+  residue_part(where: residue_partFilterInput): [residue_part!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2137,7 +3551,22 @@ type team {
   guid: String
   description: String
   department_cv: String
+  action: String
   job_order(where: job_orderFilterInput): [job_order]
+  team_user(where: team_userFilterInput): [team_user]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type team_user {
+  guid: String
+  userId: String
+  team_guid: String
+  team: team
+  aspnetusers: aspnetusers
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2244,16 +3673,328 @@ type transfer {
   update_by: String
 }
 
+type user_functions {
+  guid: String
+  functions_guid: String
+  user_guid: String
+  adhoc: Boolean
+  remarks: String
+  action: String
+  functions(where: functionsFilterInput): functions
+  user(where: aspnetusersFilterInput): aspnetusers
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+type user_role {
+  guid: String!
+  user_guid: String!
+  role_guid: String!
+  role: role
+  aspnetusers: aspnetusers
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
 input BillingEstimateRequestInput {
   process_guid: String!
   process_type: String!
   billing_party: String!
   action: String!
+  existing_billing_guid: String
 }
 
 input BooleanOperationFilterInput {
   eq: Boolean
   neq: Boolean
+}
+
+input BottomFilterInput {
+  and: [BottomFilterInput!]
+  or: [BottomFilterInput!]
+  begin_temp: FloatOperationFilterInput
+  close_temp: FloatOperationFilterInput
+}
+
+input BottomSortInput {
+  begin_temp: SortEnumType
+  close_temp: SortEnumType
+}
+
+input CleanerPerformanceFilterInput {
+  and: [CleanerPerformanceFilterInput!]
+  or: [CleanerPerformanceFilterInput!]
+  customer_code: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_dt: LongOperationFilterInput
+  last_cargo: StringOperationFilterInput
+  complete_dt: LongOperationFilterInput
+  cost: FloatOperationFilterInput
+  method: StringOperationFilterInput
+  bay: StringOperationFilterInput
+  cleaner_name: StringOperationFilterInput
+  duration: FloatOperationFilterInput
+}
+
+input CleanerPerformanceRequestInput {
+  last_cargo: String
+  method_name: String
+  cleaning_bay: String
+  cleaner_name: String
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  start_date: Long!
+  end_date: Long!
+}
+
+input CleanerPerformanceSortInput {
+  customer_code: SortEnumType
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  eir_dt: SortEnumType
+  last_cargo: SortEnumType
+  complete_dt: SortEnumType
+  cost: SortEnumType
+  method: SortEnumType
+  bay: SortEnumType
+  cleaner_name: SortEnumType
+  duration: SortEnumType
+}
+
+input CleaningInventoryRequestInput {
+  report_type: String!
+  start_date: Long!
+  end_date: Long!
+  customer_code: String
+  last_cargo: String
+  un_no: String
+  class_no: [String]
+  tank_no: String
+  eir_no: String
+}
+
+input CleaningInventorySummaryFilterInput {
+  and: [CleaningInventorySummaryFilterInput!]
+  or: [CleaningInventorySummaryFilterInput!]
+  count: IntOperationFilterInput
+  code: StringOperationFilterInput
+  name: StringOperationFilterInput
+}
+
+input CleaningInventorySummarySortInput {
+  count: SortEnumType
+  code: SortEnumType
+  name: SortEnumType
+}
+
+input CustomerMonthlySalesRequestInput {
+  year: Int!
+  month: Int!
+  customer_code: String
+}
+
+input DailyInventoryRequestInput {
+  start_date: Long!
+  end_date: Long!
+  inventory_type: String!
+  customer_code: String
+}
+
+input DailyQCDetailFilterInput {
+  and: [DailyQCDetailFilterInput!]
+  or: [DailyQCDetailFilterInput!]
+  estimate_date: LongOperationFilterInput
+  qc_by: StringOperationFilterInput
+  appv_hour: FloatOperationFilterInput
+  appv_material_cost: FloatOperationFilterInput
+  team: StringOperationFilterInput
+  estimate_no: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  code: StringOperationFilterInput
+  repair_type: StringOperationFilterInput
+  repair_cost: FloatOperationFilterInput
+}
+
+input DailyQCDetailRequestInput {
+  team: [String]
+  repair_type: [String]
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  estimate_start_date: Long
+  estimate_end_date: Long
+  allocation_start_date: Long
+  allocation_end_date: Long
+  approved_start_date: Long
+  approved_end_date: Long
+  qc_start_date: Long
+  qc_end_date: Long
+}
+
+input DailyQCDetailSortInput {
+  estimate_date: SortEnumType
+  qc_by: SortEnumType
+  appv_hour: SortEnumType
+  appv_material_cost: SortEnumType
+  team: SortEnumType
+  estimate_no: SortEnumType
+  tank_no: SortEnumType
+  code: SortEnumType
+  repair_type: SortEnumType
+  repair_cost: SortEnumType
+}
+
+input DailyTankSurveyRequestInput {
+  survey_type: [String!]
+  surveyor_name: String
+  customer_code: String
+  next_test_due: String
+  tank_no: String
+  eir_no: String
+  start_date: Long!
+  end_date: Long!
+}
+
+input DailyTankSurveySummaryFilterInput {
+  and: [DailyTankSurveySummaryFilterInput!]
+  or: [DailyTankSurveySummaryFilterInput!]
+  customer_code: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  surveryor: StringOperationFilterInput
+  status: StringOperationFilterInput
+  survey_type: StringOperationFilterInput
+  visit: StringOperationFilterInput
+  clean_dt: LongOperationFilterInput
+  survey_dt: LongOperationFilterInput
+}
+
+input DailyTankSurveySummarySortInput {
+  customer_code: SortEnumType
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  surveryor: SortEnumType
+  status: SortEnumType
+  survey_type: SortEnumType
+  visit: SortEnumType
+  clean_dt: SortEnumType
+  survey_dt: SortEnumType
+}
+
+input DailyTeamApprovalFilterInput {
+  and: [DailyTeamApprovalFilterInput!]
+  or: [DailyTeamApprovalFilterInput!]
+  status: StringOperationFilterInput
+  estimate_no: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  code: StringOperationFilterInput
+  repair_type: StringOperationFilterInput
+  repair_cost: FloatOperationFilterInput
+}
+
+input DailyTeamApprovalRequestInput {
+  team: [String]
+  repair_type: [String]
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  estimate_start_date: Long
+  estimate_end_date: Long
+  allocation_start_date: Long
+  allocation_end_date: Long
+  approved_start_date: Long
+  approved_end_date: Long
+  qc_start_date: Long
+  qc_end_date: Long
+}
+
+input DailyTeamApprovalSortInput {
+  status: SortEnumType
+  estimate_no: SortEnumType
+  tank_no: SortEnumType
+  code: SortEnumType
+  repair_type: SortEnumType
+  repair_cost: SortEnumType
+}
+
+input DailyTeamRevenuRequestInput {
+  team: [String]
+  repair_type: [String]
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  estimate_start_date: Long
+  estimate_end_date: Long
+  allocation_start_date: Long
+  allocation_end_date: Long
+  approved_start_date: Long
+  approved_end_date: Long
+  qc_start_date: Long
+  qc_end_date: Long
+}
+
+input DailyTeamRevenueFilterInput {
+  and: [DailyTeamRevenueFilterInput!]
+  or: [DailyTeamRevenueFilterInput!]
+  estimate_date: LongOperationFilterInput
+  qc_by: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  team: StringOperationFilterInput
+  estimate_no: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  code: StringOperationFilterInput
+  repair_type: StringOperationFilterInput
+  repair_cost: FloatOperationFilterInput
+}
+
+input DailyTeamRevenueSortInput {
+  estimate_date: SortEnumType
+  qc_by: SortEnumType
+  eir_no: SortEnumType
+  team: SortEnumType
+  estimate_no: SortEnumType
+  tank_no: SortEnumType
+  code: SortEnumType
+  repair_type: SortEnumType
+  repair_cost: SortEnumType
+}
+
+input DepotPerformanceRequestInput {
+  customer_code: String
+  month: Int!
+  year: Int!
+}
+
+input DepotPerformanceResultFilterInput {
+  and: [DepotPerformanceResultFilterInput!]
+  or: [DepotPerformanceResultFilterInput!]
+  week_of_year: IntOperationFilterInput
+  cleaning_count: IntOperationFilterInput
+  repair_count: IntOperationFilterInput
+  gate_in_count: IntOperationFilterInput
+  gate_out_count: IntOperationFilterInput
+  depot_count: IntOperationFilterInput
+  total_gate_count: IntOperationFilterInput
+  average_gate_count: IntOperationFilterInput
+}
+
+input DepotPerformanceResultSortInput {
+  week_of_year: SortEnumType
+  cleaning_count: SortEnumType
+  repair_count: SortEnumType
+  gate_in_count: SortEnumType
+  gate_out_count: SortEnumType
+  depot_count: SortEnumType
+  total_gate_count: SortEnumType
+  average_gate_count: SortEnumType
 }
 
 input FloatOperationFilterInput {
@@ -2286,10 +4027,10 @@ input IntOperationFilterInput {
   nlte: Int
 }
 
-input ListFilterInputTypeOfaspnetuserrolesFilterInput {
-  all: aspnetuserrolesFilterInput
-  none: aspnetuserrolesFilterInput
-  some: aspnetuserrolesFilterInput
+input ListFilterInputTypeOfSurveyorDetailFilterInput {
+  all: SurveyorDetailFilterInput
+  none: SurveyorDetailFilterInput
+  some: SurveyorDetailFilterInput
   any: Boolean
 }
 
@@ -2311,6 +4052,20 @@ input ListFilterInputTypeOfcleaningFilterInput {
   all: cleaningFilterInput
   none: cleaningFilterInput
   some: cleaningFilterInput
+  any: Boolean
+}
+
+input ListFilterInputTypeOfcleaning_methodFilterInput {
+  all: cleaning_methodFilterInput
+  none: cleaning_methodFilterInput
+  some: cleaning_methodFilterInput
+  any: Boolean
+}
+
+input ListFilterInputTypeOfcleaning_method_formulaFilterInput {
+  all: cleaning_method_formulaFilterInput
+  none: cleaning_method_formulaFilterInput
+  some: cleaning_method_formulaFilterInput
   any: Boolean
 }
 
@@ -2433,6 +4188,13 @@ input ListFilterInputTypeOfresidue_partFilterInput {
   any: Boolean
 }
 
+input ListFilterInputTypeOfrole_functionsFilterInput {
+  all: role_functionsFilterInput
+  none: role_functionsFilterInput
+  some: role_functionsFilterInput
+  any: Boolean
+}
+
 input ListFilterInputTypeOfrp_damage_repairFilterInput {
   all: rp_damage_repairFilterInput
   none: rp_damage_repairFilterInput
@@ -2465,6 +4227,13 @@ input ListFilterInputTypeOfsteaming_tempFilterInput {
   all: steaming_tempFilterInput
   none: steaming_tempFilterInput
   some: steaming_tempFilterInput
+  any: Boolean
+}
+
+input ListFilterInputTypeOfstorage_detailFilterInput {
+  all: storage_detailFilterInput
+  none: storage_detailFilterInput
+  some: storage_detailFilterInput
   any: Boolean
 }
 
@@ -2510,6 +4279,13 @@ input ListFilterInputTypeOftariff_cleaningFilterInput {
   any: Boolean
 }
 
+input ListFilterInputTypeOfteam_userFilterInput {
+  all: team_userFilterInput
+  none: team_userFilterInput
+  some: team_userFilterInput
+  any: Boolean
+}
+
 input ListFilterInputTypeOftemplate_est_customerFilterInput {
   all: template_est_customerFilterInput
   none: template_est_customerFilterInput
@@ -2545,6 +4321,20 @@ input ListFilterInputTypeOftransferFilterInput {
   any: Boolean
 }
 
+input ListFilterInputTypeOfuser_functionsFilterInput {
+  all: user_functionsFilterInput
+  none: user_functionsFilterInput
+  some: user_functionsFilterInput
+  any: Boolean
+}
+
+input ListFilterInputTypeOfuser_roleFilterInput {
+  all: user_roleFilterInput
+  none: user_roleFilterInput
+  some: user_roleFilterInput
+  any: Boolean
+}
+
 input LongOperationFilterInput {
   eq: Long
   neq: Long
@@ -2558,6 +4348,182 @@ input LongOperationFilterInput {
   nlt: Long
   lte: Long
   nlte: Long
+}
+
+input MonthlyInventoryRequestInput {
+  month: Int!
+  year: Int!
+  inventory_type: [String!]!
+  customer_code: String
+}
+
+input MonthlyProcessRequestInput {
+  report_type: String!
+  year: Int!
+  month: Int!
+  customer_code: String
+}
+
+input MonthlyRevenueRequestInput {
+  month: Int!
+  year: Int!
+  revenue_type: [String]
+  customer_code: String
+}
+
+input MonthlySalesRequestInput {
+  report_type: [String!]!
+  year: Int!
+  month: Int!
+  customer_code: String
+}
+
+input OrderTrackingRequestInput {
+  order_type: String!
+  tank_no: String
+  customer_code: String
+  last_cargo: String
+  so_no: String
+  ro_no: String
+  eir_no: String
+  job_no: String
+  start_date: Long!
+  end_date: Long!
+  purpose: [String]
+  status: [String]
+}
+
+input OrderTrackingResultFilterInput {
+  and: [OrderTrackingResultFilterInput!]
+  or: [OrderTrackingResultFilterInput!]
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_date: LongOperationFilterInput
+  release_date: LongOperationFilterInput
+  customer_code: StringOperationFilterInput
+  customer_name: StringOperationFilterInput
+  last_cargo: StringOperationFilterInput
+  order_no: StringOperationFilterInput
+  order_date: LongOperationFilterInput
+  cancel_date: LongOperationFilterInput
+  cancel_remarks: StringOperationFilterInput
+  status: StringOperationFilterInput
+  purpose: StringOperationFilterInput
+}
+
+input OrderTrackingResultSortInput {
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  eir_date: SortEnumType
+  release_date: SortEnumType
+  customer_code: SortEnumType
+  customer_name: SortEnumType
+  last_cargo: SortEnumType
+  order_no: SortEnumType
+  order_date: SortEnumType
+  cancel_date: SortEnumType
+  cancel_remarks: SortEnumType
+  status: SortEnumType
+  purpose: SortEnumType
+}
+
+input PeriodicTestDueRequestInput {
+  due_type: String
+  customer_code: String
+  next_test_due: String
+  tank_no: String
+  eir_no: String
+}
+
+input PeriodicTestDueSummaryFilterInput {
+  and: [PeriodicTestDueSummaryFilterInput!]
+  or: [PeriodicTestDueSummaryFilterInput!]
+  customer_code: StringOperationFilterInput
+  customer_name: StringOperationFilterInput
+  owner_code: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_dt: LongOperationFilterInput
+  class_cv: StringOperationFilterInput
+  last_test_type: StringOperationFilterInput
+  next_test_type: StringOperationFilterInput
+  test_dt: LongOperationFilterInput
+  next_test_dt: LongOperationFilterInput
+  due_type: StringOperationFilterInput
+  due_days: StringOperationFilterInput
+}
+
+input PeriodicTestDueSummarySortInput {
+  customer_code: SortEnumType
+  customer_name: SortEnumType
+  owner_code: SortEnumType
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  eir_dt: SortEnumType
+  class_cv: SortEnumType
+  last_test_type: SortEnumType
+  next_test_type: SortEnumType
+  test_dt: SortEnumType
+  next_test_dt: SortEnumType
+  due_type: SortEnumType
+  due_days: SortEnumType
+}
+
+input SteamPerformanceFilterInput {
+  and: [SteamPerformanceFilterInput!]
+  or: [SteamPerformanceFilterInput!]
+  customer_code: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_dt: LongOperationFilterInput
+  last_cargo: StringOperationFilterInput
+  duration: StringOperationFilterInput
+  complete_dt: LongOperationFilterInput
+  cost: FloatOperationFilterInput
+  require_temp: FloatOperationFilterInput
+  bay: StringOperationFilterInput
+  themometer: ThemometerFilterInput
+  top: TopFilterInput
+  bottom: BottomFilterInput
+}
+
+input SteamPerformanceRequestInput {
+  last_cargo: String
+  steaming_point: [String!]
+  yard: String
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  start_date: Long!
+  end_date: Long!
+}
+
+input SteamPerformanceSortInput {
+  customer_code: SortEnumType
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  eir_dt: SortEnumType
+  last_cargo: SortEnumType
+  duration: SortEnumType
+  complete_dt: SortEnumType
+  cost: SortEnumType
+  require_temp: SortEnumType
+  bay: SortEnumType
+  themometer: ThemometerSortInput
+  top: TopSortInput
+  bottom: BottomSortInput
+}
+
+input StorageDetailRequestInput {
+  action: String!
+  guid: String
+  sot_guid: String!
+  start_dt: Long!
+  end_dt: Long!
+  total_cost: Float!
+  remaining_free_storage: Int!
+  state_cv: String!
+  remarks: String
 }
 
 input StringOperationFilterInput {
@@ -2575,34 +4541,149 @@ input StringOperationFilterInput {
   nendsWith: String
 }
 
-input aspnetrolesFilterInput {
-  and: [aspnetrolesFilterInput!]
-  or: [aspnetrolesFilterInput!]
-  id: StringOperationFilterInput
-  Role: StringOperationFilterInput
-  aspnetuserroles: ListFilterInputTypeOfaspnetuserrolesFilterInput
+input SurveyorDetailFilterInput {
+  and: [SurveyorDetailFilterInput!]
+  or: [SurveyorDetailFilterInput!]
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_date: LongOperationFilterInput
+  est_type: StringOperationFilterInput
+  est_no: StringOperationFilterInput
+  est_status: StringOperationFilterInput
+  est_date: LongOperationFilterInput
+  est_cost: FloatOperationFilterInput
+  appv_date: LongOperationFilterInput
+  appv_cost: FloatOperationFilterInput
 }
 
-input aspnetrolesInput {
-  id: String
-  Role: String
-  aspnetuserroles: [aspnetuserrolesInput]
+input SurveyorPerformanceDetailFilterInput {
+  and: [SurveyorPerformanceDetailFilterInput!]
+  or: [SurveyorPerformanceDetailFilterInput!]
+  surveyor: StringOperationFilterInput
+  surveyor_details: ListFilterInputTypeOfSurveyorDetailFilterInput
+  total_est_cost: FloatOperationFilterInput
+  total_appv_cost: FloatOperationFilterInput
 }
 
-input aspnetuserrolesFilterInput {
-  and: [aspnetuserrolesFilterInput!]
-  or: [aspnetuserrolesFilterInput!]
-  userID: StringOperationFilterInput
-  roleID: StringOperationFilterInput
-  aspnetusers: aspnetusersFilterInput
-  aspnetroles: aspnetrolesFilterInput
+input SurveyorPerformanceDetailRequestInput {
+  tank_no: String
+  eir_no: String
+  start_date: Long!
+  end_date: Long!
+  estimate_status: [String!]
+  customer_code: String
+  surveyor_name: [String!]
+  repair_type: [String!]
 }
 
-input aspnetuserrolesInput {
-  userID: String!
-  roleID: String!
-  aspnetusers: aspnetusersInput
-  aspnetroles: aspnetrolesInput
+input SurveyorPerformanceDetailSortInput {
+  surveyor: SortEnumType
+  total_est_cost: SortEnumType
+  total_appv_cost: SortEnumType
+}
+
+input SurveyorPerformanceSummaryRequestInput {
+  start_month: Int!
+  end_month: Int!
+  year: Int!
+  customer_code: String
+  surveyor_name: [String!]
+  repair_type: [String!]
+}
+
+input ThemometerFilterInput {
+  and: [ThemometerFilterInput!]
+  or: [ThemometerFilterInput!]
+  begin_temp: FloatOperationFilterInput
+  close_temp: FloatOperationFilterInput
+}
+
+input ThemometerSortInput {
+  begin_temp: SortEnumType
+  close_temp: SortEnumType
+}
+
+input TopFilterInput {
+  and: [TopFilterInput!]
+  or: [TopFilterInput!]
+  begin_temp: FloatOperationFilterInput
+  close_temp: FloatOperationFilterInput
+}
+
+input TopSortInput {
+  begin_temp: SortEnumType
+  close_temp: SortEnumType
+}
+
+input YearlyInventoryRequestInput {
+  start_month: Int!
+  end_month: Int!
+  year: Int!
+  report_format_type: String!
+  inventory_type: [String!]!
+  customer_code: String
+}
+
+input YearlyProcessRequestInput {
+  report_type: String!
+  year: Int!
+  start_month: Int!
+  end_month: Int!
+  customer_code: String
+}
+
+input YearlyRevenueRequestInput {
+  start_month: Int!
+  end_month: Int!
+  year: Int!
+  report_format_type: String!
+  revenue_type: [String]
+  customer_code: String
+}
+
+input YearlySalesRequestInput {
+  report_type: [String!]!
+  year: Int!
+  start_month: Int!
+  end_month: Int!
+  customer_code: String
+}
+
+input ZeroApprovalCostFilterInput {
+  and: [ZeroApprovalCostFilterInput!]
+  or: [ZeroApprovalCostFilterInput!]
+  customer_code: StringOperationFilterInput
+  tank_no: StringOperationFilterInput
+  eir_no: StringOperationFilterInput
+  eir_dt: LongOperationFilterInput
+  customer_name: StringOperationFilterInput
+  complete_dt: LongOperationFilterInput
+  approve_dt: LongOperationFilterInput
+  est_cost: FloatOperationFilterInput
+  estimate_no: StringOperationFilterInput
+}
+
+input ZeroApprovalCostSortInput {
+  customer_code: SortEnumType
+  tank_no: SortEnumType
+  eir_no: SortEnumType
+  eir_dt: SortEnumType
+  customer_name: SortEnumType
+  complete_dt: SortEnumType
+  approve_dt: SortEnumType
+  est_cost: SortEnumType
+  estimate_no: SortEnumType
+}
+
+input ZeroApprovalRequestInput {
+  customer_code: String
+  tank_no: String
+  eir_no: String
+  year: Int!
+  month: Int!
+  last_cargo: String
+  report_type: String!
+  tank_status: String
 }
 
 input aspnetusersFilterInput {
@@ -2613,7 +4694,9 @@ input aspnetusersFilterInput {
   userName: StringOperationFilterInput
   email: StringOperationFilterInput
   phoneNumber: StringOperationFilterInput
-  aspnetuserroles: ListFilterInputTypeOfaspnetuserrolesFilterInput
+  user_role: ListFilterInputTypeOfuser_roleFilterInput
+  team_user: ListFilterInputTypeOfteam_userFilterInput
+  user_functions: ListFilterInputTypeOfuser_functionsFilterInput
 }
 
 input aspnetusersInput {
@@ -2622,7 +4705,17 @@ input aspnetusersInput {
   userName: String
   email: String
   phoneNumber: String
-  aspnetuserroles: [aspnetuserrolesInput]
+  user_role: [user_roleInput]
+  team_user: [team_userInput]
+  user_functions: [user_functionsInput]
+}
+
+input aspnetusersSortInput {
+  id: SortEnumType
+  corporateID: SortEnumType
+  userName: SortEnumType
+  email: SortEnumType
+  phoneNumber: SortEnumType
 }
 
 input billingFilterInput {
@@ -2634,6 +4727,7 @@ input billingFilterInput {
   invoice_no: StringOperationFilterInput
   invoice_dt: LongOperationFilterInput
   invoice_due: LongOperationFilterInput
+  invoice_type: StringOperationFilterInput
   status_cv: StringOperationFilterInput
   remarks: StringOperationFilterInput
   currency: currencyFilterInput
@@ -2643,10 +4737,13 @@ input billingFilterInput {
   residue: ListFilterInputTypeOfresidueFilterInput
   repair_customer: ListFilterInputTypeOfrepairFilterInput
   repair_owner: ListFilterInputTypeOfrepairFilterInput
-  lolo_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  lon_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  loff_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
   preinsp_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
   storage_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
-  gateio_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  gin_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  gout_billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  storage_detail: ListFilterInputTypeOfstorage_detailFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -2661,6 +4758,7 @@ input billingInput {
   invoice_no: String!
   invoice_dt: Long!
   invoice_due: Long
+  invoice_type: String
   status_cv: String!
   remarks: String
   currency: currencyInput
@@ -2670,10 +4768,13 @@ input billingInput {
   residue: [residueInput]
   repair_customer: [repairInput]
   repair_owner: [repairInput]
-  lolo_billing_sot: [billing_sotInput]
+  lon_billing_sot: [billing_sotInput]
+  loff_billing_sot: [billing_sotInput]
   preinsp_billing_sot: [billing_sotInput]
   storage_billing_sot: [billing_sotInput]
-  gateio_billing_sot: [billing_sotInput]
+  gin_billing_sot: [billing_sotInput]
+  gout_billing_sot: [billing_sotInput]
+  storage_detail: [storage_detailInput]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2688,6 +4789,7 @@ input billingSortInput {
   invoice_no: SortEnumType
   invoice_dt: SortEnumType
   invoice_due: SortEnumType
+  invoice_type: SortEnumType
   status_cv: SortEnumType
   remarks: SortEnumType
   currency: currencySortInput
@@ -2705,13 +4807,17 @@ input billing_sotFilterInput {
   guid: StringOperationFilterInput
   sot_guid: StringOperationFilterInput
   tariff_depot_guid: StringOperationFilterInput
-  lolo_billing_guid: StringOperationFilterInput
+  loff_billing_guid: StringOperationFilterInput
+  lon_billing_guid: StringOperationFilterInput
   preinsp_billing_guid: StringOperationFilterInput
   storage_billing_guid: StringOperationFilterInput
-  gateio_billing_guid: StringOperationFilterInput
+  gin_billing_guid: StringOperationFilterInput
+  gout_billing_guid: StringOperationFilterInput
   preinspection: BooleanOperationFilterInput
   lift_on: BooleanOperationFilterInput
   lift_off: BooleanOperationFilterInput
+  gate_in: BooleanOperationFilterInput
+  gate_out: BooleanOperationFilterInput
   storage_cal_cv: StringOperationFilterInput
   preinspection_cost: FloatOperationFilterInput
   lift_on_cost: FloatOperationFilterInput
@@ -2721,12 +4827,16 @@ input billing_sotFilterInput {
   gate_out_cost: FloatOperationFilterInput
   free_storage: IntOperationFilterInput
   remarks: StringOperationFilterInput
+  depot_cost_remarks: StringOperationFilterInput
+  action: StringOperationFilterInput
   storing_order_tank: storing_order_tankFilterInput
   tariff_depot: tariff_depotFilterInput
-  lolo_billing: billingFilterInput
+  lon_billing: billingFilterInput
+  loff_billing: billingFilterInput
   preinsp_billing: billingFilterInput
   storage_billing: billingFilterInput
-  gateio_billing: billingFilterInput
+  gin_billing: billingFilterInput
+  gout_billing: billingFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -2738,13 +4848,17 @@ input billing_sotInput {
   guid: String
   sot_guid: String!
   tariff_depot_guid: String!
-  lolo_billing_guid: String
+  loff_billing_guid: String
+  lon_billing_guid: String
   preinsp_billing_guid: String
   storage_billing_guid: String
-  gateio_billing_guid: String
+  gin_billing_guid: String
+  gout_billing_guid: String
   preinspection: Boolean
   lift_on: Boolean
   lift_off: Boolean
+  gate_in: Boolean
+  gate_out: Boolean
   storage_cal_cv: String
   preinspection_cost: Float
   lift_on_cost: Float
@@ -2754,12 +4868,16 @@ input billing_sotInput {
   gate_out_cost: Float
   free_storage: Int
   remarks: String
+  depot_cost_remarks: String
+  action: String
   storing_order_tank: storing_order_tankInput
   tariff_depot: tariff_depotInput
-  lolo_billing: billingInput
+  lon_billing: billingInput
+  loff_billing: billingInput
   preinsp_billing: billingInput
   storage_billing: billingInput
-  gateio_billing: billingInput
+  gin_billing: billingInput
+  gout_billing: billingInput
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2771,13 +4889,17 @@ input billing_sotSortInput {
   guid: SortEnumType
   sot_guid: SortEnumType
   tariff_depot_guid: SortEnumType
-  lolo_billing_guid: SortEnumType
+  loff_billing_guid: SortEnumType
+  lon_billing_guid: SortEnumType
   preinsp_billing_guid: SortEnumType
   storage_billing_guid: SortEnumType
-  gateio_billing_guid: SortEnumType
+  gin_billing_guid: SortEnumType
+  gout_billing_guid: SortEnumType
   preinspection: SortEnumType
   lift_on: SortEnumType
   lift_off: SortEnumType
+  gate_in: SortEnumType
+  gate_out: SortEnumType
   storage_cal_cv: SortEnumType
   preinspection_cost: SortEnumType
   lift_on_cost: SortEnumType
@@ -2787,12 +4909,16 @@ input billing_sotSortInput {
   gate_out_cost: SortEnumType
   free_storage: SortEnumType
   remarks: SortEnumType
+  depot_cost_remarks: SortEnumType
+  action: SortEnumType
   storing_order_tank: storing_order_tankSortInput
   tariff_depot: tariff_depotSortInput
-  lolo_billing: billingSortInput
+  lon_billing: billingSortInput
+  loff_billing: billingSortInput
   preinsp_billing: billingSortInput
   storage_billing: billingSortInput
-  gateio_billing: billingSortInput
+  gin_billing: billingSortInput
+  gout_billing: billingSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
@@ -2845,6 +4971,8 @@ input cleaningFilterInput {
   job_order_guid: StringOperationFilterInput
   cleaning_cost: FloatOperationFilterInput
   buffer_cost: FloatOperationFilterInput
+  est_cleaning_cost: FloatOperationFilterInput
+  est_buffer_cost: FloatOperationFilterInput
   status_cv: StringOperationFilterInput
   remarks: StringOperationFilterInput
   job_no: StringOperationFilterInput
@@ -2857,6 +4985,7 @@ input cleaningFilterInput {
   na_dt: LongOperationFilterInput
   customer_billing_guid: StringOperationFilterInput
   owner_billing_guid: StringOperationFilterInput
+  overwrite_remarks: StringOperationFilterInput
   action: StringOperationFilterInput
   storing_order_tank: storing_order_tankFilterInput
   customer_company: customer_companyFilterInput
@@ -2876,6 +5005,8 @@ input cleaningInput {
   job_order_guid: String
   cleaning_cost: Float
   buffer_cost: Float
+  est_cleaning_cost: Float
+  est_buffer_cost: Float
   status_cv: String
   remarks: String
   job_no: String
@@ -2888,6 +5019,7 @@ input cleaningInput {
   na_dt: Long
   customer_billing_guid: String
   owner_billing_guid: String
+  overwrite_remarks: String
   action: String!
   storing_order_tank: storing_order_tankInput
   customer_company: customer_companyInput
@@ -2909,6 +5041,7 @@ input cleaning_categoryFilterInput {
   sequence: IntOperationFilterInput
   cost: FloatOperationFilterInput
   tariff_cleanings: ListFilterInputTypeOftariff_cleaningFilterInput
+  cleaning_method: ListFilterInputTypeOfcleaning_methodFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -2923,6 +5056,7 @@ input cleaning_categoryInput {
   sequence: Int
   cost: Float
   tariff_cleanings: [tariff_cleaningInput!]
+  cleaning_method: [cleaning_methodInput!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2943,14 +5077,43 @@ input cleaning_categorySortInput {
   update_by: SortEnumType
 }
 
+input cleaning_formulaFilterInput {
+  and: [cleaning_formulaFilterInput!]
+  or: [cleaning_formulaFilterInput!]
+  guid: StringOperationFilterInput
+  description: StringOperationFilterInput
+  duration: FloatOperationFilterInput
+  cleaning_method_formula: ListFilterInputTypeOfcleaning_method_formulaFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input cleaning_formulaInput {
+  guid: String
+  description: String
+  duration: Float
+  cleaning_method_formula: [cleaning_method_formulaInput]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
 input cleaning_methodFilterInput {
   and: [cleaning_methodFilterInput!]
   or: [cleaning_methodFilterInput!]
   guid: StringOperationFilterInput
+  category_guid: StringOperationFilterInput
   name: StringOperationFilterInput
   sequence: IntOperationFilterInput
   description: StringOperationFilterInput
   tariff_cleanings: ListFilterInputTypeOftariff_cleaningFilterInput
+  cleaning_method_formula: ListFilterInputTypeOfcleaning_method_formulaFilterInput
+  cleaning_category: cleaning_categoryFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -2960,10 +5123,13 @@ input cleaning_methodFilterInput {
 
 input cleaning_methodInput {
   guid: String
+  category_guid: String
   name: String
   sequence: Int
   description: String
   tariff_cleanings: [tariff_cleaningInput!]
+  cleaning_method_formula: [cleaning_method_formulaInput]
+  cleaning_category: cleaning_categoryInput
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -2973,14 +5139,48 @@ input cleaning_methodInput {
 
 input cleaning_methodSortInput {
   guid: SortEnumType
+  category_guid: SortEnumType
   name: SortEnumType
   sequence: SortEnumType
   description: SortEnumType
+  cleaning_category: cleaning_categorySortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
   create_by: SortEnumType
   update_by: SortEnumType
+}
+
+input cleaning_method_formulaFilterInput {
+  and: [cleaning_method_formulaFilterInput!]
+  or: [cleaning_method_formulaFilterInput!]
+  guid: StringOperationFilterInput
+  method_guid: StringOperationFilterInput
+  formula_guid: StringOperationFilterInput
+  sequence: IntOperationFilterInput
+  cleaning_method: cleaning_methodFilterInput
+  cleaning_formula: cleaning_formulaFilterInput
+  action: StringOperationFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input cleaning_method_formulaInput {
+  guid: String
+  method_guid: String
+  formula_guid: String
+  sequence: Int
+  cleaning_method: cleaning_methodInput
+  cleaning_formula: cleaning_formulaInput
+  action: String
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
 }
 
 input currencyFilterInput {
@@ -3043,6 +5243,7 @@ input customer_companyFilterInput {
   country: StringOperationFilterInput
   postal: StringOperationFilterInput
   phone: StringOperationFilterInput
+  country_code: StringOperationFilterInput
   email: StringOperationFilterInput
   website: StringOperationFilterInput
   effective_dt: LongOperationFilterInput
@@ -3051,7 +5252,7 @@ input customer_companyFilterInput {
   def_template_guid: StringOperationFilterInput
   def_tank_guid: StringOperationFilterInput
   main_customer_guid: StringOperationFilterInput
-  tank: tankFilterInput
+  tariff_depot: tariff_depotFilterInput
   currency: currencyFilterInput
   template_est: template_estFilterInput
   repair: ListFilterInputTypeOfrepairFilterInput
@@ -3064,6 +5265,7 @@ input customer_companyFilterInput {
   package_repair: ListFilterInputTypeOfpackage_repairFilterInput
   template_est_customer: ListFilterInputTypeOftemplate_est_customerFilterInput
   tank_info: ListFilterInputTypeOftank_infoFilterInput
+  main_customer_company: customer_companyFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -3083,6 +5285,7 @@ input customer_companyInput {
   country: String
   postal: String
   phone: String
+  country_code: String
   email: String
   website: String
   effective_dt: Long
@@ -3091,7 +5294,7 @@ input customer_companyInput {
   def_template_guid: String
   def_tank_guid: String
   main_customer_guid: String
-  tank: tankInput
+  tariff_depot: tariff_depotInput
   currency: currencyInput
   template_est: template_estInput
   repair: [repairInput!]
@@ -3104,6 +5307,7 @@ input customer_companyInput {
   package_repair: [package_repairInput!]
   template_est_customer: [template_est_customerInput!]
   tank_info: [tank_infoInput]
+  main_customer_company: customer_companyInput
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -3123,6 +5327,7 @@ input customer_companySortInput {
   country: SortEnumType
   postal: SortEnumType
   phone: SortEnumType
+  country_code: SortEnumType
   email: SortEnumType
   website: SortEnumType
   effective_dt: SortEnumType
@@ -3131,9 +5336,10 @@ input customer_companySortInput {
   def_template_guid: SortEnumType
   def_tank_guid: SortEnumType
   main_customer_guid: SortEnumType
-  tank: tankSortInput
+  tariff_depot: tariff_depotSortInput
   currency: currencySortInput
   template_est: template_estSortInput
+  main_customer_company: customer_companySortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
@@ -3179,6 +5385,54 @@ input customer_company_contact_personInput {
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input functionsFilterInput {
+  and: [functionsFilterInput!]
+  or: [functionsFilterInput!]
+  guid: StringOperationFilterInput
+  module: StringOperationFilterInput
+  submodule: StringOperationFilterInput
+  action: StringOperationFilterInput
+  code: StringOperationFilterInput
+  opt: StringOperationFilterInput
+  role_functions: ListFilterInputTypeOfrole_functionsFilterInput
+  user_functions: ListFilterInputTypeOfuser_functionsFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input functionsInput {
+  guid: String
+  module: String
+  submodule: String
+  action: String
+  code: String
+  opt: String
+  role_functions: [role_functionsInput!]
+  user_functions: [user_functionsInput!]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+input functionsSortInput {
+  guid: SortEnumType
+  module: SortEnumType
+  submodule: SortEnumType
+  action: SortEnumType
+  code: SortEnumType
+  opt: SortEnumType
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
 }
 
 input in_gateFilterInput {
@@ -3245,7 +5499,6 @@ input in_gate_surveyFilterInput {
   test_class_cv: StringOperationFilterInput
   dom_dt: LongOperationFilterInput
   inspection_dt: LongOperationFilterInput
-  last_release_dt: LongOperationFilterInput
   manufacturer_cv: StringOperationFilterInput
   cladding_cv: StringOperationFilterInput
   max_weight_cv: StringOperationFilterInput
@@ -3296,6 +5549,15 @@ input in_gate_surveyFilterInput {
   rear_remarks: StringOperationFilterInput
   left_remarks: StringOperationFilterInput
   right_remarks: StringOperationFilterInput
+  btm_dis_valve_oth: StringOperationFilterInput
+  btm_dis_valve_spec_oth: StringOperationFilterInput
+  foot_valve_oth: StringOperationFilterInput
+  top_dis_valve_oth: StringOperationFilterInput
+  top_dis_valve_spec_oth: StringOperationFilterInput
+  airline_valve_oth: StringOperationFilterInput
+  airline_valve_conn_oth: StringOperationFilterInput
+  airline_valve_conn_spec_oth: StringOperationFilterInput
+  manlid_cover_oth: StringOperationFilterInput
   in_gate: in_gateFilterInput
   tariff_buffer: tariff_bufferFilterInput
   delete_dt: LongOperationFilterInput
@@ -3317,7 +5579,6 @@ input in_gate_surveyInput {
   test_class_cv: String
   dom_dt: Long
   inspection_dt: Long
-  last_release_dt: Long
   manufacturer_cv: String
   cladding_cv: String
   max_weight_cv: String
@@ -3368,6 +5629,15 @@ input in_gate_surveyInput {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
   in_gate: in_gateInput
   tariff_buffer: tariff_bufferInput
   delete_dt: Long
@@ -3470,6 +5740,7 @@ input out_gateFilterInput {
   eir_dt: LongOperationFilterInput
   eir_status_cv: StringOperationFilterInput
   vehicle_no: StringOperationFilterInput
+  yard_cv: StringOperationFilterInput
   driver_name: StringOperationFilterInput
   remarks: StringOperationFilterInput
   publish_by: StringOperationFilterInput
@@ -3491,6 +5762,7 @@ input out_gateInput {
   eir_dt: Long
   eir_status_cv: String
   vehicle_no: String
+  yard_cv: String
   driver_name: String
   remarks: String
   publish_by: String
@@ -3569,6 +5841,15 @@ input out_gate_surveyFilterInput {
   rear_remarks: StringOperationFilterInput
   left_remarks: StringOperationFilterInput
   right_remarks: StringOperationFilterInput
+  btm_dis_valve_oth: StringOperationFilterInput
+  btm_dis_valve_spec_oth: StringOperationFilterInput
+  foot_valve_oth: StringOperationFilterInput
+  top_dis_valve_oth: StringOperationFilterInput
+  top_dis_valve_spec_oth: StringOperationFilterInput
+  airline_valve_oth: StringOperationFilterInput
+  airline_valve_conn_oth: StringOperationFilterInput
+  airline_valve_conn_spec_oth: StringOperationFilterInput
+  manlid_cover_oth: StringOperationFilterInput
   out_gate: out_gateFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
@@ -3640,6 +5921,15 @@ input out_gate_surveyInput {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
   out_gate: out_gateInput
   delete_dt: Long
   create_dt: Long
@@ -3928,18 +6218,23 @@ input repairFilterInput {
   labour_cost_discount: FloatOperationFilterInput
   material_cost_discount: FloatOperationFilterInput
   labour_cost: FloatOperationFilterInput
+  est_cost: FloatOperationFilterInput
   total_cost: FloatOperationFilterInput
+  total_hour: FloatOperationFilterInput
+  total_material_cost: FloatOperationFilterInput
+  total_labour_cost: FloatOperationFilterInput
   remarks: StringOperationFilterInput
   owner_enable: BooleanOperationFilterInput
   status_cv: StringOperationFilterInput
   job_no: StringOperationFilterInput
-  total_hour: FloatOperationFilterInput
   complete_dt: LongOperationFilterInput
   na_dt: LongOperationFilterInput
   approve_by: StringOperationFilterInput
   approve_dt: LongOperationFilterInput
   allocate_by: StringOperationFilterInput
   allocate_dt: LongOperationFilterInput
+  overwrite_remarks: StringOperationFilterInput
+  action: StringOperationFilterInput
   bill_to_guid: StringOperationFilterInput
   customer_billing_guid: StringOperationFilterInput
   owner_billing_guid: StringOperationFilterInput
@@ -3964,18 +6259,23 @@ input repairInput {
   labour_cost_discount: Float
   material_cost_discount: Float
   labour_cost: Float
+  est_cost: Float
   total_cost: Float
+  total_hour: Float
+  total_material_cost: Float
+  total_labour_cost: Float
   remarks: String
   owner_enable: Boolean
   status_cv: String
   job_no: String
-  total_hour: Float
   complete_dt: Long
   na_dt: Long
   approve_by: String
   approve_dt: Long
   allocate_by: String
   allocate_dt: Long
+  overwrite_remarks: String
+  action: String
   bill_to_guid: String
   customer_billing_guid: String
   owner_billing_guid: String
@@ -4071,8 +6371,12 @@ input residueFilterInput {
   complete_dt: LongOperationFilterInput
   na_dt: LongOperationFilterInput
   estimate_no: StringOperationFilterInput
+  total_cost: FloatOperationFilterInput
+  est_cost: FloatOperationFilterInput
+  overwrite_remarks: StringOperationFilterInput
   customer_billing_guid: StringOperationFilterInput
   owner_billing_guid: StringOperationFilterInput
+  action: StringOperationFilterInput
   customer_company: customer_companyFilterInput
   storing_order_tank: storing_order_tankFilterInput
   residue_part: ListFilterInputTypeOfresidue_partFilterInput
@@ -4099,8 +6403,12 @@ input residueInput {
   complete_dt: Long
   na_dt: Long
   estimate_no: String
+  total_cost: Float
+  est_cost: Float
+  overwrite_remarks: String
   customer_billing_guid: String
   owner_billing_guid: String
+  action: String
   customer_company: customer_companyInput
   storing_order_tank: storing_order_tankInput
   residue_part: [residue_partInput]
@@ -4155,6 +6463,68 @@ input residue_partInput {
   tariff_residue: tariff_residueInput
   job_order: job_orderInput
   action: String
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+input roleFilterInput {
+  and: [roleFilterInput!]
+  or: [roleFilterInput!]
+  guid: StringOperationFilterInput
+  department: StringOperationFilterInput
+  position: StringOperationFilterInput
+  code: StringOperationFilterInput
+  description: StringOperationFilterInput
+  action: StringOperationFilterInput
+  role_functions: ListFilterInputTypeOfrole_functionsFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input roleInput {
+  guid: String
+  department: String
+  position: String
+  code: String
+  description: String
+  action: String
+  role_functions: [role_functionsInput!]
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+input role_functionsFilterInput {
+  and: [role_functionsFilterInput!]
+  or: [role_functionsFilterInput!]
+  guid: StringOperationFilterInput
+  functions_guid: StringOperationFilterInput
+  role_guid: StringOperationFilterInput
+  action: StringOperationFilterInput
+  functions: functionsFilterInput
+  role: roleFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input role_functionsInput {
+  guid: String
+  functions_guid: String
+  role_guid: String
+  action: String
+  functions: functionsInput
+  role: roleInput
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -4265,6 +6635,7 @@ input steamingFilterInput {
   remarks: StringOperationFilterInput
   job_no: StringOperationFilterInput
   total_cost: FloatOperationFilterInput
+  est_cost: FloatOperationFilterInput
   estimate_no: StringOperationFilterInput
   estimate_by: StringOperationFilterInput
   estimate_dt: LongOperationFilterInput
@@ -4275,13 +6646,18 @@ input steamingFilterInput {
   complete_by: StringOperationFilterInput
   complete_dt: LongOperationFilterInput
   na_dt: LongOperationFilterInput
-  invoice_by: StringOperationFilterInput
-  invoice_dt: LongOperationFilterInput
   allocate_by: StringOperationFilterInput
   allocate_dt: LongOperationFilterInput
+  overwrite_remarks: StringOperationFilterInput
   bill_to_guid: StringOperationFilterInput
   customer_billing_guid: StringOperationFilterInput
   owner_billing_guid: StringOperationFilterInput
+  total_material_cost: FloatOperationFilterInput
+  total_labour_cost: FloatOperationFilterInput
+  est_hour: FloatOperationFilterInput
+  total_hour: FloatOperationFilterInput
+  flat_rate: BooleanOperationFilterInput
+  rate: FloatOperationFilterInput
   action: StringOperationFilterInput
   customer_company: customer_companyFilterInput
   storing_order_tank: storing_order_tankFilterInput
@@ -4301,6 +6677,7 @@ input steamingInput {
   remarks: String
   job_no: String
   total_cost: Float
+  est_cost: Float
   estimate_no: String
   estimate_by: String
   estimate_dt: Long
@@ -4311,13 +6688,18 @@ input steamingInput {
   complete_by: String
   complete_dt: Long
   na_dt: Long
-  invoice_by: String
-  invoice_dt: Long
   allocate_by: String
   allocate_dt: Long
+  overwrite_remarks: String
   bill_to_guid: String
   customer_billing_guid: String
   owner_billing_guid: String
+  total_material_cost: Float
+  total_labour_cost: Float
+  est_hour: Float
+  total_hour: Float
+  flat_rate: Boolean
+  rate: Float
   action: String!
   customer_company: customer_companyInput
   storing_order_tank: storing_order_tankInput
@@ -4337,6 +6719,7 @@ input steamingSortInput {
   remarks: SortEnumType
   job_no: SortEnumType
   total_cost: SortEnumType
+  est_cost: SortEnumType
   estimate_no: SortEnumType
   estimate_by: SortEnumType
   estimate_dt: SortEnumType
@@ -4347,13 +6730,18 @@ input steamingSortInput {
   complete_by: SortEnumType
   complete_dt: SortEnumType
   na_dt: SortEnumType
-  invoice_by: SortEnumType
-  invoice_dt: SortEnumType
   allocate_by: SortEnumType
   allocate_dt: SortEnumType
+  overwrite_remarks: SortEnumType
   bill_to_guid: SortEnumType
   customer_billing_guid: SortEnumType
   owner_billing_guid: SortEnumType
+  total_material_cost: SortEnumType
+  total_labour_cost: SortEnumType
+  est_hour: SortEnumType
+  total_hour: SortEnumType
+  flat_rate: SortEnumType
+  rate: SortEnumType
   action: SortEnumType
   customer_company: customer_companySortInput
   storing_order_tank: storing_order_tankSortInput
@@ -4550,6 +6938,65 @@ input steaming_tempSortInput {
   update_by: SortEnumType
 }
 
+input storage_detailFilterInput {
+  and: [storage_detailFilterInput!]
+  or: [storage_detailFilterInput!]
+  guid: StringOperationFilterInput
+  sot_guid: StringOperationFilterInput
+  billing_guid: StringOperationFilterInput
+  start_dt: LongOperationFilterInput
+  end_dt: LongOperationFilterInput
+  total_cost: FloatOperationFilterInput
+  remaining_free_storage: IntOperationFilterInput
+  state_cv: StringOperationFilterInput
+  remarks: StringOperationFilterInput
+  storing_order_tank: storing_order_tankFilterInput
+  billing: billingFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input storage_detailInput {
+  guid: String
+  sot_guid: String!
+  billing_guid: String!
+  start_dt: Long!
+  end_dt: Long!
+  total_cost: Float!
+  remaining_free_storage: Int!
+  state_cv: String!
+  remarks: String
+  storing_order_tank: storing_order_tankInput
+  billing: billingInput
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+input storage_detailSortInput {
+  guid: SortEnumType
+  sot_guid: SortEnumType
+  billing_guid: SortEnumType
+  start_dt: SortEnumType
+  end_dt: SortEnumType
+  total_cost: SortEnumType
+  remaining_free_storage: SortEnumType
+  state_cv: SortEnumType
+  remarks: SortEnumType
+  storing_order_tank: storing_order_tankSortInput
+  billing: billingSortInput
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
 input storing_orderFilterInput {
   and: [storing_orderFilterInput!]
   or: [storing_orderFilterInput!]
@@ -4638,11 +7085,15 @@ input storing_order_tankFilterInput {
   repair_remarks: StringOperationFilterInput
   storage_remarks: StringOperationFilterInput
   last_release_dt: LongOperationFilterInput
+  job_no_remarks: StringOperationFilterInput
+  last_cargo_remarks: StringOperationFilterInput
+  clean_status_remarks: StringOperationFilterInput
   storing_order: storing_orderFilterInput
   tariff_cleaning: tariff_cleaningFilterInput
   customer_company: customer_companyFilterInput
   tank_info: tank_infoFilterInput
   tank: tankFilterInput
+  billing_sot: billing_sotFilterInput
   in_gate: ListFilterInputTypeOfin_gateFilterInput
   out_gate: ListFilterInputTypeOfout_gateFilterInput
   booking: ListFilterInputTypeOfbookingFilterInput
@@ -4654,7 +7105,7 @@ input storing_order_tankFilterInput {
   steaming: ListFilterInputTypeOfsteamingFilterInput
   survey_detail: ListFilterInputTypeOfsurvey_detailFilterInput
   transfer: ListFilterInputTypeOftransferFilterInput
-  billing_sot: ListFilterInputTypeOfbilling_sotFilterInput
+  storage_detail: ListFilterInputTypeOfstorage_detailFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -4696,11 +7147,15 @@ input storing_order_tankInput {
   repair_remarks: String
   storage_remarks: String
   last_release_dt: Long
+  job_no_remarks: String
+  last_cargo_remarks: String
+  clean_status_remarks: String
   storing_order: storing_orderInput
   tariff_cleaning: tariff_cleaningInput
   customer_company: customer_companyInput
   tank_info: tank_infoInput
   tank: tankInput
+  billing_sot: billing_sotInput
   in_gate: [in_gateInput!]
   out_gate: [out_gateInput!]
   booking: [bookingInput!]
@@ -4712,7 +7167,7 @@ input storing_order_tankInput {
   steaming: [steamingInput]
   survey_detail: [survey_detailInput]
   transfer: [transferInput]
-  billing_sot: [billing_sotInput]
+  storage_detail: [storage_detailInput]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -4754,11 +7209,15 @@ input storing_order_tankSortInput {
   repair_remarks: SortEnumType
   storage_remarks: SortEnumType
   last_release_dt: SortEnumType
+  job_no_remarks: SortEnumType
+  last_cargo_remarks: SortEnumType
+  clean_status_remarks: SortEnumType
   storing_order: storing_orderSortInput
   tariff_cleaning: tariff_cleaningSortInput
   customer_company: customer_companySortInput
   tank_info: tank_infoSortInput
   tank: tankSortInput
+  billing_sot: billing_sotSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
@@ -4809,7 +7268,15 @@ input tankFilterInput {
   tariff_depot_guid: StringOperationFilterInput
   unit_type: StringOperationFilterInput
   description: StringOperationFilterInput
+  preinspect: BooleanOperationFilterInput
+  lift_on: BooleanOperationFilterInput
+  lift_off: BooleanOperationFilterInput
+  gate_in: BooleanOperationFilterInput
+  gate_out: BooleanOperationFilterInput
+  iso_format: BooleanOperationFilterInput
+  flat_rate: BooleanOperationFilterInput
   tariff_depot: tariff_depotFilterInput
+  sot: ListFilterInputTypeOfstoring_order_tankFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -4822,7 +7289,15 @@ input tankInput {
   tariff_depot_guid: String
   unit_type: String
   description: String
+  preinspect: Boolean
+  lift_on: Boolean
+  lift_off: Boolean
+  gate_in: Boolean
+  gate_out: Boolean
+  iso_format: Boolean
+  flat_rate: Boolean
   tariff_depot: tariff_depotInput
+  sot: [storing_order_tankInput!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -4835,6 +7310,13 @@ input tankSortInput {
   tariff_depot_guid: SortEnumType
   unit_type: SortEnumType
   description: SortEnumType
+  preinspect: SortEnumType
+  lift_on: SortEnumType
+  lift_off: SortEnumType
+  gate_in: SortEnumType
+  gate_out: SortEnumType
+  iso_format: SortEnumType
+  flat_rate: SortEnumType
   tariff_depot: tariff_depotSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
@@ -4866,8 +7348,12 @@ input tank_infoFilterInput {
   last_notify_dt: LongOperationFilterInput
   last_release_dt: LongOperationFilterInput
   yard_cv: StringOperationFilterInput
+  previous_tank_no: StringOperationFilterInput
+  previous_owner_guid: StringOperationFilterInput
+  last_eir_no: StringOperationFilterInput
   tank: tankFilterInput
   customer_company: customer_companyFilterInput
+  previous_customer_company: customer_companyFilterInput
   tariff_buffer: tariff_bufferFilterInput
   storing_order_tank: ListFilterInputTypeOfstoring_order_tankFilterInput
   delete_dt: LongOperationFilterInput
@@ -4898,8 +7384,12 @@ input tank_infoInput {
   last_notify_dt: Long
   last_release_dt: Long
   yard_cv: String
+  previous_tank_no: String
+  previous_owner_guid: String
+  last_eir_no: String
   tank: tankInput
   customer_company: customer_companyInput
+  previous_customer_company: customer_companyInput
   tariff_buffer: tariff_bufferInput
   storing_order_tank: [storing_order_tankInput]
   delete_dt: Long
@@ -4930,8 +7420,12 @@ input tank_infoSortInput {
   last_notify_dt: SortEnumType
   last_release_dt: SortEnumType
   yard_cv: SortEnumType
+  previous_tank_no: SortEnumType
+  previous_owner_guid: SortEnumType
+  last_eir_no: SortEnumType
   tank: tankSortInput
   customer_company: customer_companySortInput
+  previous_customer_company: customer_companySortInput
   tariff_buffer: tariff_bufferSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
@@ -5190,6 +7684,7 @@ input tariff_residueFilterInput {
   cost: FloatOperationFilterInput
   remarks: StringOperationFilterInput
   package_residue: ListFilterInputTypeOfpackage_residueFilterInput
+  residue_part: ListFilterInputTypeOfresidue_partFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -5203,6 +7698,7 @@ input tariff_residueInput {
   cost: Float
   remarks: String
   package_residue: [package_residueInput!]
+  residue_part: [residue_partInput!]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -5264,7 +7760,9 @@ input teamFilterInput {
   guid: StringOperationFilterInput
   description: StringOperationFilterInput
   department_cv: StringOperationFilterInput
+  action: StringOperationFilterInput
   job_order: ListFilterInputTypeOfjob_orderFilterInput
+  team_user: ListFilterInputTypeOfteam_userFilterInput
   delete_dt: LongOperationFilterInput
   create_dt: LongOperationFilterInput
   update_dt: LongOperationFilterInput
@@ -5276,7 +7774,9 @@ input teamInput {
   guid: String
   description: String
   department_cv: String
+  action: String
   job_order: [job_orderInput]
+  team_user: [team_userInput]
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -5288,11 +7788,40 @@ input teamSortInput {
   guid: SortEnumType
   description: SortEnumType
   department_cv: SortEnumType
+  action: SortEnumType
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
   create_by: SortEnumType
   update_by: SortEnumType
+}
+
+input team_userFilterInput {
+  and: [team_userFilterInput!]
+  or: [team_userFilterInput!]
+  guid: StringOperationFilterInput
+  userId: StringOperationFilterInput
+  team_guid: StringOperationFilterInput
+  team: teamFilterInput
+  aspnetusers: aspnetusersFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input team_userInput {
+  guid: String
+  userId: String
+  team_guid: String
+  team: teamInput
+  aspnetusers: aspnetusersInput
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
 }
 
 input template_estFilterInput {
@@ -5537,6 +8066,84 @@ input transferSortInput {
   update_dt: SortEnumType
   create_by: SortEnumType
   update_by: SortEnumType
+}
+
+input user_functionsFilterInput {
+  and: [user_functionsFilterInput!]
+  or: [user_functionsFilterInput!]
+  guid: StringOperationFilterInput
+  functions_guid: StringOperationFilterInput
+  user_guid: StringOperationFilterInput
+  adhoc: BooleanOperationFilterInput
+  remarks: StringOperationFilterInput
+  action: StringOperationFilterInput
+  functions: functionsFilterInput
+  user: aspnetusersFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input user_functionsInput {
+  guid: String
+  functions_guid: String
+  user_guid: String
+  adhoc: Boolean
+  remarks: String
+  action: String
+  functions: functionsInput
+  user: aspnetusersInput
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
+}
+
+input user_functionsSortInput {
+  guid: SortEnumType
+  functions_guid: SortEnumType
+  user_guid: SortEnumType
+  adhoc: SortEnumType
+  remarks: SortEnumType
+  action: SortEnumType
+  functions: functionsSortInput
+  user: aspnetusersSortInput
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
+input user_roleFilterInput {
+  and: [user_roleFilterInput!]
+  or: [user_roleFilterInput!]
+  guid: StringOperationFilterInput
+  user_guid: StringOperationFilterInput
+  role_guid: StringOperationFilterInput
+  role: roleFilterInput
+  aspnetusers: aspnetusersFilterInput
+  delete_dt: LongOperationFilterInput
+  create_dt: LongOperationFilterInput
+  update_dt: LongOperationFilterInput
+  create_by: StringOperationFilterInput
+  update_by: StringOperationFilterInput
+}
+
+input user_roleInput {
+  guid: String!
+  user_guid: String!
+  role_guid: String!
+  role: roleInput
+  aspnetusers: aspnetusersInput
+  delete_dt: Long
+  create_dt: Long
+  update_dt: Long
+  create_by: String
+  update_by: String
 }
 
 enum ApplyPolicy {
@@ -5911,6 +8518,30 @@ type QuerySurveyDetailEdge {
 }
 
 """A connection to a list of items."""
+type QueryTankConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTankEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [tank!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTankEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: tank!
+}
+
+"""A connection to a list of items."""
 type QueryTankInfoConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -5960,7 +8591,8 @@ type QueryTransferEdge {
 
 type Record {
   affected: Int!
-  guid: [String!]!
+  guid: [String!]
+  residue_guid: String
 }
 
 type code_values {
@@ -5993,6 +8625,10 @@ input BookingRequestInput {
   update_by: String
 }
 
+input CleaningInput {
+  guid: String!
+}
+
 input CodeValuesRequestInput {
   guid: String
   description: String
@@ -6000,6 +8636,46 @@ input CodeValuesRequestInput {
   code_val: String
   child_code: String
   sequence: Int
+}
+
+input GateDetailRequestInput {
+  inGateDetail: InGateDetailInput
+  outGateDetail: OutGateDetailInput
+}
+
+input GateInfoInput {
+  guid: String!
+  vehicle_no: String
+  driver_name: String
+  remarks: String
+}
+
+input InGateDetailInput {
+  sot: StoringOrderTankInfoInput
+  orderInfo: OrderInfoInput
+  gateInfo: GateInfoInput
+}
+
+input InGateInput {
+  guid: String!
+  yard_cv: String
+}
+
+input InGateSurveyInput {
+  guid: String!
+  last_test_cv: String
+  next_test_cv: String
+  test_dt: Long
+  test_class_cv: String
+  tare_weight: Int
+  cladding_cv: String
+  btm_dis_comp_cv: String
+  manufacturer_cv: String
+  dom_dt: Long
+  capacity: Int
+  max_weight_cv: String
+  walkway_cv: String
+  tank_comp_guid: String
 }
 
 input InGateSurveyRequestInput {
@@ -6014,7 +8690,6 @@ input InGateSurveyRequestInput {
   test_class_cv: String
   dom_dt: Long
   inspection_dt: Long
-  last_release_dt: Long
   manufacturer_cv: String
   cladding_cv: String
   max_weight_cv: String
@@ -6065,11 +8740,32 @@ input InGateSurveyRequestInput {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
+  action: String
   delete_dt: Long
   create_dt: Long
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input OrderInfoInput {
+  guid: String!
+  haulier: String
+}
+
+input OutGateDetailInput {
+  sot: StoringOrderTankInfoInput
+  orderInfo: OrderInfoInput
+  gateInfo: GateInfoInput
 }
 
 input OutGateRequestInput {
@@ -6081,8 +8777,6 @@ input OutGateRequestInput {
   vehicle_no: String
   yard_cv: String
   driver_name: String
-  lolo_cv: String
-  preinspection_cv: String
   eir_dt: Long
   remarks: String
   tank: storing_order_tankInput
@@ -6158,6 +8852,16 @@ input OutGateSurveyRequestInput {
   rear_remarks: String
   left_remarks: String
   right_remarks: String
+  btm_dis_valve_oth: String
+  btm_dis_valve_spec_oth: String
+  foot_valve_oth: String
+  top_dis_valve_oth: String
+  top_dis_valve_spec_oth: String
+  airline_valve_oth: String
+  airline_valve_conn_oth: String
+  airline_valve_conn_spec_oth: String
+  manlid_cover_oth: String
+  action: String
   delete_dt: Long
   create_dt: Long
   update_dt: Long
@@ -6169,6 +8873,7 @@ input PeriodicTestRequestInput {
   tank_no: String!
   last_test_cv: String!
   next_test_cv: String!
+  test_dt: Long!
 }
 
 input PurposeChangesInput {
@@ -6208,6 +8913,11 @@ input ReleaseOrderSOTRequestInput {
   update_by: String
 }
 
+input ResidueRequestInput {
+  residue_guid: String!
+  residue_part_guid: [String!]!
+}
+
 input SchedulingRequestInput {
   guid: String
   status_cv: String
@@ -6238,6 +8948,17 @@ input SchedulingSOTRequestInput {
   update_by: String
 }
 
+input SteamingInput {
+  guid: String!
+  cost: Float!
+  labour: Float!
+}
+
+input StoringOrderInput {
+  guid: String!
+  customer_company_guid: String
+}
+
 input StoringOrderRequestInput {
   guid: String
   customer_company_guid: String!
@@ -6251,6 +8972,21 @@ input StoringOrderRequestInput {
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input StoringOrderTankInfoInput {
+  guid: String!
+  job_no: String
+  release_job_no: String
+}
+
+input StoringOrderTankInput {
+  guid: String!
+  owner_guid: String
+  unit_type_guid: String
+  tank_no: String
+  clean_status_remarks: String
+  clean_status_cv: String
 }
 
 input StoringOrderTankRequestInput {
@@ -6294,6 +9030,31 @@ input StoringOrderTankRequestInput {
   update_by: String
 }
 
+input TankDetailRequestInput {
+  sot: StoringOrderTankInput
+  so: StoringOrderInput
+  ingateSurvey: InGateSurveyInput
+  steaming: [SteamingInput]
+  cleaning: CleaningInput
+}
+
+input TankInfoInput {
+  guid: String!
+  tank_no: String!
+  owner_guid: String
+  last_test_cv: String
+  next_test_cv: String
+  test_dt: Long
+  test_class_cv: String
+  yard_cv: String
+}
+
+input TankInfoRequestInput {
+  sot: StoringOrderTankInput
+  tankInfo: TankInfoInput
+  action: String!
+}
+
 input TankPurposeRequestInput {
   guid: String
   storing_order_tank: storing_order_tankInput!
@@ -6301,6 +9062,15 @@ input TankPurposeRequestInput {
   job_no: String
   in_gate_dt: Long!
   purpose_changes: [PurposeChangesInput!]!
+  residue_request: ResidueRequestInput
+}
+
+input TankSummaryRequestInput {
+  sot: StoringOrderTankInput
+  so: StoringOrderInput
+  ingate: InGateInput
+  ingateSurvey: InGateSurveyInput
+  tankInfo: TankInfoInput
 }
 
 input bookingSortInput {
@@ -6386,7 +9156,6 @@ input in_gate_surveySortInput {
   test_class_cv: SortEnumType
   dom_dt: SortEnumType
   inspection_dt: SortEnumType
-  last_release_dt: SortEnumType
   manufacturer_cv: SortEnumType
   cladding_cv: SortEnumType
   max_weight_cv: SortEnumType
@@ -6437,6 +9206,15 @@ input in_gate_surveySortInput {
   rear_remarks: SortEnumType
   left_remarks: SortEnumType
   right_remarks: SortEnumType
+  btm_dis_valve_oth: SortEnumType
+  btm_dis_valve_spec_oth: SortEnumType
+  foot_valve_oth: SortEnumType
+  top_dis_valve_oth: SortEnumType
+  top_dis_valve_spec_oth: SortEnumType
+  airline_valve_oth: SortEnumType
+  airline_valve_conn_oth: SortEnumType
+  airline_valve_conn_spec_oth: SortEnumType
+  manlid_cover_oth: SortEnumType
   in_gate: in_gateSortInput
   tariff_buffer: tariff_bufferSortInput
   delete_dt: SortEnumType
@@ -6454,6 +9232,7 @@ input out_gateSortInput {
   eir_dt: SortEnumType
   eir_status_cv: SortEnumType
   vehicle_no: SortEnumType
+  yard_cv: SortEnumType
   driver_name: SortEnumType
   remarks: SortEnumType
   publish_by: SortEnumType
@@ -6530,6 +9309,15 @@ input out_gate_surveySortInput {
   rear_remarks: SortEnumType
   left_remarks: SortEnumType
   right_remarks: SortEnumType
+  btm_dis_valve_oth: SortEnumType
+  btm_dis_valve_spec_oth: SortEnumType
+  foot_valve_oth: SortEnumType
+  top_dis_valve_oth: SortEnumType
+  top_dis_valve_spec_oth: SortEnumType
+  airline_valve_oth: SortEnumType
+  airline_valve_conn_oth: SortEnumType
+  airline_valve_conn_spec_oth: SortEnumType
+  manlid_cover_oth: SortEnumType
   out_gate: out_gateSortInput
   delete_dt: SortEnumType
   create_dt: SortEnumType
@@ -6617,6 +9405,13 @@ input survey_detailSortInput {
   update_by: SortEnumType
 }
 
+type CustomerCompanyResult {
+  customer_company: customer_company!
+  sot_count: Int!
+  so_count: Int!
+  tank_info_count: Int!
+}
+
 """A connection to a list of items."""
 type QueryContactPersonConnection {
   """Information to aid in pagination."""
@@ -6690,6 +9485,30 @@ type QueryCustomerCompanyEdge {
 }
 
 """A connection to a list of items."""
+type QueryCustomerCompanyWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryCustomerCompanyWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [CustomerCompanyResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryCustomerCompanyWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: CustomerCompanyResult
+}
+
+"""A connection to a list of items."""
 type QueryTemplateEstimationConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -6718,6 +9537,22 @@ input BillingBranchRequestInput {
   branchContactPerson: [customer_company_contact_personInput]
 }
 
+input CustomerCompanyResultFilterInput {
+  and: [CustomerCompanyResultFilterInput!]
+  or: [CustomerCompanyResultFilterInput!]
+  customer_company: customer_companyFilterInput
+  sot_count: IntOperationFilterInput
+  so_count: IntOperationFilterInput
+  tank_info_count: IntOperationFilterInput
+}
+
+input CustomerCompanyResultSortInput {
+  customer_company: customer_companySortInput
+  sot_count: SortEnumType
+  so_count: SortEnumType
+  tank_info_count: SortEnumType
+}
+
 input CustomerRequestInput {
   guid: String
   currency_guid: String
@@ -6728,6 +9563,7 @@ input CustomerRequestInput {
   address_line2: String
   city: String
   country: String
+  country_code: String
   postal: String
   phone: String
   email: String
@@ -6758,6 +9594,11 @@ input customer_company_contact_personSortInput {
   update_dt: SortEnumType
   create_by: SortEnumType
   update_by: SortEnumType
+}
+
+type PackageRepairResult {
+  package_repair: package_repair!
+  count: Int!
 }
 
 """A connection to a list of items."""
@@ -6881,6 +9722,30 @@ type QueryPackageRepairEdge {
 }
 
 """A connection to a list of items."""
+type QueryPackageRepairWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryPackageRepairWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [PackageRepairResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryPackageRepairWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: PackageRepairResult
+}
+
+"""A connection to a list of items."""
 type QueryPackageResidueConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -6972,11 +9837,31 @@ type tariff_labour {
   update_by: String
 }
 
+input CostPercentageInput {
+  lolo_percentage: Float
+  preinspect_percentage: Float
+  gate_in_percentage: Float
+  gate_out_percentage: Float
+  storage_percentage: Float
+}
+
 input ListFilterInputTypeOfpackage_labourFilterInput {
   all: package_labourFilterInput
   none: package_labourFilterInput
   some: package_labourFilterInput
   any: Boolean
+}
+
+input PackageRepairResultFilterInput {
+  and: [PackageRepairResultFilterInput!]
+  or: [PackageRepairResultFilterInput!]
+  package_repair: package_repairFilterInput
+  count: IntOperationFilterInput
+}
+
+input PackageRepairResultSortInput {
+  package_repair: package_repairSortInput
+  count: SortEnumType
 }
 
 input customer_company_cleaning_categoryFilterInput {
@@ -7245,6 +10130,30 @@ type QueryCleaningCategoryEdge {
 }
 
 """A connection to a list of items."""
+type QueryCleaningFormulaConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryCleaningFormulaEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [cleaning_formula]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryCleaningFormulaEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: cleaning_formula
+}
+
+"""A connection to a list of items."""
 type QueryCleaningMethodConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7269,6 +10178,56 @@ type QueryCleaningMethodEdge {
 }
 
 """A connection to a list of items."""
+type QueryCleaningMethodFormulaConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryCleaningMethodFormulaEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [cleaning_method_formula]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryCleaningMethodFormulaEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: cleaning_method_formula
+}
+
+input cleaning_formulaSortInput {
+  guid: SortEnumType
+  description: SortEnumType
+  duration: SortEnumType
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
+input cleaning_method_formulaSortInput {
+  guid: SortEnumType
+  method_guid: SortEnumType
+  formula_guid: SortEnumType
+  sequence: SortEnumType
+  cleaning_method: cleaning_methodSortInput
+  cleaning_formula: cleaning_formulaSortInput
+  action: SortEnumType
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
+"""A connection to a list of items."""
 type QueryCleaningConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7290,6 +10249,30 @@ type QueryCleaningEdge {
 
   """The item at the end of the edge."""
   node: cleaning!
+}
+
+"""A connection to a list of items."""
+type QueryFunctionsConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryFunctionsEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [functions!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryFunctionsEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: functions!
 }
 
 """A connection to a list of items."""
@@ -7365,6 +10348,30 @@ type QueryResidueEdge {
 }
 
 """A connection to a list of items."""
+type QueryRolesConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryRolesEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [role!]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryRolesEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: role!
+}
+
+"""A connection to a list of items."""
 type QuerySteamingConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7437,6 +10444,30 @@ type QueryTeamsEdge {
 }
 
 """A connection to a list of items."""
+type QueryTeamsWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTeamsWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TeamResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTeamsWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TeamResult
+}
+
+"""A connection to a list of items."""
 type QueryUsersConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7460,12 +10491,24 @@ type QueryUsersEdge {
   node: aspnetusers!
 }
 
+type TeamResult {
+  team: team!
+  assign_count: Int!
+}
+
 input CleaningJobOrderInput {
   guid: String!
   sot_guid: String
   sot_status: String
   remarks: String
   job_order: [job_orderInput]
+}
+
+input FunctionsRequestInput {
+  guid: String
+  addhoc: Boolean
+  remarks: String
+  action: String
 }
 
 input JobOrderRequestInput {
@@ -7526,21 +10569,21 @@ input ResiduePartRequestInput {
   approve_part: Boolean!
 }
 
-input ResidueRequestInput {
-  guid: String!
-  sot_guid: String
-  estimate_no: String
-  remarks: String!
-  customer_guid: String!
-  is_approved: Boolean!
-}
-
 input ResidueStatusRequestInput {
   guid: String!
   sot_guid: String!
   remarks: String
   action: String!
   residuePartRequests: [ResiduePartRequestInput]
+}
+
+input RollbackResidueRequestInput {
+  guid: String!
+  sot_guid: String
+  estimate_no: String
+  remarks: String!
+  customer_guid: String!
+  is_approved: Boolean!
 }
 
 input SteamJobOrderRequestInput {
@@ -7573,19 +10616,23 @@ input SteamingStatusRequestInput {
   steamingPartRequests: [SteamingPartRequestInput]
 }
 
+input TeamResultFilterInput {
+  and: [TeamResultFilterInput!]
+  or: [TeamResultFilterInput!]
+  team: teamFilterInput
+  assign_count: IntOperationFilterInput
+}
+
+input TeamResultSortInput {
+  team: teamSortInput
+  assign_count: SortEnumType
+}
+
 input UpdateJobOrderRequestInput {
   guid: String!
   remarks: String
   start_dt: Long
   complete_dt: Long
-}
-
-input aspnetusersSortInput {
-  id: SortEnumType
-  corporateID: SortEnumType
-  userName: SortEnumType
-  email: SortEnumType
-  phoneNumber: SortEnumType
 }
 
 input cleaningSortInput {
@@ -7595,6 +10642,8 @@ input cleaningSortInput {
   job_order_guid: SortEnumType
   cleaning_cost: SortEnumType
   buffer_cost: SortEnumType
+  est_cleaning_cost: SortEnumType
+  est_buffer_cost: SortEnumType
   status_cv: SortEnumType
   remarks: SortEnumType
   job_no: SortEnumType
@@ -7607,6 +10656,7 @@ input cleaningSortInput {
   na_dt: SortEnumType
   customer_billing_guid: SortEnumType
   owner_billing_guid: SortEnumType
+  overwrite_remarks: SortEnumType
   action: SortEnumType
   storing_order_tank: storing_order_tankSortInput
   customer_company: customer_companySortInput
@@ -7627,18 +10677,23 @@ input repairSortInput {
   labour_cost_discount: SortEnumType
   material_cost_discount: SortEnumType
   labour_cost: SortEnumType
+  est_cost: SortEnumType
   total_cost: SortEnumType
+  total_hour: SortEnumType
+  total_material_cost: SortEnumType
+  total_labour_cost: SortEnumType
   remarks: SortEnumType
   owner_enable: SortEnumType
   status_cv: SortEnumType
   job_no: SortEnumType
-  total_hour: SortEnumType
   complete_dt: SortEnumType
   na_dt: SortEnumType
   approve_by: SortEnumType
   approve_dt: SortEnumType
   allocate_by: SortEnumType
   allocate_dt: SortEnumType
+  overwrite_remarks: SortEnumType
+  action: SortEnumType
   bill_to_guid: SortEnumType
   customer_billing_guid: SortEnumType
   owner_billing_guid: SortEnumType
@@ -7669,11 +10724,29 @@ input residueSortInput {
   complete_dt: SortEnumType
   na_dt: SortEnumType
   estimate_no: SortEnumType
+  total_cost: SortEnumType
+  est_cost: SortEnumType
+  overwrite_remarks: SortEnumType
   customer_billing_guid: SortEnumType
   owner_billing_guid: SortEnumType
+  action: SortEnumType
   customer_company: customer_companySortInput
   storing_order_tank: storing_order_tankSortInput
   customer_billing: billingSortInput
+  delete_dt: SortEnumType
+  create_dt: SortEnumType
+  update_dt: SortEnumType
+  create_by: SortEnumType
+  update_by: SortEnumType
+}
+
+input roleSortInput {
+  guid: SortEnumType
+  department: SortEnumType
+  position: SortEnumType
+  code: SortEnumType
+  description: SortEnumType
+  action: SortEnumType
   delete_dt: SortEnumType
   create_dt: SortEnumType
   update_dt: SortEnumType
@@ -7735,6 +10808,30 @@ type QueryTariffBufferEdge {
 }
 
 """A connection to a list of items."""
+type QueryTariffBufferWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffBufferWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffBufferResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffBufferWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffBufferResult
+}
+
+"""A connection to a list of items."""
 type QueryTariffCleaningConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7759,6 +10856,30 @@ type QueryTariffCleaningEdge {
 }
 
 """A connection to a list of items."""
+type QueryTariffCleaningWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffCleaningWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffCleaningResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffCleaningWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffCleaningResult
+}
+
+"""A connection to a list of items."""
 type QueryTariffDepotConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7780,6 +10901,30 @@ type QueryTariffDepotEdge {
 
   """The item at the end of the edge."""
   node: tariff_depot
+}
+
+"""A connection to a list of items."""
+type QueryTariffDepotWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffDepotWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffDepotResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffDepotWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffDepotResult
 }
 
 """A connection to a list of items."""
@@ -7831,6 +10976,30 @@ type QueryTariffRepairEdge {
 }
 
 """A connection to a list of items."""
+type QueryTariffRepairWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffRepairWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffRepairResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffRepairWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffRepairResult
+}
+
+"""A connection to a list of items."""
 type QueryTariffResidueConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -7852,6 +11021,30 @@ type QueryTariffResidueEdge {
 
   """The item at the end of the edge."""
   node: tariff_residue
+}
+
+"""A connection to a list of items."""
+type QueryTariffResidueWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffResidueWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffResidueResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffResidueWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffResidueResult
 }
 
 """A connection to a list of items."""
@@ -7878,6 +11071,60 @@ type QueryTariffSteamingEdge {
   node: tariff_steaming
 }
 
+"""A connection to a list of items."""
+type QueryTariffSteamingWithCountConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QueryTariffSteamingWithCountEdge!]
+
+  """A flattened list of the nodes."""
+  nodes: [TariffSteamingResult]
+
+  """Identifies the total count of items in the connection."""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type QueryTariffSteamingWithCountEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: TariffSteamingResult
+}
+
+type TariffBufferResult {
+  tariff_buffer: tariff_buffer!
+  tank_count: Int!
+}
+
+type TariffCleaningResult {
+  tariff_cleaning: tariff_cleaning!
+  tank_count: Int!
+}
+
+type TariffDepotResult {
+  tariff_depot: tariff_depot!
+  tank_count: Int!
+}
+
+type TariffRepairResult {
+  tariff_repair: tariff_repair!
+  tank_count: Int!
+}
+
+type TariffResidueResult {
+  tariff_residue: tariff_residue!
+  tank_count: Int!
+}
+
+type TariffSteamingResult {
+  tariff_steaming: tariff_steaming!
+  tank_count: Int!
+}
+
 type un_number {
   guid: String
   un_no: String!
@@ -7887,6 +11134,78 @@ type un_number {
   update_dt: Long
   create_by: String
   update_by: String
+}
+
+input TariffBufferResultFilterInput {
+  and: [TariffBufferResultFilterInput!]
+  or: [TariffBufferResultFilterInput!]
+  tariff_buffer: tariff_bufferFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffBufferResultSortInput {
+  tariff_buffer: tariff_bufferSortInput
+  tank_count: SortEnumType
+}
+
+input TariffCleaningResultFilterInput {
+  and: [TariffCleaningResultFilterInput!]
+  or: [TariffCleaningResultFilterInput!]
+  tariff_cleaning: tariff_cleaningFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffCleaningResultSortInput {
+  tariff_cleaning: tariff_cleaningSortInput
+  tank_count: SortEnumType
+}
+
+input TariffDepotResultFilterInput {
+  and: [TariffDepotResultFilterInput!]
+  or: [TariffDepotResultFilterInput!]
+  tariff_depot: tariff_depotFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffDepotResultSortInput {
+  tariff_depot: tariff_depotSortInput
+  tank_count: SortEnumType
+}
+
+input TariffRepairResultFilterInput {
+  and: [TariffRepairResultFilterInput!]
+  or: [TariffRepairResultFilterInput!]
+  tariff_repair: tariff_repairFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffRepairResultSortInput {
+  tariff_repair: tariff_repairSortInput
+  tank_count: SortEnumType
+}
+
+input TariffResidueResultFilterInput {
+  and: [TariffResidueResultFilterInput!]
+  or: [TariffResidueResultFilterInput!]
+  tariff_residue: tariff_residueFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffResidueResultSortInput {
+  tariff_residue: tariff_residueSortInput
+  tank_count: SortEnumType
+}
+
+input TariffSteamingResultFilterInput {
+  and: [TariffSteamingResultFilterInput!]
+  or: [TariffSteamingResultFilterInput!]
+  tariff_steaming: tariff_steamingFilterInput
+  tank_count: IntOperationFilterInput
+}
+
+input TariffSteamingResultSortInput {
+  tariff_steaming: tariff_steamingSortInput
+  tank_count: SortEnumType
 }
 
 input un_numberFilterInput {
