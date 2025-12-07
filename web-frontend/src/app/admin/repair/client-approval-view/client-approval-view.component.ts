@@ -54,6 +54,8 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { defaultDiscountThreshold } from 'environments/environment';
+import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
+import { FileManagerService } from '@core/service/filemanager.service';
 
 @Component({
   selector: 'app-client-approval-view',
@@ -212,6 +214,7 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     CONTACT_SYSTEM_ADMIN: 'COMMON-FORM.CONTACT-SYSTEM-ADMIN',
     CONTACT_DEPOT_FOR_ADJUSTMENT: 'COMMON-FORM.CONTACT-DEPOT-FOR-ADJUSTMENT',
+    PHOTOS: 'COMMON-FORM.PHOTOS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -259,6 +262,8 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
   isExportingPDF: boolean = false;
   previousOverallCost: number = 0;
   maxDiscount: number = 0;
+  repairImages: any[] = [];
+  isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
 
   constructor(
     public httpClient: HttpClient,
@@ -269,7 +274,8 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService,
+    private fileManagerService: FileManagerService,
   ) {
     super();
     this.translateLangText();
@@ -294,6 +300,7 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isImageLoading$ = this.fileManagerService.loading$;
     this.updateView(window.innerWidth);
 
     window.addEventListener('resize', () => {
@@ -461,6 +468,22 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
           this.repairItem = data[0];
           console.log(this.repairItem);
           this.sotItem = this.repairItem?.storing_order_tank;
+          if (this.repair_guid) {
+            this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid]).subscribe({
+              next: (response) => {
+                console.log('Files retrieved successfully:', response);
+                if (response?.length) {
+                  this.populateImages(response)
+                }
+              },
+              error: (error) => {
+                console.error('Error retrieving files:', error);
+              },
+              complete: () => {
+                console.log('File retrieval process completed.');
+              }
+            });
+          }
           this.getCustomerMaxDiscount(this.sotItem?.storing_order?.customer_company?.guid!);
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             if (cc?.length) {
@@ -1362,6 +1385,51 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
 
     const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
     return Utility.convertNumber(cost, 2);
+  }
+
+  previewImagesDialog(event: Event, index: number) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const headerText = this.translatedLangText.PREVIEW_PHOTOS;
+    const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
+      data: {
+        headerText: headerText,
+        previewImages: this.getImages(),
+        focusIndex: index
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  getImages() {
+    const images: any[] = [];
+    this.repairImages.forEach((x: any) => {
+      images.push(x?.preview)
+    })
+
+    return images;
+  }
+
+  populateImages(files: any[]) {
+    files.forEach(dmgFile => {
+      this.repairImages.push(this.createImageForm(dmgFile.description, dmgFile.url, undefined));
+    });
+  }
+
+  createImageForm(side: string, preview: string | ArrayBuffer, file: File | undefined) {
+    return {
+      file: [file],
+      preview: [preview],
+      side: [side],
+    }
   }
 
   canEdit() {

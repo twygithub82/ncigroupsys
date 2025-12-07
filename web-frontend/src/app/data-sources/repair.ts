@@ -1551,7 +1551,10 @@ export const GET_REPAIR_FOR_CLIENT = gql`
 
 export const ADD_REPAIR = gql`
   mutation AddRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
-    addRepair(repair: $repair, customerCompany: $customerCompany)
+    addRepair(repair: $repair, customerCompany: $customerCompany) {
+      guid
+      affected
+    }
   }
 `;
 
