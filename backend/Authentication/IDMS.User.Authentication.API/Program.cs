@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;    
 using System.Text;
 using System.Text.Json;
 
@@ -32,7 +32,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
                     maxRetryDelay: TimeSpan.FromSeconds(5),
                     errorNumbersToAdd: null)
                     .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
-                ).LogTo(Console.WriteLine)
+                )//.LogTo(Console.WriteLine)
 );
 
 //For Identity
@@ -136,6 +136,10 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Application starting up.");
 logger.LogInformation("GraphQL server initializing. Environment: {env}", app.Environment.EnvironmentName);
 logger.LogInformation($"Using database connection string: {connectionString?.Split(";")[0]}");
+logger.LogInformation("ZipFileUrl: " + builder.Configuration["ZipFileUrl"]);
+logger.LogInformation("ResetLinkConfiguration: " + builder.Configuration["ResetLinkConfiguration:Url"]);
+logger.LogInformation("License_Url_Validity: " + builder.Configuration["License:Url_Validity"]);
+logger.LogInformation("License_Url_Activation: " + builder.Configuration["License:Url_Activation"]);
 
 //app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.

@@ -11,16 +11,11 @@ using IDMS.UserAuthentication.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using static IDMS.User.Authentication.API.Models.StaticConstant;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IDMS.UserAuthentication.Controllers
 {
@@ -39,9 +34,10 @@ namespace IDMS.UserAuthentication.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly string _companyName;
         private readonly string _resetUrl;
+        private readonly ILogger<UserAuthenticationController> _logger;
 
         public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
+            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService, ILogger<UserAuthenticationController> logger,
             IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
             _userManager = userManager;
@@ -52,6 +48,7 @@ namespace IDMS.UserAuthentication.Controllers
             _dbContext = context;
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
+            _logger = logger;
 
             _companyName = _configuration["EmailConfiguration:CompanyName"] ?? "IDMS Support Team";
             _resetUrl = _configuration["ResetLinkConfiguration:Url"] ?? "http://localhost:4200/#/authentication/reset-password";
@@ -61,95 +58,117 @@ namespace IDMS.UserAuthentication.Controllers
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            if (model.NewPassword != model.ConfirmPassword)
+                if (model.NewPassword != model.ConfirmPassword)
+                {
+                    return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
+                }
+
+                var email = User.FindFirstValue("email");
+                if (email == null)
+                    email = User.FindFirstValue(ClaimTypes.Email);
+
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound(new { Errors = new[] { "User not found." } });
+                }
+
+                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    return Ok(new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
+                }
+
+                return BadRequest(new Response() { Status = "Error", Message = result.Errors.Select(e => e.Description) });
+            }
+            catch (Exception ex)
             {
-                return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
-            }
-
-            var email = User.FindFirstValue("email");
-            if(email == null)
-                email = User.FindFirstValue(ClaimTypes.Email);
-
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return NotFound(new { Errors = new[] { "User not found." } });
-            }
-
-            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
-            if (result.Succeeded)
-            {
-                return Ok(new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
-            }
-
-            return BadRequest(new Response() { Status = "Error", Message = result.Errors.Select(e => e.Description) });
+                _logger.LogError(ex, "Error occurred while changing password.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { "An error occurred while processing your request." } });
+            }   
         }
 
         [HttpPost("UserLogin")]
         [AllowAnonymous]
         public async Task<IActionResult> UserSignIn([FromBody] LoginUserModel loginModel)
         {
-            //checking the user
-            var user = await _userManager.FindByEmailAsync(loginModel.Email);
-            if (user == null)
-                return NotFound(new { username = loginModel.Email });
-
-            //validate the user password
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
+            try
             {
-                if (!user.EmailConfirmed)
+                //checking the user
+                var user = await _userManager.FindByEmailAsync(loginModel.Email);
+                if (user == null)
+                    return NotFound(new { username = loginModel.Email });
+
+                //validate the user password
+                if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, new Response() { Status = "Error", Message = new string[] { "The user account is not yet activated. Please activate the account with the link sent previously" } });
+                    if (!user.EmailConfirmed)
+                    {
+                        return StatusCode(StatusCodes.Status401Unauthorized, new Response() { Status = "Error", Message = new string[] { "The user account is not yet activated. Please activate the account with the link sent previously" } });
+                    }
+
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    user.CurrentSessionId = Guid.NewGuid();
+                    var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}"); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                    var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+
+                    _refreshTokenStore.AddToken(refreshToken);
+                    // _refreshTokens[user.UserName] = refreshToken;
+                    //returning the token
+                    return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
                 }
 
-                var userRoles = await _userManager.GetRolesAsync(user);
-                user.CurrentSessionId = Guid.NewGuid();
-                var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}"); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
-                var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
-
-                _refreshTokenStore.AddToken(refreshToken);
-                // _refreshTokens[user.UserName] = refreshToken;
-                //returning the token
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
+                return Unauthorized();
             }
-
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during user login.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { "An error occurred while processing your request." } });
+            }
         }
 
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
         {
-            //var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
-            //var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-            var userName = User.FindFirstValue("name");
-            var refreshTokenKey = _refreshTokenStore.GetToken(userName);
-            if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
+            try
             {
-                return Unauthorized();
+                var userName = User.FindFirstValue("name");
+                var refreshTokenKey = _refreshTokenStore.GetToken(userName);
+                if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
+                {
+                    return Unauthorized();
+                }
+
+                var user = await _userManager.FindByNameAsync(userName);
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var newJwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
+                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+                _refreshTokenStore.AddToken(refreshToken);
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                    expiration = newJwtToken.ValidTo,
+                    refreshToken = newRefreshToken
+                });
             }
-
-            var user = await _userManager.FindByNameAsync(userName);
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var newJwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
-            var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
-
-            var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
-
-            _refreshTokenStore.AddToken(refreshToken);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
-                expiration = newJwtToken.ValidTo,
-                refreshToken = newRefreshToken
-            });
+                _logger.LogError(ex, "Error occurred while refreshing token.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { "An error occurred while processing your request." } });
+            }
         }
 
 
@@ -215,11 +234,11 @@ namespace IDMS.UserAuthentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during user sign up.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
 
-            return Unauthorized();
-
+            //return Unauthorized();
         }
 
 
@@ -270,6 +289,7 @@ namespace IDMS.UserAuthentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during staff creation by admin.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
         }
@@ -331,6 +351,7 @@ namespace IDMS.UserAuthentication.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during forgot password process.");
                 return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { ex.Message } });
             }
 
@@ -361,6 +382,7 @@ namespace IDMS.UserAuthentication.Controllers
             }
             catch (Exception ex) 
             {
+                _logger.LogError(ex, "Error occurred during password reset process.");
                 return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { ex.Message } });
             }
         }

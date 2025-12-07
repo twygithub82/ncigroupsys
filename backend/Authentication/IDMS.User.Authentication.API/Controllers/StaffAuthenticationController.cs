@@ -13,14 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Bcpg;
-using System;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Security.Cryptography.Xml;
 using static IDMS.User.Authentication.API.Models.StaticConstant;
 
 namespace IDMS.User.Authentication.API.Controllers
@@ -41,9 +35,10 @@ namespace IDMS.User.Authentication.API.Controllers
         private readonly JwtTokenService _jwtTokenService;
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILogger _logger;
 
         public StaffAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
+            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService, ILogger<StaffAuthenticationController> logger,
             IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
             _userManager = userManager;
@@ -54,7 +49,7 @@ namespace IDMS.User.Authentication.API.Controllers
             _dbContext = context;
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
-
+            _logger = logger;
 
             //InitDB();
         }
@@ -102,10 +97,12 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (SecurityTokenException se)
             {
+                _logger.LogError($"CheckLicenseValidity Error: {se.Message}");
                 return BadRequest(se.Message);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"CheckLicenseValidity Error: {ex.Message}");
                 throw;
             }
         }
@@ -133,6 +130,7 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"GetUserClaims Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
 
@@ -184,10 +182,12 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (SecurityTokenException se)
             {
+                _logger.LogError($"StaffSignIn Error: {se.Message}");
                 return BadRequest(se.Message);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"StaffSignIn Error: {ex.Message}");
                 throw;
             }
         }
@@ -368,6 +368,7 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"CreateStaffCredential Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
         }
@@ -426,6 +427,7 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"StaffActivation Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
         }
@@ -474,6 +476,7 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"RemoveStaff Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
         }
@@ -549,6 +552,7 @@ namespace IDMS.User.Authentication.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"QueryStaff Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
         }
