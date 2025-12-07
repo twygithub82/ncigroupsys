@@ -490,6 +490,41 @@
         </div>
       </div>
     </div>
+    <div class="row clearfix">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="header header-custom-padding">
+            <h2 class="d-flex">
+              {{translatedLangText.PHOTOS}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (isImageLoading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            @else {
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="image-previews">
+                  @for (img of repairImages; track img; let index = $index) {
+                  <div>
+                    <div class="image-preview">
+                      <img [src]="img.preview" alt="Image Preview" class="preview-img"
+                        (click)="img.preview ? previewImagesDialog($event, index) : null">
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
     <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -930,7 +965,7 @@
               <div class="row m-t-10">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/approval']">
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/client-approval']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
