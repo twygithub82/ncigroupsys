@@ -971,13 +971,5 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   isAllowView() {
     return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
   }
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      centerClass += ExtraPadding ? 'extra-left-padding' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+ 
 }
