@@ -33,7 +33,8 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export interface DialogData {
   report_inventory: report_inventory_cleaning_detail[],
-  date: string
+  date: string,
+  report_type:string
 }
 
 @Component({
@@ -257,7 +258,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
     CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
-    MASTER:'MENUITEMS.MASTER.TEXT'
+    MASTER:'MENUITEMS.MASTER.TEXT',
+    UNCLEAN_TANK:'COMMON-FORM.UNCLEAN-TANK'
   }
 
 
@@ -310,7 +312,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
   date: string = '';
   invType: string = '';
   queryType: number = 1;
-
+  repType:string='';
 
 
   constructor(
@@ -364,6 +366,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
   }
 
   public loadData(dataDlg: DialogData) {
+    this.repType=dataDlg.report_type;
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
@@ -578,7 +581,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 90 , minCellHeight: minHeightBodyCell},
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -1015,7 +1018,15 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.translatedLangText.MASTER}`
+    
+    if (this.repType=="DETAIL")
+    {
+      return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.translatedLangText.MASTER}`
+    }
+    else
+    {
+      return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.translatedLangText.UNCLEAN_TANK}`
+    }
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
