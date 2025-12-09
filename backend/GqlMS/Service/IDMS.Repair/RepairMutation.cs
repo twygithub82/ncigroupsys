@@ -2,6 +2,7 @@
 using HotChocolate;
 using HotChocolate.Data.Projections;
 using HotChocolate.Types;
+using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Service;
@@ -25,7 +26,7 @@ namespace IDMS.Repair.GqlTypes
             _logger = logger;
         }
 
-        public async Task<int> AddRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<Record> AddRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair, customer_company? customerCompany)
         {
             try
@@ -110,7 +111,12 @@ namespace IDMS.Repair.GqlTypes
 
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-                return res;
+                var record = new Record
+                {
+                    affected = res,
+                    guid = new List<string> { newRepair.guid }
+                };
+                return record;
 
             }
             catch (Exception ex)

@@ -1,21 +1,12 @@
-﻿using IDMS.User.Authentication.API.Models.Authentication;
-using IDMS.User.Authentication.API.Models.Authentication.Login;
-using IDMS.User.Authentication.API.Models.RefreshToken;
+﻿using IDMS.User.Authentication.API.Models.RefreshToken;
 using IDMS.User.Authentication.API.Utilities;
 using IDMS.User.Authentication.Service.Models;
 using IDMS.User.Authentication.Service.Services;
 using IDMS.UserAuthentication.DB;
 using IDMS.UserAuthentication.Models;
-using IDMS.UserAuthentication.Models.Authentication.Login;
-using IDMS.UserAuthentication.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 

@@ -96,10 +96,11 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
   ];
 
   availableReportTypes: string[] = [
+    'DETAIL',
     'CUSTOMER_WISE',
     'CARGO_WISE',
     'UN_WISE',
-    'DETAIL',
+    'UNCLEAN_TANK',
   ]
 
   translatedLangText: any = {};
@@ -345,7 +346,14 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       // this.classCvList = data;
     });
     this.cvDS.connectAlias('reportTypesCv').subscribe(data => {
-      this.reportTypesCvList = data;
+     if (data.length > 0) {
+        this.reportTypesCvList = [...data].sort((a, b) => {
+      const indexA = this.availableReportTypes.indexOf(a.code_val ?? '');
+      const indexB = this.availableReportTypes.indexOf(b.code_val ?? '');
+      return indexA - indexB;
+    });
+      }
+      
     });
     this.cvDS.getAllClassNo().subscribe(data => {
       this.classCvList = data;
@@ -403,9 +411,9 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
 
-    if (report_type == "DETAIL") {
+    if (["DETAIL","UNCLEAN_TANK"].includes(report_type) ) {
       where.cleaning = { any: true };
-      // where.tank_status_cv={in:TANK_STATUS_IN_YARD}; //{neq:'RELEASED'};
+      if(report_type=="UNCLEAN_TANK") where.tank_status_cv={eq:"CLEANING"}; //{neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
         where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
         cond_counter++;
@@ -744,13 +752,14 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
 
   ProcessReportCleaningInventory(report_type: string, date: string) {
 
-    if (report_type == 'DETAIL') {
-      this.ProcessReportCleaningInventoryDetail(date);
+    // if (report_type == 'DETAIL') {
+    if(["DETAIL","UNCLEAN_TANK"].includes(report_type) ){
+      this.ProcessReportCleaningInventoryDetail(report_type,date);
     }
   }
 
 
-  ProcessReportCleaningInventoryDetail(date: string) {
+  ProcessReportCleaningInventoryDetail(report_type:string, date: string) {
     if (this.sotList.length === 0) {
       this.isGeneratingReport = false;
       return;
@@ -778,12 +787,12 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     });
 
 
-    this.onExportDetail(report_inv_cln_dtl, date);
+    this.onExportDetail(report_inv_cln_dtl, date,report_type);
 
 
   }
 
-  onExportDetail(repCln: report_inventory_cleaning_detail[], date: string) {
+  onExportDetail(repCln: report_inventory_cleaning_detail[], date: string,report_type:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -802,7 +811,8 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repCln,
-        date: date
+        date: date,
+        report_type:report_type
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
