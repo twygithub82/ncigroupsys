@@ -188,7 +188,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
-
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -198,6 +198,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     private translate: TranslateService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
@@ -1001,4 +1002,9 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       this.search();
     }
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
