@@ -152,6 +152,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   updatedRoleFeaturesList: any[] = [];
   translatedLangText: any = {};
    separatorKeysCodes: number[] = [ENTER, COMMA];
+   isMobile : boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -275,6 +276,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.pcForm = this.createUserProfile();
     this.packageResidueDS = new PackageResidueDS(this.apollo);
@@ -909,4 +911,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             });
         }
       }
+
+      
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

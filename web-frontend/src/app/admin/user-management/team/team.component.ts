@@ -38,7 +38,7 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { TeamDS, TeamItem, TeamItemWithCount } from 'app/data-sources/teams';
 
@@ -138,7 +138,8 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   pageStateType = 'Team';
-  translatedLangText: any = {}
+  translatedLangText: any = {};
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -250,6 +251,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
@@ -401,8 +403,9 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     // if(this.selection.isEmpty()) return;
+    const wdth =this.isMobile?MOBILE_DIALOG_WIDTH:'600px';
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: wdth,
       disableClose: true,
       data: {
         action: 'edit',
@@ -844,6 +847,11 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
       ComponentUtil.showCustomNotification('error', 'snackbar-danger', error.message, 'top', 'center', this.snackBar);
     });
   }
+
+    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
 }
 

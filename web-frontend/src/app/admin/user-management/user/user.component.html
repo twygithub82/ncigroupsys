@@ -37,7 +37,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.USER }}</mat-label>
                         <input matInput formControlName="user" type="text" (keyup.enter)="search()">
@@ -61,9 +61,9 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="fName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear disableClear
-                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.USERNAME }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.USERNAME }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-2'">
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{this.translatedLangText.USERNAME }}:</span>{{row.userName}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="lName">
@@ -72,10 +72,10 @@
                     <span class="mobile-label">{{this.translatedLangText.NAME }}:</span>{{row.e}}</mat-cell>
                 </ng-container> -->
                 <ng-container matColumnDef="role">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.ROLE
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm2 '">{{this.translatedLangText.ROLE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-3'">
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                     <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span>
                     <span class="role-text" [title]="showUserRole(row)">
                       {{ showUserRole(row) }}
@@ -83,10 +83,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="team">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.TEAM
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.TEAM
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-3'">
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                     <span class="mobile-label">{{this.translatedLangText.TEAM }}:</span>
                     <span class="role-text" [title]="showUserTeam(row)">
                       {{ showUserTeam(row) }}
@@ -96,9 +96,9 @@
                 </ng-container>
                 <ng-container matColumnDef="mobile">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-2'">
+                    [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                     <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span>
                     {{row.phoneNumber}}</mat-cell>
                 </ng-container>
@@ -108,9 +108,9 @@
                       <span class="mobile-label">{{this.translatedLangText.DID}}:</span> {{row.did}}</mat-cell>
                   </ng-container> -->
                 <ng-container matColumnDef="bDate">
-                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.EMAIL
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.EMAIL
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                     <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
