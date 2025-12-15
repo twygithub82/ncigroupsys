@@ -570,7 +570,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.clearFilterRE();
 
     const where: any = {
-      tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
+      tank_status_cv: { in: ['CLEANING', 'REPAIR', 'STORAGE'] },
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
 
