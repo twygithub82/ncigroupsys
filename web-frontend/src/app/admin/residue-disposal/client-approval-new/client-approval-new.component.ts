@@ -116,7 +116,7 @@ export class ResidueDisposalEstimateApprovalClientNewComponent extends Unsubscri
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/client-approval' },
-    { text: 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE-APPROVAL', route: '/admin/residue-disposal/client-approval' },
+    { text: 'MENUITEMS.RESIDUE-DISPOSAL.LIST.CLIENT-APPROVAL', route: '/admin/residue-disposal/client-approval' },
   ]
   translatedLangText: any = {}
   langText = {
