@@ -129,7 +129,7 @@ export class SteamEstimateApprovalClientNewComponent extends UnsubscribeOnDestro
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/client-approval' },
-    { text: 'MENUITEMS.STEAM.LIST.APPROVAL', route: '/admin/steam/client-approval' },
+    { text: 'MENUITEMS.STEAM.LIST.CLIENT-APPROVAL', route: '/admin/steam/client-approval' },
   ]
   translatedLangText: any = {}
   langText = {

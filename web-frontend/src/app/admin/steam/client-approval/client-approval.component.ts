@@ -97,7 +97,7 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
     'remarks'
   ];
 
-  pageTitle = 'MENUITEMS.STEAM.LIST.APPROVAL'
+  pageTitle = 'MENUITEMS.STEAM.LIST.CLIENT-APPROVAL'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.STEAM.TEXT', route: '/admin/steam/client-approval' },
   ]

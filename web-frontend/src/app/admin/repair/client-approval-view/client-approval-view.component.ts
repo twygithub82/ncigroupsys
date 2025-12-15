@@ -113,7 +113,7 @@ export class RepairApprovalClientViewComponent extends UnsubscribeOnDestroyAdapt
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/client-approval' },
-    { text: 'MENUITEMS.REPAIR.LIST.APPROVAL', route: '/admin/repair/client-approval' }
+    { text: 'MENUITEMS.REPAIR.LIST.CLIENT-APPROVAL', route: '/admin/repair/client-approval' }
   ]
   translatedLangText: any = {}
   langText = {
