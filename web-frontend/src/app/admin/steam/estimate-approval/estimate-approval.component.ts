@@ -31,7 +31,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { TableFooter, TableGroup, TlxTableCardComponent } from '@shared/components/tlx-table-card/tlx-table-card.component';
+import { TableColumn, TableFooter, TableGroup, TlxTableCardComponent } from '@shared/components/tlx-table-card/tlx-table-card.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -1084,12 +1084,17 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-  // simpleColumns: TableColumn[] = [
-  //   { key: 'id', header: 'ID', width: '10%' },
-  //   { key: 'name', header: 'Name', width: '30%' },
-  //   { key: 'email', header: 'Email', width: '40%' },
-  //   { key: 'status', header: 'Status', width: '20%' }
-  // ];
+  columns: TableColumn[] = [
+    { key: 'index', header: 'No.', width: '5%' },
+    { key: 'group', header: 'Sub Group', width: '12%' },
+    { key: 'damage_code', header: 'Damage', width: '8%' },
+    { key: 'repair_code', header: 'Repair', width: '8%' },
+    { key: 'description', header: 'Description', width: '37%' },
+    { key: 'quantity', header: 'Qty', width: '6%' },
+    { key: 'hour', header: 'Hour', width: '8%' },
+    { key: 'material_cost', header: 'Material $', width: '8%' },
+    { key: 'price', header: 'Price $', width: '8%' }
+  ];
 
   repairData: any[] = [
     {
@@ -1122,12 +1127,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       material_cost: 7.55,
       price: 7.55
     }
-  ];
-
-  simpleData = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Active' }
   ];
 
   groupedRepairs: TableGroup[] = [];
