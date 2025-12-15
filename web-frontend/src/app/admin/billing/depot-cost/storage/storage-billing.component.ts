@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from "./form-dialog/form-dialog.component";
@@ -213,7 +213,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
-
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -223,6 +223,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     private translate: TranslateService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.minManuDOMDt.setMonth(this.minManuDOMDt.getMonth() - 1);
     this.translateLangText();
     this.initSearchForm();
@@ -1489,9 +1490,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
 
-
+    const width =this.isMobile?MOBILE_DIALOG_WIDTH:'75vw';
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '75vw',
+      width: width,
       maxWidth: '1200px',
       //height: '80vh',
       data: {
@@ -1546,4 +1547,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
     return  Utility.formatNumberDisplay(row?.free_storage||0) ;
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

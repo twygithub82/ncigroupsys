@@ -38,7 +38,7 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { RoleDS, RoleItem } from 'app/data-sources/role';
 @Component({
@@ -136,7 +136,8 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
-  translatedLangText: any = {}
+  translatedLangText: any = {};
+  isMobile: boolean = false;
   pageStateType = 'Role';
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -249,6 +250,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.roleDS = new RoleDS(this.apollo);
@@ -400,8 +402,9 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     // if(this.selection.isEmpty()) return;
+    const wdth = this.isMobile ? MOBILE_DIALOG_WIDTH : '40vw';
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '40vw',
+      width: wdth,
       //maxHeight: '75vh',
       disableClose: true,
       data: {

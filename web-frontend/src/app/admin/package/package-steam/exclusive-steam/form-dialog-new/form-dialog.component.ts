@@ -107,6 +107,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   translatedLangText: any = {};
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -231,6 +232,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
 
     this.pckSteamExclusiveDS = new PackageSteamingExclusiveDS(this.apollo);
@@ -588,4 +590,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     const input = event.target as HTMLInputElement;
     input.select();  // Selects all text in the input
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

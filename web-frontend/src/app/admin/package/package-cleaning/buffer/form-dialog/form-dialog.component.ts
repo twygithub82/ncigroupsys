@@ -94,7 +94,7 @@ export class FormDialogComponent {
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   //packLabourDS : PackageLabourDS;
   packBufferDS: PackageBufferDS;
-
+  isMobile: boolean=false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -201,7 +201,7 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
     this.selectedItems = data.selectedItems;
-
+    this.isMobile = Utility.isMobile();
     this.pcForm = this.createPackageLabour();
     if (this.selectedItems.length == 1) {
       this.pcForm.patchValue({
@@ -344,4 +344,13 @@ export class FormDialogComponent {
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_EDIT']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

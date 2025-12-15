@@ -165,7 +165,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isMobile :boolean =false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -177,6 +177,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.initSearchForm();
@@ -718,4 +719,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   canCancel(row: any) {
     return this.isAllowDelete() && this.soDS.canCancel(row);
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart: boolean = false, isTextCenter:boolean=false,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      if(isStart) centerClass = 'justify-content-start ';
+      centerClass += isTextCenter ? 'text-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

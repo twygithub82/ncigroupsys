@@ -25,7 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -275,7 +275,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
       height: 'auto',
        autoFocus: false,
       disableClose: true,
@@ -365,7 +365,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
+      width: MOBILE_DIALOG_WIDTH,
        autoFocus: false,
       disableClose: true,
       data: {

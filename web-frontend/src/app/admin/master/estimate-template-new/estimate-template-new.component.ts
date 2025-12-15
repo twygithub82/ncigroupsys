@@ -214,6 +214,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     DUPLICATE_ESTIMATION_DETECTED: "COMMON-FORM.DUPLICATE-ESTIMATION-DETECTED",
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    S_N: 'COMMON-FORM.S_N',
+    ID: 'COMMON-FORM.ID',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -262,6 +264,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  isMobile : boolean = false;
   @ViewChild('custInput', { static: false }) custInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
@@ -276,6 +279,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     private modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initTempForm();
     this.soDS = new StoringOrderDS(this.apollo);
@@ -1578,5 +1582,17 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
     }
+  }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
+    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content-end ' ;
+    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
+    if(PaddingRight) centerClass +=  'p-r-0 ' ;
+    if(PaddingBottom) centerClass +=  'mb-0 ' ;
+    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
+    return `${baseClasses} ${centerClass}`.trim();
   }
 }

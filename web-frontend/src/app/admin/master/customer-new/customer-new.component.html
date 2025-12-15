@@ -69,7 +69,7 @@
                     } -->
                   </mat-form-field>
                 </div>
-                <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 mb-0 p-r-0">
+                <div [ngClass]="getColumnClasses('col-xl-1 col-lg-1 col-md-12 col-sm-12',false,false,false,false,!isMobile,true)">
                   <mat-form-field class="example-full-width">
                     <mat-label><mat-icon>flag</mat-icon></mat-label>
                     <input matInput formControlName="country_code" [matAutocomplete]="countryCode" required>
@@ -91,13 +91,13 @@
                     </mat-select> -->
                   </mat-form-field>
                 </div>
-                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0 p-l-1">
+                <div [ngClass]="getColumnClasses('col-xl-2 col-lg-2 col-md-12 col-sm-12',false,false,false,!isMobile,false,true)">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CONTACT_NO }}</mat-label>
                     <input matInput formControlName="phone" (input)="onNumericOnly($event)" required>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+                <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.EMAIL }}</mat-label>
                     <input matInput formControlName="email" required>
@@ -229,14 +229,14 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                  @if (canEdit() && canEditBillingBranch()) {
-                  <div class="col-xl-1-5 col-lg-2 col-md-12 col-sm-12 mb-0">
-                    <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
-                      (click)="addBillingBranch($event)">
-                      <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
-                    </button>
-                  </div>
-                  }
+                @if (canEdit() && canEditBillingBranch()) {
+                <div [ngClass]="getColumnClasses('col-xl-2 col-lg-2 col-md-12 col-sm-12',false,false,false,false,false,!isMobile,isMobile)" >
+                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
+                    (click)="addBillingBranch($event)">
+                    <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                  </button>
+                </div>
+                }
                 }
             
               </div>
@@ -279,10 +279,12 @@
                       <ng-container matColumnDef="index">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          
                           {{translatedLangText.S_N}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i = index"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.S_N}}:</span>
                           {{i + 1}} <!-- Add 1 if you want to display index starting from 1 -->
                         </mat-cell>
                       </ng-container>

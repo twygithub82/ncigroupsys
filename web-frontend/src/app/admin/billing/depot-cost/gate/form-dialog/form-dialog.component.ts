@@ -112,6 +112,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   billingItems: any[] = [];
   translatedLangText: any = {};
+  isMobile:boolean=false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -220,6 +221,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.langText = data.langText;
     this.billingItems = this.transformList(this.selectedItem)
@@ -490,4 +492,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   DisplayBillingType(billing_type: string) {
     return this.CodeValuesDS?.getCodeDescription(billing_type, this.invoiceTypeCvList);
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+  getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_Right(baseClasses: string, isRight: boolean = true): string {
+      const centerClass = isRight ? 'align-right' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

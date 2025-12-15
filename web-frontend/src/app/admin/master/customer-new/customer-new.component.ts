@@ -44,7 +44,7 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
@@ -240,6 +240,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
+  isMobile : boolean = false;
   defDiscThd: number = defaultDiscountThreshold;
 
   starterPackageNotAllowCustomerType = [
@@ -260,6 +261,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile=Utility.isMobile();
     this.translateLangText();
     this.initCCForm();
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -571,7 +573,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     const cntPerson = row ?? new ContactPersonItem();
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'1000px',
       disableClose: true,
       data: {
         item: row ? row : cntPerson,
@@ -1359,6 +1361,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   AllowedToChangeBillingBranch(row: any) {
     if (!row) return true;
     return (!row?.so_count && !row?.sot_count && !row?.tank_info_count);
+  }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
+    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content-end ' ;
+    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
+    if(PaddingRight) centerClass +=  'p-r-0 ' ;
+    if(PaddingBottom) centerClass +=  'mb-0 ' ;
+    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
+    return `${baseClasses} ${centerClass}`.trim();
   }
 
 }

@@ -191,6 +191,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
+  isMobile: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -201,6 +202,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     private translate: TranslateService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
@@ -1030,4 +1032,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

@@ -109,6 +109,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -233,6 +234,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItems = data.selectedItems;
     //this.selectedItem = data.selectedItem;
 
@@ -451,4 +453,18 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     var bRetval: boolean = (this.selectedItems?.length || 0) > 1;
     return bRetval;
   }
+
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true ,Padding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center' : '';
+      centerClass += Padding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

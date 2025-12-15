@@ -99,7 +99,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-
+  isMobile: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -209,6 +209,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageRepair();
     this.packRepairDS = new PackageRepairDS(this.apollo);
@@ -426,4 +427,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   parse2Decimal(value: any): string {
     return Utility.formatNumberDisplay(value)
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

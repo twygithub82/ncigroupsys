@@ -41,7 +41,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from "./form-dialog/form-dialog.component";
@@ -203,7 +203,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   invoiceTypeControl = new FormControl(this.processType);
-
+  isMobile:boolean=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -214,6 +214,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     private searchStateService: SearchStateService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
@@ -1367,9 +1368,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
 
-
+    const wdth = this.isMobile ? MOBILE_DIALOG_WIDTH : '65vw';
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: wdth,
       maxWidth: '800px',
       //height: '80vh',
       data: {
@@ -1415,4 +1416,9 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       this.search();
     }
   }
+
+    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

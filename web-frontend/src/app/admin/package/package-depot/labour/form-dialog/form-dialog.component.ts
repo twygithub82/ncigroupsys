@@ -91,7 +91,7 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   packLabourDS: PackageLabourDS;
-
+  isMobile: boolean=false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -198,7 +198,7 @@ export class FormDialogComponent {
     private snackBar: MatSnackBar,
   ) {
     // Set the defaults
-
+    this.isMobile=Utility.isMobile();
     this.selectedItems = data.selectedItems;
 
     this.pcForm = this.createPackageLabour();
@@ -347,4 +347,12 @@ export class FormDialogComponent {
   isMultiSelect(): boolean {
     return (this.selectedItems?.length || 0) > 1;
   }
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

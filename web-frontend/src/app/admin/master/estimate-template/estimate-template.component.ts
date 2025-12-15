@@ -158,6 +158,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -195,6 +196,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   mtForm?: UntypedFormGroup;
 
+  isMobile : boolean = false;
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -207,6 +209,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initMtForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.masterEstTempDS = new MasterEstimateTemplateDS(this.apollo);
@@ -715,5 +718,17 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_DELETE']);
+  }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
+    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content-end ' ;
+    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
+    if(PaddingRight) centerClass +=  'p-r-0 ' ;
+    if(PaddingBottom) centerClass +=  'mb-0 ' ;
+    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
+    return `${baseClasses} ${centerClass}`.trim();
   }
 }

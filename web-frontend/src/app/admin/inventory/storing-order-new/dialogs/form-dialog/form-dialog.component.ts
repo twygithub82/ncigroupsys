@@ -83,6 +83,7 @@ export class FormDialogComponent {
   soDS: StoringOrderDS;
   lastCargoControl: UntypedFormControl;
   today: Date = new Date();
+  isMobile :boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -90,6 +91,7 @@ export class FormDialogComponent {
     private apollo: Apollo,
     public modulePackageService: ModulePackageService
   ) {
+    this.isMobile=Utility.isMobile();
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.soDS = new StoringOrderDS(this.apollo);
@@ -523,4 +525,14 @@ export class FormDialogComponent {
   isAllowView() {
     return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

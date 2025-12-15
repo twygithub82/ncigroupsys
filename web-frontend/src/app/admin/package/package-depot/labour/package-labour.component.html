@@ -114,13 +114,13 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox color="primary" (click)="$event.stopPropagation()"
                   (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
                   [ngClass]="'tbl-checkbox'">
@@ -140,18 +140,21 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header="lName" disableClear>{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef mat-sort-header="lName" 
+              [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+              disableClear>{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+              [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customerCost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST}}:</span>
                 {{displayCurrency(row.cost)}}</mat-cell>
             </ng-container>
@@ -161,10 +164,12 @@
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_labour.cost.toFixed(2)}}</mat-cell>
                   </ng-container> -->
             <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef mat-sort-header="gender"
+              <mat-header-cell *matHeaderCellDef mat-sort-header="gender" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 disableClear>{{this.translatedLangText.CLEANING_LAST_UPDATED_DT
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+              [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)"
+              >
                 <span class="mobile-label">{{this.translatedLangText.CLEANING_LAST_UPDATED_DT }}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>

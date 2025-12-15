@@ -106,7 +106,7 @@ export class FormDialogComponent {
   cleanFormulaList: CleaningFormulaItem[] = [];
   updatedMethodFormulaLinkList: CleaningStepItem[] = [];
   existingMethodFormulaLinkList: CleaningStepItem[] = [];
-
+  isMobile: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -186,6 +186,8 @@ export class FormDialogComponent {
     private snackBar: MatSnackBar,
     private modulePackageService: ModulePackageService
   ) {
+
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
     this.mthDS = new CleaningMethodDS(this.apollo);
@@ -479,4 +481,13 @@ export class FormDialogComponent {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_ADD']);
   }
+
+    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

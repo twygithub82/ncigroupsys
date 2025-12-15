@@ -39,7 +39,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -151,6 +151,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   allowSelectedAll: boolean = false;
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -263,6 +264,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile=Utility.isMobile();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
@@ -380,7 +382,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -411,7 +413,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -975,4 +977,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.search();
   }
 
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

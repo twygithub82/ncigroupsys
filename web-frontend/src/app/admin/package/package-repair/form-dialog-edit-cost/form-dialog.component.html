@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -12,10 +12,10 @@
     </mat-progress-spinner>
   </div>
   }
-  <div mat-dialog-content class="auto-height">
+  <div mat-dialog-content [ngClass]="isMobile?'':'auto-height'">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
-        <div class="card info-card col-xl-5-75 col-lg-12 col-md-12 col-sm-11 mb-1 p-0 pt-5 me-1">
+        <div [ngClass]="getColumnClasses_row('card info-card col-md-12 col-sm-12 mb-1 p-0 pt-5 me-1',isMobile)">
           <div class="info-box8">
             <i class="bg-purple card1-icon fas fa-search"></i>
             <!-- <h5 class="col-purple font-b-500"> Condition</h5> -->
@@ -131,7 +131,7 @@
             </div>
           </div>
         </div>
-        <div class="card info-card col-xl-5-75 col-lg-12 col-md-12 col-sm-11 mb-1 p-0 pt-5">
+        <div [ngClass]="getColumnClasses_row('card info-card col-md-12 col-sm-12 mb-1 p-0 pt-5 me-1',isMobile)">
           <div class="info-box8">
             <i class="bg-purple card1-icon fas fa-edit"></i>
             <!-- <h5 class="col-purple font-b-500"> Update</h5> -->
