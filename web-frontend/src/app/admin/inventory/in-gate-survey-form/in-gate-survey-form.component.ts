@@ -1932,6 +1932,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         correctArray = this.highlightedCellsWalkwayMiddle;
       } else if (parentRow?.classList.contains('grid-bottom-row')) {
         correctArray = this.highlightedCellsWalkwayBottom;
+      } else {
+        // If no parent row found, this is an outer grid cell (highlightedCellsTop, etc.)
+        // Allow highlighting for the passed-in array
+        correctArray = highlightedCells;
       }
 
       // Only highlight if the cell belongs to the array we're supposed to be drawing on
