@@ -1,5 +1,5 @@
 # Use official Nginx image
-FROM nginx:1.26-alpine
+FROM nginx:1.27-alpine
 
 # Remove default Nginx config
 RUN rm /etc/nginx/conf.d/default.conf
