@@ -9,11 +9,11 @@
             @if(enablePagination && totalPages > 1) {
             <div class="pagination-controls desktop-pagination">
                 <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
-                    ‹ Previous
+                    &lsaquo; Previous
                 </button>
                 <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
                 <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
-                    Next ›
+                    Next &rsaquo;
                 </button>
             </div>
             }
@@ -105,11 +105,11 @@
         @if(enablePagination && totalPages > 1) {
         <div class="pagination-controls mobile-pagination">
             <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
-                ‹
+                &lsaquo;
             </button>
             <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
             <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
-                ›
+                &rsaquo;
             </button>
             <div class="swipe-hint">Swipe to navigate</div>
         </div>

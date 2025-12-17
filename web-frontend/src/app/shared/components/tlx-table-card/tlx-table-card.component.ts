@@ -156,18 +156,25 @@ export class TlxTableCardComponent implements OnChanges {
     }
 
     onTouchStart(event: TouchEvent): void {
-        if (!this.enableSwipe) return;
+        if (!this.enableSwipe || !this.enablePagination) return;
         this.startX = event.touches[0].clientX;
         this.isDragging = true;
     }
 
     onTouchMove(event: TouchEvent): void {
-        if (!this.enableSwipe || !this.isDragging) return;
-        event.preventDefault();
+        if (!this.enableSwipe || !this.isDragging || !this.enablePagination) return;
+
+        const currentX = event.touches[0].clientX;
+        const diff = Math.abs(currentX - this.startX);
+
+        // Only prevent default if horizontal movement is significant and event is cancelable
+        if (event.cancelable && diff > 10) {
+            event.preventDefault();
+        }
     }
 
     onTouchEnd(event: TouchEvent): void {
-        if (!this.enableSwipe || !this.isDragging) return;
+        if (!this.enableSwipe || !this.isDragging || !this.enablePagination) return;
 
         const endX = event.changedTouches[0].clientX;
         const deltaX = this.startX - endX;
@@ -184,18 +191,19 @@ export class TlxTableCardComponent implements OnChanges {
     }
 
     onMouseDown(event: MouseEvent): void {
-        if (!this.enableSwipe) return;
+        if (!this.enableSwipe || !this.enablePagination) return;
         this.startX = event.clientX;
         this.isDragging = true;
+        event.preventDefault(); // Prevent text selection
     }
 
     onMouseMove(event: MouseEvent): void {
-        if (!this.enableSwipe || !this.isDragging) return;
+        if (!this.enableSwipe || !this.isDragging || !this.enablePagination) return;
         event.preventDefault();
     }
 
     onMouseEnd(event: MouseEvent): void {
-        if (!this.enableSwipe || !this.isDragging) return;
+        if (!this.enableSwipe || !this.isDragging || !this.enablePagination) return;
 
         const endX = event.clientX;
         const deltaX = this.startX - endX;

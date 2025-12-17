@@ -348,3 +348,10 @@
         transition: none;
     }
 }
+
+.pagination-controls,
+.table-container {
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+}
