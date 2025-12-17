@@ -570,7 +570,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.clearFilterRE();
 
     const where: any = {
-      tank_status_cv: { in: ['CLEANING', 'REPAIR', 'STORAGE'] },
+      tank_status_cv: { in: ['CLEANING', 'REPAIR', 'STORAGE'] }, // TODO :: Test fo Malaysia Depot allow to add repair after in gate survey, ORIGINAL: ['REPAIR', 'STORAGE']
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
 
@@ -950,7 +950,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   anyActiveResidues(sot: StoringOrderTankItem): boolean {
-    return BusinessLogicUtil.anyActiveResidues(sot.residue);
+    return true;  // TODO :: Test fo Malaysia Depot allow to add repair after in gate survey, ORIGINAL: BusinessLogicUtil.anyActiveResidues(sot.residue);
   }
 
   getMaxDate() {
