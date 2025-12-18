@@ -571,7 +571,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const where: any = {
       tank_status_cv: { in: ['CLEANING', 'REPAIR', 'STORAGE'] }, // TODO :: Test fo Malaysia Depot allow to add repair after in gate survey, ORIGINAL: ['REPAIR', 'STORAGE']
-      purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
+      purpose_repair_cv: { in: ["", "REPAIR", "OFFHIRE"] }
     };
 
     if (this.searchForm!.get('est_pending')?.value) {
