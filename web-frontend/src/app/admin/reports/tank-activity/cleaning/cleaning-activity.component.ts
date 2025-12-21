@@ -45,6 +45,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {UncleanTankDetailInventoryPdfComponent}from 'app/document-template/pdf/inventory/unclean-tank-detail-pdf/unclean-tank-pdf.component'
 @Component({
   selector: 'app-cleaning-activity',
   standalone: true,
@@ -786,8 +787,13 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       }
     });
 
-
-    this.onExportDetail(report_inv_cln_dtl, date,report_type);
+    if(report_type == 'UNCLEAN_TANK'){
+      this.onExportUncleanTankDetail(report_inv_cln_dtl, date,report_type);
+    }
+    else
+    {
+       this.onExportDetail(report_inv_cln_dtl, date,report_type);
+    }
 
 
   }
@@ -806,6 +812,36 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
 
 
     const dialogRef = this.dialog.open(CleaningDetailInventoryPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_inventory: repCln,
+        date: date,
+        report_type:report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+   onExportUncleanTankDetail(repCln: report_inventory_cleaning_detail[], date: string,report_type:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+
+    const dialogRef = this.dialog.open(UncleanTankDetailInventoryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,

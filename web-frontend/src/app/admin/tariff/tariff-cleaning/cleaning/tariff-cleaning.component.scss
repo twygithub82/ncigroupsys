@@ -9,8 +9,6 @@
 .mat-option.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) .mat-option-text::after {
   content: none !important;
 }
-
-
 /* Ensure the mat-option uses flexbox */
 .checkbox-option {
   display: flex;
