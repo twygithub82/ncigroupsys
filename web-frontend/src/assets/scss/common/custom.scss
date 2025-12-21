@@ -2350,6 +2350,12 @@ mat-card-content.tank-card-content {
   color: white !important;
 }
 
+.light-green-button {
+  background-color: lighten(#90c990, 16%) !important; //#057930
+  /* Material green */
+  color: white !important;
+}
+
 .red-button {
   background-color: lighten(#f51111, 18%) !important;
   /* Material green */

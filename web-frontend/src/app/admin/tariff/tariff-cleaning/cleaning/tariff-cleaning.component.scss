@@ -10,7 +10,10 @@
   content: none !important;
 }
 
-
+.fab-icon {
+  width: 24px;
+  height: 24px;
+}
 /* Ensure the mat-option uses flexbox */
 .checkbox-option {
   display: flex;
