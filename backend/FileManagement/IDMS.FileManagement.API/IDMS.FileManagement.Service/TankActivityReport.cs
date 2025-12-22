@@ -1,12 +1,14 @@
 ﻿using IDMS.FileManagement.Interface.DB;
 using IDMS.FileManagement.Interface.Model;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,13 +22,17 @@ namespace IDMS.FileManagement.Service
         private CustomerGroup _customerGroup = new CustomerGroup();
         private readonly ReportSettings _settings;
         private readonly string _webRootPath;
+        private readonly ILogger _logger;
 
 
-        public TankActivityReport(ReportSettings reportSetting, string webRootPath)
+        public TankActivityReport(ReportSettings reportSetting, string webRootPath, ILogger logger)
         {
             QuestPDF.Settings.License = LicenseType.Community;
             _settings = reportSetting;
             _webRootPath = webRootPath;
+            _logger = logger;
+
+            _logger.LogInformation("TankActivityReport initialized with TimeZoneId: {TimeZoneId}", _settings.TimeZoneId);
         }
 
         public void LoadData(List<daily_tank_activity_result>? data, CustomerGroup? data1)
@@ -34,7 +40,7 @@ namespace IDMS.FileManagement.Service
             _data = data;
             _customerGroup = data1;
 
-            Helper.InitHelper(_settings);
+            Helper.InitHelper(_settings, _logger);
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -290,7 +296,7 @@ namespace IDMS.FileManagement.Service
                     .AlignMiddle()
                     .AlignCenter();
 
-                var TimeZoneId = "Asia/Singapore";
+                //var TimeZoneId = "Asia/Singapore";
                 var SN = 0;
                 string? prevTankNo = null;
 
@@ -347,10 +353,12 @@ namespace IDMS.FileManagement.Service
     public static class Helper
     {
         private static ReportSettings _setting;
+        private static ILogger _logger;
 
-        public static void InitHelper(ReportSettings setting)
+        public static void InitHelper(ReportSettings setting, ILogger logger)
         {
             _setting = setting;
+            _logger = logger;
         }
 
         public static object ConvertEpochToLocalTime(long? epoch, string? format = null)
@@ -384,7 +392,8 @@ namespace IDMS.FileManagement.Service
             }
             catch (TimeZoneNotFoundException)
             {
-                Console.WriteLine("Time zone not found. Falling back to UTC.");
+                _logger.LogError("Time zone '{TimeZoneId}' not found. Falling back to UTC.", _setting.TimeZoneId);  
+                //Console.WriteLine("Time zone not found. Falling back to UTC.");
                 timeZone = TimeZoneInfo.Utc;
             }
 

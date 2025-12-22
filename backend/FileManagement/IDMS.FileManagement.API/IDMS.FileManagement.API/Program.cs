@@ -142,8 +142,9 @@ namespace IDMS.FileManagement.API
                 var emailService = provider.GetRequiredService<IEmail>();
                 var scopeService = provider.GetRequiredService<IServiceScopeFactory>();
                 var env = provider.GetRequiredService<IWebHostEnvironment>();
+                var logger = provider.GetRequiredService<ILogger<ReportService>>();
 
-                return new ReportService(reportSettings, dbContext, emailService, scopeService, env.WebRootPath);
+                return new ReportService(reportSettings, dbContext, emailService, scopeService, env.WebRootPath, logger);
 
             });
                 

@@ -4,6 +4,7 @@ using IDMS.FileManagement.Interface.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Utilities;
 using QuestPDF.Fluent;
@@ -19,14 +20,16 @@ namespace IDMS.FileManagement.Service
         private readonly IEmail _emailService;
         private readonly string _webRootPath;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<ReportService> _logger;
 
-        public ReportService(ReportSettings reportSettings, AppDBContext appDBContext, IEmail emailService, IServiceScopeFactory scopeFactory, string env)
+        public ReportService(ReportSettings reportSettings, AppDBContext appDBContext, IEmail emailService, IServiceScopeFactory scopeFactory, string env, ILogger<ReportService> logger)
         {
             _reportConfig = reportSettings;
             _context = appDBContext;
             _emailService = emailService;
             _webRootPath = env;
             _scopeFactory = scopeFactory;
+            _logger = logger;
         }
 
         public async Task<bool> GenerateTankActivityReport()
@@ -37,6 +40,7 @@ namespace IDMS.FileManagement.Service
                 if (customers?.Any() ?? false)
                 {
                     GenerateTankActivityReportThread(customers);
+                    _logger.LogInformation("Tank Activity Report generation task started.");
                 }
 
                 await Task.Delay(200);
@@ -44,8 +48,7 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex) 
             {
-                Console.WriteLine($"[Error] {ex.Message}");
-                Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                _logger.LogError(ex, "Error in GenerateTankActivityReport");
                 throw;
             }
         }
@@ -67,7 +70,7 @@ namespace IDMS.FileManagement.Service
                                 .SelectMany(t => t.Activities)
                                 .ToList();
 
-                            var report = new TankActivityReport(_reportConfig, _webRootPath);
+                            var report = new TankActivityReport(_reportConfig, _webRootPath, _logger);
                             report.LoadData(customerData, customerGroup);
 
                             var fileName = $"Tank Activity Report_{customerGroup.CustomerName}.pdf"
@@ -78,6 +81,7 @@ namespace IDMS.FileManagement.Service
                                 report.GeneratePdf(_webRootPath + "/" + fileName);
 
                             var reportByteArray = report.GeneratePdf();
+                            _logger.LogInformation($"Generated Tank Activity Report for customer: {customerGroup.Customer} with {customerData.Count} records.");
 
                             // Create ZIP archive in memory
                             using var zipStream = new MemoryStream();
@@ -99,6 +103,7 @@ namespace IDMS.FileManagement.Service
                                 var emailBody = EirMessage.GetTankActivityBody();
 
                                 _emailService?.SendEmailWithZipAttachmentAsync(toEmails, null, null, emailSubject, emailBody, zipStream.ToArray(), fileName);
+                                _logger.LogInformation($"Sent Tank Activity Report email to customer: {customerGroup.Customer} at {string.Join(", ", toEmails)}");
                             }
                         }
                     }
@@ -107,8 +112,9 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] {ex.Message}");
-                Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                //Console.WriteLine($"[Error] {ex.Message}");
+                //Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                _logger.LogError(ex, "Error in GenerateTankActivityReportThread");
                 throw;
             }
         }
@@ -131,8 +137,9 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] {ex.Message}");
-                Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                //Console.WriteLine($"[Error] {ex.Message}");
+                //Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                _logger.LogError(ex, "Error in GetValidDailyCustomer");
                 throw;
             }
         }
@@ -186,12 +193,12 @@ namespace IDMS.FileManagement.Service
                 customerGroups?.AddRange(batchGroups);
 
                 // 4️⃣ Do something with this batch
-                Debug.WriteLine($"Processing batch {i / batchSize + 1} ({batch.Count} customers)");
+                _logger.LogInformation($"Processing batch {i / batchSize + 1} ({batch.Count} customers)");
                 // e.g., process, export, or aggregate data
             }
 
             //MessageBox.Show($"Loaded {results.Count} records from stored procedure.");
-            Debug.WriteLine("OK");
+            _logger.LogInformation($"Total customers processed: {customerGroups?.Count}");
             return customerGroups;
         }
     }

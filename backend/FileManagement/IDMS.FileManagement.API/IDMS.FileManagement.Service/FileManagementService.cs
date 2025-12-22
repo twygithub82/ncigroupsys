@@ -3,11 +3,13 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using CommonUtil.Core.Service;
+using IDMS.Email.Service;
 using IDMS.FileManagement.Interface;
 using IDMS.FileManagement.Interface.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
 using System;
@@ -32,22 +34,26 @@ namespace IDMS.FileManagement.Service
 
         private AppDBContext _context;
 
-        public FileManagementService(IConfiguration config, AppDBContext context)
+        private readonly ILogger<FileManagementService> _logger;
+
+        public FileManagementService(IConfiguration config, AppDBContext context, ILogger<FileManagementService> logger)
         {
             try
             {
                 _context = context;
+                _logger = logger;
                 //Setup Azure Connection 
                 azureConnectionString = config.GetConnectionString("AzureConnection");
                 _blobServiceClient = new BlobServiceClient(azureConnectionString);
-                Console.WriteLine($"Azure blob storage connection: {azureConnectionString}");
+                _logger.LogInformation($"Azure blob storage connection: {azureConnectionString}");
                 //Setup Db Connection
                 dbConnectionString = config.GetConnectionString("LocalDbConnection");
-                Console.WriteLine($"Database connection: {azureConnectionString}");
+                _logger.LogInformation($"Database connection: {azureConnectionString}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger?.LogError(ex, "FileManagementServie Error");
+                //Console.WriteLine(ex.Message);
                 throw;
             }
 
@@ -68,6 +74,7 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "GetFiles Error");
                 throw;
             }
         }
@@ -94,13 +101,14 @@ namespace IDMS.FileManagement.Service
                 Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
                 string sasUrl = sasUri.ToString();
 
-                Console.WriteLine("SAS URL for the blob:");
-                Console.WriteLine(sasUrl);
+                _logger.LogInformation($"SAS URL for the blob: {sasUrl}");
+                //_logger.LogInformation(sasUrl);
 
                 return sasUrl;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "GetFileUrl_SAS Error");
                 throw;
             }
         }
@@ -127,10 +135,12 @@ namespace IDMS.FileManagement.Service
                             azureResponce.Add(blobInfo);
                     }
                 }
+                _logger.LogInformation($"Uploaded {files.Count} files to container {containerName}.");
                 return azureResponce;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "UploadFiles Error");
                 throw;
             }
         }
@@ -193,6 +203,7 @@ namespace IDMS.FileManagement.Service
                         }
                         // Here, you could save metadataObj.Description and metadataObj.Category associated with the file
                         // For example: Save metadataObj and file.FileName to a database or other storage mechanism
+                        _logger.LogInformation($"Uploaded file {file.FileName} with metadata: Description={metadataObj.Description}, Category={metadataObj.FileType}.");
                     }
                 }
                 var res = await _context.SaveChangesAsync();
@@ -200,7 +211,8 @@ namespace IDMS.FileManagement.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "UploadFiles with Metadata Error");
+                throw;
             }
         }
 
@@ -213,10 +225,13 @@ namespace IDMS.FileManagement.Service
                     res = await _context.file_management.Where(f => (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
                 else
                     res = await _context.file_management.Where(f => guid.Contains(f.guid) && (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
+               
+                _logger.LogInformation($"Retrieved {res.Count} file URLs from database.");
                 return res;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "GetFileUrlFromDB Error");
                 throw;
             }
         }
@@ -260,16 +275,19 @@ namespace IDMS.FileManagement.Service
                         // Handle exceptions as needed
                     }
                 }
+
+                _logger.LogInformation($"Deleted {files.Count()} files from blob storage and marked as deleted in database.");
                 var res = await _context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex, "DeleteFile Error");
+                throw;
             }
         }
 
-
+        [Obsolete]
         public async Task<List<string>> GetGroupFileUrlFromDB1(List<string> groupGuid)
         {
             try
@@ -324,7 +342,7 @@ namespace IDMS.FileManagement.Service
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Failed to download or add file from {url}: {ex.Message}");
+                           _logger.LogError($"Failed to download or add file from {url}: {ex.Message}");
                             // Optionally: skip or throw depending on your use case
                         }
                     }
@@ -339,10 +357,12 @@ namespace IDMS.FileManagement.Service
                 //{
                 //    await zipStream.CopyToAsync(fileStream);
                 //}
+                _logger.LogInformation("Created ZIP archive from blob folder successfully.");
                 return zipStream;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "GetZipBlobFolderAsync Error");
                 throw;
             }
 
@@ -389,27 +409,19 @@ namespace IDMS.FileManagement.Service
 
         public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid) => await GetGroupFileUrlFromDB(groupGuid, _context);
 
-        //try
-        //{
-        //    var res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
-        //            (f.delete_dt == null || f.delete_dt == 0)).Select(f => new FileManagementDto { Url = f.url, Description = f.description }).ToListAsync();
-        //    return res;
-        //}
-        //catch (Exception ex)
-        //{
-        //    throw;
-        //}
-
         public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid, AppDBContext dbContext)
         {
             try
             {
                 var res = await dbContext.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
                         (f.delete_dt == null || f.delete_dt == 0)).Select(f => new FileManagementDto { Url = f.url, Description = f.description }).ToListAsync();
+               
+                _logger.LogInformation($"Retrieved {res.Count} file URLs from database for specified group GUIDs.");
                 return res;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "GetGroupFileUrlFromDB Error");
                 throw;
             }
         }

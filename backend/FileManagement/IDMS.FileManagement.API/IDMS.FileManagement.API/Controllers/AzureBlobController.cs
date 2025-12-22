@@ -35,6 +35,7 @@ namespace IDMS.FileManagement.API.Controllers
             string containerName = Util.GetContainerName(fileType);
 
             var response = await _fileManagementService.GetFileUrl_SAS(filename, containerName);
+            _logger.LogInformation($"Generated SAS URL for file: {filename} in container: {containerName}");
             return Ok(response);
         }
 
@@ -52,6 +53,7 @@ namespace IDMS.FileManagement.API.Controllers
         {
             string containerName = Util.GetContainerName(fileType);
             var response = await _fileManagementService.UploadFiles(files, containerName, filename, cancellationToken);
+            _logger.LogInformation($"Uploaded {response.Count} files to container: {containerName}");
             return Ok();
         }
 
@@ -96,11 +98,13 @@ namespace IDMS.FileManagement.API.Controllers
                 };
 
                 // Serialize the class object
+                _logger.LogInformation($"Uploaded {data.affected} files with metadata.");
                 var json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 return Ok(json);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error uploading files with metadata.");
                 return BadRequest(ex.Message);
             }
         }
@@ -112,10 +116,12 @@ namespace IDMS.FileManagement.API.Controllers
             try
             {
                 var response = await _fileManagementService.GetFileUrlFromDB(guid);
+                _logger.LogInformation($"Retrieved file URLs for {guid.Count} GUIDs.");
                 return Ok(response);
             }
             catch (Exception ex) 
             {
+                _logger.LogError(ex, "Error retrieving file URLs.");
                 return BadRequest($"{ex.Message}"); 
             }
         }
@@ -128,10 +134,12 @@ namespace IDMS.FileManagement.API.Controllers
             try
             {
                 var response = await _fileManagementService.GetGroupFileUrlFromDB(guid);
+                _logger.LogInformation($"Retrieved file URLs for {guid.Count} group GUIDs.");
                 return Ok(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error retrieving group file URLs.");
                 return BadRequest($"{ex.Message}");
             }
         }
@@ -143,10 +151,12 @@ namespace IDMS.FileManagement.API.Controllers
             try
             {
                 var response = await _fileManagementService.GetZipBlobFolderAsync(zipFileRequest);
+                _logger.LogInformation($"Generated ZIP file for GroupGuid: {zipFileRequest.GroupGuid}");
                 return Ok(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error generating ZIP file.");
                 return BadRequest($"{ex.Message}");
             }
         }
@@ -159,10 +169,12 @@ namespace IDMS.FileManagement.API.Controllers
             try
             {
                 var response = await _fileManagementService.DeleteFile(guid);
+                _logger.LogInformation($"Deleted {response} files.");
                 return Ok(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error deleting files.");
                 return BadRequest($"{ex.Message}");
             }
         }
