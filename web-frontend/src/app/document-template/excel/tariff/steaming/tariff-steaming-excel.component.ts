@@ -52,11 +52,12 @@ import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffLabourItem[],
+  repData: TariffSteamingItem[],
   date: string
 }
 
@@ -82,9 +83,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-tariff-labour-cost-report-excel',
-  templateUrl: './tariff-labour-cost-excel.component.html',
-  styleUrls: ['./tariff-labour-cost-excel.component.scss'],
+  selector: 'app-tariff-steaming-report-excel',
+  templateUrl: './tariff-steaming-excel.component.html',
+  styleUrls: ['./tariff-steaming-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -98,13 +99,40 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-     NEW: 'COMMON-FORM.NEW',
+      NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
+    HEADER: 'COMMON-FORM.CARGO-DETAILS',
+    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    ST: 'COMMON-FORM.ST',
+    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
@@ -127,11 +155,44 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_MIN_LABOUR: 'COMMON-FORM.PACKAGE-MIN-LABOUR',
+    PACKAGE_MAX_LABOUR: 'COMMON-FORM.PACKAGE-MAX-LABOUR',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
-    COST_DETAILS: 'COMMON-FORM.COST-DETAILS',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
+    MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
+    QTY: 'COMMON-FORM.QTY',
+    LABOUR: 'COMMON-FORM.LABOUR$'
 
   }
 
@@ -193,7 +254,7 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffLabourCostExcelComponent>,
+    public dialogRef: MatDialogRef<TariffSteamingExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -436,7 +497,7 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 }
 
 
-async exportExcel(items: TariffLabourItem[]) {
+async exportExcel(items: TariffSteamingItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -461,9 +522,10 @@ async exportExcel(items: TariffLabourItem[]) {
 
     const data: any[][] = items.map((item) => {
                 const row = [
-                    item.description||"-",
+                    item.temp_min||"-",
+                    item.temp_max||"-",
                     this.parse2Decimal(item.cost!)||"-",
-                    item.remarks||"-",
+                    this.parse2Decimal(item.labour!)||"-",
                     this.displayLastUpdated(item) || "-",
                     
                 ];
@@ -471,9 +533,10 @@ async exportExcel(items: TariffLabourItem[]) {
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
    const head: (string | number)[][] = [[
-  this.translatedLangText.DESCRIPTION,
-  this.translatedLangText.COST,
-  this.translatedLangText.REMARKS,
+  this.translatedLangText.MIN_TEMP,
+  this.translatedLangText.MAX_TEMP,
+  this.translatedLangText.FLAT_RATE,
+  this.translatedLangText.HOURLY_RATE,
   this.translatedLangText.LAST_UPDATED
 ]];
 
@@ -486,7 +549,7 @@ async exportExcel(items: TariffLabourItem[]) {
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "LabourCost.xlsx");
+    XLSX.writeFile(workbook, "SteamingTariff.xlsx");
     this.dialogRef.close();
 }
 

@@ -41,6 +41,8 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { TariffSteamingExcelComponent } from 'app/document-template/excel/tariff/steaming/tariff-steaming-excel.component';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -213,6 +215,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     QTY: 'COMMON-FORM.QTY',
     LABOUR: 'COMMON-FORM.LABOUR$'
   }
+  isGeneratingReport: boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -742,5 +745,66 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
+     export_excel()
+          {
+            
+            if(this.tariffSteamItems)
+            {
+            this.isGeneratingReport=true;
+            var prcList:TariffSteamingItem[]=[];
+                 this.tariffSteamItems.forEach((item)=>{
+                   var itm:any = item;
+                   
+                  const c: TariffSteamingItem = {
+                    ...itm.tariff_steaming,
+                    min_temp : (itm.tariff_steaming?.temp_min === null || itm.tariff_steaming?.temp_min ===
+                      undefined|| itm.tariff_steaming?.temp_min === 9999) ? "-" : this.roundUpToDecimal(itm.tariff_steaming?.temp_min,2),
+                    max_temp: (itm.tariff_steaming?.temp_max === null || itm.tariff_steaming?.temp_max ===
+                      undefined  ||itm.tariff_steaming?.temp_max === 9999) ? "-" :this.roundUpToDecimal(itm.tariff_steaming?.temp_max,2),
+                    
+                  };
+                  prcList.push(c);
+                 });
+            this.exportExcelReport(prcList);
+            }
+        
+          }
+      
+            exportExcelReport(repData:any) {
+                
+                    //this.preventDefault(event);
+                    let cut_off_dt = new Date();
+                
+                
+                    let tempDirection: Direction;
+                    if (localStorage.getItem('isRtl') === 'true') {
+                      tempDirection = 'rtl';
+                    } else {
+                      tempDirection = 'ltr';
+                    }
+                
+                    const dialogRef = this.dialog.open(TariffSteamingExcelComponent, {
+                      width: reportPreviewWindowDimension.portrait_width_rate,
+                      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                      
+                      data: {
+                        repData: repData
+                      },
+                
+                      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                      direction: tempDirection
+                    });
+                
+                      dialogRef.updatePosition({
+                      top: '-90vh',  // Move far above the screen
+                      left: '0px'  // Move far to the left of the screen
+                    });
+                
+                    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                      this.isGeneratingReport = false;
+                    });
+            
+              }
 }
 

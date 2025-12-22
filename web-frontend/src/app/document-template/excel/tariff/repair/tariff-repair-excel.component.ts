@@ -30,7 +30,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, RowInput, Styles } from 'jspdf-autotable';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { PDFUtility } from 'app/utilities/pdf-utility';
-import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
+import { TariffRepairGroup, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import * as XLSX from 'xlsx';
 import {
   ApexAxisChartSeries, ApexChart,
@@ -56,7 +56,7 @@ import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffLabourItem[],
+  repData: TariffRepairItem[],
   date: string
 }
 
@@ -82,9 +82,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-tariff-labour-cost-report-excel',
-  templateUrl: './tariff-labour-cost-excel.component.html',
-  styleUrls: ['./tariff-labour-cost-excel.component.scss'],
+  selector: 'app-tariff-repair-report-excel',
+  templateUrl: './tariff-repair-excel.component.html',
+  styleUrls: ['./tariff-repair-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -98,13 +98,40 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TariffRepairExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-     NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
+    HEADER: 'COMMON-FORM.CARGO-DETAILS',
+    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    ST: 'COMMON-FORM.ST',
+    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
@@ -113,6 +140,7 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -127,11 +155,51 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
-    COST_DETAILS: 'COMMON-FORM.COST-DETAILS',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    GROUP_NAME: "COMMON-FORM.GROUP",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    DIMENSION: "COMMON-FORM.DIMENSION",
+    MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
+    MATERIAL$: "COMMON-FORM.MATERIAL$",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    SEARCH: 'COMMON-FORM.SEARCH',
+    ADD: 'COMMON-FORM.ADD',
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    PART_SELECTED: 'COMMON-FORM.SELECTED',
+    EXPORT:'COMMON-FORM.EXPORT',
 
   }
 
@@ -193,7 +261,7 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffLabourCostExcelComponent>,
+    public dialogRef: MatDialogRef<TariffRepairExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -346,97 +414,97 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
- async export(items: CleaningPriceList[]) {
-    const doc = new jsPDF();
+//  async export(items: CleaningPriceList[]) {
+//     const doc = new jsPDF();
 
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
+//     const pageWidth = 210; // A4 width in mm (portrait)
+//     const pageHeight = 297; // A4 height in mm (portrait)
+//     const leftMargin = 10;
+//     const rightMargin = 10;
+//     const topMargin = 5;
+//     const bottomMargin = 5;
 
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+//     const contentWidth = pageWidth - leftMargin - rightMargin;
+//     const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+//     let fontSize = 12;
+//     doc.setFontSize(fontSize);
+//     doc.text("Cleaning Tariff", 105, 15, { align: "center" });
 
-    let lastTableFinalY = 25;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
+//     let lastTableFinalY = 25;
+//     const pagePositions: { page: number; x: number; y: number }[] = [];
+//     const table_body_fontsize = 8;
+//     const startX = leftMargin;
+//     let index = 1;
 
-    const data: any[][] = items.map((item) => {
-                const row = [
-                    index++, // increment index for each item
-                    item.Descripton,
-                    `${item.Unit || "-"}`,
-                    item.ManHour|| "-" ,
-                    item.Material||"-",
-                ];
-                return row;
-            });
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-     autoTable(doc, {
-                startY: lastTableFinalY,
-                head: [[
-                    this.translatedLangText.S_N,
-                    this.translatedLangText.DESCRIPTION,
-                    this.translatedLangText.UNIT,
-                    this.translatedLangText.MANHOUR,
-                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
-                ]],
-                body: data,
-                theme: "grid",
-                margin: { left: leftMargin, right: rightMargin },
-                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
-                headStyles: {
-                  fillColor: [220, 220, 220],
-                  textColor: [0, 0, 0],
-                  fontStyle: 'bold',
-                  halign: 'center',   // ✅ centers header text
-                  valign: 'middle'
-                },
-                columnStyles: {
-                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
-                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
-                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
-                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
-                },
-                didDrawPage: (d: any) => {
-                    lastTableFinalY = d.cursor.y + 8;
-                    const pageCount = doc.getNumberOfPages();
-                    if (!pagePositions.find(p => p.page === pageCount)) {
-                        pagePositions.push({
-                            page: pageCount,
-                            x: doc.internal.pageSize.width - 20,
-                            y: doc.internal.pageSize.height - 10
-                        });
-                    }
-                }
-            });
+//     const data: any[][] = items.map((item) => {
+//                 const row = [
+//                     index++, // increment index for each item
+//                     item.Descripton,
+//                     `${item.Unit || "-"}`,
+//                     item.ManHour|| "-" ,
+//                     item.Material||"-",
+//                 ];
+//                 return row;
+//             });
+//     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+//      autoTable(doc, {
+//                 startY: lastTableFinalY,
+//                 head: [[
+//                     this.translatedLangText.S_N,
+//                     this.translatedLangText.DESCRIPTION,
+//                     this.translatedLangText.UNIT,
+//                     this.translatedLangText.MANHOUR,
+//                     `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
+//                 ]],
+//                 body: data,
+//                 theme: "grid",
+//                 margin: { left: leftMargin, right: rightMargin },
+//                 styles: { fontSize: table_body_fontsize, cellPadding: 2 },
+//                 headStyles: {
+//                   fillColor: [220, 220, 220],
+//                   textColor: [0, 0, 0],
+//                   fontStyle: 'bold',
+//                   halign: 'center',   // ✅ centers header text
+//                   valign: 'middle'
+//                 },
+//                 columnStyles: {
+//                     0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+//                     1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
+//                     2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
+//                     3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
+//                     4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
+//                 },
+//                 didDrawPage: (d: any) => {
+//                     lastTableFinalY = d.cursor.y + 8;
+//                     const pageCount = doc.getNumberOfPages();
+//                     if (!pagePositions.find(p => p.page === pageCount)) {
+//                         pagePositions.push({
+//                             page: pageCount,
+//                             x: doc.internal.pageSize.width - 20,
+//                             y: doc.internal.pageSize.height - 10
+//                         });
+//                     }
+//                 }
+//             });
 
     
 
-    const totalPages = doc.getNumberOfPages();
+//     const totalPages = doc.getNumberOfPages();
 
-    // Add page numbers
-    for (const { page } of pagePositions) {
-        doc.setFontSize(8);
-        doc.setPage(page);
-        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
-    }
+//     // Add page numbers
+//     for (const { page } of pagePositions) {
+//         doc.setFontSize(8);
+//         doc.setPage(page);
+//         doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
+//     }
 
-    doc.save("CleaningTariff.pdf");
-    this.dialogRef.close();
-}
+//     doc.save("CleaningTariff.pdf");
+//     this.dialogRef.close();
+// }
 
 
-async exportExcel(items: TariffLabourItem[]) {
+async exportExcel(items: TariffRepairItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -460,21 +528,28 @@ async exportExcel(items: TariffLabourItem[]) {
     let index = 1;
 
     const data: any[][] = items.map((item) => {
+                var itm:any = item;
                 const row = [
-                    item.description||"-",
-                    this.parse2Decimal(item.cost!)||"-",
-                    item.remarks||"-",
-                    this.displayLastUpdated(item) || "-",
+                    itm.part_name||"-",
+                    itm.group_name_cv||"-",
+                    itm.subgroup_name_cv||"-",
+                    itm.labour_hour||"-",
+                    this.parse2Decimal(itm.material_cost!)||"-",
+                    this.displayLastUpdated(itm) || "-",
+                    itm.handled||"-",
                     
                 ];
                 return row;
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
    const head: (string | number)[][] = [[
-  this.translatedLangText.DESCRIPTION,
-  this.translatedLangText.COST,
-  this.translatedLangText.REMARKS,
-  this.translatedLangText.LAST_UPDATED
+  this.translatedLangText.PART_NAME,
+  this.translatedLangText.GROUP_NAME,
+  this.translatedLangText.SUB_GROUP_NAME,
+  this.translatedLangText.LABOUR_HOUR,
+  this.translatedLangText.MATERIAL$,
+  this.translatedLangText.LAST_UPDATED,
+  this.translatedLangText.HANDLED_ITEM,
 ]];
 
     const rows: (string | number)[][] = [
@@ -486,7 +561,7 @@ async exportExcel(items: TariffLabourItem[]) {
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "LabourCost.xlsx");
+    XLSX.writeFile(workbook, "RepairTariff.xlsx");
     this.dialogRef.close();
 }
 
