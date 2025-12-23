@@ -411,7 +411,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       width: wdth,
       autoFocus: false,
       disableClose: true,
-      height: '95vh',
+      maxHeight: '95vh',
       data: {
         action: 'new',
         langText: this.langText,

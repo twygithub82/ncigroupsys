@@ -24,6 +24,7 @@
                       </button>
                     </div>
                     }
+                     @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                     <button mat-mini-fab
                             class="light-green-button m-l-10"
                             (click)="export_excel()"
@@ -34,6 +35,7 @@
                           alt="{{ translatedLangText.EXPORT }}"
                           class="fab-icon">
                     </button>
+                  }
                     <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />

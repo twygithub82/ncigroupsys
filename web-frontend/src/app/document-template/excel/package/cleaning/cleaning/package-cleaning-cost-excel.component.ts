@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -9,8 +9,6 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { BehaviorSubject, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
@@ -21,13 +19,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { BarChartModule } from '@swimlane/ngx-charts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
-import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
-import { PDFUtility } from 'app/utilities/pdf-utility';
-import { autoTable, Styles } from 'jspdf-autotable';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -49,7 +45,7 @@ import * as XLSX from 'xlsx';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffSteamingItem[],
+  repData: CustomerCompanyCleaningCategoryItem[],
   date: string
 }
 
@@ -72,12 +68,29 @@ export type ChartOptions = {
   markers?: ApexMarkers;
   labels: string[];
   responsive: ApexResponsive[];
+  // series?: ApexAxisChartSeries;
+  // series2?: ApexNonAxisChartSeries;
+  // chart?: ApexChart;
+  // dataLabels?: ApexDataLabels;
+  // plotOptions?: ApexPlotOptions;
+  // yaxis?: ApexYAxis;
+  // xaxis?: ApexXAxis;
+  // fill?: ApexFill;
+  // tooltip?: ApexTooltip;
+  // stroke?: ApexStroke;
+  // legend?: ApexLegend;
+  // title?: ApexTitleSubtitle;
+  // colors?: string[];
+  // grid?: ApexGrid;
+  // markers?: ApexMarkers;
+  // labels: string[];
+  // responsive: ApexResponsive[];
 };
 
 @Component({
-  selector: 'app-tariff-steaming-report-excel',
-  templateUrl: './tariff-steaming-excel.component.html',
-  styleUrls: ['./tariff-steaming-excel.component.scss'],
+  selector: 'app-package-cleaning-cost-report-excel',
+  templateUrl: './package-cleaning-cost-excel.component.html',
+  styleUrls: ['./package-cleaning-cost-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -91,13 +104,14 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-      NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -171,20 +185,22 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_MIN_LABOUR: 'COMMON-FORM.PACKAGE-MIN-LABOUR',
-    PACKAGE_MAX_LABOUR: 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    COST: 'COMMON-FORM.COST',
-    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
-    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
-    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    COST: "COMMON-FORM.COST",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
-    MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
-    QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR$'
+    PROCEDURE_CLEAN_CATEGORY: 'COMMON-FORM.CLEAN-CATEGORY',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
 
   }
 
@@ -235,7 +251,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: any[];
+  repData?: TariffCleaningItem[];
   date?: string;
   repType?: string;
   customer?: string;
@@ -246,7 +262,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffSteamingExcelComponent>,
+    public dialogRef: MatDialogRef<PackageCleaningCostExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -313,14 +329,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  // getRepairData(): Promise<any[]> {
-  //   return new Promise((resolve, reject) => {
-  //     this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
-  //       next: (data) => resolve(data),
-  //       error: (err) => reject(err),
-  //     });
-  //   });
-  // }
+
 
   getRepairPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
@@ -331,7 +340,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  
+
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -345,7 +354,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
-  
+
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -353,7 +362,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     }).join('/');
   }
 
-  
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -391,7 +400,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
 
 
 
-  @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
+  // @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
   async exportToExcel_r1(fileName: string = 'document.xslx') {
@@ -399,8 +408,11 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
   }
 
 
- async export(items: CleaningPriceList[]) {
-    const doc = new jsPDF();
+
+
+
+  async exportExcel(items: CustomerCompanyCleaningCategoryItem[]) {
+    // const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -413,8 +425,8 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
     let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+    // doc.setFontSize(fontSize);
+    // doc.text("Cleaning Tariff", 105, 15, { align: "center" });
 
     let lastTableFinalY = 25;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -423,322 +435,231 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     let index = 1;
 
     const data: any[][] = items.map((item) => {
-                const row = [
-                    index++, // increment index for each item
-                    item.Descripton,
-                    `${item.Unit || "-"}`,
-                    item.ManHour|| "-" ,
-                    item.Material||"-",
-                ];
-                return row;
-            });
+      const row = [
+        item.customer_company?.name || "-",
+        item.cleaning_category?.name || "-",
+        this.parse2Decimal(item.adjusted_price!) || "-",
+        this.parse2Decimal(item.cleaning_category?.cost!) || "-",
+        this.displayLastUpdated(item) || "-",
+      ];
+      return row;
+    });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-     autoTable(doc, {
-                startY: lastTableFinalY,
-                head: [[
-                    this.translatedLangText.S_N,
-                    this.translatedLangText.DESCRIPTION,
-                    this.translatedLangText.UNIT,
-                    this.translatedLangText.MANHOUR,
-                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
-                ]],
-                body: data,
-                theme: "grid",
-                margin: { left: leftMargin, right: rightMargin },
-                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
-                headStyles: {
-                  fillColor: [220, 220, 220],
-                  textColor: [0, 0, 0],
-                  fontStyle: 'bold',
-                  halign: 'center',   // ✅ centers header text
-                  valign: 'middle'
-                },
-                columnStyles: {
-                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
-                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
-                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
-                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
-                },
-                didDrawPage: (d: any) => {
-                    lastTableFinalY = d.cursor.y + 8;
-                    const pageCount = doc.getNumberOfPages();
-                    if (!pagePositions.find(p => p.page === pageCount)) {
-                        pagePositions.push({
-                            page: pageCount,
-                            x: doc.internal.pageSize.width - 20,
-                            y: doc.internal.pageSize.height - 10
-                        });
-                    }
-                }
-            });
-
-    
-
-    const totalPages = doc.getNumberOfPages();
-
-    // Add page numbers
-    for (const { page } of pagePositions) {
-        doc.setFontSize(8);
-        doc.setPage(page);
-        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
-    }
-
-    doc.save("CleaningTariff.pdf");
-    this.dialogRef.close();
-}
-
-
-async exportExcel(items: TariffSteamingItem[]) {
-    const doc = new jsPDF();
-
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
-
-    let lastTableFinalY = 25;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
-
-    const data: any[][] = items.map((item) => {
-                const row = [
-                    item.temp_min||"-",
-                    item.temp_max||"-",
-                    this.parse2Decimal(item.cost!)||"-",
-                    this.parse2Decimal(item.labour!)||"-",
-                    this.displayLastUpdated(item) || "-",
-                    
-                ];
-                return row;
-            });
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-   const head: (string | number)[][] = [[
-  this.translatedLangText.MIN_TEMP,
-  this.translatedLangText.MAX_TEMP,
-  this.translatedLangText.FLAT_RATE,
-  this.translatedLangText.HOURLY_RATE,
-  this.translatedLangText.LAST_UPDATED
-]];
+    const head: (string | number)[][] = [[
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.PROCEDURE_CLEAN_CATEGORY,
+      this.translatedLangText.CUSTOMER_COST,
+      this.translatedLangText.TARIFF_COST,
+      this.translatedLangText.LAST_UPDATE
+    ]];
 
     const rows: (string | number)[][] = [
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "SteamingTariff.xlsx");
+    XLSX.writeFile(workbook, "cleaningPackage.xlsx");
     this.dialogRef.close();
-}
-
-
-  async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
-    leftMargin: number, rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
-
-    pdf.addPage();
-    const tablewidth = 55;
-    var pageNumber = pdf.getNumberOfPages();
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    const card = cardElements[0];
-    const contentWidth = pageWidth - leftMargin - rightMargin - tablewidth - 5;
-
-    const imgData = await PDFUtility.captureFullCardImage(card);
-    // Convert card to image (JPEG format)
-    const canvas = await html2canvas(card);
-    // const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
-
-    const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-
-    // Add the report title at the top of every page, centered
-    const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-
-    var pos = 10;
-    PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pos);
-    // pdf.text(reportTitle, titleX, pos); // Position it at the top
-
-    // // Draw underline for the title
-    // pdf.setLineWidth(0.5); // Set line width for underline
-    // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-
-    pos += 8;
-    pdf.addImage(imgData, 'JPEG', leftMargin, pos, contentWidth, imgHeight); // Adjust y position to leave space for the title
-
-
-    let minHeightBodyCell = 9;
-    let fontSz = 6.5;
-    const headers = [[
-      this.translatedLangText.DESCRIPTION,
-      this.translatedLangText.NO_OF_TANKS
-    ]];
-
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    const comStyles: any = {
-      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-    };
-
-    let lastTableFinalY = 10;
-    let startY = lastTableFinalY;
-    let minHeightHeaderCol = 8;
-    const data: any[][] = [];
-    // data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
-    // data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
-
-
-
-    let startX = (pageWidth - rightMargin - tablewidth);
-    //Add table using autoTable plugin
-
-    // pdf.setFontSize(8);
-    // pdf.setTextColor(0, 0, 0); // Black text
-    // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
-
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      startY: startY + 8, // Start table at the current startY value
-      margin: { left: startX },
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        halign: 'center', // Left-align content for body by default
-        valign: 'middle', // Vertically align content
-      }
-
-    });
-
   }
 
-  async exportToPDF(fileName: string = 'document.pdf') {
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const leftMargin = 10; // Left margin
-    const rightMargin = 10; // Right margin
-    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-    let totalPages = 0;
 
-    // Store page positions for later text update
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
+  // async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
+  //   leftMargin: number, rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
 
-    const reportTitle = this.GetReportTitle();  // Set your report title here
+  //   pdf.addPage();
+  //   const tablewidth = 55;
+  //   var pageNumber = pdf.getNumberOfPages();
+  //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  //   const card = cardElements[0];
+  //   const contentWidth = pageWidth - leftMargin - rightMargin - tablewidth - 5;
 
-    // Set font for the title
-    pdf.setFontSize(14); // Title font size
+  //   const imgData = await PDFUtility.captureFullCardImage(card);
+  //   // Convert card to image (JPEG format)
+  //   const canvas = await html2canvas(card);
+  //   // const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
 
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
+  //   const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-      // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+  //   // Add the report title at the top of every page, centered
+  //   const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
+  //   const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
 
-      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+  //   var pos = 10;
+  //   PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pos);
+  //   // pdf.text(reportTitle, titleX, pos); // Position it at the top
 
-      // Add the report title at the top of every page, centered
-      const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+  //   // // Draw underline for the title
+  //   // pdf.setLineWidth(0.5); // Set line width for underline
+  //   // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
-      const pos = 15;
-      // pdf.text(reportTitle, titleX, pos); // Position it at the top
+  //   pos += 8;
+  //   pdf.addImage(imgData, 'JPEG', leftMargin, pos, contentWidth, imgHeight); // Adjust y position to leave space for the title
 
-      // // Draw underline for the title
-      // pdf.setLineWidth(0.5); // Set line width for underline
-      // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
 
-      // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
-        let yPosition = 0;
-        while (yPosition < canvas.height) {
-          const sectionCanvas = document.createElement('canvas');
-          sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
+  //   let minHeightBodyCell = 9;
+  //   let fontSz = 6.5;
+  //   const headers = [[
+  //     this.translatedLangText.DESCRIPTION,
+  //     this.translatedLangText.NO_OF_TANKS
+  //   ]];
 
-          const sectionCtx = sectionCanvas.getContext('2d');
-          sectionCtx?.drawImage(canvas, 0, -yPosition);
+  //   // Define headStyles with valid fontStyle
+  //   const headStyles: Partial<Styles> = {
+  //     fillColor: [211, 211, 211], // Background color
+  //     textColor: 0, // Text color (white)
+  //     fontStyle: "bold", // Valid fontStyle value
+  //     halign: 'center', // Centering header text
+  //     valign: 'middle',
+  //     lineColor: 201,
+  //     lineWidth: 0.1
+  //   };
 
-          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
+  //   const comStyles: any = {
+  //     0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+  //     1: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+  //   };
 
-          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
+  //   let lastTableFinalY = 10;
+  //   let startY = lastTableFinalY;
+  //   let minHeightHeaderCol = 8;
+  //   const data: any[][] = [];
+  //   // data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
+  //   // data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
 
-          // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
 
-          yPosition += sectionCanvas.height;
-          if (yPosition < canvas.height) {
-            pdf.addPage();
-            pageNumber++;
-            pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.setLineWidth(0.5); // Set line width for underline
-            pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-          }
-        }
-      } else {
-        if (i > 0) pdf.addPage(); // New page for each card
-        pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-        pdf.text(reportTitle, titleX, pos); // Position it at the top
 
-        // Draw underline for the title
-        pdf.setLineWidth(0.5); // Set line width for underline
-        pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+  //   let startX = (pageWidth - rightMargin - tablewidth);
+  //   //Add table using autoTable plugin
 
-        // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-      }
-      pageNumber++;
-      this.generatingPdfProgress += progressValue;
-    }
+  //   // pdf.setFontSize(8);
+  //   // pdf.setTextColor(0, 0, 0); // Black text
+  //   // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+  //   // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
 
-    totalPages = pageNumber - 1;
+  //   autoTable(pdf, {
+  //     head: headers,
+  //     body: data,
+  //     startY: startY + 8, // Start table at the current startY value
+  //     margin: { left: startX },
+  //     theme: 'grid',
+  //     styles: {
+  //       fontSize: fontSz,
+  //       minCellHeight: minHeightHeaderCol
 
-    // Add page numbers in a second pass
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
+  //     },
+  //     columnStyles: comStyles,
+  //     headStyles: headStyles, // Custom header styles
+  //     bodyStyles: {
+  //       fillColor: [255, 255, 255],
+  //       halign: 'center', // Left-align content for body by default
+  //       valign: 'middle', // Vertically align content
+  //     }
 
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
+  //   });
+
+  // }
+
+  // async exportToPDF(fileName: string = 'document.pdf') {
+  //   this.generatingPdfLoadingSubject.next(true);
+  //   this.generatingPdfProgress = 0;
+  //   const pdf = new jsPDF('p', 'mm', 'a4');
+  //   const leftMargin = 10; // Left margin
+  //   const rightMargin = 10; // Right margin
+  //   const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
+  //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  //   let pageNumber = 1;
+  //   let totalPages = 0;
+
+  //   // Store page positions for later text update
+  //   const pagePositions: { page: number; x: number; y: number }[] = [];
+  //   const progressValue = 100 / cardElements.length;
+
+  //   const reportTitle = this.GetReportTitle();  // Set your report title here
+
+  //   // Set font for the title
+  //   pdf.setFontSize(14); // Title font size
+
+  //   for (let i = 0; i < cardElements.length; i++) {
+  //     const card = cardElements[i];
+
+  //     // Convert card to image (JPEG format)
+  //     const canvas = await html2canvas(card, { scale: this.scale });
+  //     const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+
+  //     const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+
+  //     // Add the report title at the top of every page, centered
+  //     const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
+  //     const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+
+  //     const pos = 15;
+  //     // pdf.text(reportTitle, titleX, pos); // Position it at the top
+
+  //     // // Draw underline for the title
+  //     // pdf.setLineWidth(0.5); // Set line width for underline
+  //     // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
+
+  //     // If card height exceeds A4 page height, split across multiple pages
+  //     if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
+  //       let yPosition = 0;
+  //       while (yPosition < canvas.height) {
+  //         const sectionCanvas = document.createElement('canvas');
+  //         sectionCanvas.width = canvas.width;
+  //         sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
+
+  //         const sectionCtx = sectionCanvas.getContext('2d');
+  //         sectionCtx?.drawImage(canvas, 0, -yPosition);
+
+  //         const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
+
+  //         pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
+
+  //         // Store page position for page numbering
+  //         pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+
+  //         yPosition += sectionCanvas.height;
+  //         if (yPosition < canvas.height) {
+  //           pdf.addPage();
+  //           pageNumber++;
+  //           pdf.text(reportTitle, titleX, 10); // Add title on new page
+  //           pdf.setLineWidth(0.5); // Set line width for underline
+  //           pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+  //         }
+  //       }
+  //     } else {
+  //       if (i > 0) pdf.addPage(); // New page for each card
+  //       pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
+  //       pdf.text(reportTitle, titleX, pos); // Position it at the top
+
+  //       // Draw underline for the title
+  //       pdf.setLineWidth(0.5); // Set line width for underline
+  //       pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
+  //       // Store page position for page numbering
+  //       pagePositions.push({ page: pageNumber, x: 200, y: 287 });
+  //     }
+  //     pageNumber++;
+  //     this.generatingPdfProgress += progressValue;
+  //   }
+
+  //   totalPages = pageNumber - 1;
+
+  //   // Add page numbers in a second pass
+  //   pagePositions.forEach(({ page, x, y }) => {
+  //     pdf.setPage(page);
+  //     pdf.setFontSize(10);
+  //     pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+  //   });
+
+  //   this.generatingPdfProgress = 100;
+  //   pdf.save(fileName);
+  //   this.generatingPdfProgress = 0;
+  //   this.generatingPdfLoadingSubject.next(false);
+  // }
 
 
   GeneratedDate(): string {
@@ -938,7 +859,7 @@ async exportExcel(items: TariffSteamingItem[]) {
     }
   }
 
-   displayLastUpdated(r: any) {
+  displayLastUpdated(r: any) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;

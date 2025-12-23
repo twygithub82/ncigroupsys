@@ -48,7 +48,8 @@ import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {TariffLabourDS} from "app/data-sources/tariff-labour";
 import { TariffCleaningCostPdfComponent } from 'app/document-template/pdf/tariff/cleaning/tariff-cleaning-cost-pdf.component';
-import { TariffCleaningCostExcelComponent } from 'app/document-template/excel/tariff/cleaning/cleaning/tariff-cleaning-cost-excel.component';
+import {TariffCleaningCostExcelComponent} from "app/document-template/excel/tariff/cleaning/cleaning/tariff-cleaning-cost-excel.component";
+
 
 
 @Component({

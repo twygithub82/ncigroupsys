@@ -21,11 +21,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { BarChartModule } from '@swimlane/ngx-charts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
-import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
+import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import { autoTable, Styles } from 'jspdf-autotable';
 import {
@@ -49,7 +49,7 @@ import * as XLSX from 'xlsx';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffSteamingItem[],
+  repData: TariffLabourItem[],
   date: string
 }
 
@@ -75,9 +75,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-tariff-steaming-report-excel',
-  templateUrl: './tariff-steaming-excel.component.html',
-  styleUrls: ['./tariff-steaming-excel.component.scss'],
+  selector: 'app-package-labour-cost-report-excel',
+  templateUrl: './package-labour-cost-excel.component.html',
+  styleUrls: ['./package-labour-cost-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -91,13 +91,14 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-      NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -171,20 +172,20 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_MIN_LABOUR: 'COMMON-FORM.PACKAGE-MIN-LABOUR',
-    PACKAGE_MAX_LABOUR: 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    COST: 'COMMON-FORM.COST',
-    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
-    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
-    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    COST: "COMMON-FORM.COST",
+    CLEANING_LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    PACKAGE_LABOUR: "COMMON-FORM.PACKAGE-LABOUR",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    SEARCH: 'COMMON-FORM.SEARCH',
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
-    MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
-    QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR$'
+    EXPORT: 'COMMON-FORM.EXPORT',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
 
   }
 
@@ -246,7 +247,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffSteamingExcelComponent>,
+    public dialogRef: MatDialogRef<PackageLabourCostExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -331,7 +332,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  
+
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -345,7 +346,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
-  
+
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -353,7 +354,7 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     }).join('/');
   }
 
-  
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -399,7 +400,10 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
   }
 
 
- async export(items: CleaningPriceList[]) {
+ 
+
+
+  async exportExcel(items: PackageLabourItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -423,127 +427,33 @@ export class TariffSteamingExcelComponent extends UnsubscribeOnDestroyAdapter im
     let index = 1;
 
     const data: any[][] = items.map((item) => {
-                const row = [
-                    index++, // increment index for each item
-                    item.Descripton,
-                    `${item.Unit || "-"}`,
-                    item.ManHour|| "-" ,
-                    item.Material||"-",
-                ];
-                return row;
-            });
+      const row = [
+        item.customer_company?.name || "-",
+        this.parse2Decimal(item.cost!) || "-",
+        this.displayLastUpdated(item) || "-",
+
+      ];
+      return row;
+    });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-     autoTable(doc, {
-                startY: lastTableFinalY,
-                head: [[
-                    this.translatedLangText.S_N,
-                    this.translatedLangText.DESCRIPTION,
-                    this.translatedLangText.UNIT,
-                    this.translatedLangText.MANHOUR,
-                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
-                ]],
-                body: data,
-                theme: "grid",
-                margin: { left: leftMargin, right: rightMargin },
-                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
-                headStyles: {
-                  fillColor: [220, 220, 220],
-                  textColor: [0, 0, 0],
-                  fontStyle: 'bold',
-                  halign: 'center',   // ✅ centers header text
-                  valign: 'middle'
-                },
-                columnStyles: {
-                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
-                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
-                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
-                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
-                },
-                didDrawPage: (d: any) => {
-                    lastTableFinalY = d.cursor.y + 8;
-                    const pageCount = doc.getNumberOfPages();
-                    if (!pagePositions.find(p => p.page === pageCount)) {
-                        pagePositions.push({
-                            page: pageCount,
-                            x: doc.internal.pageSize.width - 20,
-                            y: doc.internal.pageSize.height - 10
-                        });
-                    }
-                }
-            });
-
-    
-
-    const totalPages = doc.getNumberOfPages();
-
-    // Add page numbers
-    for (const { page } of pagePositions) {
-        doc.setFontSize(8);
-        doc.setPage(page);
-        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
-    }
-
-    doc.save("CleaningTariff.pdf");
-    this.dialogRef.close();
-}
-
-
-async exportExcel(items: TariffSteamingItem[]) {
-    const doc = new jsPDF();
-
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
-
-    let lastTableFinalY = 25;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
-
-    const data: any[][] = items.map((item) => {
-                const row = [
-                    item.temp_min||"-",
-                    item.temp_max||"-",
-                    this.parse2Decimal(item.cost!)||"-",
-                    this.parse2Decimal(item.labour!)||"-",
-                    this.displayLastUpdated(item) || "-",
-                    
-                ];
-                return row;
-            });
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-   const head: (string | number)[][] = [[
-  this.translatedLangText.MIN_TEMP,
-  this.translatedLangText.MAX_TEMP,
-  this.translatedLangText.FLAT_RATE,
-  this.translatedLangText.HOURLY_RATE,
-  this.translatedLangText.LAST_UPDATED
-]];
+    const head: (string | number)[][] = [[
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.CUSTOMER_COST,
+      this.translatedLangText.LAST_UPDATE
+    ]];
 
     const rows: (string | number)[][] = [
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "SteamingTariff.xlsx");
+    XLSX.writeFile(workbook, "LabourCostPackage.xlsx");
     this.dialogRef.close();
-}
+  }
 
 
   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
@@ -938,7 +848,7 @@ async exportExcel(items: TariffSteamingItem[]) {
     }
   }
 
-   displayLastUpdated(r: any) {
+  displayLastUpdated(r: any) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;

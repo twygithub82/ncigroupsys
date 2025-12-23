@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { TariffCleaningCostPdfComponent } from "./tariff-cleaning-cost-pdf.component"
-describe("TariffCleaningCostPdfComponent", () => {
-  let component: TariffCleaningCostPdfComponent;
-  let fixture: ComponentFixture<TariffCleaningCostPdfComponent>;
+import { TariffCleaningCostExcelComponent } from "./tariff-cleaning-cost-excel.component"
+describe("TariffCleaningCostExcelComponent", () => {
+  let component: TariffCleaningCostExcelComponent;
+  let fixture: ComponentFixture<TariffCleaningCostExcelComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [TariffCleaningCostPdfComponent],
+    imports: [TariffCleaningCostExcelComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(TariffCleaningCostPdfComponent);
+    fixture = TestBed.createComponent(TariffCleaningCostExcelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

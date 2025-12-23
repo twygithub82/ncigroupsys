@@ -6,12 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -20,18 +20,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { BarChartModule } from '@swimlane/ngx-charts';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard, report_status, AdminReportMonthlyReport } from 'app/data-sources/reports';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { autoTable, RowInput, Styles } from 'jspdf-autotable';
-import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
+import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { PDFUtility } from 'app/utilities/pdf-utility';
-import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
-import * as XLSX from 'xlsx';
+import { autoTable, Styles } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -48,10 +44,7 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
-import { TariffLabourItem } from 'app/data-sources/tariff-labour';
+import * as XLSX from 'xlsx';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -486,7 +479,7 @@ async exportExcel(items: TariffLabourItem[]) {
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "LabourCost.xlsx");
+    XLSX.writeFile(workbook, "LabourCostTariff.xlsx");
     this.dialogRef.close();
 }
 

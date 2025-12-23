@@ -144,7 +144,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();

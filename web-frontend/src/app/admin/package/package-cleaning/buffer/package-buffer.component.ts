@@ -44,6 +44,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { PackageBufferCleaningCostExcelComponent } from 'app/document-template/excel/package/cleaning/buffer-cleaning/package-buffer-cleaning-cost-excel.component';
 
 @Component({
   selector: 'app-package-buffer',
@@ -239,6 +241,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+  isGeneratingReport: boolean=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -951,4 +954,61 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_DELETE']);
   }
+
+  export_excel()
+        {
+          
+         if(this.packBufferItems)
+         {
+          this.isGeneratingReport=true;
+          var prcList:PackageBufferItem[]=[];
+              this.packBufferItems.forEach((item)=>{
+                var itm:any = item;
+               const c: PackageBufferItem = {
+                  ...itm,
+                 
+                };
+                prcList.push(c);
+              });
+          this.exportExcelReport(prcList);
+         }
+      
+        }
+    
+      exportExcelReport(repData:any) {
+              
+                 //this.preventDefault(event);
+                  let cut_off_dt = new Date();
+              
+              
+                  let tempDirection: Direction;
+                  if (localStorage.getItem('isRtl') === 'true') {
+                    tempDirection = 'rtl';
+                  } else {
+                    tempDirection = 'ltr';
+                  }
+              
+                  const dialogRef = this.dialog.open(PackageBufferCleaningCostExcelComponent, {
+                    width: reportPreviewWindowDimension.portrait_width_rate,
+                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                    
+                    data: {
+                      repData: repData
+                    },
+              
+                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                    direction: tempDirection
+                  });
+              
+                    dialogRef.updatePosition({
+                    top: '-90vh',  // Move far above the screen
+                    left: '0px'  // Move far to the left of the screen
+                  });
+              
+                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                    this.isGeneratingReport = false;
+                  });
+          
+            }
 }
