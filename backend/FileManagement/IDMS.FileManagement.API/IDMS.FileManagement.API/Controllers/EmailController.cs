@@ -29,11 +29,12 @@ namespace IDMS.FileManagement.API.Controllers
         private readonly IEmail _emailService;
         private readonly IReport _reportService;
         private readonly IFileManagement _fileManagement;
+        private readonly ILogger<EmailController> _logger;
         //private readonly JwtTokenService _jwtTokenService;
         //private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly AppDBContext _dbContext;
 
-        public EmailController(IConfiguration configuration, IEmail emailService, IFileManagement fileManagement, IReport reportService, AppDBContext context)
+        public EmailController(IConfiguration configuration, IEmail emailService, IFileManagement fileManagement, IReport reportService, AppDBContext context, ILogger<EmailController> logger)
         {
             //_userManager = userManager;
             //_roleManager = roleManager;
@@ -43,6 +44,7 @@ namespace IDMS.FileManagement.API.Controllers
             _reportService = reportService;
             //_signInManager = signInManager;
             _dbContext = context;
+            _logger = logger;
             //_jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             //_refreshTokenStore = refreshTokenStore;
         }
@@ -101,11 +103,12 @@ namespace IDMS.FileManagement.API.Controllers
                         await using var responseStream = await _fileManagement.GetZipBlobFolderAsync(zipFileRequest);
                         var zipBytes = responseStream.ToArray();
                         await _emailService.SendEmailWithZipAttachmentAsync(recipient, ccList, bccList, subject, htmlBody, zipBytes, $"{tankNumber}.zip");
+                        _logger.LogInformation($"EIR email sent to {string.Join(", ", recipient)} for Tank No: {tankNumber}");
                     }
                     catch (Exception ex)
                     {
                         // Log exception or handle as needed
-                        Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
+                        _logger.LogError($"[BackgroundTaskError] {ex.Message}");
                     }
                 });
 
@@ -119,6 +122,7 @@ namespace IDMS.FileManagement.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"[SendMailError] {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
                     Status = "Error",
@@ -142,6 +146,7 @@ namespace IDMS.FileManagement.API.Controllers
                 // Validate To addresses (required)
                 if (emailJobDto.to_addresses == null || !emailJobDto.to_addresses.Any())
                 {
+                    _logger.LogWarning("No To addresses provided in NewEmailJob request.");
                     return BadRequest(new Response
                     {
                         Status = "ValidationError",
@@ -175,6 +180,7 @@ namespace IDMS.FileManagement.API.Controllers
 
                 if (invalidEmails.Any())
                 {
+                    _logger.LogWarning("Email validation errors in NewEmailJob request: {Errors}", string.Join("; ", invalidEmails));
                     return BadRequest(new Response
                     {
                         Status = "ValidationError",
@@ -199,6 +205,7 @@ namespace IDMS.FileManagement.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"[NewEmailJobError] {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
                     Status = "Error",
@@ -219,10 +226,12 @@ namespace IDMS.FileManagement.API.Controllers
                 var res = await _emailService.ScheduleEirEmailTask(int.Parse(EirType));
                 var type = EirType == "1" ? "In_Gate" : "Out_Gate";
 
+                _logger.LogInformation($"[{type} - Eir Email Job Started]");
                 return Ok(new { Message = $"{type} - Eir Email Job Started" });
             }
             catch (Exception ex)
             {
+                _logger.LogError($"[StartEirEmailJobError] {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
                     Status = "Error",
@@ -236,6 +245,7 @@ namespace IDMS.FileManagement.API.Controllers
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> StartEirEmailJobExternal(string EirType)
         {
+            _logger.LogInformation($"[ExternalCall] StartEirEmailJobExternal called with EirType: {EirType}");
             return await EirEmailJob(EirType);
         }
 
@@ -248,12 +258,14 @@ namespace IDMS.FileManagement.API.Controllers
         {
             try
             {
+                _logger.LogInformation($"[Tank Activity Email Job Started for customer: {customer}]");
                 await _reportService.GenerateTankActivityReport();
 
                 return Ok(new { Message = $"Tank Activity Email Job Started" });
             }
             catch (Exception ex)
             {
+                _logger.LogError($"[StartTankActivityJobError] {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response
                 {
                     Status = "Error",

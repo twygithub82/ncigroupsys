@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -6,12 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -20,18 +19,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { BarChartModule } from '@swimlane/ngx-charts';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard, report_status, AdminReportMonthlyReport } from 'app/data-sources/reports';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { autoTable, RowInput, Styles } from 'jspdf-autotable';
-import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
-import { PDFUtility } from 'app/utilities/pdf-utility';
-import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
-import * as XLSX from 'xlsx';
+import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { autoTable } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -48,8 +42,7 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import * as XLSX from 'xlsx';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -119,8 +112,8 @@ export class TariffCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapte
    STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
+    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME', 
+    SO_DATE: 'COMMON-FORM.SO-DATE', 
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',

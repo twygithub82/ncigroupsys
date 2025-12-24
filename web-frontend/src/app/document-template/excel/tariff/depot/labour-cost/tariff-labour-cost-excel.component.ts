@@ -6,12 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -20,18 +20,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { BarChartModule } from '@swimlane/ngx-charts';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard, report_status, AdminReportMonthlyReport } from 'app/data-sources/reports';
-import { SteamDS } from 'app/data-sources/steam';
-import { SteamPartDS } from 'app/data-sources/steam-part';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { autoTable, RowInput, Styles } from 'jspdf-autotable';
-import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
+import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { PDFUtility } from 'app/utilities/pdf-utility';
-import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
-import * as XLSX from 'xlsx';
+import { autoTable, Styles } from 'jspdf-autotable';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -48,14 +44,12 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import * as XLSX from 'xlsx';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffBufferItem[],
+  repData: TariffLabourItem[],
   date: string
 }
 
@@ -100,37 +94,10 @@ export type ChartOptions = {
 export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    NEW: 'COMMON-FORM.NEW',
+     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
-    HEADER: 'COMMON-FORM.CARGO-DETAILS',
-    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
@@ -153,32 +120,11 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION: 'COMMON-FORM.BUFFER-TYPE',
-    BUFFER_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
+    COST_DETAILS: 'COMMON-FORM.COST-DETAILS',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    TARIFF_BUFFER_ASSIGNED: 'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
 
   }
 
@@ -483,7 +429,7 @@ export class TariffLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 }
 
 
-async exportExcel(items: TariffBufferItem[]) {
+async exportExcel(items: TariffLabourItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -508,8 +454,9 @@ async exportExcel(items: TariffBufferItem[]) {
 
     const data: any[][] = items.map((item) => {
                 const row = [
-                    item.buffer_type||"-",
+                    item.description||"-",
                     this.parse2Decimal(item.cost!)||"-",
+                    item.remarks||"-",
                     this.displayLastUpdated(item) || "-",
                     
                 ];
@@ -519,6 +466,7 @@ async exportExcel(items: TariffBufferItem[]) {
    const head: (string | number)[][] = [[
   this.translatedLangText.DESCRIPTION,
   this.translatedLangText.COST,
+  this.translatedLangText.REMARKS,
   this.translatedLangText.LAST_UPDATED
 ]];
 
@@ -531,7 +479,7 @@ async exportExcel(items: TariffBufferItem[]) {
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "BufferCleaningTariff.xlsx");
+    XLSX.writeFile(workbook, "LabourCostTariff.xlsx");
     this.dialogRef.close();
 }
 

@@ -24,7 +24,7 @@ namespace IDMS.Models.Package.GqlTypes
 
         #region Package Cleaning methods
 
-        public async Task<int> UpdatePackageCleans(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageCleans(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
              [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageClean_guids, string remarks, double adjusted_price, double? price_percentage)
         {
             int retval = 0;
@@ -73,7 +73,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageClean(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageClean(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, customer_company_cleaning_category UpdatePackageClean)
         {
             int retval = 0;
@@ -113,7 +113,7 @@ namespace IDMS.Models.Package.GqlTypes
 
         #region Package Depot methods
 
-        public async Task<int> UpdatePackageDepots(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageDepots(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageDepot_guids, int free_storage, double lolo_cost,
            double preinspection_cost, double storage_cost, double gate_in_cost, double gate_out_cost, string remarks, string storage_cal_cv, CostPercentage? costPercentage)
         {
@@ -173,7 +173,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-        public async Task<int> UpdatePackageDepot(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageDepot(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, package_depot UpdatePackageDepot)
         {
             int retval = 0;
@@ -223,7 +223,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-        public async Task<int> DeletePackageDepot(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageDepot(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageDepot_guids)
         {
             int retval = 0;
@@ -258,7 +258,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Depot methods
 
         #region Package Labour methods
-        public async Task<int> UpdatePackageLabours(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageLabours(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, double cost, string remarks, double? cost_percentage)
         {
             int retval = 0;
@@ -307,7 +307,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-        public async Task<int> UpdatePackageLabour(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageLabour(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, package_labour UpdatePackageLabour)
         {
             int retval = 0;
@@ -351,7 +351,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageLabour(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageLabour(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageLabour_guids)
         {
             int retval = 0;
@@ -386,7 +386,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Labour methods
 
         #region Package Residue methods
-        public async Task<int> UpdatePackageResidues(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageResidues(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageResidue_guids, double cost, string remarks)
         {
             int retval = 0;
@@ -421,7 +421,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageResidue(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageResidue(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
           [Service] IHttpContextAccessor httpContextAccessor, package_residue updatePackageResidue)
         {
             int retval = 0;
@@ -463,7 +463,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageResidue(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageResidue(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] deletePackageResidue_guids)
         {
             int retval = 0;
@@ -499,7 +499,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Residue methods
 
         #region Package Buffer methods
-        public async Task<int> UpdatePackageBuffers(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageBuffers(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageBuffer_guids, double cost, string remarks, double? cost_percentage)
         {
             int retval = 0;
@@ -544,7 +544,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
           [Service] IHttpContextAccessor httpContextAccessor, package_buffer updatePackageBuffer)
         {
             int retval = 0;
@@ -587,7 +587,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageBuffer(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] deletePackageBuffer_guids)
         {
             int retval = 0;
@@ -626,7 +626,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Buffer methods
 
         #region Package Repair methods
-        public async Task<int> UpdatePackageRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageRepair_guids, double material_cost, double labour_hour, string remarks)
         {
             int retval = 0;
@@ -663,7 +663,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageRepair(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageRepair(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
           [Service] IHttpContextAccessor httpContextAccessor, package_repair updatePackageRepair)
         {
             int retval = 0;
@@ -706,7 +706,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageRepair(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageRepair(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] deletePackageRepair_guids)
         {
             int retval = 0;
@@ -739,7 +739,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageRepair_ByPercentage(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageRepair_ByPercentage(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] package_repair_guid, double material_cost_percentage, double labour_hour_percentage)
         {
             int retval = 0;
@@ -802,7 +802,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-        public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
             int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
         {
@@ -1082,7 +1082,7 @@ namespace IDMS.Models.Package.GqlTypes
         #endregion Package Repair methods
 
         #region Package Steaming methods
-        public async Task<int> UpdatePackageSteamings(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageSteamings(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageSteaming_guids, double cost, double labour, string remarks)
         {
             int retval = 0;
@@ -1125,7 +1125,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-        public async Task<int> UpdatePackageSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdatePackageSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, package_steaming UpdatePackageSteaming)
         {
             int retval = 0;
@@ -1170,7 +1170,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeletePackageSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageSteaming_guids)
         {
             int retval = 0;
@@ -1207,7 +1207,7 @@ namespace IDMS.Models.Package.GqlTypes
 
 
         #region Package Steaming methods
-        public async Task<int> AddSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> AddSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, List<steaming_exclusive> NewSteamingExclusive)
         {
             int retval = 0;
@@ -1272,7 +1272,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdateSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> UpdateSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive UpdateSteamingExclusive)
         {
             int retval = 0;
@@ -1332,7 +1332,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageQuery> logger,
+        public async Task<int> DeleteSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] ILogger<PackageMutation> logger,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteSteamExclusive_guids)
         {
             int retval = 0;

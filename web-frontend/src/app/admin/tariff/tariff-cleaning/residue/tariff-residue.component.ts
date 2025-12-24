@@ -44,6 +44,7 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { TariffResidueCostExcelComponent } from 'app/document-template/excel/tariff/cleaning/residue-dispose/tariff-residue-cost-excel.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
+
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -235,7 +236,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();

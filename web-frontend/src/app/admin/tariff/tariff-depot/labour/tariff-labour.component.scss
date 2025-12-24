@@ -57,6 +57,11 @@
   :host  ::ng-deep .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
     margin-right: 0px !important;
   }
+
+   .fab-icon {
+  width: 24px;
+  height: 24px;
+}
   // :host ::ng-deep .mat-expansion-panel-header {
   //   padding-right: 0px !important;
   // }

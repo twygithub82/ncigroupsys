@@ -147,6 +147,7 @@ namespace IDMS.Email.Service
                 if (emailJobs.Any())
                 {
                     Task.Run(() => EirEmailThread(emailJobs));
+                    _logger.LogInformation($"Scheduled {emailJobs.Count} EIR email jobs of type {type}.");
                 }
                 await Task.Delay(200);
                 return true;
@@ -200,6 +201,8 @@ namespace IDMS.Email.Service
                 //Task.Run(() => InGateEmailThread(emailJob.eir_group_guid, emailJob.tank_no, newEmailJob.guid,
                 //    emailJob.to_addresses, emailJob.cc_addresses, emailJob.bcc_addresses));
 
+
+                _logger.LogInformation($"Inserted new email job for Tank {emailJob.tank_no}, Type {emailJob.type}");
                 await Task.Delay(300);
                 return res > 0 ? true : false;
             }
@@ -305,7 +308,7 @@ namespace IDMS.Email.Service
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError($"[Error] Failed to send email for Job {emJob.guid}, Tank {emJob.tank_no}: {ex.Message}");
+                                _logger.LogError($"Failed to send email for Job {emJob.guid}, Tank {emJob.tank_no}: {ex.Message}");
                                 //Console.WriteLine(ex.StackTrace);
                                 unsuccessfullSentJobs.Add(emJob);
                             }
@@ -322,6 +325,8 @@ namespace IDMS.Email.Service
                                     .SetProperty(e => e.status, 1)
                                     .SetProperty(e => e.attempt_count, e => (e.attempt_count ?? 0) + 1)
                                 );
+
+                            _logger.LogInformation($"Successfully sent {successfullySentJobs.Count} email jobs.");
                         }
 
                         if (unsuccessfullSentJobs.Any())
@@ -333,6 +338,8 @@ namespace IDMS.Email.Service
                                     .SetProperty(e => e.status, 2) // failure
                                     .SetProperty(e => e.attempt_count, e => (e.attempt_count ?? 0) + 1)
                                 );
+
+                            _logger.LogWarning($"Failed to send {unsuccessfullSentJobs.Count} email jobs.");
                         }
                     }
                 }
