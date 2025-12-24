@@ -40,6 +40,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-exclusive-steam',
@@ -234,6 +237,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+  isGeneratingReport: boolean=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -242,7 +246,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -885,5 +890,63 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   displayNumber(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
+
+  export_excel() {
+  
+      if (this.packageSteamItems) {
+        this.isGeneratingReport = true;
+        var prcList: PackageSteamingItem[] = [];
+        this.packageSteamItems.forEach((item) => {
+           var itm:any = item;
+          const c: PackageSteamingItem = {
+             ...itm.package_steaming,
+          temp_max:this.displayTempMax(itm.temp_max),
+          temp_min:itm.temp_min,
+          tariff_cleaning:itm.tariff_cleaning,
+  
+          };
+          prcList.push(c);
+        });
+        this.exportExcelReport(prcList);
+      }
+  
+    }
+  
+    exportExcelReport(repData: any) {
+  
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(PackageExclusiveSteamingCostExcelComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+  
+        data: {
+          repData: repData
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-90vh',  // Move far above the screen
+        left: '0px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+  
+    }
 }
 
