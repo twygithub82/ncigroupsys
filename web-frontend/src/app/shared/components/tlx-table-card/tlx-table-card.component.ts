@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, ContentChild, TemplateRef, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, ContentChild, TemplateRef, HostListener, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { trigger, transition, style, animate, state } from '@angular/animations';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator'; // ✅ Import PageEvent
 
 export interface TableColumn {
     key: string;
@@ -26,10 +27,14 @@ export interface TableGroup {
 @Component({
     selector: 'tlx-table-card',
     standalone: true,
-    imports: [CommonModule],
+    imports: [
+        CommonModule,
+        MatPaginatorModule,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './tlx-table-card.component.html',
     styleUrl: './tlx-table-card.component.scss',
+    encapsulation: ViewEncapsulation.None,
     animations: [
         trigger('swipeAnimation', [
             transition(':increment', [
@@ -59,12 +64,13 @@ export class TlxTableCardComponent implements OnChanges {
     @Input() rowLabel: string = 'Record';
     @Input() enableRowClick: boolean = true;
     @Input() enablePagination: boolean = false;
-    @Input() pageSize: number = 10;
+    @Input() pageSize: number = 25; // ✅ Changed default to match Material paginator
     @Input() enableSwipe: boolean = true;
+    @Input() mobilePaginationMode: 'standard' | 'bullets' = 'standard';
 
     @Output() rowClick = new EventEmitter<{ item: any, index: number, group?: TableGroup }>();
     @Output() groupToggle = new EventEmitter<TableGroup>();
-    @Output() pageChange = new EventEmitter<number>();
+    @Output() pageChange = new EventEmitter<PageEvent>(); // ✅ Changed to PageEvent
 
     @ContentChild('rowTemplate') rowTemplate?: TemplateRef<any>;
     @ContentChild('mobileRowTemplate') mobileRowTemplate?: TemplateRef<any>;
@@ -72,13 +78,22 @@ export class TlxTableCardComponent implements OnChanges {
 
     groupedData: TableGroup[] = [];
     hasData: boolean = false;
-    currentPage: number = 0;
+    currentPage: number = 0; // ✅ 0-based for Material paginator
     totalPages: number = 1;
     animationState: number = 0;
 
     private startX: number = 0;
     private isDragging: boolean = false;
     private swipeThreshold: number = 50;
+
+    // ✅ Add getter for total count (needed by mat-paginator)
+    get totalCount(): number {
+        return this.groupedData.length > 0
+            ? this.groupedData.reduce((sum, group) => sum + group.items.length, 0)
+            : this.items.length;
+    }
+
+    constructor(private cdr: ChangeDetectorRef) { }
 
     ngOnChanges() {
         this.hasData = this.items.length > 0 || this.groups.length > 0;
@@ -115,10 +130,7 @@ export class TlxTableCardComponent implements OnChanges {
     }
 
     private calculateTotalPages(): void {
-        const totalItems = this.groupedData.length > 0
-            ? this.groupedData.reduce((sum, group) => sum + group.items.length, 0)
-            : this.items.length;
-        this.totalPages = Math.ceil(totalItems / this.pageSize);
+        this.totalPages = Math.ceil(this.totalCount / this.pageSize);
     }
 
     getCurrentPageItems(): any[] {
@@ -139,11 +151,27 @@ export class TlxTableCardComponent implements OnChanges {
         })).filter(group => group.items.length > 0);
     }
 
+    // ✅ NEW: Handle Material Paginator events
+    onPageChange(event: PageEvent): void {
+        this.currentPage = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.calculateTotalPages();
+        this.pageChange.emit(event); // ✅ Emit PageEvent to parent
+        this.cdr.markForCheck();
+    }
+
+    // ✅ KEEP these for swipe functionality
     nextPage(): void {
         if (this.currentPage < this.totalPages - 1) {
             this.currentPage++;
             this.animationState++;
-            this.pageChange.emit(this.currentPage);
+            // Emit PageEvent format for consistency
+            this.pageChange.emit({
+                pageIndex: this.currentPage,
+                pageSize: this.pageSize,
+                length: this.totalCount
+            } as PageEvent);
+            this.cdr.markForCheck();
         }
     }
 
@@ -151,7 +179,13 @@ export class TlxTableCardComponent implements OnChanges {
         if (this.currentPage > 0) {
             this.currentPage--;
             this.animationState--;
-            this.pageChange.emit(this.currentPage);
+            // Emit PageEvent format for consistency
+            this.pageChange.emit({
+                pageIndex: this.currentPage,
+                pageSize: this.pageSize,
+                length: this.totalCount
+            } as PageEvent);
+            this.cdr.markForCheck();
         }
     }
 
@@ -167,7 +201,6 @@ export class TlxTableCardComponent implements OnChanges {
         const currentX = event.touches[0].clientX;
         const diff = Math.abs(currentX - this.startX);
 
-        // Only prevent default if horizontal movement is significant and event is cancelable
         if (event.cancelable && diff > 10) {
             event.preventDefault();
         }
@@ -194,7 +227,7 @@ export class TlxTableCardComponent implements OnChanges {
         if (!this.enableSwipe || !this.enablePagination) return;
         this.startX = event.clientX;
         this.isDragging = true;
-        event.preventDefault(); // Prevent text selection
+        event.preventDefault();
     }
 
     onMouseMove(event: MouseEvent): void {
@@ -232,5 +265,55 @@ export class TlxTableCardComponent implements OnChanges {
     toggleGroup(group: TableGroup): void {
         group.isExpanded = !group.isExpanded;
         this.groupToggle.emit(group);
+        this.cdr.markForCheck();
+    }
+
+    getPageArray(): number[] {
+        const maxDots = 7; // Show max 7 dots
+        const pages: number[] = [];
+
+        if (this.totalPages <= maxDots) {
+            // Show all if total pages is small
+            return Array.from({ length: this.totalPages }, (_, i) => i);
+        }
+
+        // Always show first page
+        pages.push(0);
+
+        // Calculate range around current page
+        let startPage = Math.max(1, this.currentPage - 1);
+        let endPage = Math.min(this.totalPages - 2, this.currentPage + 1);
+
+        // Add ellipsis indicator (use -1 as marker)
+        if (startPage > 1) {
+            pages.push(-1); // ellipsis before
+        }
+
+        // Add middle pages
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+
+        // Add ellipsis indicator
+        if (endPage < this.totalPages - 2) {
+            pages.push(-2); // ellipsis after
+        }
+
+        // Always show last page
+        pages.push(this.totalPages - 1);
+
+        return pages;
+    }
+
+    goToPage(pageIndex: number): void {
+        if (pageIndex >= 0 && pageIndex < this.totalPages) {
+            this.currentPage = pageIndex;
+            this.pageChange.emit({
+                pageIndex: this.currentPage,
+                pageSize: this.pageSize,
+                length: this.totalCount
+            } as PageEvent);
+            this.cdr.markForCheck(); // ✅ Add this for consistency with your other page methods
+        }
     }
 }

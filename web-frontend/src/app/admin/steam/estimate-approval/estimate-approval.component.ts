@@ -608,8 +608,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
               if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
                 // this.calculateNetCost_r1(stm);
-                 return { ...stm, steaming_part: stm_part ,net_cost: "0.01"};
-                
+                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
+
               } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
                 // this.calculateNetCost_r1(stm);
                 return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
@@ -759,7 +759,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     }
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
-  
+
   }
 
   calculateNetCost(steam: SteamItem): any {
@@ -777,10 +777,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
-   
+
   }
 
-   calculateNetCost_r1(row: any) {
+  calculateNetCost_r1(row: any) {
 
     const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company_guid;
     const where = {
@@ -796,7 +796,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         if (isAutoApproveSteaming) {
           row.net_cost = this.displayNumber(row.rate || 0);
           if (!row.flat_rate) {
-            row.net_cost = this.displayNumber(row.total_hour * row.rate) 
+            row.net_cost = this.displayNumber(row.total_hour * row.rate)
           }
         }
         else {
@@ -980,21 +980,21 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       ]
     };
     this.plDS.getCustomerPackageCost(where).subscribe(data => {
-        if (data.length > 0) {
+      if (data.length > 0) {
         var cost: number = data[0].cost;
         sot.steaming = sot.steaming?.map(stm => {
-         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
-         var net_cost="";
-        if (isAutoApproveSteaming) {
-          net_cost = this.displayNumber(stm.rate || 0);
-          if (!stm.flat_rate) {
-            net_cost = this.displayNumber((stm?.total_hour||0) * (stm?.rate||0)) 
+          var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
+          var net_cost = "";
+          if (isAutoApproveSteaming) {
+            net_cost = this.displayNumber(stm.rate || 0);
+            if (!stm.flat_rate) {
+              net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
+            }
           }
-        }
-        else {
-          net_cost= this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
-        }
-          
+          else {
+            net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
+          }
+
           return { ...stm, net_cost: net_cost };
         });
         // var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
@@ -1136,6 +1136,126 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       hour: 1,
       material_cost: 7.55,
       price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
     }
   ];
 
@@ -1166,8 +1286,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     console.log(`Group "${group.groupLabel}" ${group.isExpanded ? 'expanded' : 'collapsed'}`);
   }
 
-  onPageChange(page: number): void {
-    console.log('Page changed to:', page + 1);
+  onPageChange(event: PageEvent): void {
+    console.log('Page changed to:', event.pageIndex + 1); // ✅ Access pageIndex property
+    // or
+    console.log('Page changed:', event);
+    console.log('Current page (1-based):', event.pageIndex + 1);
+    console.log('Page size:', event.pageSize);
   }
 
   getFooterWidth(footer: TableFooter): string {

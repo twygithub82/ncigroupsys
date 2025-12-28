@@ -664,9 +664,9 @@
 
                 <!-- testing normal table -->
                 <!-- <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
-                  [enablePagination]="true" [pageSize]="1" [enableSwipe]="true" rowLabel="Repair"
-                  (rowClick)="onRepairClick($event)" (groupToggle)="onGroupToggle($event)"
-                  (pageChange)="onPageChange($event)">
+                  class="striped-rows" [enablePagination]="true" [pageSize]="1" [enableSwipe]="true" rowLabel="Repair"
+                  mobilePaginationMode="bullets" (rowClick)="onRepairClick($event)"
+                  (groupToggle)="onGroupToggle($event)" (pageChange)="onPageChange($event)">
 
                   <ng-template #rowTemplate let-repair let-i="index" let-group="group">
                     <div class="row-cell" [style.width]="'5%'">{{ i + 1 }}</div>
