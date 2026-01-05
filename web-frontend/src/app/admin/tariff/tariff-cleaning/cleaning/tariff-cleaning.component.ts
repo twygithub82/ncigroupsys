@@ -48,6 +48,8 @@ import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {TariffLabourDS} from "app/data-sources/tariff-labour";
 import { TariffCleaningCostPdfComponent } from 'app/document-template/pdf/tariff/cleaning/tariff-cleaning-cost-pdf.component';
+import {TariffCleaningCostExcelComponent} from "app/document-template/excel/tariff/cleaning/cleaning/tariff-cleaning-cost-excel.component";
+
 
 
 @Component({
@@ -894,9 +896,30 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
+  export_excel()
+  {
+    
+   if(this.tcList)
+   {
+    this.isGeneratingReport=true;
+    var prcList:TariffCleaningItem[]=[];
+        this.tcList.forEach((item)=>{
+          var itm:any = item;
+         const c: TariffCleaningItem = {
+            ...itm.tariff_cleaning,
+            ban_type_cv: this.getbanTypeDescription(itm.tariff_cleaning.ban_type_cv)
+          };
+          prcList.push(c);
+        });
+    this.exportExcelReport(prcList);
+   }
+
+  }
    export_report()
     {
       this.isGeneratingReport=true;
+      
+      
       var order={};
       var where={};
       // this.subs.sink = this.cMethodDS.searchAllCleaningMethods(where, order).subscribe(data => 
@@ -924,7 +947,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
           prc.Material=Utility.formatNumberDisplay(item.cost||0);
           prcList.push(prc);
           }
-          this.ShowReport(prcList);
+          
+            this.ShowReport(prcList);
+          
 
         })
 
@@ -932,6 +957,42 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       });
     }
 
+    exportExcelReport(repData:any) {
+      
+         //this.preventDefault(event);
+          let cut_off_dt = new Date();
+      
+      
+          let tempDirection: Direction;
+          if (localStorage.getItem('isRtl') === 'true') {
+            tempDirection = 'rtl';
+          } else {
+            tempDirection = 'ltr';
+          }
+      
+          const dialogRef = this.dialog.open(TariffCleaningCostExcelComponent, {
+            width: reportPreviewWindowDimension.portrait_width_rate,
+            maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+            maxHeight: reportPreviewWindowDimension.report_maxHeight,
+            
+            data: {
+              repData: repData
+            },
+      
+            // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+            direction: tempDirection
+          });
+      
+            dialogRef.updatePosition({
+            top: '-90vh',  // Move far above the screen
+            left: '0px'  // Move far to the left of the screen
+          });
+      
+          this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+            this.isGeneratingReport = false;
+          });
+  
+    }
    ShowReport(repData:any) {
       
          //this.preventDefault(event);

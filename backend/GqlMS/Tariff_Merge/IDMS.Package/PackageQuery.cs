@@ -257,7 +257,7 @@ namespace IDMS.Models.Package.GqlTypes
         [UseFiltering()]
         [UseSorting]
         public IQueryable<package_steaming?> QueryPackageSteaming(ApplicationTariffDBContext context,
-            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, [Service] ILogger logger)
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, [Service] ILogger<PackageQuery> logger)
         {
 
             IQueryable<package_steaming> query = null;

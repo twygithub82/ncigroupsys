@@ -47,6 +47,9 @@ import { debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { pack } from 'd3';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { PackageBufferCleaningCostExcelComponent } from 'app/document-template/excel/package/cleaning/buffer-cleaning/package-buffer-cleaning-cost-excel.component';
+import { PackageRepairCostExcelComponent } from 'app/document-template/excel/repair/package-repair-cost-excel.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -275,6 +278,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+  isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -420,7 +424,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'80vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '80vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -451,7 +455,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -485,7 +489,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItemWithCount[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -1207,9 +1211,66 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return Utility.formatNumberDisplay(amount);
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      centerClass += ExtraPadding ? 'extra-left-padding' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, ExtraPadding: boolean = true): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    centerClass += ExtraPadding ? 'extra-left-padding' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  export_excel() {
+
+    if (this.packRepairItems) {
+      this.isGeneratingReport = true;
+      var prcList: PackageRepairItem[] = [];
+      this.packRepairItems.forEach((item) => {
+        var itm: any = item;
+        const c: PackageRepairItem = {
+          ...itm.package_repair,
+          part_name: this.getTariffRepairAlias(itm.package_repair?.tariff_repair),
+          group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair?.tariff_repair),
+          subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.package_repair?.tariff_repair.subgroup_name_cv)
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
     }
+
+  }
+
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PackageRepairCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }

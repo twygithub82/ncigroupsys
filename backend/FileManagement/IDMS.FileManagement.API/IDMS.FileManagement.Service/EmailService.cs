@@ -7,6 +7,7 @@ using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using MimeKit;
 using Org.BouncyCastle.Cms;
@@ -40,19 +41,27 @@ namespace IDMS.Email.Service
         private readonly IFileManagement _fileMangementService;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public EmailService(IConfiguration config, AppDBContext context, EmailConfiguration emailConfig, IFileManagement fileMangementService, IServiceScopeFactory scopeFactory)
+
+        private readonly ILogger<EmailService> _logger;
+
+        public EmailService(IConfiguration config, AppDBContext context, EmailConfiguration emailConfig, 
+                            IFileManagement fileMangementService, IServiceScopeFactory scopeFactory, ILogger<EmailService> logger)
         {
             _context = context;
+            _logger = logger;
+
             //Setup Azure Connection 
             azureConnectionString = config.GetConnectionString("AzureConnection");
             _blobServiceClient = new BlobServiceClient(azureConnectionString);
-            Console.WriteLine($"Azure blob storage connection: {azureConnectionString}");
+            _logger.LogInformation($"Azure blob storage connection: {azureConnectionString}");
+
             //Setup Db Connection
             dbConnectionString = config.GetConnectionString("LocalDbConnection");
-            Console.WriteLine($"Database connection: {azureConnectionString}");
+            _logger.LogInformation($"Database connection: {azureConnectionString}");
             _emailConfig = emailConfig;
             _fileMangementService = fileMangementService;
             _scopeFactory = scopeFactory;
+           
         }
 
         public async Task<bool> SendEmailWithZipAttachmentAsync(List<string> toEmails, List<string?>? ccEmails, List<string?>? bccEmails,
@@ -124,7 +133,7 @@ namespace IDMS.Email.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace.ToString());
+                _logger.LogError(ex, "SendEmailWithZipAttachmentAsync failed");
                 throw;
             }
         }
@@ -138,14 +147,16 @@ namespace IDMS.Email.Service
                 if (emailJobs.Any())
                 {
                     Task.Run(() => EirEmailThread(emailJobs));
+                    _logger.LogInformation($"Scheduled {emailJobs.Count} EIR email jobs of type {type}.");
                 }
                 await Task.Delay(200);
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Error] {ex.Message}");
-                Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                //Console.WriteLine($"[Error] {ex.Message}");
+                //Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                _logger.LogError(ex, "ScheduleEirEmailTask failed");
                 throw;
             }
         }
@@ -190,12 +201,15 @@ namespace IDMS.Email.Service
                 //Task.Run(() => InGateEmailThread(emailJob.eir_group_guid, emailJob.tank_no, newEmailJob.guid,
                 //    emailJob.to_addresses, emailJob.cc_addresses, emailJob.bcc_addresses));
 
+
+                _logger.LogInformation($"Inserted new email job for Tank {emailJob.tank_no}, Type {emailJob.type}");
                 await Task.Delay(300);
                 return res > 0 ? true : false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace.ToString());
+                //Console.WriteLine(ex.StackTrace.ToString());
+                _logger.LogError(ex, "InsertNewEmailJob failed");
                 throw;
             }
         }
@@ -294,8 +308,8 @@ namespace IDMS.Email.Service
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"[Error] Failed to send email for Job {emJob.guid}, Tank {emJob.tank_no}: {ex.Message}");
-                                Console.WriteLine(ex.StackTrace);
+                                _logger.LogError($"Failed to send email for Job {emJob.guid}, Tank {emJob.tank_no}: {ex.Message}");
+                                //Console.WriteLine(ex.StackTrace);
                                 unsuccessfullSentJobs.Add(emJob);
                             }
                         }
@@ -311,6 +325,8 @@ namespace IDMS.Email.Service
                                     .SetProperty(e => e.status, 1)
                                     .SetProperty(e => e.attempt_count, e => (e.attempt_count ?? 0) + 1)
                                 );
+
+                            _logger.LogInformation($"Successfully sent {successfullySentJobs.Count} email jobs.");
                         }
 
                         if (unsuccessfullSentJobs.Any())
@@ -322,14 +338,17 @@ namespace IDMS.Email.Service
                                     .SetProperty(e => e.status, 2) // failure
                                     .SetProperty(e => e.attempt_count, e => (e.attempt_count ?? 0) + 1)
                                 );
+
+                            _logger.LogWarning($"Failed to send {unsuccessfullSentJobs.Count} email jobs.");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     // Log exception or handle as needed
-                    Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
-                    Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                    //Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
+                    //Console.WriteLine($"[StackTrace] {ex.StackTrace}");
+                    _logger.LogError(ex, "EirEmailThread failed");
                 }
             }
         }

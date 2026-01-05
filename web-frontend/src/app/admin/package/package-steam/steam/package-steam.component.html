@@ -22,6 +22,18 @@
                   <mat-icon class="col-white">edit</mat-icon>
                 </button>
               </div>
+               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                    <button mat-mini-fab
+                    class="light-green-button m-l-10"
+                    (click)="export_excel()"
+                    (click)="$event.stopPropagation()"
+                    [disabled]="isGeneratingReport"
+                    matTooltip="{{ translatedLangText.EXPORT }}">
+              <img src="assets/images/icons/xlsx1_64x64.png"
+                  alt="{{ translatedLangText.EXPORT }}"
+                  class="fab-icon">
+            </button>
+                }
               <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT" >
                       <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>

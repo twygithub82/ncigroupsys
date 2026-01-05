@@ -1194,13 +1194,14 @@ $breakpoints: (
   .hover-highlight .mdc-data-table__row:hover {
     background-color: transparent;
   }
- 
-   .tlx-button-group {
+
+  .tlx-button-group {
     flex-wrap: wrap;
   }
-  
+
   .tlx-button-group .mat-button-toggle {
-    flex: 1 0 calc(50% - 8px); /* 2 buttons per row */
+    flex: 1 0 calc(50% - 8px);
+    /* 2 buttons per row */
     margin-bottom: 8px;
   }
 }
@@ -2348,6 +2349,12 @@ mat-card-content.tank-card-content {
 
 .green-button {
   background-color: lighten(#35b435, 16%) !important; //#057930
+  /* Material green */
+  color: white !important;
+}
+
+.light-green-button {
+  background-color: lighten(#90c990, 16%) !important; //#057930
   /* Material green */
   color: white !important;
 }
@@ -3772,6 +3779,11 @@ mat-checkbox.compact-checkbox {
     padding-top: 7px;
     padding-bottom: 7px;
   }
+}
+
+.fab-icon {
+  width: 24px;
+  height: 24px;
 }
 
 // Custom styles for tlx-table-card component

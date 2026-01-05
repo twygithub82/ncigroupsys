@@ -49,6 +49,7 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { TariffRepairCostPdfComponent } from 'app/document-template/pdf/tariff/repair/tariff-repair-cost-pdf.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { TariffRepairExcelComponent } from 'app/document-template/excel/tariff/repair/tariff-repair-excel.component';
 
 @Component({
   selector: 'app-tariff-repair',
@@ -410,7 +411,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       width: wdth,
       autoFocus: false,
       disableClose: true,
-      height: '95vh',
+      maxHeight: '95vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -1244,4 +1245,65 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       return new TariffRepairItemWithDesc(item, groupDesc, subGroupDesc);
     });
   }
+
+   export_excel()
+      {
+        
+        if(this.trfRepairItems)
+        {
+        this.isGeneratingReport=true;
+        var prcList:TariffRepairItem[]=[];
+             this.trfRepairItems.forEach((item)=>{
+               var itm:any = item;
+               
+              const c: TariffRepairItem = {
+                ...itm.tariff_repair,
+                part_name : this.getTariffRepairAlias(itm.tariff_repair),
+                group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair.group_name_cv),
+                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv),
+                handled:this.getHandledItemDescription(itm.tariff_repair.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
+              };
+              prcList.push(c);
+             });
+        this.exportExcelReport(prcList);
+        }
+    
+      }
+  
+        exportExcelReport(repData:any) {
+            
+                //this.preventDefault(event);
+                let cut_off_dt = new Date();
+            
+            
+                let tempDirection: Direction;
+                if (localStorage.getItem('isRtl') === 'true') {
+                  tempDirection = 'rtl';
+                } else {
+                  tempDirection = 'ltr';
+                }
+            
+                const dialogRef = this.dialog.open(TariffRepairExcelComponent, {
+                  width: reportPreviewWindowDimension.portrait_width_rate,
+                  maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                  maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                  
+                  data: {
+                    repData: repData
+                  },
+            
+                  // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                  direction: tempDirection
+                });
+            
+                  dialogRef.updatePosition({
+                  top: '-90vh',  // Move far above the screen
+                  left: '0px'  // Move far to the left of the screen
+                });
+            
+                this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                  this.isGeneratingReport = false;
+                });
+        
+          }
 }

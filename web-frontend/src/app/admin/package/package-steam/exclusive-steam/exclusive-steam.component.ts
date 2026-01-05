@@ -40,6 +40,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
   selector: 'app-exclusive-steam',
@@ -234,6 +237,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+  isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -242,7 +246,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
 
   ) {
     super();
@@ -305,7 +310,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       //height: 'auto',
@@ -364,7 +369,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -398,7 +403,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       //width: '600px',
-      width: this.isMobile?MOBILE_DIALOG_WIDTH: '55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       height: 'auto',
       autoFocus: false,
       disableClose: true,
@@ -488,12 +493,12 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       where.and.push({ package_steaming: { customer_company: { code: { in: custCodes } } } });
     }
 
-     if (this.pcForm!.value["hourly_rate"]) {
+    if (this.pcForm!.value["hourly_rate"]) {
       const flat_rate: number = Number(this.pcForm!.value["hourly_rate"]);
       where.and.push({ package_steaming: { labour: { eq: flat_rate } } })
     }
 
-     if (this.pcForm!.value["flat_rate"]) {
+    if (this.pcForm!.value["flat_rate"]) {
 
       const hourly_rate: number = Number(this.pcForm!.value["flat_rate"]);
       where.and.push({ package_steaming: { cost: { eq: hourly_rate } } })
@@ -889,13 +894,71 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
+    let centerClass = isEnd ? 'justify-content-end ' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  export_excel() {
+
+    if (this.packageSteamItems) {
+      this.isGeneratingReport = true;
+      var prcList: PackageSteamingItem[] = [];
+      this.packageSteamItems.forEach((item) => {
+        var itm: any = item;
+        const c: PackageSteamingItem = {
+          ...itm.package_steaming,
+          temp_max: this.displayTempMax(itm.temp_max),
+          temp_min: itm.temp_min,
+          tariff_cleaning: itm.tariff_cleaning,
+
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
     }
 
-     getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
-      let centerClass = isEnd ? 'justify-content-end ' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(PackageExclusiveSteamingCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
 

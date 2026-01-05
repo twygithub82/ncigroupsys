@@ -24,11 +24,16 @@ namespace IDMS.FileManagement.API
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
+            // Configure logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.SetMinimumLevel(LogLevel.Information);
+
             string connectionString = builder.Configuration.GetConnectionString("DbConnection");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<AppDBContext>(o =>
             {
-                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                 o.EnableSensitiveDataLogging(false);
             });
 
@@ -137,8 +142,9 @@ namespace IDMS.FileManagement.API
                 var emailService = provider.GetRequiredService<IEmail>();
                 var scopeService = provider.GetRequiredService<IServiceScopeFactory>();
                 var env = provider.GetRequiredService<IWebHostEnvironment>();
+                var logger = provider.GetRequiredService<ILogger<ReportService>>();
 
-                return new ReportService(reportSettings, dbContext, emailService, scopeService, env.WebRootPath);
+                return new ReportService(reportSettings, dbContext, emailService, scopeService, env.WebRootPath, logger);
 
             });
                 
@@ -147,10 +153,19 @@ namespace IDMS.FileManagement.API
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Application starting up.");
+            logger.LogInformation("Environment:{env}", app.Environment.EnvironmentName);
+            logger.LogInformation($"Using database connection string: {connectionString?.Split(";")[0]}");
+            logger.LogInformation("ZipFileUrl: " + builder.Configuration["ZipFileUrl"]);
+            logger.LogInformation("ResetLinkConfiguration: " + builder.Configuration["ResetLinkConfiguration:Url"]);
+            logger.LogInformation("License_Url_Validity: " + builder.Configuration["License:Url_Validity"]);
+            logger.LogInformation("License_Url_Activation: " + builder.Configuration["License:Url_Activation"]);
+
 
             // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            if (true)
+            if (app.Environment.IsDevelopment())
+            //if (true)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(options =>

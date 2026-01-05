@@ -84,6 +84,7 @@
     "ts-invariant": "^0.10.3",
     "tslib": "^2.6.2",
     "xlsx": "^0.18.5",
+    "xslx": "^1.0.0",
     "zen-observable-ts": "^1.1.0",
     "zone.js": "~0.14.4"
   },

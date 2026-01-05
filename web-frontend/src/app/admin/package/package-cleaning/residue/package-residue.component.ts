@@ -43,6 +43,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { PackageResidueCostExcelComponent } from 'app/document-template/excel/package/cleaning/residue-dispose/package-residue-cost-excel.component';
 
 @Component({
   selector: 'app-package-residue',
@@ -244,6 +246,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   custInput?: ElementRef<HTMLInputElement>;
   @ViewChild('residueInput', { static: true })
   residueInput?: ElementRef<HTMLInputElement>;
+  isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -394,7 +397,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -431,7 +434,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-       width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -997,8 +1000,63 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  export_excel() {
+
+    if (this.packResidueItems) {
+      this.isGeneratingReport = true;
+      var prcList: PackageResidueItem[] = [];
+      this.packResidueItems.forEach((item) => {
+        var itm: any = item;
+        const c: PackageResidueItem = {
+          ...itm,
+
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
     }
+
+  }
+
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PackageResidueCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
 

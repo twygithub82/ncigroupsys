@@ -27,6 +27,19 @@
               </button>
             </div>
             }
+            @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+
+            <button mat-mini-fab
+                    class="light-green-button m-l-10"
+                    (click)="export_excel()"
+                    (click)="$event.stopPropagation()"
+                    [disabled]="isGeneratingReport"
+                    matTooltip="{{ translatedLangText.EXPORT }}">
+              <img src="assets/images/icons/xlsx1_64x64.png"
+                  alt="{{ translatedLangText.EXPORT }}"
+                  class="fab-icon">
+            </button>
+          }
             <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT" hidden>
               <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
                 <mat-icon class="col-white">edit</mat-icon>
@@ -40,33 +53,7 @@
         </mat-expansion-panel-header>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="row">
-            <!-- <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                    <input matInput formControlName="buffer_type" type="string">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
-                    <input matInput formControlName="min_cost" type="number">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
-                    <input matInput formControlName="max_cost" type="number">
-                  </mat-form-field>
-                </div> -->
-            <!-- <div
-                  class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                  <button mat-mini-fab color="primary" (click)="search()">
-                    <mat-icon>search</mat-icon>
-                  </button>
-                  <button mat-flat-button class="m-l-10" (click)="resetDialog($event)">
-                    {{translatedLangText.CLEAR_ALL}}
-                  </button>
-                </div> -->
+           
           </div>
         </div>
       </mat-expansion-panel>
