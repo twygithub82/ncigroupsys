@@ -1354,6 +1354,8 @@
                                 </button>
 
                                 <mat-menu #menu="matMenu">
+                                  <button mat-menu-item class=""
+                                    (click)="exportCleaningQuotation($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CLEANING_QUOTATION}}</button>
                                   @if (canOverwriteCleaningApproval() && allowPerformAction()) {
                                   <button mat-menu-item
                                     (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.APPROVAL}}</button>

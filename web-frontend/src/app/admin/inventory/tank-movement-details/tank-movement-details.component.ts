@@ -100,6 +100,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { SteamHeatingFormDialogComponent_View } from '@shared/preview/preview-steam-heating/form-dialog.component';
+import { CleaningEstimatePdfComponent } from 'app/document-template/pdf/cleaning-estimate-pdf/cleaning-estimate-pdf.component';
 
 
 @Component({
@@ -519,7 +520,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     STEAM_LOG: "COMMON-FORM.STEAM-LOG",
     ESTIMATE_DETAILS: "COMMON-FORM.ESTIMATE-DETAILS",
     ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY",
-    BY_HOUR: "COMMON-FORM.BY-HOUR"
+    BY_HOUR: "COMMON-FORM.BY-HOUR",
+    CLEANING_QUOTATION: "COMMON-FORM.CLEANING-QUOTATION"
   }
 
   sot_guid: string | null | undefined;
@@ -3464,6 +3466,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         repair_guid: repair_guid,
         customer_company_guid: this.sot?.storing_order?.customer_company?.guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  exportCleaningQuotation(event: Event, cleaning_guid?: string) {
+    let tempDirection: Direction = this.getViewDirection();
+
+    const dialogRef = this.dialog.open(CleaningEstimatePdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        cleaning_guid: cleaning_guid,
       },
       direction: tempDirection
     });

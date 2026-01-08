@@ -1415,7 +1415,8 @@
     "SELECT-LANGUAGE": "Select Language",
     "CONTACT-DEPOT-FOR-ADJUSTMENT": "Please contact depot for the adjustment",
     "CONTACT-SYSTEM-ADMIN": "Please contact system administrator",
-    "UNCLEAN-TANK":"Unclean Tank"
+    "UNCLEAN-TANK": "Unclean Tank",
+    "CLEANING-QUOTATION": "Cleaning Quotation"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
