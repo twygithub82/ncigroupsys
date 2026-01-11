@@ -384,6 +384,7 @@ namespace IDMS.Customer.GqlTypes
                     newCurrency.create_dt = currentDateTime;
                     newCurrency.update_dt = currentDateTime;
                     newCurrency.create_by = user;
+                    newCurrency.update_by = user;
 
                     currencyList.Add(newCurrency);
                 }
