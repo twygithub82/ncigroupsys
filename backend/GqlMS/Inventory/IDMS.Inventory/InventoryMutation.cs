@@ -1138,6 +1138,128 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        public async Task<int> AddInspections(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, inspections newInspections, List<surface_types> surfaceTypesList)
+        {   
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation("AddInspections invoked by {User} (SOT: {SotGuid})", user, newInspections?.sot_guid);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var newInspection = new inspections();
+                newInspection.guid = Util.GenerateGUID();
+                newInspection.create_by = user;
+                newInspection.create_dt = currentDateTime;
+                newInspection.update_by = user;
+                newInspection.update_dt = currentDateTime;
+
+                newInspection.sot_guid = newInspections?.sot_guid;
+                newInspection.type_cv = newInspections?.type_cv;
+                newInspection.inspect_dt = currentDateTime;
+
+                newInspection.marked_tank_section = newInspection.marked_tank_section;
+                newInspection.marked_front_section = newInspection.marked_front_section;
+                newInspection.marked_rear_section = newInspection.marked_rear_section;
+
+                if (surfaceTypesList != null && surfaceTypesList.Count > 0)
+                {
+                    IList<surface_types> surTypeList = new List<surface_types>();
+                    foreach (var surface in surfaceTypesList)
+                    {
+                        var newSurfaceType = new surface_types();
+                        newSurfaceType.guid = Util.GenerateGUID();
+                        newSurfaceType.create_by = user;
+                        newSurfaceType.create_dt = currentDateTime;
+                        newSurfaceType.update_by = user;
+                        newSurfaceType.update_dt = currentDateTime;
+
+                        newSurfaceType.inspection_guid = newInspection.guid;
+                        newSurfaceType.type = surface?.type;    
+                        newSurfaceType.remarks = surface?.remarks;
+                        surTypeList.Add(newSurfaceType);
+                    }
+                    await context.AddRangeAsync(surfaceTypesList);
+                }
+
+                await context.AddAsync(newInspection);
+                var res = await context.SaveChangesAsync();
+                _logger.LogInformation("AddInspections saved changes {Count} for SOT {SotGuid}", res, newInspections?.sot_guid);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AddInspections failed for SOT {SotGuid}", newInspections?.sot_guid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
+            }
+        }
+
+        public async Task<int> UpdateInspections(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, inspections editInspections, List<surface_types> surfaceTypesList)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var curInspection = context.inspections.Where(i => i.guid == editInspections.guid
+                                                && (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefault();
+                if (curInspection == null) 
+                {
+                    _logger.LogError($"Inspection record guid:{editInspections.guid}  not found.");
+                    throw new GraphQLException(new Error($"Inspection record not found", "NOT FOUND"));
+                }
+                curInspection.update_by = user;
+                curInspection.update_dt = currentDateTime;
+
+                curInspection.sot_guid = editInspections?.sot_guid;
+                curInspection.type_cv = editInspections?.type_cv;
+                curInspection.inspect_dt = currentDateTime;
+
+                curInspection.marked_tank_section = curInspection.marked_tank_section;
+                curInspection.marked_front_section = curInspection.marked_front_section;
+                curInspection.marked_rear_section = curInspection.marked_rear_section;
+
+                if (surfaceTypesList != null && surfaceTypesList.Count > 0)
+                {
+                    IList<surface_types> surTypeList = new List<surface_types>();
+                    foreach (var surface in surfaceTypesList)
+                    {
+                        var newSurfaceType = new surface_types();
+                        newSurfaceType.guid = Util.GenerateGUID();
+                        newSurfaceType.create_by = user;
+                        newSurfaceType.create_dt = currentDateTime;
+                        newSurfaceType.update_by = user;
+                        newSurfaceType.update_dt = currentDateTime;
+
+                        newSurfaceType.inspection_guid = curInspection.guid;
+                        newSurfaceType.type = surface?.type;
+                        newSurfaceType.remarks = surface?.remarks;
+                        surTypeList.Add(newSurfaceType);
+                    }
+                    await context.AddRangeAsync(surfaceTypesList);
+                }
+
+                await context.AddAsync(curInspection);
+                var res = await context.SaveChangesAsync();
+                _logger.LogInformation("UpdateInspections saved changes {Count} for SOT {SotGuid}", res, editInspections?.sot_guid);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UpdateInspections failed for SOT {SotGuid}", editInspections?.sot_guid);
+                throw new GraphQLException(
+                                ErrorBuilder.New()
+                                    .SetMessage(ex.Message)
+                                    .SetCode(graphqlErrorCode)
+                                    .Build());
+            }
+        }
+
 
         #region Private Local Functions
 
