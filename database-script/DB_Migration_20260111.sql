@@ -27,5 +27,11 @@ CREATE TABLE `idms`.`surface_types` (
 ALTER TABLE `idms`.`inspections` 
 ADD COLUMN `type_cv` VARCHAR(20) NULL AFTER `marked_section`;
 
+ALTER TABLE `idms`.`inspections` 
+ADD COLUMN `marked_front_section` JSON NULL AFTER `delete_dt`,
+ADD COLUMN `marked_rear_section` JSON NULL AFTER `marked_front_section`,
+CHANGE COLUMN `marked_section` `marked_tank_section` JSON NULL DEFAULT NULL ;
+
+
 ALTER TABLE `idms`.`cleaning` 
 ADD COLUMN `clean_statement_dt` BIGINT NULL DEFAULT NULL AFTER `overwrite_remarks`;
