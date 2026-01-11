@@ -1,0 +1,33 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="body">
+            <!-- @if (allowedTabs.length > 1) {
+            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+              <mat-tab [label]="translatedLangText.TARIFF_DEPOT">
+                <app-currency-exchange #currencyExchange></app-currency-exchange>
+              </mat-tab>
+            </mat-tab-group>
+            }
+            @else {
+            @for (tab of allowedTabs; track tab.label) {
+            @if (tab.component == 'app-currency-exchange') {
+            <app-currency-exchange #currencyExchange></app-currency-exchange>
+            }
+            @if (tab.component == 'app-currency-exchange') { -->
+            <app-currency-exchange #currencyExchange></app-currency-exchange>
+            <!-- }
+            }
+            } -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

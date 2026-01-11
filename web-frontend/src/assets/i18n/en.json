@@ -152,7 +152,8 @@
         "BILLING-BRANCH": "Billing Branch",
         "BILLING-BRANCH-NEW": "New Billing Branch",
         "BILLING-BRANCH-EDIT": "Edit Billing Branch",
-        "UNIT-TYPE": "Unit Type"
+        "UNIT-TYPE": "Unit Type",
+        "CURRENCY":"Currency"
       }
     },
     "MANAGEMENT": {
@@ -1416,7 +1417,8 @@
     "CONTACT-DEPOT-FOR-ADJUSTMENT": "Please contact depot for the adjustment",
     "CONTACT-SYSTEM-ADMIN": "Please contact system administrator",
     "UNCLEAN-TANK": "Unclean Tank",
-    "CLEANING-QUOTATION": "Cleaning Quotation"
+    "CLEANING-QUOTATION": "Cleaning Quotation",
+    "SYSTEM-CURRENCY": "System Currency"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
