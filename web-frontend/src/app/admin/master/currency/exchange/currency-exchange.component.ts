@@ -84,7 +84,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     'lName',
     'rate',
     'mobile',
-    // 'actions',
+     'actions',
   ];
 
   unit_type_control = new UntypedFormControl();
@@ -517,13 +517,13 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent_New, {
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       autoFocus: false,
       disableClose: true,
       width: '600px',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
-        action: 'view',
+        action: 'new',
         langText: this.langText,
         selectedItem: null
       }
@@ -649,15 +649,21 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
+    return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_EDIT']);
   }
 
   isAllowAdd() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_ADD']);
+    return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_ADD']);
   }
 
   isAllowDelete() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_DELETE']);
+     return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_DELETE']);
+  }
+
+  isAllowDeleteRow(row: any) {
+    
+    var count = row.customer_company?.length||0;
+    return count==0;
   }
 
   onSortChange(event: Sort): void {

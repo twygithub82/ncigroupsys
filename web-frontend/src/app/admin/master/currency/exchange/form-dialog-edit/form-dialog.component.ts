@@ -29,6 +29,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
+import { firstValueFrom } from 'rxjs';
 
 export interface DialogData {
   action?: string;
@@ -180,6 +181,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     CODE:'COMMON-FORM.CODE',
     RATE:'COMMON-FORM.RATE',
     SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
+    SAVE:'COMMON-FORM.SAVE',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -200,7 +202,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     // this.tnkDS = new TankDS(this.apollo);
     this.currencyDS = new CurrencyDS(this.apollo);
     this.pcForm = this.createCurrencyForm();
-    this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
+    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
     this.action = data.action!;
     this.translateLangText();
 
@@ -218,27 +220,27 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
   ngOnInit() {
     this.isMobile=Utility.isMobile();
-    if (!this.canEdit()) {
-      this.pcForm?.get('code')?.disable()
-      this.pcForm?.get('description')?.disable()
-      this.pcForm?.get('rate')?.disable()
-      // this.pcForm?.get('lolo_cost')?.disable()
-      // this.pcForm?.get('storage_cost')?.disable()
-      // this.pcForm?.get('free_storage')?.disable()
-      // this.pcForm?.get('gate_in_cost')?.disable()
-      // this.pcForm?.get('gate_out_cost')?.disable()
-      // this.unit_type_control?.disable()
-       this.pcForm?.get('last_updated')?.disable()
-    }
+    // if (!this.canEdit()) {
+    //   this.pcForm?.get('code')?.disable()
+    //   this.pcForm?.get('description')?.disable()
+    //   this.pcForm?.get('rate')?.disable()
+    //   // this.pcForm?.get('lolo_cost')?.disable()
+    //   // this.pcForm?.get('storage_cost')?.disable()
+    //   // this.pcForm?.get('free_storage')?.disable()
+    //   // this.pcForm?.get('gate_in_cost')?.disable()
+    //   // this.pcForm?.get('gate_out_cost')?.disable()
+    //   // this.unit_type_control?.disable()
+    //    this.pcForm?.get('last_updated')?.disable()
+    // }
   }
 
   createCurrencyForm(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
       action: this.action,
-      code: this.selectedItem.currency_code,
-      description: this.selectedItem.currency_name,
-      rate: this.selectedItem.rate,
+      code: this.selectedItem?.currency_code??[''],
+      description: this.selectedItem?.currency_name??[''],
+      rate: this.selectedItem?.rate??[''],
      last_updated: ['']
     });
   }
@@ -288,14 +290,57 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   update() {
     if (!this.pcForm?.valid) return;
 
-    let where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.profile_name = { eq: this.pcForm!.value['name'] };
+    if(this.isNew())
+    {
+      this.addCurrencyRate();
+    }
+    else
+    {
+      this.updateCurrencyRate();
     }
 
    
   }
 
+  async addCurrencyRate(){
+
+    const dup: boolean = await this.checkDuplication();
+    if (dup) {
+      this.pcForm?.get("code")?.setErrors({ duplicated: true });
+      return;
+    }
+    var newCurrency= new CurrencyItem();
+    newCurrency.currency_code=this.pcForm?.value['code'];
+    newCurrency.currency_name=this.pcForm?.value['description'];
+    newCurrency.rate=Number(this.pcForm?.value['rate']);
+    this.currencyDS.addCurrency([newCurrency]).subscribe(result => {
+      this.handleSaveSuccess(result?.data?.addCurrency);
+    });
+  }
+
+  async checkDuplication(): Promise<boolean> {
+     var retval: boolean = false;
+        
+       const code = `${this.pcForm?.get("code")?.value}`;
+        const where: any = {};
+        where.and = [
+          {currency_code : { eq: `${code}` }},
+          {is_active : { eq: true }}
+        ];
+        const data = await firstValueFrom(this.currencyDS!.search(where));
+        if (data.length > 0) {
+            retval = true;
+        }
+        return retval;
+  }
+  updateCurrencyRate()
+  {
+    var updateCurrency= new CurrencyItem(this.selectedItem);
+    updateCurrency.rate=Number(this.pcForm?.value['rate']);
+    this.currencyDS.updateCurrency(updateCurrency).subscribe(result => {
+      this.handleSaveSuccess(result?.data?.updateCurrency);
+    });
+  }
 
   performUpdate(unit_types: TankItem[]) {
     const updatedTD = new TariffDepotItem(this.selectedItem);
@@ -316,7 +361,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
 
   displayLastUpdated(r: TariffDepotItem) {
-    return Utility.convertEpochToDateStr(r.update_dt || r.create_dt)
+     const epoch =
+    r.update_dt ??
+    r.create_dt ??
+    Math.floor(Date.now() / 1000); // current Unix timestamp (seconds)
+
+  return Utility.convertEpochToDateStr(epoch);
   }
 
   onAlphaNumericWithSpace(event: Event, controlName: string): void {
@@ -340,12 +390,17 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
+    return this.action !== "new";
   }
   isAllowSave(){
-    return this.unit_type_control?.value?.length > 0;
+    return true;
   }
 
+  isNew()
+  {
+    const retval = this.action === "new";
+    return retval;
+  }
   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();

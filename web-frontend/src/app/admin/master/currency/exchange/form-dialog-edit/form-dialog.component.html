@@ -16,8 +16,13 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CODE}}</mat-label>
-                <input matInput formControlName="code" appNumericText type="text" required min="0"
-                  #preinspection_cost  readonly>
+                <input matInput formControlName="code"  type="text" required maxlength="5"
+                  #preinspection_cost  [readonly]="!isNew()">
+                   @if (pcForm.get('code')?.hasError('duplicated')) {
+                  <mat-error>
+                    {{translatedLangText.CODE }} {{translatedLangText.EXISTED }}
+                  </mat-error>
+                  }
                 <!-- @if (pcForm.get('preinspection_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.PREINSPECTION_COST }} {{translatedLangText.CARGO_REQUIRED}}
@@ -28,8 +33,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                <input matInput formControlName="description" appNumericText type="text" required min="0" #lolo_cost
-                   readonly>
+                <input matInput formControlName="description"  type="text" required  #lolo_cost maxlength="50"
+                    [readonly]="!isNew()">
                 <!-- @if (pcForm.get('lolo_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED }}
@@ -44,7 +49,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.RATE }}</mat-label>
                 <input matInput formControlName="rate" appNumericText type="text" required min="0" #storage_cost
-                 #rate (focus)="rate.select()">
+                 #rate (focus)="rate.select()" [allowDecimal]="true" [decimalLimit]="5">
                 <!-- @if (pcForm.get('storage_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.STORAGE_COST }} {{translatedLangText.CARGO_REQUIRED }}
@@ -65,14 +70,20 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()">
-          <mat-icon>
-            save
-          </mat-icon>
-          {{translatedLangText.UPDATE}}
-        </button>
-        }
+       @if(isAllowEdit()) {
+          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()">
+            <mat-icon>
+              save
+            </mat-icon>
+            @if (isNew()) {
+                {{translatedLangText.SAVE}}
+            }
+            @else{
+              {{translatedLangText.UPDATE}}
+            }
+          </button>
+      }
+        
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>
