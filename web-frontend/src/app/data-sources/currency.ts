@@ -50,6 +50,9 @@ const GET_CURRENCY= gql`
         sequence
         update_by
         update_dt
+        customer_company {
+          guid
+        }
       }
       pageInfo {
         endCursor
@@ -61,6 +64,17 @@ const GET_CURRENCY= gql`
   }
 `;
 
+export const ADD_CURRENCY = gql`
+   mutation AddCurrency($currencies: [currencyInput!]!) {
+    addCurrency(currencies: $currencies)
+  }
+`;
+
+export const UPDATE_CURRENCY = gql`
+  mutation UpdateCurrency($editCurrency: currencyInput!) {
+    updateCurrency(editCurrency: $editCurrency)
+  }
+`;
 export class CurrencyDS extends BaseDataSource<CurrencyItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -87,4 +101,32 @@ export class CurrencyDS extends BaseDataSource<CurrencyItem> {
         })
       );
   }
+
+   addCurrency(currencies: any): Observable<any> {
+      this.actionLoadingSubject.next(true);
+      return this.apollo.mutate({
+        mutation: ADD_CURRENCY,
+        variables: {
+          currencies
+        }
+      }).pipe(
+        finalize(() => {
+          this.actionLoadingSubject.next(false);
+        })
+      );
+    }
+  
+    updateCurrency(editCurrency: any): Observable<any> {
+      this.actionLoadingSubject.next(true);
+      return this.apollo.mutate({
+        mutation: UPDATE_CURRENCY,
+        variables: {
+          editCurrency
+        }
+      }).pipe(
+        finalize(() => {
+          this.actionLoadingSubject.next(false);
+        })
+      );
+    }
 }

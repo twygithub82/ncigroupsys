@@ -37,7 +37,7 @@ ALTER TABLE `idms`.`cleaning`
 ADD COLUMN `clean_statement_dt` BIGINT NULL DEFAULT NULL AFTER `overwrite_remarks`;
 
 INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B941', 'MASTER', 'CURRENCY', 'VIEW', 'MASTER_CURRENCY_VIEW');
-INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B942', 'MASTER', 'CURRENCY', 'EDIT', 'MASTER_CURRENCY_TYPE_EDIT');
-INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B943', 'MASTER', 'CURRENCY', 'DELETE', 'MASTER_CURRENCY_TYPE_DELETE');
-INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B944', 'MASTER', 'CURRENCY', 'ADD', 'MASTER_CURRENCY_TYPE_ADD');
+INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B942', 'MASTER', 'CURRENCY', 'EDIT', 'MASTER_CURRENCY_EDIT');
+INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B943', 'MASTER', 'CURRENCY', 'DELETE', 'MASTER_CURRENCY_DELETE');
+INSERT INTO `idms`.`functions` (`guid`, `module`, `submodule`, `action`, `code`) VALUES ('c43b97f3a7c64f6fb9816f216f20B944', 'MASTER', 'CURRENCY', 'ADD', 'MASTER_CURRENCY_ADD');
 
