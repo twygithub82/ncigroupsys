@@ -75,6 +75,12 @@ export const UPDATE_CURRENCY = gql`
     updateCurrency(editCurrency: $editCurrency)
   }
 `;
+
+export const DELETE_CURRENCY = gql`
+  mutation DeleteCurrency($deleteCurrency: currencyInput!) {
+    deleteCurrency(deleteCurrency: $deleteCurrency)
+  }
+`;
 export class CurrencyDS extends BaseDataSource<CurrencyItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -122,6 +128,21 @@ export class CurrencyDS extends BaseDataSource<CurrencyItem> {
         mutation: UPDATE_CURRENCY,
         variables: {
           editCurrency
+        }
+      }).pipe(
+        finalize(() => {
+          this.actionLoadingSubject.next(false);
+        })
+      );
+    }
+
+
+    deleteCurrency(deleteCurrency: any): Observable<any> {
+      this.actionLoadingSubject.next(true);
+      return this.apollo.mutate({
+        mutation: DELETE_CURRENCY,
+        variables: {
+          deleteCurrency
         }
       }).pipe(
         finalize(() => {

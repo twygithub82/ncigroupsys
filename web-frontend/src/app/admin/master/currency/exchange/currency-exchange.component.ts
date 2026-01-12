@@ -586,20 +586,21 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.action == "confirmed") {
-        this.deleteTariffDepotAndPackageDepot(row.guid!);
+        this.deleteCurrencyRate(row);
       }
     });
   }
 
-  deleteTariffDepotAndPackageDepot(tariffDepotGuid: string) {
-    // this.tfDepotDS.deleteTariffDepot([tariffDepotGuid]).subscribe(d => {
-    //   let count = d.data.deleteTariffDepot;
-    //   if (count > 0) {
-    //     this.handleSaveSuccess(count);
-    //     this.refreshProfileNameList();
-    //     this.search();
-    //   }
-    // });
+  deleteCurrencyRate(selectedItem: CurrencyItem) {
+     var curItem :any= new CurrencyItem(selectedItem);
+     delete curItem.customer_company;
+    this.currencyDS.deleteCurrency(curItem).subscribe(d => {
+      let count = d.data.deleteCurrency;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        this.search();
+      }
+    });
   }
 
   // context menu
