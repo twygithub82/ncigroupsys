@@ -446,5 +446,44 @@ namespace IDMS.Customer.GqlTypes
             }
 
         }
+
+
+        public async Task<int> DeleteCurrency(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, currency deleteCurrency)
+        {
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var curCurrency = await context.currency.Where(c => c.guid == deleteCurrency.guid && (c.delete_dt == null || c.delete_dt == 0)).FirstOrDefaultAsync();
+                if (curCurrency == null)
+                {
+                    _logger.LogWarning("Currency with GUID {Guid} not found", deleteCurrency.guid);
+                    throw new GraphQLException(new Error($"Currency not found", "ERROR"));
+                }
+
+                curCurrency.is_active = false;
+                curCurrency.delete_dt = currentDateTime;    
+                curCurrency.update_by = user;
+                curCurrency.update_dt = currentDateTime;
+
+                res = await context.SaveChangesAsync();
+                _logger.LogInformation("Delete currency completed for GUID {Guid}. Saved {Changes} change(s).", deleteCurrency.guid, res);
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DeleteCurrency: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
+            }
+
+        }
     }
 }

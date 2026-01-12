@@ -1,5 +1,4 @@
 using AutoMapper;
-using Google.Protobuf.WellKnownTypes;
 using HotChocolate.Data;
 using HotChocolate.Types.Pagination;
 using IDMS.Booking.GqlTypes;
@@ -15,12 +14,9 @@ using IDMS.Survey.GqlTypes;
 using IDMS.Survey.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Pomelo.EntityFrameworkCore.MySql.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace IDMS.Inventory
 {
@@ -163,7 +159,7 @@ namespace IDMS.Inventory
                 app.UseWebSockets();//Subscription using websockets, must add this middleware
                 app.MapGraphQL();
 
-                logger.LogInformation("Starting web host (GraphQL mapped).");
+                logger?.LogInformation("Starting web host (GraphQL mapped).");
                 app.Run();
             }
             catch (Exception ex)

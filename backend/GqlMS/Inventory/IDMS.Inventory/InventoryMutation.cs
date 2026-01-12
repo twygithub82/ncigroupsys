@@ -1175,7 +1175,7 @@ namespace IDMS.Inventory.GqlTypes
                         newSurfaceType.update_dt = currentDateTime;
 
                         newSurfaceType.inspection_guid = newInspection.guid;
-                        newSurfaceType.type = surface?.type;    
+                        newSurfaceType.type_cv = surface?.type_cv;    
                         newSurfaceType.remarks = surface?.remarks;
                         surTypeList.Add(newSurfaceType);
                     }
@@ -1237,7 +1237,7 @@ namespace IDMS.Inventory.GqlTypes
                         newSurfaceType.update_dt = currentDateTime;
 
                         newSurfaceType.inspection_guid = curInspection.guid;
-                        newSurfaceType.type = surface?.type;
+                        newSurfaceType.type_cv = surface?.type_cv;
                         newSurfaceType.remarks = surface?.remarks;
                         surTypeList.Add(newSurfaceType);
                     }
