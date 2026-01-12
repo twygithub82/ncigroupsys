@@ -15,10 +15,10 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("inspection")]
         public string? inspection_guid { get; set; }
-        public string? type { get; set; }
+        
+        public string? type_cv { get; set; }
         public string? remarks { get; set; }
         public double? value { get; set; }
-
         public inspections? inspection { get; set; }
     }
 }
