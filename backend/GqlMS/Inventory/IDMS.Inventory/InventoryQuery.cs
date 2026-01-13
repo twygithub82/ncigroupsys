@@ -172,5 +172,22 @@ namespace IDMS.Inventory.GqlTypes
                 throw new GraphQLException(new Error($"QuerySurveyDetailByTankNo failed for tank{tankNo}", "ERROR"));
             }
         }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<inspections> QueryInspections(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                return context.inspections.Where(t => t.delete_dt == null || t.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "QueryInspections failed");
+                throw new GraphQLException(new Error($"QueryInspections failed", "ERROR"));
+            }
+        }
     }
 }

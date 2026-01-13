@@ -49,6 +49,9 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<currency> currency { get; set; }
         public DbSet<transfer> transfer { get; set; }
         public DbSet<billing_sot> billing_sot { get; set; }
+        public DbSet<inspections> inspections { get; set; }
+        public DbSet<surface_types> surface_types { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -81,10 +84,17 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
                  .Property(e => e.right_coord)
                  .HasColumnType("json"); // Specify the column type as JSON for MySQL
 
-            //modelBuilder.Entity<billing>()
-            //   .HasMany(b => b.repair_customer)
-            //   .WithOne(c => c.customer_billing) // Assuming this is the correct navigation
-            //   .HasForeignKey(c => c.customer_billing_guid);
+            modelBuilder.Entity<inspections>()
+                 .Property(e => e.marked_tank_section)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<inspections>()
+                 .Property(e => e.marked_front_section)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<inspections>()
+                 .Property(e => e.marked_rear_section)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
 
             //modelBuilder.Entity<billing>()
             //   .HasMany(b => b.repair_owner)

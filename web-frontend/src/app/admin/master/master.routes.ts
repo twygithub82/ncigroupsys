@@ -6,6 +6,7 @@ import { EstimateTemplateNewComponent } from "./estimate-template-new/estimate-t
 import { EstimateTemplateComponent } from "./estimate-template/estimate-template.component";
 import { UnitTypeComponent } from "./tank/unit-type.component";
 import { AuthGuard } from "@core/guard/auth.guard";
+import { MainCurrencyComponent } from "./currency/main-currency.component";
 
 export const MASTER_ROUTE: Routes = [
   {
@@ -49,5 +50,13 @@ export const MASTER_ROUTE: Routes = [
     component: UnitTypeComponent,
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['MASTER_UNIT_TYPE_EDIT', 'MASTER_UNIT_TYPE_ADD', 'MASTER_UNIT_TYPE_DELETE', 'MASTER_UNIT_TYPE_VIEW'] }
+  },
+   {
+    path: "currency",
+    component: MainCurrencyComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['MASTER_UNIT_TYPE_EDIT', 'MASTER_UNIT_TYPE_ADD', 'MASTER_UNIT_TYPE_DELETE', 'MASTER_UNIT_TYPE_VIEW'],
+            expectedFunctions1: ['MASTER_CURRENCY_EDIT', 'MASTER_CURRENCY_ADD', 'MASTER_CURRENCY_DELETE', 'MASTER_CURRENCY_VIEW']
+     }
   },
 ];

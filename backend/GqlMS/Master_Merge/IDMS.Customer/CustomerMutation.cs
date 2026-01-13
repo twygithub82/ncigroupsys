@@ -1,17 +1,19 @@
-﻿using HotChocolate;
-using HotChocolate.Types;
-using IDMS.EstimateTemplate.GqlTypes;
-using IDMS.Models.Master.GqlTypes.DB;
-using IDMS.Models.Master;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
 using CommonUtil.Core.Service;
-using IDMS.Customer.GqlTypes.LocalModel;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
+using HotChocolate;
 using HotChocolate.Authorization;
+using HotChocolate.Types;
+using IDMS.Customer.GqlTypes.LocalModel;
+using IDMS.EstimateTemplate.GqlTypes;
+using IDMS.Models.Inventory;
+using IDMS.Models.Master;
+using IDMS.Models.Master.GqlTypes.DB;
+using IDMS.Models.Shared;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
 
 namespace IDMS.Customer.GqlTypes
 {
@@ -27,7 +29,7 @@ namespace IDMS.Customer.GqlTypes
         }
 
         public async Task<int> AddCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor, [Service] IConfiguration config,
-                [Service] IMapper mapper, CustomerRequest customer, List<customer_company_contact_person?>? contactPersons, List<BillingBranchRequest?>? billingBranches)
+            [Service] IMapper mapper, CustomerRequest customer, List<customer_company_contact_person?>? contactPersons, List<BillingBranchRequest?>? billingBranches)
         {
             try
             {
@@ -233,7 +235,7 @@ namespace IDMS.Customer.GqlTypes
 
         [Authorize]
         public async Task<int> DeleteCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] IConfiguration config, List<string> customerGuids)
+            [Service] IConfiguration config, List<string> customerGuids)
         {
             try
             {
@@ -358,6 +360,130 @@ namespace IDMS.Customer.GqlTypes
                                     .Build());
             }
             return true;
+        }
+
+        public async Task<int> AddCurrency(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<currency> currencies)
+        {
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                IList<currency> currencyList = new List<currency>();
+                foreach (var cur in currencies)
+                {
+                    currency newCurrency = new currency();
+                    newCurrency.guid = Util.GenerateGUID();
+                    newCurrency.currency_code = cur.currency_code;
+                    newCurrency.currency_name = cur.currency_name;
+                    newCurrency.rate = cur.rate;
+                    newCurrency.sequence = cur.sequence;
+                    newCurrency.is_active = true;
+                    newCurrency.create_dt = currentDateTime;
+                    newCurrency.update_dt = currentDateTime;
+                    newCurrency.create_by = user;
+                    newCurrency.update_by = user;
+
+                    currencyList.Add(newCurrency);
+                }
+
+                context.currency.AddRange(currencyList);
+                res = await context.SaveChangesAsync();
+                _logger.LogInformation("Add new currency completed. Saved {Changes} change(s).", res);
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in AddNewCurrency: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
+            }
+
+        }
+
+
+        public async Task<int> UpdateCurrency(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, currency editCurrency)
+        {
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var updateCurrency = await context.currency.Where(c => c.guid == editCurrency.guid && (c.delete_dt == null || c.delete_dt == 0)).FirstOrDefaultAsync();
+                if (updateCurrency == null)
+                {
+                    _logger.LogWarning("Currency with GUID {Guid} not found", editCurrency.guid);
+                    throw new GraphQLException(new Error($"Currency not found", "ERROR"));
+                }
+
+                updateCurrency.rate = editCurrency.rate;
+                updateCurrency.is_active = editCurrency.is_active;
+                updateCurrency.sequence = editCurrency.sequence;
+                updateCurrency.update_by = user;
+                updateCurrency.update_dt = currentDateTime;
+
+                res = await context.SaveChangesAsync();
+                _logger.LogInformation("Update currency completed for GUID {Guid}. Saved {Changes} change(s).", editCurrency.guid, res);    
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in UpdateCurrency: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
+            }
+
+        }
+
+
+        public async Task<int> DeleteCurrency(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, currency deleteCurrency)
+        {
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var curCurrency = await context.currency.Where(c => c.guid == deleteCurrency.guid && (c.delete_dt == null || c.delete_dt == 0)).FirstOrDefaultAsync();
+                if (curCurrency == null)
+                {
+                    _logger.LogWarning("Currency with GUID {Guid} not found", deleteCurrency.guid);
+                    throw new GraphQLException(new Error($"Currency not found", "ERROR"));
+                }
+
+                curCurrency.is_active = false;
+                curCurrency.delete_dt = currentDateTime;    
+                curCurrency.update_by = user;
+                curCurrency.update_dt = currentDateTime;
+
+                res = await context.SaveChangesAsync();
+                _logger.LogInformation("Delete currency completed for GUID {Guid}. Saved {Changes} change(s).", deleteCurrency.guid, res);
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DeleteCurrency: {Message}", ex.Message);
+                throw new GraphQLException(
+                            ErrorBuilder.New()
+                                .SetMessage(ex.Message)
+                                .SetCode(graphqlErrorCode)
+                                .Build());
+            }
+
         }
     }
 }

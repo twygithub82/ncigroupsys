@@ -41,13 +41,15 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
 import { TariffDepotCostExcelComponent } from 'app/document-template/excel/tariff/depot/depot-cost/tariff-depot-cost-excel.component';
-import { reportPreviewWindowDimension } from 'environments/environment';
+import { reportPreviewWindowDimension, systemCurrencyCode } from 'environments/environment';
+import {CurrencyDS, CurrencyItem} from 'app/data-sources/currency';
+import { sequence } from '@angular/animations';
 
 @Component({
-  selector: 'app-tariff-depot',
+  selector: 'app-currency-exchange',
   standalone: true,
-  templateUrl: './tariff-depot.component.html',
-  styleUrl: './tariff-depot.component.scss',
+  templateUrl: './currency-exchange.component.html',
+  styleUrl: './currency-exchange.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -75,30 +77,32 @@ import { reportPreviewWindowDimension } from 'environments/environment';
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
-export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
+export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'fName',
     'lName',
+    'rate',
     'mobile',
-    'actions',
+     'actions',
   ];
 
   unit_type_control = new UntypedFormControl();
 
-  tnkDS: TankDS;
-  tfDepotDS: TariffDepotDS;
+  
+  currencyDS: CurrencyDS;
 
-
+  currencyItemList: CurrencyItem[] = [];
+  currencyList: CurrencyItem[] = [];
   tariffDepotItems: TariffDepotItem[] = [];
   tankItemList: TankItem[] = [];
   profileList: String[] = [];
 
-  pageStateType = 'TariffDepot'
+  pageStateType = 'CurrencyExchange'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { tariff_depot: { update_dt: "DESC" } };
+  lastOrderBy: any = { sequence:  "DESC" } ;
   defaultSortDirection: 'asc' | 'desc' = 'asc';
   defaultSortField = 'fName';
   endCursor: string | undefined = undefined;
@@ -158,7 +162,10 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     EXPORT: 'COMMON-FORM.EXPORT',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
-    CLEANING_LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED'
+    CLEANING_LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    CODE:'COMMON-FORM.CODE',
+    RATE:'COMMON-FORM.RATE',
+    SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
   }
   isGeneratingReport: boolean=false;
 
@@ -174,8 +181,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initTdForm();
-    this.tnkDS = new TankDS(this.apollo);
-    this.tfDepotDS = new TariffDepotDS(this.apollo);
+    // this.tnkDS = new TankDS(this.apollo);
+    this.currencyDS = new CurrencyDS(this.apollo);
     this.initializeFilterValues();
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -192,9 +199,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
   initTdForm() {
     this.tdForm = this.fb.group({
-      profile_name: [''],
-      description: [''],
-      unit_type: this.unit_type_control
+      code: ['']
     });
   }
 
@@ -218,37 +223,38 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterValues() {
-    this.tdForm!.get('profile_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (value && typeof value === 'object') {
-          searchCriteria = value.profile_name;
-        } else {
-          searchCriteria = value || '';
-        }
-        this.subs.sink = this.tfDepotDS.SearchTariffDepot({ or: [{ profile_name: { contains: searchCriteria } }] }, [{ profile_name: 'ASC' }]).subscribe(data => {
-          this.profileList = data
-            .map(item => item.profile_name)
-            .filter((name): name is string => name !== undefined);
-          this.search();
-        });
-      })
-    ).subscribe();
+    // this.tdForm!.get('profile_name')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (value && typeof value === 'object') {
+    //       searchCriteria = value.profile_name;
+    //     } else {
+    //       searchCriteria = value || '';
+    //     }
+    //     this.subs.sink = this.tfDepotDS.SearchTariffDepot({ or: [{ profile_name: { contains: searchCriteria } }] }, [{ profile_name: 'ASC' }]).subscribe(data => {
+    //       this.profileList = data
+    //         .map(item => item.profile_name)
+    //         .filter((name): name is string => name !== undefined);
+    //       this.search();
+    //     });
+    //   })
+    // ).subscribe();
 
-    this.tdForm!.get('unit_type')!.valueChanges.pipe(
+    this.tdForm!.get('code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         if (value && typeof value === 'object') {
-          searchCriteria = value.unit_type;
+          searchCriteria = value.code;
         } else {
           searchCriteria = value || '';
         }
-        this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
-          this.tankItemList = data;
+        this.subs.sink = this.currencyDS.search({ or: [{ currency_code: { contains: searchCriteria } }] }, [{ sequence: 'ASC' }]).subscribe(data => {
+          this.currencyList = data.filter(item => item.currency_code !== systemCurrencyCode);
+          
           this.search();
         });
       })
@@ -323,34 +329,37 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {
       and: [
         {
-          tariff_depot: {
-            delete_dt: {
-              eq: null
-            }
+          is_active: {
+              eq: true
+          }
+        },
+        {
+          currency_code: {
+            neq: systemCurrencyCode
           }
         }
       ]
     };
 
-    if (this.tdForm!.get("description")?.value) {
-      let desc = this.tdForm!.get("description")?.value;
-      where.description = { contains: desc }
-    }
+    // if (this.tdForm!.get("description")?.value) {
+    //   let desc = this.tdForm!.get("description")?.value;
+    //   where.description = { contains: desc }
+    // }
 
-    const unitType = this.tdForm!.get("unit_type")?.value;
-    if (unitType && typeof unitType === 'object') {
-      const tankSome: any = {};
-      tankSome.unit_type = { contains: unitType?.unit_type };
-      // where.tanks = { some: tankSome }
-      const tariff_depot: any = { tanks: { some: tankSome } }
-      where.and.push({ tariff_depot: tariff_depot })
-    }
+    // const unitType = this.tdForm!.get("unit_type")?.value;
+    // if (unitType && typeof unitType === 'object') {
+    //   const tankSome: any = {};
+    //   tankSome.unit_type = { contains: unitType?.unit_type };
+    //   // where.tanks = { some: tankSome }
+    //   const tariff_depot: any = { tanks: { some: tankSome } }
+    //   where.and.push({ tariff_depot: tariff_depot })
+    // }
 
-    if (this.tdForm!.value["profile_name"]) {
-      let name = this.tdForm!.value["profile_name"];
+    if (this.tdForm!.value["code"]) {
+      let name = this.tdForm!.value["code"];
       // where.profile_name = { contains: name }
-      const tariff_depot: any = { profile_name: { contains: name } }
-      where.and.push({ tariff_depot: tariff_depot })
+      // const tariff_depot: any = { currency_code: { contains: name } }
+      where.and.push({ currency_code: { contains: name }  })
     }
 
     this.lastSearchCriteria = where;
@@ -372,13 +381,13 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       before
     });
     console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.tariffDepotItems = data;
+    this.subs.sink = this.currencyDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.currencyItemList = data;
       this.previous_endCursor = undefined;
-      this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
-      this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.endCursor = this.currencyDS.pageInfo?.endCursor;
+      this.startCursor = this.currencyDS.pageInfo?.startCursor;
+      this.hasNextPage = this.currencyDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.currencyDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = 0;
       this.paginator.pageIndex = 0;
     });
@@ -433,12 +442,12 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotWithCount(where, order, first, after, last, before).subscribe(data => {
-      this.tariffDepotItems = data;
-      this.endCursor = this.tfDepotDS.pageInfo?.endCursor;
-      this.startCursor = this.tfDepotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tfDepotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
+    this.subs.sink = this.currencyDS.search(where, order, first, after, last, before).subscribe(data => {
+      this.currencyItemList = data;
+      this.endCursor = this.currencyDS.pageInfo?.endCursor;
+      this.startCursor = this.currencyDS.pageInfo?.startCursor;
+      this.hasNextPage = this.currencyDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.currencyDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       if (!this.hasPreviousPage)
@@ -447,8 +456,10 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
-    this.subs.sink = this.tnkDS.loadItems().subscribe(data => {
-      this.tankItemList = data;
+    const where = {is_active:{eq:true}};
+    const order={sequence:'ASC'};
+    this.subs.sink = this.currencyDS.search(where,order,100).subscribe(data => {
+      this.currencyList = data;
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -506,13 +517,13 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent_New, {
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       autoFocus: false,
       disableClose: true,
       width: '600px',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
-        action: 'view',
+        action: 'new',
         langText: this.langText,
         selectedItem: null
       }
@@ -527,7 +538,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  editCall(row: TariffDepotItem) {
+  editCall(row: any) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -575,17 +586,18 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.action == "confirmed") {
-        this.deleteTariffDepotAndPackageDepot(row.guid!);
+        this.deleteCurrencyRate(row);
       }
     });
   }
 
-  deleteTariffDepotAndPackageDepot(tariffDepotGuid: string) {
-    this.tfDepotDS.deleteTariffDepot([tariffDepotGuid]).subscribe(d => {
-      let count = d.data.deleteTariffDepot;
+  deleteCurrencyRate(selectedItem: CurrencyItem) {
+     var curItem :any= new CurrencyItem(selectedItem);
+     delete curItem.customer_company;
+    this.currencyDS.deleteCurrency(curItem).subscribe(d => {
+      let count = d.data.deleteCurrency;
       if (count > 0) {
         this.handleSaveSuccess(count);
-        this.refreshProfileNameList();
         this.search();
       }
     });
@@ -638,15 +650,21 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
+    return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_EDIT']);
   }
 
   isAllowAdd() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_ADD']);
+    return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_ADD']);
   }
 
   isAllowDelete() {
-    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_DELETE']);
+     return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_DELETE']);
+  }
+
+  isAllowDeleteRow(row: any) {
+    
+    var count = row.customer_company?.length||0;
+    return count==0;
   }
 
   onSortChange(event: Sort): void {
@@ -757,4 +775,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
                   });
           
             }
+          GetSystemCurrency()
+          {
+            return this.translatedLangText.SYSTEM_CURRENCY + ' : ' + systemCurrencyCode;
+          }
 }
