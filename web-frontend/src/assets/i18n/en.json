@@ -152,7 +152,8 @@
         "BILLING-BRANCH": "Billing Branch",
         "BILLING-BRANCH-NEW": "New Billing Branch",
         "BILLING-BRANCH-EDIT": "Edit Billing Branch",
-        "UNIT-TYPE": "Unit Type"
+        "UNIT-TYPE": "Unit Type",
+        "CURRENCY": "Currency"
       }
     },
     "MANAGEMENT": {
@@ -1415,7 +1416,14 @@
     "SELECT-LANGUAGE": "Select Language",
     "CONTACT-DEPOT-FOR-ADJUSTMENT": "Please contact depot for the adjustment",
     "CONTACT-SYSTEM-ADMIN": "Please contact system administrator",
-    "UNCLEAN-TANK":"Unclean Tank"
+    "UNCLEAN-TANK": "Unclean Tank",
+    "CLEANING-QUOTATION": "Cleaning Quotation",
+    "SYSTEM-CURRENCY": "System Currency",
+    "INTERNAL-INSPECTION-MAPPING": "Internal Inspection Mapping",
+    "INSPECTION-DATE": "Inspection Date",
+    "INSPECTION-TYPES": "Inspection Types",
+    "SELECT-TYPE-TO-MARK-DAMAGE": "Select a type to mark damage",
+    "PLEASE-SELECT-INSPECTION-TYPE": "Please select an inspection type to start marking"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

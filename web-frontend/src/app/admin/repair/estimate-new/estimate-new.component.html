@@ -929,8 +929,8 @@
                   }
                   @if (canEdit()) {
                   <button mat-flat-button color="primary"
-                   [class.auth-spinner]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)"
-                   [disabled]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)">
+                    [class.auth-spinner]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)"
+                    [disabled]="(repairDS.actionLoading$ | async) || (isFileActionLoading$ | async) || (isImageLoading$ | async)">
                     <mat-icon>
                       save
                       <!-- @if (!(repairDS.actionLoading$ | async)) {
