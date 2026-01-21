@@ -8,7 +8,6 @@ import { Functions } from './role';
 import { TeamUserLinkage } from './teams';
 import { UserRoleItem, UserRoleLinkage } from './userrole';
 
-
 export class UserGO {
   public id?: string;
   public userName?: string;
