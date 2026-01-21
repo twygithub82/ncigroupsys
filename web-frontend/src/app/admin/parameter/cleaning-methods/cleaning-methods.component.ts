@@ -35,7 +35,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -158,7 +158,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isMobile : boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -170,6 +170,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.mthDS = new CleaningMethodDS(this.apollo);
@@ -392,8 +393,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     var row = new CleaningMethodItem();
     //  rows.push(row);
+
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH: '600px',
+      maxHeight: '80vh',
       disableClose: true,
       data: {
         action: 'new',
@@ -765,4 +768,9 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const existingValue = this.descriptionControl?.value;
     this.descriptionControl?.setValue(existingValue);
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

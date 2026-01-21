@@ -40,12 +40,13 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TankInfoFormDialogComponent } from './dialogs/tank-form-dialog/tank-info-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { D } from '@angular/cdk/keycodes';
 @Component({
   selector: 'app-bay-overview',
   standalone: true,
@@ -749,8 +750,9 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     } else {
       tempDirection = 'ltr';
     }
+    const width =this.isMobile? MOBILE_DIALOG_WIDTH:'45vw';
     const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-      width: this.isMobile ? '90vw' : '45vw',
+      width: width,
       data: {
         selectedItem: team.jobOrderItem?.storing_order_tank!,
         action: 'new',

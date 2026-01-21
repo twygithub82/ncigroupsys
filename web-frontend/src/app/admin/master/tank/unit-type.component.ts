@@ -39,7 +39,7 @@ import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { maxTankCount } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -255,7 +255,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   tankList?: TankItem[] = [];
-
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -267,6 +267,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     public modulePackageService: ModulePackageService,
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
@@ -369,7 +370,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
       disableClose: true,
       data: {
         action: 'new',
@@ -416,7 +417,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
       disableClose: true,
       data: {
         action: 'update',
@@ -785,5 +786,12 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   refreshUnitTypeList() {
     const existingValue = this.pcForm?.get('unit_type')?.value;
     this.pcForm?.get('unit_type')?.setValue(existingValue);
+  }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if (isStart) centerClass = 'justify-content-start ';
+    if (Padding) centerClass += 'left-padding-cell ';
+    return `${baseClasses} ${centerClass}`.trim();
   }
 }

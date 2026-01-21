@@ -27,7 +27,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { MatDividerModule } from '@angular/material/divider';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -137,7 +137,8 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   pageStateType = 'User';
   id?: number;
   pcForm?: UntypedFormGroup;
-  translatedLangText: any = {}
+  translatedLangText: any = {};
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -254,6 +255,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile= Utility.isMobile();
     this.usrDS = new UserDS(this.apollo);
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -427,9 +429,10 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   editCall(row: CustomerCompanyItem) {
 
 
+    const wdth = this.isMobile? MOBILE_DIALOG_WIDTH:'70vw';
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
-      width: '70vw',
+      width: wdth,
       maxHeight: '95vh',
       disableClose: true,
       data: {
@@ -812,5 +815,9 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     return sRetval;
   }
 
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
 

@@ -212,6 +212,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
 
   selectedItem: BillingSOTItem;
+  isMobile: boolean = false;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -225,6 +226,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.langText = data.langText;
     this.billingItems = this.transformList(this.selectedItem)
@@ -520,4 +522,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     return diffInDays;
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+  getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_Right(baseClasses: string, isRight: boolean = true): string {
+      const centerClass = isRight ? 'align-right' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

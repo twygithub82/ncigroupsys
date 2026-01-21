@@ -120,7 +120,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-
+  isMobile: boolean = false;
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
 
   id?: number;
@@ -242,6 +242,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile=Utility.isMobile();
     this.initPlForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.packLabourDS = new PackageLabourDS(this.apollo);
@@ -353,7 +354,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '60vw',
+      width: this.isMobile?'600px':'60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -387,7 +388,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageLabourItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '60vw',
+       width: this.isMobile?'600px':'60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -859,6 +860,11 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

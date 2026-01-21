@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -198,7 +198,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   invoiceTypeControl = new FormControl(this.processType);
-
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -208,6 +208,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     private translate: TranslateService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.translateLangText();
     this.initSearchForm();
     this.initInvoiceForm();
@@ -1250,9 +1251,9 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
 
-
+    const width =this.isMobile?MOBILE_DIALOG_WIDTH:'65vw';
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: width,
       maxWidth: '800px',
       //height: '80vh',
       data: {
@@ -1313,4 +1314,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       this.search();
     }
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true , isStart: boolean = false): string {
+      var centerClass = isCenter ? 'justify-content-center' : '';
+      if(isStart) centerClass='justify-content-start';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

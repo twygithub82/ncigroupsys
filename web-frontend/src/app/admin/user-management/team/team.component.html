@@ -34,10 +34,10 @@
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div >
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
                         <input matInput formControlName="description" type="text" (keyup.enter)="search()">
@@ -56,31 +56,31 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="description">
                   <mat-header-cell *matHeaderCellDef mat-sort-header="description" disableClear disableClear
-                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-3'">
+                    [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                       }}:</span>{{row.team.description}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="department">
-                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.DEPARTMENT
+                <ng-container matColumnDef="department" >
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.DEPARTMENT
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{this.translatedLangText.DEPARTMENT
                       }}:</span>{{ShowDepartment(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header="last_update"
+                  <mat-header-cell *matHeaderCellDef mat-sort-header="last_update" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                     disableCleardisableClear >{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
                 </ng-container>
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
+                  <mat-header-cell class="pr-0" *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> 
                     <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>

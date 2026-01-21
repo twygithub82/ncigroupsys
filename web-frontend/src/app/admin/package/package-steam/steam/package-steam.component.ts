@@ -38,7 +38,7 @@ import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -126,6 +126,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   selectedPackEst?: PackageSteamingItem = undefined;
   allowSelectedAll: boolean = false;
+  isMobile: boolean = false;
 
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -242,6 +243,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.packSteamDS = new PackageSteamingDS(this.apollo);
@@ -352,7 +354,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '55vw',
+     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -386,7 +388,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     var selectedItems: PackageResidueItem[] = [];
     selectedItems.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '55vw',
+     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -922,6 +924,11 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
     this.search();
   }
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      if(isStart) centerClass =  'justify-content-start ' ;
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

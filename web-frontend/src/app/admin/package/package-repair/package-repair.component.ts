@@ -42,7 +42,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH } from 'app/utilities/utility';
 import { debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -168,6 +168,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  isMobile = false;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -291,6 +292,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
@@ -422,10 +424,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '80vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'80vw',
       autoFocus: false,
       disableClose: true,
-      // height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -454,7 +455,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -488,7 +489,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItemWithCount[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -1209,6 +1210,12 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

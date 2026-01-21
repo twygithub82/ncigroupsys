@@ -337,20 +337,6 @@
                             class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-6 m-b-0 d-flex d-md-none justify-content-center">
                             <span class="header-label font-bold">{{ item.storing_order?.customer_company?.code }}</span>
                           </div>
-                          <!-- <div class="m-l-">
-                            @if (copiedSteamEst) {
-                            <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
-                              (click)="pasteSteamEstimate($event, item, copiedSteamEst)">
-                              <mat-icon class="col-white">content_paste</mat-icon>
-                            </button>
-                            }
-                            @else {
-                            <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
-                              (click)="addSteamEstimate($event, item)">
-                              <mat-icon class="col-white">add</mat-icon>
-                            </button>
-                            }
-                          </div> -->
                         </div>
                       </div>
 
@@ -679,9 +665,9 @@
 
                 <!-- testing normal table -->
                 <!-- <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
-                  [enablePagination]="true" [pageSize]="5" [enableSwipe]="true" rowLabel="Repair"
-                  (rowClick)="onRepairClick($event)" (groupToggle)="onGroupToggle($event)"
-                  (pageChange)="onPageChange($event)">
+                  class="striped-rows" [enablePagination]="true" [pageSize]="1" [enableSwipe]="true" rowLabel="Repair"
+                  mobilePaginationMode="bullets" (rowClick)="onRepairClick($event)"
+                  (groupToggle)="onGroupToggle($event)" (pageChange)="onPageChange($event)">
 
                   <ng-template #rowTemplate let-repair let-i="index" let-group="group">
                     <div class="row-cell" [style.width]="'5%'">{{ i + 1 }}</div>
@@ -691,8 +677,8 @@
                     <div class="row-cell" [style.width]="'37%'">{{ repair.description }}</div>
                     <div class="row-cell" [style.width]="'6%'">{{ repair.quantity }}</div>
                     <div class="row-cell" [style.width]="'8%'">{{ repair.hour }}</div>
-                    <div class="row-cell" [style.width]="'8%'">\${{ repair.material_cost }}</div>
-                    <div class="row-cell" [style.width]="'8%'">\${{ repair.price }}</div>
+                    <div class="row-cell" [style.width]="'8%'">${{ repair.material_cost }}</div>
+                    <div class="row-cell" [style.width]="'8%'">${{ repair.price }}</div>
                   </ng-template>
 
                   <ng-template #mobileRowTemplate let-repair let-i="index" let-group="group">
@@ -722,11 +708,11 @@
                     </div>
                     <div class="mobile-field">
                       <span class="field-label">Material Cost:</span>
-                      <span class="field-value">\${{ repair.material_cost }}</span>
+                      <span class="field-value">${{ repair.material_cost }}</span>
                     </div>
                     <div class="mobile-field">
                       <span class="field-label">Price:</span>
-                      <span class="field-value">\${{ repair.price }}</span>
+                      <span class="field-value">${{ repair.price }}</span>
                     </div>
                   </ng-template>
 

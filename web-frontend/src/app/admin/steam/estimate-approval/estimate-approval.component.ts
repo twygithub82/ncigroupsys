@@ -607,8 +607,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
               if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
                 // this.calculateNetCost_r1(stm);
-                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
-
+                 return { ...stm, steaming_part: stm_part ,net_cost: "0.01"};
+                
               } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
                 // this.calculateNetCost_r1(stm);
                 return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
@@ -1126,6 +1126,126 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       hour: 1,
       material_cost: 7.55,
       price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    },
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
     }
   ];
 
@@ -1150,8 +1270,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     console.log(`Group "${group.groupLabel}" ${group.isExpanded ? 'expanded' : 'collapsed'}`);
   }
 
-  onPageChange(page: number): void {
-    console.log('Page changed to:', page + 1);
+  onPageChange(event: PageEvent): void {
+    console.log('Page changed to:', event.pageIndex + 1); // ✅ Access pageIndex property
+    // or
+    console.log('Page changed:', event);
+    console.log('Current page (1-based):', event.pageIndex + 1);
+    console.log('Page size:', event.pageSize);
   }
 
   getFooterWidth(footer: TableFooter): string {

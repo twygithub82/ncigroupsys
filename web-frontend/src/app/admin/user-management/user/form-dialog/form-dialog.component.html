@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -96,10 +96,10 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                       <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ROLE}}</mat-label>
                       <!-- <input matInput formControlName="role" type="text"> -->
                       <mat-chip-grid #role_chipGrid class="nowrap single-line-chip-grid">
@@ -120,66 +120,11 @@
                         </mat-autocomplete>
                       </mat-chip-grid>
                     </mat-form-field>
+                    </div>
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-
-                      <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                      <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
-
-                        <input #teamInput [matAutocomplete]="team" formControlName="team"
-                          [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
-                        <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
-
-                          @for (pn of teamNameList; track pn) {
-
-                          <mat-option [value]="pn" class="checkbox-option">
-                            <div class="horizontal-container">
-                              <div class="option-text">{{ pn.department_cv }} - {{ pn.description }}
-                              </div>
-                            </div>
-                          </mat-option>
-
-
-                          }
-                        </mat-autocomplete>
-                      </mat-chip-grid>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.ADHOC}}</mat-label>
-                      <!-- <input matInput formControlName="adhoc" type="text"> -->
-                      <mat-chip-grid #adhoc_chipGrid class="nowrap single-line-chip-grid">
-
-                        <input #adhocInput [matAutocomplete]="adhoc" formControlName="adhoc"
-                          [matChipInputFor]="adhoc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
-                        <mat-autocomplete #adhoc="matAutocomplete" (optionSelected)="onAdhocSelected($event)">
-
-                          @for (f of adhocFuntionList; track f) {
-
-
-                          <mat-option [value]="f" class="checkbox-option">
-                            <div class="horizontal-container">
-                              <div class="option-text">{{ f.code }}
-                              </div>
-                            </div>
-                          </mat-option>
-
-
-                          }
-                        </mat-autocomplete>
-                      </mat-chip-grid>
-                    </mat-form-field>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <div class="card">
+                   <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                      <div class="card">
                       <div class="header">
                         <h2>{{translatedLangText.SELECTED_ROLES}} </h2>
                       </div>
@@ -212,10 +157,41 @@
                         </div>
                         }
                       </div>
+                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <div class="card">
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="row">
+                    <div  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+
+                      <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                      <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
+
+                        <input #teamInput [matAutocomplete]="team" formControlName="team"
+                          [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
+
+                          @for (pn of teamNameList; track pn) {
+
+                          <mat-option [value]="pn" class="checkbox-option">
+                            <div class="horizontal-container">
+                              <div class="option-text">{{ pn.department_cv }} - {{ pn.description }}
+                              </div>
+                            </div>
+                          </mat-option>
+
+
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
+                    </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                          <div class="card">
                       <div class="header">
                         <h2>{{translatedLangText.SELECTED_TEAMS}} </h2>
                       </div>
@@ -249,9 +225,41 @@
 
                       </div>
                     </div>
+                      </div>
                   </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <div class="card">
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.ADHOC}}</mat-label>
+                      <!-- <input matInput formControlName="adhoc" type="text"> -->
+                      <mat-chip-grid #adhoc_chipGrid class="nowrap single-line-chip-grid">
+
+                        <input #adhocInput [matAutocomplete]="adhoc" formControlName="adhoc"
+                          [matChipInputFor]="adhoc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        <mat-autocomplete #adhoc="matAutocomplete" (optionSelected)="onAdhocSelected($event)">
+
+                          @for (f of adhocFuntionList; track f) {
+
+
+                          <mat-option [value]="f" class="checkbox-option">
+                            <div class="horizontal-container">
+                              <div class="option-text">{{ f.code }}
+                              </div>
+                            </div>
+                          </mat-option>
+
+
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
+                    </mat-form-field>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <div class="card">
                       <div class="header">
                         <h2>{{translatedLangText.SELECTED_ADHOC}} </h2>
                       </div>
@@ -284,10 +292,41 @@
                        
                       </div>
                     </div>
+                      </div>
+                  </div>
+               </div>
+            </div>
+          
+            <!-- <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                   
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    
                   </div>
                 </div>
               </div>
             </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                   
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    
+                  </div>
+                </div>
+              </div>
+            </div> -->
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">

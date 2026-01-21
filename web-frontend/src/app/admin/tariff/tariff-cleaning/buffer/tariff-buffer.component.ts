@@ -34,7 +34,7 @@ import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -107,6 +107,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   sotDS: StoringOrderTankDS;
 
   tariffBufferItems: TariffBufferItem[] = [];
+  isMobile: boolean = false;
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -218,6 +219,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.tariffBufferDS = new TariffBufferDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -266,7 +268,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -311,8 +313,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -342,8 +344,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -544,7 +546,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,

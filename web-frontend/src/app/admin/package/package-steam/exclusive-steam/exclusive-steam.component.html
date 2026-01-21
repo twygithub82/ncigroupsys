@@ -132,51 +132,51 @@
                   }}:</span>{{row.package_steaming?.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-3'">
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{row.package_steaming?.customer_company?.name||''}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-2_75'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2_75'">
+                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_CARGO
                   }}:</span>{{row.tariff_cleaning?.cargo}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1 justify-content-center'">{{this.translatedLangText.MIN_TEMP
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.MIN_TEMP
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.MIN_TEMP }}:</span>{{row.temp_min}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="maxTemp">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1 justify-content-center'">{{this.translatedLangText.MAX_TEMP
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  justify-content-center'">{{this.translatedLangText.MAX_TEMP
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
                   }}:</span>{{displayTempMax(row.temp_max)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
                 {{displayNumber(row.package_steaming?.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
                 {{displayNumber(row.package_steaming?.labour)}}</mat-cell>
             </ng-container>
@@ -188,17 +188,17 @@
                   </ng-container> -->
             <ng-container matColumnDef="lastUpdate">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_25'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_25'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
             <!-- actions -->
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-0_75 justify-content-end'"></mat-header-cell>
-              <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75 justify-content-end'">
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'"></mat-header-cell>
+              <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="deleteItem($event,row)"
                   class="tbl-action-btn text-custom-danger" [matTooltip]="translatedLangText.DELETE">
                   <mat-icon>delete_forever</mat-icon>

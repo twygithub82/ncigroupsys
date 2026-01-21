@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -84,7 +84,7 @@
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_CODE
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center extra-left-padding'"
+                      [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm ',!isMobile,!isMobile)"
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                         }}:</span>{{row.package_repair.customer_company.code}}</mat-cell>
@@ -116,7 +116,7 @@
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.LABOUR_HOUR}} $</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile,false)">
                       <span class="mobile-label">{{translatedLangText.LABOUR_HOUR
                         }}:</span>{{row.package_repair.labour_hour}}</mat-cell>
                   </ng-container>
@@ -125,7 +125,7 @@
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.MATERIAL_COST}} $</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile,false)">
                       <span class="mobile-label">{{translatedLangText.MATERIAL_COST
                         }}:</span>{{parse2Decimal(row.package_repair.material_cost)}}</mat-cell>
                   </ng-container>
@@ -134,7 +134,7 @@
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.TARIFF_COST}} $</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile,false)">
                       <span class="mobile-label">{{translatedLangText.TARIFF_COST
                         }}:</span>{{parse2Decimal(row.package_repair.tariff_repair.material_cost)}}</mat-cell>
                   </ng-container>

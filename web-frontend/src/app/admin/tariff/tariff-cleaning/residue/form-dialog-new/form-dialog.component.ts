@@ -312,7 +312,7 @@ isMobile: boolean = false;
   }
 
     getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'ms-3 me-3' : '';
+      const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
 }

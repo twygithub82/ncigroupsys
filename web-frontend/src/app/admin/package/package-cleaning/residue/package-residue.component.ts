@@ -40,7 +40,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -142,6 +142,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {};
   allowSelectedAll: boolean = false;
+  isMobile: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -258,6 +259,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tariffResidueDS = new TariffResidueDS(this.apollo);
@@ -395,7 +397,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -432,7 +434,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageResidueItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+       width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -996,6 +998,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     this.search();
   }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel()
             {

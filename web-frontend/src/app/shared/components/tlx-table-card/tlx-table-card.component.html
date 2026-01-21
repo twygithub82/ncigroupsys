@@ -5,19 +5,6 @@
     <!-- Desktop View -->
     <div class="desktop-view">
         <div class="table-container">
-            <!-- Pagination Controls for Desktop -->
-            @if(enablePagination && totalPages > 1) {
-            <div class="pagination-controls desktop-pagination">
-                <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
-                    ‹ Previous
-                </button>
-                <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
-                <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
-                    Next ›
-                </button>
-            </div>
-            }
-
             <div class="table-header" [class.first-row]="true" [class.last-row]="!hasData"
                 [class.single-row]="!hasData">
                 @for(column of columns; track column) {
@@ -98,23 +85,16 @@
             }
             }
         </div>
+        <!-- Material Paginator (Desktop) - BELOW table -->
+        @if(enablePagination && totalPages > 1) {
+        <mat-paginator #paginator [length]="totalCount" [pageIndex]="currentPage" [pageSize]="pageSize"
+            [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageChange($event)" class="desktop-paginator">
+        </mat-paginator>
+        }
     </div>
 
     <!-- Mobile View -->
     <div class="mobile-view">
-        @if(enablePagination && totalPages > 1) {
-        <div class="pagination-controls mobile-pagination">
-            <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
-                ‹
-            </button>
-            <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-            <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
-                ›
-            </button>
-            <div class="swipe-hint">Swipe to navigate</div>
-        </div>
-        }
-
         <div class="mobile-container" [@swipeAnimation]="animationState">
             @if(groupedData.length > 0) {
             @for(group of getCurrentPageGroups(); track group; let gi = $index) {
@@ -161,5 +141,24 @@
             }
             }
         </div>
+        <!-- Material Paginator (Mobile) - ABOVE cards -->
+        @if(enablePagination && totalPages > 1 && mobilePaginationMode === 'standard') {
+        <mat-paginator #mobilePaginator [length]="totalCount" [pageIndex]="currentPage" [pageSize]="pageSize"
+            [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageChange($event)" class="mobile-paginator">
+        </mat-paginator>
+        }
+        @else if(enablePagination && totalPages > 1 && mobilePaginationMode === 'bullets') {
+        <div class="bullet-pagination">
+            @for(page of getPageArray(); track page) {
+            @if(page >= 0) {
+            <button class="bullet" [class.active]="page === currentPage" (click)="goToPage(page)"
+                [attr.aria-label]="'Go to page ' + (page + 1)">
+            </button>
+            } @else {
+            <span class="bullet-ellipsis">···</span>
+            }
+            }
+        </div>
+        }
     </div>
 </div>

@@ -21,3 +21,9 @@
   overflow: auto;
   /* Ensures scrollbars appear if content exceeds container size */
 }
+
+.mdc-data-table__cell.left-padding-cell {
+  padding-left: 25% !important;
+}
+
+

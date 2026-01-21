@@ -1,4 +1,4 @@
-<div class="addContainer">
+<div [ngClass]="getColumnClasses('addContainer',isMobile)">
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
@@ -16,14 +16,14 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.GATE_IN_COST}}</mat-label>
                     <input matInput #gateInInput formControlName="gate_in_cost_cust" appNumericText type="text" min="0"
                       [required]="this.selectedItems.length===1" (focus)="gateInInput.select()">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.GATE_OUT_COST}}</mat-label>
                     <input matInput #gateOutInput formControlName="gate_out_cost_cust" appNumericText type="text"
@@ -36,14 +36,14 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PREINSPECTION_COST}}</mat-label>
                     <input matInput #costInput formControlName="preinspection_cost_cust" appNumericText type="text"
                       min="0" [required]="this.selectedItems.length===1" (focus)="costInput.select()">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-1 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
                     <input matInput #loloInput formControlName="lolo_cost_cust" appNumericText type="text" min="0"

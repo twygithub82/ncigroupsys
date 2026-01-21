@@ -177,7 +177,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   lastCursorDirection: string | undefined = undefined;
 
   todayDt = new Date();
-
+  isMobile:boolean = false;
   constructor(
     private route: ActivatedRoute,
     public httpClient: HttpClient,
@@ -206,6 +206,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile=Utility.isMobile();
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
@@ -709,4 +710,12 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
     console.log("search pending records");
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart: boolean = false, isTextCenter:boolean=false,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      if(isStart) centerClass = 'justify-content-start ';
+      centerClass += isTextCenter ? 'text-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

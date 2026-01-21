@@ -1,4 +1,4 @@
-<div class="addContainer">
+ <div [ngClass]="getColumnClasses('addContainer',isMobile) ">
   <div class="modalHeader_left_align">
   </div>
   <div mat-dialog-content class="auto-height">
@@ -16,7 +16,7 @@
             <span class="font-bold">
               {{DisplayEirNo(this.selectedItem)}}</span>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-11 mb-1 align-right">
+          <div [ngClass]="getColumnClasses_Right('col-lg-3 col-lg-3 col-md-12 col-sm-11 mb-1',!isMobile) ">
             {{translatedLangText.EIR_DATE }}
             <span class="font-bold">
               {{DisplayEirDate(this.selectedItem)}}</span>

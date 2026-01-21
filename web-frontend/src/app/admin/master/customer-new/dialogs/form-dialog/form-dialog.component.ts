@@ -85,6 +85,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   prDS: PackageRepairDS;
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   title_control = new UntypedFormControl();
+  isMobile:boolean=false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -94,6 +95,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile=Utility.isMobile();
     // Set the defaults
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -228,4 +230,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_ADD']);
   }
+
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true ,Padding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center' : '';
+      centerClass += Padding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

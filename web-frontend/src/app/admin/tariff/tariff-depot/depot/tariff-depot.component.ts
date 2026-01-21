@@ -35,7 +35,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -93,6 +93,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   tariffDepotItems: TariffDepotItem[] = [];
   tankItemList: TankItem[] = [];
   profileList: String[] = [];
+  isMobile: boolean = false;
 
   pageStateType = 'TariffDepot'
   pageIndex = 0;
@@ -108,7 +109,6 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
-  isMobile: boolean = false;
   id?: number;
   tdForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -173,6 +173,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     public modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTdForm();
     this.tnkDS = new TankDS(this.apollo);
     this.tfDepotDS = new TariffDepotDS(this.apollo);
@@ -185,7 +186,6 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.isMobile=Utility.isMobile();
     this.loadData();
     this.translateLangText();
   }
@@ -509,8 +509,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       autoFocus: false,
       disableClose: true,
-      width: '600px',
-      maxHeight: '90vh',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
+      height: '90vh',
       data: {
         action: 'view',
         langText: this.langText,
@@ -538,8 +538,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
-      width: '600px',
-      maxHeight: '90vh',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
+      height: '90vh',
       data: {
         action: 'edit',
         langText: this.langText,

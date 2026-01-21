@@ -84,7 +84,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
-
+  isMobile: boolean = false;
   title_control = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -95,6 +95,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     // Set the defaults
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -391,61 +392,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
   }
 
-  // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
-  //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
-  //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: group_name_cv.code_val },
-  //               subgroup_name_cv: { eq: subgroup_name_cv },
-  //               part_name: { eq: partName },
-  //               dimension: { eq: dimension },
-  //               length: { eq: length }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       // this.selectedPackageRepair = data[0];
-  //       // this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
-  //     }
-  //   });
-  // }
-
-  searchPart() {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {  
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(SearchFormDialogComponent, {
-    //   width: '1050px',
-    //   data: {
-    //     customer_company_guid: this.customer_company_guid,
-    //     group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
-    //     subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
-    //     part_name: this.repairPartForm?.get('part_name')!.value,
-    //     translatedLangText: this.data.translatedLangText,
-    //     populateData: this.data.populateData,
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     console.log(result);
-    //     this.repairPart = result.selected_repair_est_part;
-    //     this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
-    //   }
-    // });
-  }
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true ,Padding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center' : '';
+      centerClass += Padding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }

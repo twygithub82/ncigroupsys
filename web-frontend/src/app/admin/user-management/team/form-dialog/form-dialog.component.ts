@@ -107,6 +107,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
 
   translatedLangText: any = {};
+  isMobile : boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -225,6 +226,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
+    this.isMobile = Utility.isMobile();
     this.selectedItem = data.selectedItem;
     this.departmentCvList=data.departmentList;
     this.pcForm = this.createTeamItem();
@@ -477,4 +479,12 @@ UpdateItem(itm:any){
   }
 
  
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
