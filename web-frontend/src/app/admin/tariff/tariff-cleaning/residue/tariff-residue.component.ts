@@ -118,6 +118,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
+  isMobile: boolean = false;
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -235,6 +236,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     private modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.tariffResidueDS = new TariffResidueDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -288,7 +290,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -334,8 +336,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: MOBILE_DIALOG_WIDTH,
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -364,8 +366,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: MOBILE_DIALOG_WIDTH,
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -684,7 +686,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,
@@ -712,7 +714,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,

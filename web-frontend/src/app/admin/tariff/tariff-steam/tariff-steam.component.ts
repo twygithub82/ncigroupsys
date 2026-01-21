@@ -225,6 +225,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     private modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.tariffSteamDS = new TariffSteamingDS(this.apollo);
   }
@@ -235,7 +236,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.isMobile=Utility.isMobile();
     this.loadData();
     this.translateLangText();
   }
@@ -275,9 +275,9 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: MOBILE_DIALOG_WIDTH,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
       height: 'auto',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -314,7 +314,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '500px',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
@@ -365,8 +365,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: MOBILE_DIALOG_WIDTH,
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -671,7 +671,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,
@@ -738,9 +738,9 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_DELETE']);
   }
 
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 }
 

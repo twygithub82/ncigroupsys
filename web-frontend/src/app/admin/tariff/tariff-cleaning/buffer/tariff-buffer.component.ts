@@ -105,6 +105,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   sotDS: StoringOrderTankDS;
 
   tariffBufferItems: TariffBufferItem[] = [];
+  isMobile: boolean = false;
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -215,6 +216,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     private modulePackageService: ModulePackageService
   ) {
     super();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.tariffBufferDS = new TariffBufferDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -263,7 +265,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -308,8 +310,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: MOBILE_DIALOG_WIDTH,
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -339,8 +341,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: MOBILE_DIALOG_WIDTH,
-       autoFocus: false,
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -541,7 +543,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,
