@@ -510,7 +510,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       autoFocus: false,
       disableClose: true,
       width: '600px',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         action: 'view',
         langText: this.langText,
