@@ -255,7 +255,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   tankList?: TankItem[] = [];
-  isMobile :boolean = false;
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -370,7 +370,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-       minWidth: this.isMobile?MOBILE_DIALOG_WIDTH: '600px',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
       disableClose: true,
       data: {
         action: 'new',
@@ -416,9 +416,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
 
-    
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      minWidth: this.isMobile?MOBILE_DIALOG_WIDTH: '600px',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
       disableClose: true,
       data: {
         action: 'update',
@@ -789,10 +788,10 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm?.get('unit_type')?.setValue(existingValue);
   }
 
-   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,Padding:boolean=false): string {
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
-    if(isStart) centerClass =  'justify-content-start ' ;
-    if(Padding) centerClass +=  'left-padding-cell ' ;
+    if (isStart) centerClass = 'justify-content-start ';
+    if (Padding) centerClass += 'left-padding-cell ';
     return `${baseClasses} ${centerClass}`.trim();
   }
 }

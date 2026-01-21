@@ -664,10 +664,10 @@
                 </tlx-table-card> -->
 
                 <!-- testing normal table -->
-                <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
-                  [enablePagination]="true" [pageSize]="5" [enableSwipe]="true" rowLabel="Repair"
-                  (rowClick)="onRepairClick($event)" (groupToggle)="onGroupToggle($event)"
-                  (pageChange)="onPageChange($event)">
+                <!-- <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
+                  class="striped-rows" [enablePagination]="true" [pageSize]="1" [enableSwipe]="true" rowLabel="Repair"
+                  mobilePaginationMode="bullets" (rowClick)="onRepairClick($event)"
+                  (groupToggle)="onGroupToggle($event)" (pageChange)="onPageChange($event)">
 
                   <ng-template #rowTemplate let-repair let-i="index" let-group="group">
                     <div class="row-cell" [style.width]="'5%'">{{ i + 1 }}</div>
@@ -721,7 +721,7 @@
                       <strong>{{ footer.content }}</strong>
                     </div>
                   </ng-template>
-                </tlx-table-card>
+                </tlx-table-card> -->
 
                 <!-- No result -->
                 @if (!(sotDS.loading$ | async) && !sotList.length) {

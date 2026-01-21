@@ -568,7 +568,7 @@ export class Utility {
       style: 'decimal',
       minimumFractionDigits: decimal,
       maximumFractionDigits: decimal,
-    }).format(numericValue)||"0.00";
+    }).format(numericValue) || "0.00";
   }
 
   static booleanToYesNo(input: boolean | undefined): string {
@@ -797,28 +797,28 @@ export class Utility {
     return textHeight;
   }
 
-  static AddTextAtCenterPage( pdf: jsPDF,  text: string,  pageWidth: number,  leftMargin: number,
-  rightMargin: number,  topPosition: number,  fontSize: number,  underline: boolean = false
-) {
-  pdf.setFontSize(fontSize);
+  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number,
+    rightMargin: number, topPosition: number, fontSize: number, underline: boolean = false
+  ) {
+    pdf.setFontSize(fontSize);
 
-  // Measure text width
-  const textWidth =
-    (pdf.getStringUnitWidth(text) * pdf.getFontSize()) /
-    pdf.internal.scaleFactor;
+    // Measure text width
+    const textWidth =
+      (pdf.getStringUnitWidth(text) * pdf.getFontSize()) /
+      pdf.internal.scaleFactor;
 
-  const textX = (pageWidth - textWidth) / 2; // Centered X
+    const textX = (pageWidth - textWidth) / 2; // Centered X
 
-  // Draw the text
-  pdf.text(text, textX, topPosition);
+    // Draw the text
+    pdf.text(text, textX, topPosition);
 
-  // Draw underline (slightly below baseline)
-  if (underline) {
-    const underlineY = topPosition + 1; // adjust offset as needed
-    pdf.setLineWidth(0.2); // thin line
-    pdf.line(textX, underlineY, textX + textWidth, underlineY);
+    // Draw underline (slightly below baseline)
+    if (underline) {
+      const underlineY = topPosition + 1; // adjust offset as needed
+      pdf.setLineWidth(0.2); // thin line
+      pdf.line(textX, underlineY, textX + textWidth, underlineY);
+    }
   }
-}
 
 
 
@@ -870,10 +870,10 @@ export class Utility {
   }
   static ConvertCanvasElementToImage64String(canvas: HTMLCanvasElement): string {
     var retval: string = '';
-    var quality: number =1;
+    var quality: number = 1;
     if (canvas) {
       // var cvs = this.adjustImageSizeAndBackground(canvas);
-       var cvs = this.adjustImageSizeAndBackground_r1(canvas);
+      var cvs = this.adjustImageSizeAndBackground_r1(canvas);
       retval = cvs.toDataURL('image/jpeg', quality);
       // retval =this.getPureBase64(retval);
     }
@@ -882,49 +882,49 @@ export class Utility {
 
 
   static adjustImageSizeAndBackground_r1(canvas: HTMLCanvasElement): HTMLCanvasElement {
-  const scale = 4; // Increase to 2x, 3x, etc.
+    const scale = 4; // Increase to 2x, 3x, etc.
 
-  const newCanvas = document.createElement("canvas");
-  newCanvas.width = canvas.width * scale;
-  newCanvas.height = canvas.height * scale;
+    const newCanvas = document.createElement("canvas");
+    newCanvas.width = canvas.width * scale;
+    newCanvas.height = canvas.height * scale;
 
-  const ctx = newCanvas.getContext("2d");
- if (!ctx) {
+    const ctx = newCanvas.getContext("2d");
+    if (!ctx) {
       throw new Error("Failed to get 2D context");
     }
-  // Fill background if needed
-  ctx.fillStyle = "#ffffff"; // white background
-  ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+    // Fill background if needed
+    ctx.fillStyle = "#ffffff"; // white background
+    ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
 
-  // Draw scaled-up version of the original
-  ctx.scale(scale, scale);
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(canvas, 0, 0);
+    // Draw scaled-up version of the original
+    ctx.scale(scale, scale);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(canvas, 0, 0);
 
-  // return newCanvas;
-   return this.applySharpening(newCanvas);
-}
-
-static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return canvas;
-
-  // Simple sharpening using image data
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data = imageData.data;
-
-  // Light sharpening kernel
-  for (let i = 0; i < data.length; i += 4) {
-    // Simple contrast enhancement for sharpness
-    data[i] = Math.min(255, data[i] * 1.05);     // Red
-    data[i + 1] = Math.min(255, data[i + 1] * 1.05); // Green
-    data[i + 2] = Math.min(255, data[i + 2] * 1.05); // Blue
+    // return newCanvas;
+    return this.applySharpening(newCanvas);
   }
 
-  ctx.putImageData(imageData, 0, 0);
-  return canvas;
-}
+  static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return canvas;
+
+    // Simple sharpening using image data
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    // Light sharpening kernel
+    for (let i = 0; i < data.length; i += 4) {
+      // Simple contrast enhancement for sharpness
+      data[i] = Math.min(255, data[i] * 1.05);     // Red
+      data[i + 1] = Math.min(255, data[i + 1] * 1.05); // Green
+      data[i + 2] = Math.min(255, data[i + 2] * 1.05); // Blue
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+  }
 
   /**
    * Adjusts image size while maintaining aspect ratio and adds white background
@@ -990,7 +990,7 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
   }
 
   static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
-    rightMargin: number, topPosition: number, maxChartWidth: number) : Promise<number> {
+    rightMargin: number, topPosition: number, maxChartWidth: number): Promise<number> {
     let chartContentWidth = maxChartWidth;
     let bottomMargin = 10;
     let startY: number = topPosition;
@@ -1012,7 +1012,7 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
     // Add the image to the PDF
     pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
-    return imgHeight1+topPosition;
+    return imgHeight1 + topPosition;
   }
 
   static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number,
@@ -1023,10 +1023,10 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
 
     // card.style.boxShadow = 'none';
     // card.style.transition = 'none';
-      const imgData1 = await this.convertToImage(card, "jpeg");
+    const imgData1 = await this.convertToImage(card, "jpeg");
     // const imgData1 = await Utility.convertToImage_html2canvas(card, "jpeg");
-   var retval= await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
-   return retval;
+    var retval = await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+    return retval;
 
   }
 
@@ -1073,7 +1073,7 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
   static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
     // this.previewPDF_r1(pdf, fileName);
     // return;
-    
+
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
     const html = `
@@ -1084,31 +1084,31 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
                 </body>
               </html>
             `;
-    
+
     pdf.save(fileName);
-    
+
   }
 
   static async previewPDF_r1(pdf: jsPDF, fileName: string = 'document.pdf') {
     try {
-        // Method 1: Direct save (preferred)
-        pdf.save(fileName);
-        
-        // Optional: Add preview window
-        this.openPDFPreview(pdf, fileName);
-        
-    } catch (error) {
-        console.warn('Direct save failed, using fallback:', error);
-        
-        // Method 2: Blob-based download (fallback)
-        await this.downloadPDFBlob(pdf, fileName);
-    }
-}
+      // Method 1: Direct save (preferred)
+      pdf.save(fileName);
 
-private static openPDFPreview(pdf: jsPDF, fileName: string) {
+      // Optional: Add preview window
+      this.openPDFPreview(pdf, fileName);
+
+    } catch (error) {
+      console.warn('Direct save failed, using fallback:', error);
+
+      // Method 2: Blob-based download (fallback)
+      await this.downloadPDFBlob(pdf, fileName);
+    }
+  }
+
+  private static openPDFPreview(pdf: jsPDF, fileName: string) {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
-    
+
     const html = `
         <html>
             <head>
@@ -1125,45 +1125,45 @@ private static openPDFPreview(pdf: jsPDF, fileName: string) {
             </body>
         </html>
     `;
-    
+
     const previewWindow = window.open('', '_blank');
     if (previewWindow) {
-        previewWindow.document.write(html);
-        previewWindow.document.close();
-        
-        // Clean up URL when window closes
-        previewWindow.onbeforeunload = () => {
-            URL.revokeObjectURL(blobUrl);
-        };
-    }
-}
+      previewWindow.document.write(html);
+      previewWindow.document.close();
 
-private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void> {
+      // Clean up URL when window closes
+      previewWindow.onbeforeunload = () => {
+        URL.revokeObjectURL(blobUrl);
+      };
+    }
+  }
+
+  private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void> {
     return new Promise((resolve) => {
-        try {
-            const pdfBlob = pdf.output('blob');
-            const url = URL.createObjectURL(pdfBlob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            a.style.display = 'none';
-            
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // Clean up
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-            resolve();
-            
-        } catch (error) {
-            console.error('Blob download also failed:', error);
-            alert('Download failed. Please check your browser settings.');
-            resolve();
-        }
+      try {
+        const pdfBlob = pdf.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.style.display = 'none';
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Clean up
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        resolve();
+
+      } catch (error) {
+        console.error('Blob download also failed:', error);
+        alert('Download failed. Please check your browser settings.');
+        resolve();
+      }
     });
-}
+  }
 
   static async addHeaderWithCompanyLogo_Portrait(
     pdf: jsPDF,
@@ -1872,7 +1872,7 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
     purposes.push("R|I: Repair");
     purposes.push("O: Offhire");
     return purposes.join(' / ');
-    
+
   }
 
   static getTankStatusLegend(): string {
@@ -1947,8 +1947,8 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
 
   static isMobile(): boolean {
 
-       var mobileWidth = 768;
-       return window.innerWidth < mobileWidth;
+    var mobileWidth = 768;
+    return window.innerWidth < mobileWidth;
   }
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {
@@ -2019,7 +2019,7 @@ export const BILLING_TANK_STATUS = [
   'STORAGE',
 ]
 
-export const BILLING_ESTIMATE_STATUS = ['QC_COMPLETED', 'COMPLETED', "COMPLETE",'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'];
+export const BILLING_ESTIMATE_STATUS = ['QC_COMPLETED', 'COMPLETED', "COMPLETE", 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'];
 
 export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "COMPLETED", "ASSIGNED", "JOB_IN_PROGRESS"];
 
@@ -2032,7 +2032,7 @@ export const BOOLEAN_YES_NO = [
   { value: false, label: 'N' }
 ];
 
-export const MOBILE_DIALOG_WIDTH='90vw';
+export const MOBILE_DIALOG_WIDTH = '90vw';
 
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
 
