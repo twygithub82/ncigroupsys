@@ -1,0 +1,143 @@
+<div class="addContainer">
+  <div class="modalHeader_left_align">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4>{{dialogTitle}}</h4>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog" hidden>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content class="">
+    <form class="register-form" [formGroup]="inspectionForm" #formDirective="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          <div class="row right-align-display">
+            <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+              <span class="label-display-info">{{data.translatedLangText.TANK_NO}}:</span>
+            </div>
+            <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+              <span class="value-display-info">
+                {{sot?.tank_no}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          <div class="row right-align-display">
+            <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+              <span class="label-display-info">{{data.translatedLangText.LAST_CARGO}}:</span>
+            </div>
+            <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+              <span class="value-display-info">
+                {{sot?.tariff_cleaning?.cargo}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          <div class="row right-align-display">
+            <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+              <span class="label-display-info">{{data.translatedLangText.INSPECTION_DATE}}:</span>
+            </div>
+            <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+              <span class="value-display-info">
+                {{getInspectionDateDisplay()}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center mt-3">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          @if (!selectedInspectionType) {
+          <div class="alert alert-info m-b-10">
+            <mat-icon>info</mat-icon>
+            <span>{{data.translatedLangText.PLEASE_SELECT_INSPECTION_TYPE}}</span>
+          </div>
+          }
+          <app-mapping-chart [markedCells]="markedCells" [circularMarkedSections]="circularMarkedSections"
+            [selectedInspectionType]="selectedInspectionType" [showGrid]="true" [readonly]="!canEdit()"
+            (cellMarked)="onCellMarked($event)" (circularSectionMarked)="onCircularSectionMarked($event)">
+          </app-mapping-chart>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+              <!-- Legend -->
+              <div class="card modal-card">
+                <div class="header header-custom-padding">
+                  <h2>
+                    {{data.translatedLangText.INSPECTION_TYPES}}
+                  </h2>
+                </div>
+                <div class="body">
+                  <mat-card-content>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                        <div class="legend-subtitle-wrapper">
+                          <span class="legend-subtitle">{{data.translatedLangText.SELECT_TYPE_TO_MARK_DAMAGE}}</span>
+                        </div>
+
+                        <div class="legend-items">
+                          @for (type of inspectionTypes; track type.type) {
+                          <div class="legend-item" [class.selected]="selectedInspectionType?.type === type.type"
+                            [class.disabled]="!type.enabled" (click)="type.enabled && selectInspectionType(type)">
+
+                            <!-- Symbol -->
+                            <div class="legend-symbol-wrapper">
+                              <div class="legend-symbol" [ngStyle]="getSymbolStyle(type)"
+                                [class.shape-circle]="type.shape === 'circle'"
+                                [class.shape-square]="type.shape === 'square'"
+                                [class.shape-triangle]="type.shape === 'triangle'"
+                                [class.shape-cross]="type.shape === 'cross'"
+                                [class.shape-diagonal]="type.shape === 'diagonal'" [attr.data-color]="type.color">
+                              </div>
+                            </div>
+
+                            <!-- Label and Info -->
+                            <div class="legend-info">
+                              <span class="legend-label">{{ type.displayName }}</span>
+                              @if (type.description) {
+                              <span class="legend-description">{{ type.description }}</span>
+                              }
+                            </div>
+                          </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </div>
+              </div>
+            </div>
+            <!-- Marked Data -->
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+              <div class="card p-0 tlx-card">
+                <mat-card-content>
+                  <div class="row">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
+                    </div>
+                  </div>
+                </mat-card-content>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" [disabled]="false" class="m-l-5 mb-2" (click)="submit(false)">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{ isEdit() ? data.translatedLangText.UPDATE : data.translatedLangText.SAVE }}
+        </button>
+        }
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1"
+          class="m-l-5 mb-2">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

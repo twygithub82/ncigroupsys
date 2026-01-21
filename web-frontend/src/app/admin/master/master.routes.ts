@@ -51,12 +51,13 @@ export const MASTER_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['MASTER_UNIT_TYPE_EDIT', 'MASTER_UNIT_TYPE_ADD', 'MASTER_UNIT_TYPE_DELETE', 'MASTER_UNIT_TYPE_VIEW'] }
   },
-   {
+  {
     path: "currency",
     component: MainCurrencyComponent,
     canActivate: [AuthGuard],
-    data: { expectedFunctions: ['MASTER_UNIT_TYPE_EDIT', 'MASTER_UNIT_TYPE_ADD', 'MASTER_UNIT_TYPE_DELETE', 'MASTER_UNIT_TYPE_VIEW'],
-            expectedFunctions1: ['MASTER_CURRENCY_EDIT', 'MASTER_CURRENCY_ADD', 'MASTER_CURRENCY_DELETE', 'MASTER_CURRENCY_VIEW']
-     }
+    data: {
+      expectedFunctions: ['MASTER_UNIT_TYPE_EDIT', 'MASTER_UNIT_TYPE_ADD', 'MASTER_UNIT_TYPE_DELETE', 'MASTER_UNIT_TYPE_VIEW'],
+      expectedFunctions1: ['MASTER_CURRENCY_EDIT', 'MASTER_CURRENCY_ADD', 'MASTER_CURRENCY_DELETE', 'MASTER_CURRENCY_VIEW']
+    }
   },
 ];
