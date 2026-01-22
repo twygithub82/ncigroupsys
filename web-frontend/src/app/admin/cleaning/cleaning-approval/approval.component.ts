@@ -577,7 +577,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      //height: '80vh',
+      //maxHeight: '80vh',
       data: {
         action: action,
         langText: this.langText,
