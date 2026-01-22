@@ -511,7 +511,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       autoFocus: false,
       disableClose: true,
       width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         action: 'view',
         langText: this.langText,
@@ -540,7 +540,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: this.isMobile ? MOBILE_DIALOG_WIDTH : '800px',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         action: 'edit',
         langText: this.langText,
