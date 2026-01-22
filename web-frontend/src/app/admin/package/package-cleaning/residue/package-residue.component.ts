@@ -999,21 +999,27 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel()
             {
-              
-             if(this.packResidueItems)
-             {
               this.isGeneratingReport=true;
-              var prcList:PackageResidueItem[]=[];
-                  this.packResidueItems.forEach((item)=>{
-                    var itm:any = item;
-                   const c: PackageResidueItem = {
-                      ...itm,
+               const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+              const order=this.lastOrderBy;
+              this.packResidueDS.SearchAllPackageResidue(where,order).subscribe(res=>{
+                    var prcList:PackageResidueItem[]=res;
+                    this.exportExcelReport(prcList);
+              })
+            //  if(this.packResidueItems) 
+            //  {
+            //   this.isGeneratingReport=true;
+            //   var prcList:PackageResidueItem[]=[];
+            //       this.packResidueItems.forEach((item)=>{
+            //         var itm:any = item;
+            //        const c: PackageResidueItem = {
+            //           ...itm,
                      
-                    };
-                    prcList.push(c);
-                  });
-              this.exportExcelReport(prcList);
-             }
+            //         };
+            //         prcList.push(c);
+            //       });
+            //   this.exportExcelReport(prcList);
+            //  }
           
             }
         

@@ -958,20 +958,29 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   export_excel()
         {
           
-         if(this.packBufferItems)
-         {
-          this.isGeneratingReport=true;
-          var prcList:PackageBufferItem[]=[];
-              this.packBufferItems.forEach((item)=>{
-                var itm:any = item;
-               const c: PackageBufferItem = {
-                  ...itm,
+           this.isGeneratingReport=true;
+           var prcList:PackageBufferItem[]=[];
+           const where ={ delete_dt: { eq: null } };
+           const order=this.lastOrderBy;
+           this.packBuffDS.SearchAllPackageBuffer(where,order).subscribe(data => {
+             
+              var prcList:PackageBufferItem[]=data;
+              this.exportExcelReport(prcList);
+           })
+        //  if(this.packBufferItems)
+        //  {
+        //   this.isGeneratingReport=true;
+        //   var prcList:PackageBufferItem[]=[];
+        //       this.packBufferItems.forEach((item)=>{
+        //         var itm:any = item;
+        //        const c: PackageBufferItem = {
+        //           ...itm,
                  
-                };
-                prcList.push(c);
-              });
-          this.exportExcelReport(prcList);
-         }
+        //         };
+        //         prcList.push(c);
+        //       });
+        //   this.exportExcelReport(prcList);
+        //  }
       
         }
     

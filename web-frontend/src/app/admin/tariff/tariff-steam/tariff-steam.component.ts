@@ -747,26 +747,48 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
      export_excel()
           {
-            
-            if(this.tariffSteamItems)
-            {
-            this.isGeneratingReport=true;
-            var prcList:TariffSteamingItem[]=[];
-                 this.tariffSteamItems.forEach((item)=>{
+              this.isGeneratingReport=true;
+            const where={ delete_dt: { eq: null } };
+            const order={ temp_max: "DESC" }
+            this.tariffSteamDS.SearchAllTariffSteam(where,order).subscribe(res=>{
+                  var prcList:TariffResidueItem[]=[];
+                  res.forEach((item)=>{
                    var itm:any = item;
                    
                   const c: TariffSteamingItem = {
-                    ...itm.tariff_steaming,
-                    min_temp : (itm.tariff_steaming?.temp_min === null || itm.tariff_steaming?.temp_min ===
-                      undefined|| itm.tariff_steaming?.temp_min === 9999) ? "-" : this.roundUpToDecimal(itm.tariff_steaming?.temp_min,2),
-                    max_temp: (itm.tariff_steaming?.temp_max === null || itm.tariff_steaming?.temp_max ===
-                      undefined  ||itm.tariff_steaming?.temp_max === 9999) ? "-" :this.roundUpToDecimal(itm.tariff_steaming?.temp_max,2),
+                    ...itm,
+                    min_temp : (itm.temp_min === null || itm.temp_min ===
+                      undefined|| itm.temp_min === 9999) ? "-" : this.roundUpToDecimal(itm.temp_min,2),
+                    max_temp: (itm.temp_max === null || itm.temp_max ===
+                      undefined  ||itm.temp_max === 9999) ? "-" :this.roundUpToDecimal(itm.temp_max,2),
                     
                   };
                   prcList.push(c);
                  });
-            this.exportExcelReport(prcList);
-            }
+
+                  this.exportExcelReport(prcList);
+        
+              })
+
+            // if(this.tariffSteamItems)
+            // {
+            // this.isGeneratingReport=true;
+            // var prcList:TariffSteamingItem[]=[];
+            //      this.tariffSteamItems.forEach((item)=>{
+            //        var itm:any = item;
+                   
+            //       const c: TariffSteamingItem = {
+            //         ...itm.tariff_steaming,
+            //         min_temp : (itm.tariff_steaming?.temp_min === null || itm.tariff_steaming?.temp_min ===
+            //           undefined|| itm.tariff_steaming?.temp_min === 9999) ? "-" : this.roundUpToDecimal(itm.tariff_steaming?.temp_min,2),
+            //         max_temp: (itm.tariff_steaming?.temp_max === null || itm.tariff_steaming?.temp_max ===
+            //           undefined  ||itm.tariff_steaming?.temp_max === 9999) ? "-" :this.roundUpToDecimal(itm.tariff_steaming?.temp_max,2),
+                    
+            //       };
+            //       prcList.push(c);
+            //      });
+            // this.exportExcelReport(prcList);
+            // }
         
           }
       

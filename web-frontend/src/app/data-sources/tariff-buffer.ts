@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { PackageBufferItem } from './package-buffer';
 export class TariffBufferItem {
@@ -264,4 +264,51 @@ export class TariffBufferDS extends BaseDataSource<TariffBufferItem> {
       }),
     );
   }
+
+  SearchAllTariffBuffer(where?: any, order?: any): Observable<TariffBufferItem[]> {
+  this.loadingSubject.next(true);
+
+  const pageSize = 100;
+  let allData: TariffBufferItem[] = [];
+
+  const fetchPage = (after?: string): Observable<TariffBufferItem[]> => {
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_BUFFER_QUERY,
+        variables: {
+          where,
+          order,
+          first: pageSize,
+          after
+        },
+        fetchPolicy: 'no-cache'
+      })
+      .pipe(
+        map(res => res.data.tariffBufferResult),
+        switchMap(result => {
+          allData = allData.concat(result.nodes);
+
+          if (result.pageInfo?.hasNextPage) {
+            return fetchPage(result.pageInfo.endCursor);
+          } else {
+            return of(allData);
+          }
+        })
+      );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => {
+      this.dataSubject.next(allData);
+      this.totalCount = allData.length;
+      this.loadingSubject.next(false);
+    }),
+    catchError(err => {
+      console.error('GraphQL Error:', err);
+      this.loadingSubject.next(false);
+      return of([]);
+    })
+  );
+}
+
 }

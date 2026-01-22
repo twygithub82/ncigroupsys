@@ -3,7 +3,7 @@ import { Apollo } from 'apollo-angular';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { TariffLabourItem } from './tariff-labour';
 
@@ -265,4 +265,54 @@ export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
       }),
     );
   }
+
+  searchAllPackageLabour(
+  where?: any,
+  order?: any
+): Observable<PackageLabourItem[]> {
+  this.loadingSubject.next(true);
+
+  const pageSize = 100; // backend-safe size
+  let allData: PackageLabourItem[] = [];
+
+  const fetchPage = (after?: string): Observable<PackageLabourItem[]> => {
+    return this.apollo
+      .query<any>({
+        query: GET_PACKAGE_LABOUR_QUERY,
+        variables: {
+          where,
+          order,
+          first: pageSize,
+          after
+        },
+        fetchPolicy: 'no-cache'
+      })
+      .pipe(
+        map(res => res.data.packageLabourList),
+        switchMap(result => {
+          allData = allData.concat(result.nodes);
+
+          if (result.pageInfo?.hasNextPage) {
+            return fetchPage(result.pageInfo.endCursor);
+          }
+
+          return of(allData);
+        })
+      );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => {
+      this.dataSubject.next(allData);
+      this.totalCount = allData.length;
+      this.loadingSubject.next(false);
+    }),
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      this.loadingSubject.next(false);
+      return of([]);
+    })
+  );
+}
+
 }

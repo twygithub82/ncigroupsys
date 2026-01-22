@@ -1249,24 +1249,68 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
    export_excel()
       {
         
-        if(this.trfRepairItems)
-        {
-        this.isGeneratingReport=true;
-        var prcList:TariffRepairItem[]=[];
-             this.trfRepairItems.forEach((item)=>{
+         this.isGeneratingReport=true;
+    var order={};
+    var where={};
+    this.subs.sink = this.trfRepairDS.SearchAllTariffRepairs(where, order).subscribe(data => {
+      var Items = data;
+      var prcList:TariffRepairItem[]=[];
+             Items.forEach((item)=>{
                var itm:any = item;
                
               const c: TariffRepairItem = {
-                ...itm.tariff_repair,
-                part_name : this.getTariffRepairAlias(itm.tariff_repair),
-                group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair.group_name_cv),
-                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv),
-                handled:this.getHandledItemDescription(itm.tariff_repair.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
+                ...itm,
+                part_name : this.getTariffRepairAlias(itm),
+                group_name_cv: this.displayGroupNameCodeValue_Description(itm.group_name_cv),
+                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.subgroup_name_cv),
+                handled:this.getHandledItemDescription(itm.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
               };
               prcList.push(c);
              });
-        this.exportExcelReport(prcList);
-        }
+       this.exportExcelReport(prcList);
+      // // Extract group and subgroup names
+      // const groupnames = data
+      //   .filter(a => a.group_name_cv && a.group_name_cv !== "")
+      //   .map(a => a.group_name_cv);
+
+      // const subgroupnames = data
+      //   .filter(a => a.subgroup_name_cv && a.subgroup_name_cv !== "")
+      //   .map(a => a.subgroup_name_cv);
+
+      // // Merge and distinct
+      // const allNames = [...groupnames, ...subgroupnames];
+      // const distinctNames = Array.from(new Set(allNames));
+      // const where :any={
+      //   code_val : { in: distinctNames }
+      // }
+      // const order: any = { description:  "ASC" } ;
+      // this.cvDS.getAllCodeValues(where,order).subscribe(cvdata => {
+      //   const cvList = cvdata;
+      //   var trfRepairItemsWithDesc = this.mapTariffRepairWithDescriptions(Items, cvList);
+      //   var groupedRepair = TariffRepairGrouper.groupItems(trfRepairItemsWithDesc);
+      //   this.ShowReport(groupedRepair);
+      // });
+
+    });
+
+        // if(this.trfRepairItems)
+        // {
+        // this.isGeneratingReport=true;
+        // var prcList:TariffRepairItem[]=[];
+        //      this.trfRepairItems.forEach((item)=>{
+        //        var itm:any = item;
+               
+        //       const c: TariffRepairItem = {
+        //         ...itm.tariff_repair,
+        //         part_name : this.getTariffRepairAlias(itm.tariff_repair),
+        //         group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair.group_name_cv),
+        //         subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv),
+        //         handled:this.getHandledItemDescription(itm.tariff_repair.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
+        //       };
+        //       prcList.push(c);
+        //      });
+        // this.exportExcelReport(prcList);
+        // }
     
       }
   

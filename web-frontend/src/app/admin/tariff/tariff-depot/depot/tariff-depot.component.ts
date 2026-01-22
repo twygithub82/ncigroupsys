@@ -704,20 +704,37 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   export_excel()
         {
           
-         if(this.tariffDepotItems)
-         {
-          this.isGeneratingReport=true;
-          var prcList:TariffDepotItem[]=[];
-              this.tariffDepotItems.forEach((item)=>{
-                var itm:any = item;
-               const c: TariffDepotItem = {
-                  ...itm.tariff_depot,
-                  unit_types:this.getAllUnitTypes(itm.tariff_depot)
-                };
-                prcList.push(c);
-              });
-          this.exportExcelReport(prcList);
-         }
+            this.isGeneratingReport=true;
+                 const where={ delete_dt: { eq: null } };
+                
+                const order={};
+                this.tfDepotDS.SearchTariffDepotAll(where,order).subscribe(res=>{
+                   var prcList:TariffDepotItem[]=[];
+                    res.forEach((item)=>{
+                      var itm:any = item;
+                    const c: TariffDepotItem = {
+                        ...itm,
+                        unit_types:this.getAllUnitTypes(itm)
+                      };
+                      prcList.push(c);
+                    });
+                   this.exportExcelReport(prcList);
+          
+                })
+        //  if(this.tariffDepotItems)
+        //  {
+        //   this.isGeneratingReport=true;
+        //   var prcList:TariffDepotItem[]=[];
+        //       this.tariffDepotItems.forEach((item)=>{
+        //         var itm:any = item;
+        //        const c: TariffDepotItem = {
+        //           ...itm.tariff_depot,
+        //           unit_types:this.getAllUnitTypes(itm.tariff_depot)
+        //         };
+        //         prcList.push(c);
+        //       });
+        //   this.exportExcelReport(prcList);
+        //  }
       
         }
     

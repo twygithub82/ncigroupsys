@@ -925,20 +925,36 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel() {
 
-    if (this.packageSteamItems) {
-      this.isGeneratingReport = true;
-      var prcList: PackageSteamingItem[] = [];
-      this.packageSteamItems.forEach((item) => {
-         var itm:any = item;
-        const c: PackageSteamingItem = {
-          ...itm,
-          temp_max:this.displayTempMax(itm.tariff_steaming?.temp_max),
-          qty: itm.qty
-        };
-        prcList.push(c);
-      });
-      this.exportExcelReport(prcList);
-    }
+     this.isGeneratingReport=true;
+               const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+              const order=this.lastOrderBy;
+              this.packSteamDS.SearchAllPackageSteam(where,order).subscribe(res=>{
+                   var prcList: PackageSteamingItem[] = [];
+                   res.forEach((item) => {
+                    var itm:any = item;
+                    const c: PackageSteamingItem = {
+                      ...itm,
+                      temp_max:this.displayTempMax(itm.tariff_steaming?.temp_max),
+                      qty: itm.qty
+                    };
+                    prcList.push(c);
+                  });
+                  this.exportExcelReport(prcList);
+              })
+    // if (this.packageSteamItems) {
+    //   this.isGeneratingReport = true;
+    //   var prcList: PackageSteamingItem[] = [];
+    //   this.packageSteamItems.forEach((item) => {
+    //      var itm:any = item;
+    //     const c: PackageSteamingItem = {
+    //       ...itm,
+    //       temp_max:this.displayTempMax(itm.tariff_steaming?.temp_max),
+    //       qty: itm.qty
+    //     };
+    //     prcList.push(c);
+    //   });
+    //   this.exportExcelReport(prcList);
+    // }
 
   }
 

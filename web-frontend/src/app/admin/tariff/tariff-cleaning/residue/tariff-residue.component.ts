@@ -829,21 +829,27 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
    export_excel()
       {
+         this.isGeneratingReport=true;
+            const where={ delete_dt: { eq: null } };
+            this.tariffResidueDS.SearchAllTariffResidue(where).subscribe(res=>{
+                  var prcList:TariffResidueItem[]=res;
+                  this.exportExcelReport(prcList);
         
-       if(this.tariffResidueItems)
-       {
-        this.isGeneratingReport=true;
-        var prcList:TariffResidueItem[]=[];
-            this.tariffResidueItems.forEach((item)=>{
-              var itm:any = item;
-             const c: TariffResidueItem = {
-                ...itm.tariff_residue,
+              })
+      //  if(this.tariffResidueItems)
+      //  {
+      //   this.isGeneratingReport=true;
+      //   var prcList:TariffResidueItem[]=[];
+      //       this.tariffResidueItems.forEach((item)=>{
+      //         var itm:any = item;
+      //        const c: TariffResidueItem = {
+      //           ...itm.tariff_residue,
                
-              };
-              prcList.push(c);
-            });
-        this.exportExcelReport(prcList);
-       }
+      //         };
+      //         prcList.push(c);
+      //       });
+      //   this.exportExcelReport(prcList);
+      //  }
     
       }
   

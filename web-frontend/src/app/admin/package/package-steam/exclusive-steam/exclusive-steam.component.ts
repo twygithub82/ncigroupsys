@@ -893,22 +893,39 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel() {
   
-      if (this.packageSteamItems) {
-        this.isGeneratingReport = true;
-        var prcList: PackageSteamingItem[] = [];
-        this.packageSteamItems.forEach((item) => {
-           var itm:any = item;
-          const c: PackageSteamingItem = {
-             ...itm.package_steaming,
-          temp_max:this.displayTempMax(itm.temp_max),
-          temp_min:itm.temp_min,
-          tariff_cleaning:itm.tariff_cleaning,
+      this.isGeneratingReport=true;
+               const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+              const order=this.lastOrderBy;
+              this.packSteamExclDS.SearchAllExclusiveSteam(where,order).subscribe(res=>{
+                   var prcList: PackageSteamingItem[] = [];
+                   res.forEach((item) => {
+                    var itm:any = item;
+                    const c: PackageSteamingItem = {
+                      ...itm,
+                      temp_max:this.displayTempMax(itm.temp_max),
+                      temp_min:itm.temp_min,
+                      tariff_cleaning:itm.tariff_cleaning,
+                    };
+                    prcList.push(c);
+                  });
+                  this.exportExcelReport(prcList);
+              })
+      // if (this.packageSteamItems) {
+      //   this.isGeneratingReport = true;
+      //   var prcList: PackageSteamingItem[] = [];
+      //   this.packageSteamItems.forEach((item) => {
+      //      var itm:any = item;
+      //     const c: PackageSteamingItem = {
+      //        ...itm.package_steaming,
+      //     temp_max:this.displayTempMax(itm.temp_max),
+      //     temp_min:itm.temp_min,
+      //     tariff_cleaning:itm.tariff_cleaning,
   
-          };
-          prcList.push(c);
-        });
-        this.exportExcelReport(prcList);
-      }
+      //     };
+      //     prcList.push(c);
+      //   });
+      //   this.exportExcelReport(prcList);
+      // }
   
     }
   

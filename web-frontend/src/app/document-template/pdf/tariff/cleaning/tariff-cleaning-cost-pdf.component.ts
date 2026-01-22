@@ -320,7 +320,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     PER_HOUR:'COMMON-FORM.PER-HOUR',
     UNIT:"COMMON-FORM.UNIT",
     MANHOUR:"COMMON-FORM.MANHOUR",
-
+    CLEANING_TARIFF:'COMMON-FORM.CLEANING-TARIFF',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -557,55 +557,6 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
   }
 
-  // getGroupSeq(codeVal: string | undefined): number | undefined {
-  //   const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-  //   if (gncv.length) {
-  //     return gncv[0].sequence;
-  //   }
-  //   return -1;
-  // }
-
-  // getLastTest(igs: any): string | undefined {
-  //   return this.getLastTestIGS(igs);
-  // }
-
-  // getLastTestIGS(igs: any): string | undefined {
-  //   if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-  //   if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-  //     const test_type = igs.last_test_cv;
-  //     const test_class = igs.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getTestTypeDescription(codeVal: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  // }
-
-  // getTestClassDescription(codeValType: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  // }
-
-  // getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  // }
-
-  // getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  // }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -613,22 +564,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     }).join('/');
   }
 
-  // displayTankPurpose(sot: any) {
-  //   let purposes: any[] = [];
-  //   if (sot?.purpose_storage) {
-  //     purposes.push(this.getPurposeOptionDescription('STORAGE'));
-  //   }
-  //   if (sot?.purpose_cleaning) {
-  //     purposes.push(this.getPurposeOptionDescription('CLEANING'));
-  //   }
-  //   if (sot?.purpose_steam) {
-  //     purposes.push(this.getPurposeOptionDescription('STEAM'));
-  //   }
-  //   if (sot?.purpose_repair_cv) {
-  //     purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-  //   }
-  //   return purposes.join('; ');
-  // }
+  
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -668,8 +604,248 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
+   async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let bufferTableWidth=8;
+    let tableWidth=pageWidth-leftMargin-rightMargin-bufferTableWidth;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+
+    var items = this.repData!;
+    var index = 1;
+    const data: any[][] = items.map((item) => {
+                const row = [
+                    index++, // increment index for each item
+                    item.Descripton,
+                    `${item.Unit || "-"}`,
+                    item.ManHour|| "-" ,
+                    item.Material||"-",
+                ];
+                return row;
+            });
+
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.S_N,
+      this.translatedLangText.DESCRIPTION,
+      this.translatedLangText.UNIT,
+      this.translatedLangText.MANHOUR,
+      `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
+    ]];
+
+    const comStyles: any = {
+      0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+      1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
+      2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
+      3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
+      4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [220, 220, 220],
+      textColor: [0, 0, 0],
+      fontStyle: 'bold',
+      halign: 'center',   // ✅ centers header text
+      valign: 'middle'
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 40;
+
+    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    // const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
+    const cutoffDate ='';
+     const subtitlePos=0;
+    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, cutoffDate,subtitlePos);
+    // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
+    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
+
+  //   var buffer = 25;
+  //   var CurrentPage = 1;
+  //   for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
+  //     let startY=0;
+
+  //     if (n > 0) lastTableFinalY += 5; // 2nd table
+  //     else {
+  //       lastTableFinalY =startPostY ; //1st Page 1st table
+  //     }
+     
+      
+  //     let cust = this.report_inventory_cln_dtl[n];
+  //     const data: any[][] = []; // Explicitly define data as a 2D array
+
+  //     var repPage = pdf.getNumberOfPages();
+  //     //if(repPage==1)lastTableFinalY=45;
+
+  //     if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+  //       pdf.addPage();
+  //       lastTableFinalY = startPostY; /// buffer for 2nd page onward first table's Method
+  //     }
+  //     else {
+  //       CurrentPage = repPage;
+  //     }
+  //    // lastTableFinalY += 7;
+  //   //  startY = lastTableFinalY + 8;
+  //     // pdf.setFontSize(8);
+  //     // pdf.setTextColor(0, 0, 0); // Black text
+  //     //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      
+  //     var unNo;
+  //     var process;
+  //     for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
+  //       var itm = cust.storing_order_tank?.[i];
+  //       data.push([
+  //         (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
+  //         this.DipslayCleanDuration(itm!) || "" //itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
+  //       ]);
+  //       unNo = itm?.tariff_cleaning?.un_no || "";
+  //       process = this.DisplayCleanMethod(itm!);
+  //     }
+  //  //   pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
+  //     // pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
+  //     // pdf.setDrawColor(0, 0, 0); // red line color
+      
+  //     var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
+      
+  //     await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+  //     lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+  //     startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
+  //     // /pdf.setLineWidth(0.1);
+  //   //  pdf.setLineDashPattern([0.01, 0.01], 0.1);
+  //     // Add table using autoTable plugin
+  //     autoTable(pdf, {
+  //       head: headers,
+  //       body: data,
+  //       //startY: startY, // Start table at the current startY value
+  //       theme: 'grid',
+  //       margin: { top:startY, horizontal: leftMargin},
+  //       tableWidth: contentWidth,
+  //       styles: {
+  //         fontSize: fontSz_body,
+  //         minCellHeight: minHeightHeaderCol
+
+  //       },
+        
+  //       columnStyles: comStyles,
+  //       headStyles: headStyles, // Custom header styles
+  //       bodyStyles: {
+  //         fillColor: [255, 255, 255],
+  //         halign: 'left', // Left-align content for body by default
+  //         valign: 'middle', // Vertically align content
+  //       },
+  //       didDrawPage: (data: any) => {
+  //         const pageCount = pdf.getNumberOfPages();
+
+  //         lastTableFinalY = data.cursor.y;
+
+  //         var pg = pagePositions.find(p => p.page == pageCount);
+  //         if (!pg) {
+  //           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+  //           if (pageCount > 1) {
+  //             // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
+  //             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+  //             // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+  //              PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+  //             PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+  //           }
+  //         }
+  //       },
+  //     });
+  //   }
+
+      autoTable(pdf, {
+        head: headers,
+        body: data,
+        //startY: startY, // Start table at the current startY value
+        theme: 'grid',
+        margin: { top:startY, horizontal: leftMargin},
+        tableWidth: contentWidth,
+        styles: {
+          fontSize: fontSz_body,
+          minCellHeight: minHeightHeaderCol
+
+        },
+        
+        columnStyles: comStyles,
+        headStyles: headStyles, // Custom header styles
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          halign: 'left', // Left-align content for body by default
+          valign: 'middle', // Vertically align content
+        },
+        didDrawPage: (data: any) => {
+          const pageCount = pdf.getNumberOfPages();
+
+          lastTableFinalY = data.cursor.y;
+
+          var pg = pagePositions.find(p => p.page == pageCount);
+          if (!pg) {
+            pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+            if (pageCount > 1) {
+              // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
+              // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+              // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              // PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            }
+          }
+        },
+      });
+
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
+
+    
+   
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
     this.export(this.repData!);
     // const pageWidth = 210; // A4 width in mm (portrait)
     // const pageHeight = 297; // A4 height in mm (portrait)
@@ -1168,20 +1344,21 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
   GetReportTitle(): string {
     var title: string = '';
-    switch (this.repType) {
-      case "CLEANING":
-        title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "STEAMING":
-        title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "REPAIR":
-        title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "RESIDUE":
-        title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
-        break;
-    }
+     title = `${this.translatedLangText.CLEANING_TARIFF}`;
+    // switch (this.repType) {
+    //   case "CLEANING":
+    //     title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
+    //     break;
+    //   case "STEAMING":
+    //     title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
+    //     break;
+    //   case "REPAIR":
+    //     title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
+    //     break;
+    //   case "RESIDUE":
+    //     title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
+    //     break;
+    // }
     return `${title}`
   }
 

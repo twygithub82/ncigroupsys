@@ -433,7 +433,7 @@ export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDes
       const data: any[][] = items.map((item) => {
         var itm:any=item;
         const row = [
-          itm.customer_company?.name || "-",
+          itm.package_steaming?.customer_company?.name || "-",
           itm.tariff_cleaning?.cargo || "-",
           itm.temp_min || "-",
           itm.temp_max  || "-",
