@@ -577,7 +577,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      height: '80vh',
+      //height: '80vh',
       data: {
         action: action,
         langText: this.langText,
@@ -679,18 +679,18 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-    IsEnable3Dots(row:any):boolean{
-    var bRetval:boolean=false;
-    
-    bRetval=!this.HiddenMenu(row,'APPROVED');
-    if(bRetval) return bRetval;
-    bRetval=!this.HiddenMenu(row,'KIV');
-    if(bRetval) return bRetval;
-    bRetval=!this.HiddenMenu(row,'NO_ACTION');
-    if(bRetval) return bRetval;
-    bRetval=this.canExport(row);
-    if(bRetval) return bRetval;
-    
+  IsEnable3Dots(row: any): boolean {
+    var bRetval: boolean = false;
+
+    bRetval = !this.HiddenMenu(row, 'APPROVED');
+    if (bRetval) return bRetval;
+    bRetval = !this.HiddenMenu(row, 'KIV');
+    if (bRetval) return bRetval;
+    bRetval = !this.HiddenMenu(row, 'NO_ACTION');
+    if (bRetval) return bRetval;
+    bRetval = this.canExport(row);
+    if (bRetval) return bRetval;
+
 
     return bRetval;
   }
