@@ -987,21 +987,27 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
    export_excel()
           {
-            
-           if(this.custCompClnCatItems)
-           {
             this.isGeneratingReport=true;
-            var prcList:CustomerCompanyCleaningCategoryItem[]=[];
-                this.custCompClnCatItems.forEach((item)=>{
-                  var itm:any = item;
-                 const c: CustomerCompanyCleaningCategoryItem = {
-                    ...itm,
+            const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            const order=this.lastOrderBy;
+            this.custCompClnCatDS.searchAll(where,order).subscribe(data => {
+              var prcList:CustomerCompanyCleaningCategoryItem[]=data;
+              this.exportExcelReport(prcList);
+            });
+          //  if(this.custCompClnCatItems)
+          //  {
+          //   this.isGeneratingReport=true;
+          //   var prcList:CustomerCompanyCleaningCategoryItem[]=[];
+          //       this.custCompClnCatItems.forEach((item)=>{
+          //         var itm:any = item;
+          //        const c: CustomerCompanyCleaningCategoryItem = {
+          //           ...itm,
                    
-                  };
-                  prcList.push(c);
-                });
-            this.exportExcelReport(prcList);
-           }
+          //         };
+          //         prcList.push(c);
+          //       });
+          //   this.exportExcelReport(prcList);
+          //  }
         
           }
       

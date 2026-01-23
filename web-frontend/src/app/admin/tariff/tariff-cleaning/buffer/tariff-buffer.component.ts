@@ -663,21 +663,29 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel()
     {
-      
-     if(this.tariffBufferItems)
-     {
       this.isGeneratingReport=true;
-      var prcList:TariffBufferItem[]=[];
-          this.tariffBufferItems.forEach((item)=>{
-            var itm:any = item;
-           const c: TariffBufferItem = {
-              ...itm.tariff_buffer,
+       const where={ delete_dt: { eq: null } };
+      
+      const order={};
+      this.tariffBufferDS.SearchAllTariffBuffer(where,order).subscribe(res=>{
+         var prcList:TariffBufferItem[]=res;
+         this.exportExcelReport(prcList);
+
+      })
+    //  if(this.tariffBufferItems)
+    //  {
+    //   this.isGeneratingReport=true;
+    //   var prcList:TariffBufferItem[]=[];
+    //       this.tariffBufferItems.forEach((item)=>{
+    //         var itm:any = item;
+    //        const c: TariffBufferItem = {
+    //           ...itm.tariff_buffer,
              
-            };
-            prcList.push(c);
-          });
-      this.exportExcelReport(prcList);
-     }
+    //         };
+    //         prcList.push(c);
+    //       });
+    //   this.exportExcelReport(prcList);
+    //  }
   
     }
 

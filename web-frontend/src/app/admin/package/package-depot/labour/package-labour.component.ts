@@ -868,19 +868,26 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel() {
 
-    if (this.pack_labourList) {
-      this.isGeneratingReport = true;
-      var prcList: PackageLabourItem[] = [];
-      this.pack_labourList.forEach((item) => {
-        var itm: any = item;
-        const c: PackageLabourItem = {
-          ...itm,
+    this.isGeneratingReport=true;
+    const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const order=this.lastOrderBy;
+    this.packLabourDS.searchAllPackageLabour(where,order).subscribe(res=>{
+          var prcList:PackageLabourItem[]=res;
+          this.exportExcelReport(prcList);
+    })
+    // if (this.pack_labourList) {
+    //   this.isGeneratingReport = true;
+    //   var prcList: PackageLabourItem[] = [];
+    //   this.pack_labourList.forEach((item) => {
+    //     var itm: any = item;
+    //     const c: PackageLabourItem = {
+    //       ...itm,
 
-        };
-        prcList.push(c);
-      });
-      this.exportExcelReport(prcList);
-    }
+    //     };
+    //     prcList.push(c);
+    //   });
+    //   this.exportExcelReport(prcList);
+    // }
 
   }
 

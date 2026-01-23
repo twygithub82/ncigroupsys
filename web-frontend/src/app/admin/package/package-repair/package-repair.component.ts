@@ -1219,21 +1219,39 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel() {
 
-    if (this.packRepairItems) {
-      this.isGeneratingReport = true;
-      var prcList: PackageRepairItem[] = [];
-      this.packRepairItems.forEach((item) => {
-         var itm:any = item;
-        const c: PackageRepairItem = {
-          ...itm.package_repair,
-          part_name:this.getTariffRepairAlias(itm.package_repair?.tariff_repair),
-          group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair?.tariff_repair),
-          subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.package_repair?.tariff_repair.subgroup_name_cv)
-        };
-        prcList.push(c);
-      });
-      this.exportExcelReport(prcList);
-    }
+     this.isGeneratingReport=true;
+      const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
+    this.packRepairDS.SearchAllPackageRepair(where,order).subscribe(res=>{
+          var prcList: PackageRepairItem[] = [];
+          res.forEach((item) => {
+            var itm:any = item;
+            const c: PackageRepairItem = {
+              ...itm,
+              part_name:this.getTariffRepairAlias(itm.tariff_repair),
+              group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair),
+              subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv)
+            };
+            prcList.push(c);
+          });
+          this.exportExcelReport(prcList);
+    })
+
+    // if (this.packRepairItems) {
+    //   this.isGeneratingReport = true;
+    //   var prcList: PackageRepairItem[] = [];
+    //   this.packRepairItems.forEach((item) => {
+    //      var itm:any = item;
+    //     const c: PackageRepairItem = {
+    //       ...itm.package_repair,
+    //       part_name:this.getTariffRepairAlias(itm.package_repair?.tariff_repair),
+    //       group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair?.tariff_repair),
+    //       subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.package_repair?.tariff_repair.subgroup_name_cv)
+    //     };
+    //     prcList.push(c);
+    //   });
+    //   this.exportExcelReport(prcList);
+    // }
 
   }
 

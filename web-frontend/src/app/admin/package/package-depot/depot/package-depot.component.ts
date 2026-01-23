@@ -997,20 +997,27 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   export_excel()
           {
             
-           if(this.packDepotItems)
-           {
-            this.isGeneratingReport=true;
-            var prcList:PackageDepotItem[]=[];
-                this.packDepotItems.forEach((item)=>{
-                  var itm:any = item;
-                 const c: PackageDepotItem = {
-                    ...itm,
+             this.isGeneratingReport=true;
+            const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+          const order=this.lastOrderBy;
+          this.packDepotDS.SearchAllPackageDepot(where,order).subscribe(res=>{
+                var prcList:PackageDepotItem[]=res;
+                this.exportExcelReport(prcList);
+          })
+          //  if(this.packDepotItems)
+          //  {
+          //   this.isGeneratingReport=true;
+          //   var prcList:PackageDepotItem[]=[];
+          //       this.packDepotItems.forEach((item)=>{
+          //         var itm:any = item;
+          //        const c: PackageDepotItem = {
+          //           ...itm,
                    
-                  };
-                  prcList.push(c);
-                });
-            this.exportExcelReport(prcList);
-           }
+          //         };
+          //         prcList.push(c);
+          //       });
+          //   this.exportExcelReport(prcList);
+          //  }
         
           }
       
