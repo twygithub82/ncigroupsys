@@ -196,6 +196,7 @@ export interface InspectionType {
   name: string;
   displayName: string;
   color: string;
+  backgroundColor: string; // NEW: Background color when selected
   shape: 'circle' | 'square' | 'triangle' | 'cross' | 'diagonal';
   description?: string;
   enabled?: boolean;
@@ -207,7 +208,8 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       type: 'discoloration',
       name: 'discoloration',
       displayName: 'Discoloration',
-      color: '#FF6B35',      // Orange-Red
+      color: '#FFFFFF',              // Shape color (bright)
+      backgroundColor: '#FF6B35',     // Background color (light)
       shape: 'circle',
       enabled: true
     },
@@ -215,47 +217,53 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       type: 'scratches',
       name: 'scratches',
       displayName: 'Scratches',
-      color: '#4ECDC4',      // Turquoise
-      shape: 'diagonal',
+      color: '#FFFFFF',
+      backgroundColor: '#4ECDC4',
+      shape: 'circle',
       enabled: true
     },
     {
       type: 'gouges',
       name: 'gouges',
       displayName: 'Gouges',
-      color: '#C44569',      // Deep Pink
-      shape: 'triangle',
+      color: '#FFFFFF',
+      backgroundColor: '#C44569',
+      shape: 'circle',
       enabled: true
     },
     {
       type: 'rust',
       name: 'rust',
       displayName: 'Rust',
-      color: '#F38181',      // Light Coral
-      shape: 'square',
+      color: '#FFFFFF',
+      backgroundColor: '#F38181',
+      shape: 'triangle',
       enabled: true
     },
     {
       type: 'stain',
       name: 'stain',
       displayName: 'Stain',
-      color: '#AA96DA',      // Lavender Purple
-      shape: 'cross',
+      color: '#FFFFFF',
+      backgroundColor: '#AA96DA',
+      shape: 'triangle',
       enabled: true
     },
     {
       type: 'pitting',
       name: 'pitting',
       displayName: 'Pitting',
-      color: '#FFD93D',      // Golden Yellow
-      shape: 'circle',
+      color: '#FFFFFF',
+      backgroundColor: '#FFD93D',
+      shape: 'triangle',
       enabled: true
     },
     {
       type: 'pinhole',
       name: 'pinhole',
       displayName: 'Pinhole',
-      color: '#6BCB77',      // Green
+      color: '#FFFFFF',
+      backgroundColor: '#6BCB77',
       shape: 'square',
       enabled: true
     },
@@ -263,16 +271,18 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       type: 'crated_pitting',
       name: 'crated_pitting',
       displayName: 'Crated Pitting',
-      color: '#4D96FF',      // Sky Blue
-      shape: 'diagonal',
+      color: '#FFFFFF',
+      backgroundColor: '#4D96FF',
+      shape: 'square',
       enabled: true
     },
     {
       type: 'harden_stain',
       name: 'harden_stain',
       displayName: 'Harden Stain',
-      color: '#845EC2',      // Royal Purple
-      shape: 'triangle',
+      color: '#FFFFFF',
+      backgroundColor: '#845EC2',
+      shape: 'square',
       enabled: true
     }
   ];

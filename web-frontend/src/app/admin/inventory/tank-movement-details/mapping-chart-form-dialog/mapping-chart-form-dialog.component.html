@@ -51,12 +51,12 @@
       </div>
       <div class="row justify-content-center mt-3">
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
-          @if (!selectedInspectionType) {
+          <!-- @if (!selectedInspectionType) {
           <div class="alert alert-info m-b-10">
             <mat-icon>info</mat-icon>
             <span>{{data.translatedLangText.PLEASE_SELECT_INSPECTION_TYPE}}</span>
           </div>
-          }
+          } -->
           <app-mapping-chart [markedCells]="markedCells" [circularMarkedSections]="circularMarkedSections"
             [selectedInspectionType]="selectedInspectionType" [showGrid]="true" [readonly]="!canEdit()"
             (cellMarked)="onCellMarked($event)" (circularSectionMarked)="onCircularSectionMarked($event)">
@@ -78,21 +78,28 @@
                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
                         <div class="legend-subtitle-wrapper">
                           <span class="legend-subtitle">{{data.translatedLangText.SELECT_TYPE_TO_MARK_DAMAGE}}</span>
+                          @if (!selectedInspectionType) {
+                          <span
+                            class="legend-subtitle-error">{{data.translatedLangText.CLICK_ON_SYMBOL_TO_SELECT}}</span>
+                          }
                         </div>
 
                         <div class="legend-items">
                           @for (type of inspectionTypes; track type.type) {
                           <div class="legend-item" [class.selected]="selectedInspectionType?.type === type.type"
-                            [class.disabled]="!type.enabled" (click)="type.enabled && selectInspectionType(type)">
+                            [class.disabled]="!type.enabled"
+                            [style.background-color]="selectedInspectionType?.type === type.type ? type.backgroundColor : null"
+                            [style.border-color]="selectedInspectionType?.type === type.type ? type.color : 'transparent'"
+                            (click)="type.enabled && selectInspectionType(type)">
 
-                            <!-- Symbol -->
-                            <div class="legend-symbol-wrapper">
+                            <!-- Symbol - ADD WRAPPER BACK -->
+                            <div class="legend-symbol-wrapper" [style.background-color]="type.backgroundColor">
                               <div class="legend-symbol" [ngStyle]="getSymbolStyle(type)"
-                                [class.shape-circle]="type.shape === 'circle'"
+                                [style.--shape-color]="'#FFFFFF'" [class.shape-circle]="type.shape === 'circle'"
                                 [class.shape-square]="type.shape === 'square'"
                                 [class.shape-triangle]="type.shape === 'triangle'"
                                 [class.shape-cross]="type.shape === 'cross'"
-                                [class.shape-diagonal]="type.shape === 'diagonal'" [attr.data-color]="type.color">
+                                [class.shape-diagonal]="type.shape === 'diagonal'">
                               </div>
                             </div>
 

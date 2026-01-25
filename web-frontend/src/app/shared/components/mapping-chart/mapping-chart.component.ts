@@ -22,8 +22,15 @@ export interface CellMark {
     typeId?: string;
     inspectionType?: string;
     color?: string;
+    backgroundColor?: string; // NEW
     shape?: 'circle' | 'square' | 'triangle' | 'cross' | 'diagonal';
-    style?: MarkStyle;
+    style?: {
+        type: 'color' | 'shape' | 'image';
+        shape?: 'circle' | 'square' | 'triangle' | 'cross' | 'diagonal';
+        color?: string;
+        backgroundColor?: string; // NEW
+        value?: string;
+    };
     timestamp?: number;
     surface?: string;
     position?: string;
@@ -93,26 +100,46 @@ export class MappingChartComponent implements OnInit, OnChanges {
 
     getCellBackgroundStyle(index: number): any {
         const mark = this.markedCells.get(index);
-        if (!mark || !mark.style) return {};
+        if (!mark) return {};
 
-        switch (mark.style.type) {
-            case 'color':
-                return { 'background-color': mark.style.value };
-            case 'image':
-                return {
-                    'background-image': `url(${mark.style.value})`,
-                    'background-size': 'contain',
-                    'background-repeat': 'no-repeat',
-                    'background-position': 'center'
-                };
-            case 'shape':
-                return {};
-            default:
-                return {};
+        const styles: any = {};
+
+        // ALWAYS add background color for marked cells
+        if (mark.backgroundColor) {
+            styles['background-color'] = mark.backgroundColor;
+        } else if (mark.style?.backgroundColor) {
+            styles['background-color'] = mark.style.backgroundColor;
         }
+
+        // Handle different style types
+        if (mark.style) {
+            switch (mark.style.type) {
+                case 'color':
+                    if (!styles['background-color']) {
+                        styles['background-color'] = mark.style.value;
+                    }
+                    break;
+                case 'image':
+                    styles['background-image'] = `url(${mark.style.value})`;
+                    styles['background-size'] = 'contain';
+                    styles['background-repeat'] = 'no-repeat';
+                    styles['background-position'] = 'center';
+                    break;
+                case 'shape':
+                    // Background color already set above
+                    break;
+            }
+        }
+
+        return styles;
     }
 
-    getShapeClass(index: number): string {
+    getCellBackgroundColor(index: number): string | undefined {
+        const mark = this.markedCells.get(index);
+        return mark?.backgroundColor || mark?.style?.backgroundColor;
+    }
+
+    getShapeClass(index: number): string | undefined {
         const mark = this.markedCells.get(index);
         if (!mark || !mark.style || mark.style.type !== 'shape') return '';
         return mark.style.shape;
@@ -121,7 +148,7 @@ export class MappingChartComponent implements OnInit, OnChanges {
     getShapeColor(index: number): string {
         const mark = this.markedCells.get(index);
         if (!mark || !mark.style || mark.style.type !== 'shape') return '';
-        return mark.style.color;
+        return mark.style.color || mark.color || ''; // Returns main color, not backgroundColor
     }
 
     startDrawing(event: MouseEvent | TouchEvent) {
@@ -171,11 +198,13 @@ export class MappingChartComponent implements OnInit, OnChanges {
                 typeId: this.selectedInspectionType.type,
                 inspectionType: this.selectedInspectionType.type,
                 color: this.selectedInspectionType.color,
+                backgroundColor: this.selectedInspectionType.backgroundColor, // IMPORTANT
                 shape: this.selectedInspectionType.shape,
                 style: {
                     type: 'shape',
                     shape: this.selectedInspectionType.shape,
-                    color: this.selectedInspectionType.color
+                    color: this.selectedInspectionType.color,
+                    backgroundColor: this.selectedInspectionType.backgroundColor // IMPORTANT
                 },
                 timestamp: Date.now(),
                 surface: 'tank',
@@ -184,12 +213,10 @@ export class MappingChartComponent implements OnInit, OnChanges {
 
             this.markedCells.set(index, mark);
             this.cellMarked.emit({ index, mark });
-            console.log('Marked cell', index, 'with type:', this.selectedInspectionType.type);
         } else if (this.drawMode === 'unmark') {
             const existingMark = this.markedCells.get(index);
             if (existingMark && existingMark.inspectionType === this.selectedInspectionType.type) {
                 this.markedCells.delete(index);
-                console.log('Unmarked cell', index);
             }
         }
 
@@ -264,17 +291,15 @@ export class MappingChartComponent implements OnInit, OnChanges {
 
     getCircularSectionColor(view: 'front' | 'rear', section: string): string {
         const mark = this.circularMarkedSections.get(view)?.get(section);
-        if (!mark) return 'rgba(200, 200, 200, 0.15)';
 
-        if (mark.style) {
-            if (mark.style.type === 'color') {
-                return mark.style.value;
-            } else if (mark.style.type === 'shape') {
-                return mark.style.color;
-            }
+        if (!mark) {
+            return 'rgba(200, 200, 200, 0.15)'; // Default unfilled color
         }
 
-        return mark.color || 'rgba(200, 200, 200, 0.15)';
+        // Priority: backgroundColor first (the bright color)
+        let color = mark.backgroundColor || mark.style?.backgroundColor || mark.color || mark.style?.color;
+
+        return color || 'rgba(200, 200, 200, 0.15)';
     }
 
     onCircularSectionClick(view: 'front' | 'rear', section: string, event: MouseEvent | TouchEvent) {
@@ -287,20 +312,20 @@ export class MappingChartComponent implements OnInit, OnChanges {
         const viewMap = this.circularMarkedSections.get(view)!;
         const existingMark = viewMap.get(section);
 
-        // Toggle: if same type, unmark; otherwise, mark with current type
         if (existingMark && existingMark.inspectionType === this.selectedInspectionType.type) {
             viewMap.delete(section);
-            console.log(`Unmarked ${view} section ${section}`);
         } else {
             const mark: CellMark = {
                 typeId: this.selectedInspectionType.type,
                 inspectionType: this.selectedInspectionType.type,
                 color: this.selectedInspectionType.color,
+                backgroundColor: this.selectedInspectionType.backgroundColor,
                 shape: this.selectedInspectionType.shape,
                 style: {
                     type: 'shape',
                     shape: this.selectedInspectionType.shape,
-                    color: this.selectedInspectionType.color
+                    color: this.selectedInspectionType.color,
+                    backgroundColor: this.selectedInspectionType.backgroundColor
                 },
                 timestamp: Date.now(),
                 surface: view,
@@ -309,10 +334,55 @@ export class MappingChartComponent implements OnInit, OnChanges {
 
             viewMap.set(section, mark);
             this.circularSectionMarked.emit({ surface: view, section, mark });
-            console.log(`Marked ${view} section ${section} with type:`, this.selectedInspectionType.type);
         }
 
         this.cdr.markForCheck();
+    }
+
+    getCircularSectionShape(view: 'front' | 'rear', section: string): string {
+        const mark = this.circularMarkedSections.get(view)?.get(section);
+        const shape = mark?.shape || '';
+        return shape;
+    }
+
+    getShapePosition(section: string): { top: string, left: string } {
+        const positions: { [key: string]: { angle: number, radius: number } } = {
+            // 12 o'clock: -90° to 0°, center angle = -45°
+            '12-inner': { angle: -45, radius: 20 },    // Reduced from 23
+            '12-middle': { angle: -45, radius: 45 },
+            '12-outer': { angle: -45, radius: 75 },
+
+            // 3 o'clock: 0° to 90°, center angle = 45°
+            '3-inner': { angle: 45, radius: 20 },      // Reduced from 23
+            '3-middle': { angle: 45, radius: 45 },
+            '3-outer': { angle: 45, radius: 75 },
+
+            // 6 o'clock: 90° to 180°, center angle = 135°
+            '6-inner': { angle: 135, radius: 20 },     // Reduced from 23
+            '6-middle': { angle: 135, radius: 45 },
+            '6-outer': { angle: 135, radius: 75 },
+
+            // 9 o'clock: 180° to 270°, center angle = 225°
+            '9-inner': { angle: 225, radius: 20 },     // Reduced from 23
+            '9-middle': { angle: 225, radius: 45 },
+            '9-outer': { angle: 225, radius: 75 },
+
+            'center': { angle: 0, radius: 0 }
+        };
+
+        const pos = positions[section];
+        if (!pos || section === 'center') {
+            return { top: '50%', left: '50%' };
+        }
+
+        const angleRad = (pos.angle - 90) * Math.PI / 180;
+        const x = 100 + pos.radius * Math.cos(angleRad);
+        const y = 100 + pos.radius * Math.sin(angleRad);
+
+        const left = (x / 200 * 100).toFixed(2);
+        const top = (y / 200 * 100).toFixed(2);
+
+        return { top: `${top}%`, left: `${left}%` };
     }
 
     clearAll() {
