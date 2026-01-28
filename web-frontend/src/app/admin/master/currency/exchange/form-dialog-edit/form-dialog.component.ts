@@ -266,7 +266,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   GetTitle() {
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.CURRENCY;
+    var title = this.translatedLangText.EDIT + " " + this.translatedLangText.CURRENCY;
+    if(this.isNew())title=this.translatedLangText.NEW + " " + this.translatedLangText.CURRENCY;
+    return title;
   }
 
   translateLangText() {
@@ -405,4 +407,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
+  
+    
 }
