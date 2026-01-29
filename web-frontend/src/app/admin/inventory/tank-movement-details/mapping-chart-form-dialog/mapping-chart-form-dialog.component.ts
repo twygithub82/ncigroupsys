@@ -420,22 +420,28 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getSymbolStyle(type: InspectionType): any {
+    // For all shapes, set the wrapper background color
+    const baseStyle: any = {};
+
     if (type.shape === 'triangle') {
+      // Triangle uses border, background should be transparent
       return {
-        'border-bottom-color': type.color
+        'background-color': 'transparent',
+        'border-bottom-color': '#FFFFFF'
       };
     }
 
     if (type.shape === 'cross' || type.shape === 'diagonal') {
-      // For cross and diagonal, we'll use CSS variables
+      // Cross and diagonal need transparent background
       return {
-        '--shape-color': type.color
+        'background-color': 'transparent',
+        '--shape-color': '#FFFFFF'
       };
     }
 
-    // For circle and square, use background-color
+    // For circle and square - make background transparent and use ::before for the white shape
     return {
-      'background-color': type.color
+      'background-color': 'transparent'
     };
   }
 }

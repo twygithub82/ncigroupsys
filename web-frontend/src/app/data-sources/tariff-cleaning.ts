@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { from, Observable, of } from 'rxjs';
-import { catchError, expand, finalize, map, reduce } from 'rxjs/operators';
+import { catchError, expand, finalize, map, reduce, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CleaningCategoryItem } from './cleaning-category';
 import { CleaningMethodItem } from './cleaning-method';
@@ -590,28 +590,56 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
 
   getAllTariffCleaning(where?: any, first?: any): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
+
+  const pageSize = 100; // use max allowed by backend
+  let allData: TariffCleaningItem[] = [];
+
+  const fetchPage = (after?: string): Observable<TariffCleaningItem[]> => {
     return this.apollo
       .query<any>({
         query: GET_ALL_TARIFF_CLEANING_WITH_CATEGORY,
-        variables: { where, first },
-        fetchPolicy: 'no-cache' // Ensure fresh data
+        variables: {
+          where,
+          first: pageSize,
+          after
+        },
+        fetchPolicy: 'no-cache'
       })
       .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([] as TariffCleaningItem[]); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(lastCargo.nodes);
-          this.totalCount = lastCargo.totalCount;
-          return lastCargo.nodes;
+        map(res => res.data.lastCargo),
+        switchMap(result => {
+          allData = allData.concat(result.nodes);
+
+          if (result.pageInfo?.hasNextPage) {
+            return fetchPage(result.pageInfo.endCursor);
+          }
+
+          return of(allData);
         })
       );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => {
+      this.dataSubject.next(allData);
+      this.totalCount = allData.length;
+      this.loadingSubject.next(false);
+    }),
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      this.loadingSubject.next(false);
+      return of([]);
+    })
+  );
   }
 
+/*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Adds a new TariffCleaning item
+   * @param tc The TariffCleaning item to be added
+   * @returns An observable that resolves to the result of the mutation
+   */
+/*******  8d007ff6-6b1f-491e-a88b-342f17c994ac  *******/
   addNewTariffCleaning(tc: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_CLEANING,

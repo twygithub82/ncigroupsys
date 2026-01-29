@@ -898,21 +898,27 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   export_excel()
   {
-    
-   if(this.tcList)
-   {
     this.isGeneratingReport=true;
-    var prcList:TariffCleaningItem[]=[];
-        this.tcList.forEach((item)=>{
-          var itm:any = item;
-         const c: TariffCleaningItem = {
-            ...itm.tariff_cleaning,
-            ban_type_cv: this.getbanTypeDescription(itm.tariff_cleaning.ban_type_cv)
-          };
-          prcList.push(c);
-        });
-    this.exportExcelReport(prcList);
-   }
+    const where={ delete_dt: { eq: null } };
+    this.tcDS.getAllTariffCleaning(where).subscribe(res=>{
+          var prcList:TariffCleaningItem[]=res;
+          this.exportExcelReport(prcList);
+
+      })
+  //  if(this.tcList)
+  //  {
+  //   this.isGeneratingReport=true;
+  //   var prcList:TariffCleaningItem[]=[];
+  //       this.tcList.forEach((item)=>{
+  //         var itm:any = item;
+  //        const c: TariffCleaningItem = {
+  //           ...itm.tariff_cleaning,
+  //           ban_type_cv: this.getbanTypeDescription(itm.tariff_cleaning.ban_type_cv)
+  //         };
+  //         prcList.push(c);
+  //       });
+  //   this.exportExcelReport(prcList);
+  //  }
 
   }
    export_report()

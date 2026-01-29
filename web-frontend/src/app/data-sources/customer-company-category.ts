@@ -4,7 +4,7 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 export class CustomerCompanyCleaningCategoryGO {
   public guid?: string;
@@ -219,5 +219,55 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
         })
       );
   }
+
+  searchAll(
+  where?: any,
+  order?: any
+): Observable<CustomerCompanyCleaningCategoryItem[]> {
+  this.loadingSubject.next(true);
+
+  const pageSize = 100; // use backend max
+  let allData: CustomerCompanyCleaningCategoryItem[] = [];
+
+  const fetchPage = (after?: string): Observable<CustomerCompanyCleaningCategoryItem[]> => {
+    return this.apollo
+      .query<any>({
+        query: GET_COMPANY_CATEGORY_QUERY,
+        variables: {
+          where,
+          order,
+          first: pageSize,
+          after
+        },
+        fetchPolicy: 'no-cache'
+      })
+      .pipe(
+        map(res => res.data.companycategoryList),
+        switchMap(result => {
+          allData = allData.concat(result.nodes);
+
+          if (result.pageInfo?.hasNextPage) {
+            return fetchPage(result.pageInfo.endCursor);
+          }
+
+          return of(allData);
+        })
+      );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => {
+      this.dataSubject.next(allData);
+      this.totalCount = allData.length;
+      this.loadingSubject.next(false);
+    }),
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      this.loadingSubject.next(false);
+      return of([]);
+    })
+  );
+}
+
 
 }

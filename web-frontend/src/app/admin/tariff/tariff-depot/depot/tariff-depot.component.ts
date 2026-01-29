@@ -697,63 +697,82 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       return '';
     }
 
-    return t.tanks
-      .map((tank: TankItem) => tank.unit_type)
-      .filter(Boolean)              // remove null / undefined / empty
-      .join(', ');
-  }
-  export_excel() {
-
-    if (this.tariffDepotItems) {
-      this.isGeneratingReport = true;
-      var prcList: TariffDepotItem[] = [];
-      this.tariffDepotItems.forEach((item) => {
-        var itm: any = item;
-        const c: TariffDepotItem = {
-          ...itm.tariff_depot,
-          unit_types: this.getAllUnitTypes(itm.tariff_depot)
-        };
-        prcList.push(c);
-      });
-      this.exportExcelReport(prcList);
-    }
-
-  }
-
-  exportExcelReport(repData: any) {
-
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(TariffDepotCostExcelComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-
-      data: {
-        repData: repData
-      },
-
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-
-    dialogRef.updatePosition({
-      top: '-90vh',  // Move far above the screen
-      left: '0px'  // Move far to the left of the screen
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport = false;
-    });
-
-  }
+  return t.tanks
+    .map((tank: TankItem) => tank.unit_type)
+    .filter(Boolean)              // remove null / undefined / empty
+    .join(', ');
+}
+  export_excel()
+        {
+          
+            this.isGeneratingReport=true;
+                 const where={ delete_dt: { eq: null } };
+                
+                const order={};
+                this.tfDepotDS.SearchTariffDepotAll(where,order).subscribe(res=>{
+                   var prcList:TariffDepotItem[]=[];
+                    res.forEach((item)=>{
+                      var itm:any = item;
+                    const c: TariffDepotItem = {
+                        ...itm,
+                        unit_types:this.getAllUnitTypes(itm)
+                      };
+                      prcList.push(c);
+                    });
+                   this.exportExcelReport(prcList);
+          
+                })
+        //  if(this.tariffDepotItems)
+        //  {
+        //   this.isGeneratingReport=true;
+        //   var prcList:TariffDepotItem[]=[];
+        //       this.tariffDepotItems.forEach((item)=>{
+        //         var itm:any = item;
+        //        const c: TariffDepotItem = {
+        //           ...itm.tariff_depot,
+        //           unit_types:this.getAllUnitTypes(itm.tariff_depot)
+        //         };
+        //         prcList.push(c);
+        //       });
+        //   this.exportExcelReport(prcList);
+        //  }
+      
+        }
+    
+         exportExcelReport(repData:any) {
+              
+                 //this.preventDefault(event);
+                  let cut_off_dt = new Date();
+              
+              
+                  let tempDirection: Direction;
+                  if (localStorage.getItem('isRtl') === 'true') {
+                    tempDirection = 'rtl';
+                  } else {
+                    tempDirection = 'ltr';
+                  }
+              
+                  const dialogRef = this.dialog.open(TariffDepotCostExcelComponent, {
+                    width: reportPreviewWindowDimension.portrait_width_rate,
+                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                    
+                    data: {
+                      repData: repData
+                    },
+              
+                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                    direction: tempDirection
+                  });
+              
+                    dialogRef.updatePosition({
+                    top: '-90vh',  // Move far above the screen
+                    left: '0px'  // Move far to the left of the screen
+                  });
+              
+                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                    this.isGeneratingReport = false;
+                  });
+          
+            }
 }

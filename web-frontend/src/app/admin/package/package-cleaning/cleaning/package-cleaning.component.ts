@@ -980,60 +980,68 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.search();
   }
 
-  export_excel() {
-
-    if (this.custCompClnCatItems) {
-      this.isGeneratingReport = true;
-      var prcList: CustomerCompanyCleaningCategoryItem[] = [];
-      this.custCompClnCatItems.forEach((item) => {
-        var itm: any = item;
-        const c: CustomerCompanyCleaningCategoryItem = {
-          ...itm,
-
-        };
-        prcList.push(c);
-      });
-      this.exportExcelReport(prcList);
-    }
-
-  }
-
-  exportExcelReport(repData: any) {
-
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(PackageCleaningCostExcelComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-
-      data: {
-        repData: repData
-      },
-
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-
-    dialogRef.updatePosition({
-      top: '-90vh',  // Move far above the screen
-      left: '0px'  // Move far to the left of the screen
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport = false;
-    });
-
-  }
+   export_excel()
+          {
+            this.isGeneratingReport=true;
+            const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            const order=this.lastOrderBy;
+            this.custCompClnCatDS.searchAll(where,order).subscribe(data => {
+              var prcList:CustomerCompanyCleaningCategoryItem[]=data;
+              this.exportExcelReport(prcList);
+            });
+          //  if(this.custCompClnCatItems)
+          //  {
+          //   this.isGeneratingReport=true;
+          //   var prcList:CustomerCompanyCleaningCategoryItem[]=[];
+          //       this.custCompClnCatItems.forEach((item)=>{
+          //         var itm:any = item;
+          //        const c: CustomerCompanyCleaningCategoryItem = {
+          //           ...itm,
+                   
+          //         };
+          //         prcList.push(c);
+          //       });
+          //   this.exportExcelReport(prcList);
+          //  }
+        
+          }
+      
+        exportExcelReport(repData:any) {
+                
+                   //this.preventDefault(event);
+                    let cut_off_dt = new Date();
+                
+                
+                    let tempDirection: Direction;
+                    if (localStorage.getItem('isRtl') === 'true') {
+                      tempDirection = 'rtl';
+                    } else {
+                      tempDirection = 'ltr';
+                    }
+                
+                    const dialogRef = this.dialog.open(PackageCleaningCostExcelComponent, {
+                      width: reportPreviewWindowDimension.portrait_width_rate,
+                      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                      
+                      data: {
+                        repData: repData
+                      },
+                
+                      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                      direction: tempDirection
+                    });
+                
+                      dialogRef.updatePosition({
+                      top: '-90vh',  // Move far above the screen
+                      left: '0px'  // Move far to the left of the screen
+                    });
+                
+                    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                      this.isGeneratingReport = false;
+                    });
+            
+              }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
     const centerClass = isCenter ? 'justify-content-center' : '';

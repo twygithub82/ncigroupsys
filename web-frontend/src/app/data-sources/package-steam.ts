@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { TariffSteamingItem } from './tariff-steam';
@@ -188,4 +188,54 @@ export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
       }),
     );
   }
+
+  SearchAllPackageSteam(
+  where?: any,
+  order?: any
+): Observable<PackageSteamingItem[]> {
+  this.loadingSubject.next(true);
+
+  const pageSize = 100; // safe page size
+  let allData: PackageSteamingItem[] = [];
+
+  const fetchPage = (after?: string): Observable<PackageSteamingItem[]> => {
+    return this.apollo
+      .query<any>({
+        query: GET_PACKAGE_STEAM_QUERY,
+        variables: {
+          where,
+          order,
+          first: pageSize,
+          after
+        },
+        fetchPolicy: 'no-cache'
+      })
+      .pipe(
+        map(res => res.data.packageSteamResult),
+        switchMap(result => {
+          allData = allData.concat(result.nodes);
+
+          if (result.pageInfo?.hasNextPage) {
+            return fetchPage(result.pageInfo.endCursor);
+          }
+
+          return of(allData);
+        })
+      );
+  };
+
+  return fetchPage().pipe(
+    finalize(() => {
+      this.dataSubject.next(allData);
+      this.totalCount = allData.length;
+      this.loadingSubject.next(false);
+    }),
+    catchError((error: ApolloError) => {
+      console.error('GraphQL Error:', error);
+      this.loadingSubject.next(false);
+      return of([]);
+    })
+  );
+}
+
 }
