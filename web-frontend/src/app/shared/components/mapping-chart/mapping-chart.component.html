@@ -1,76 +1,182 @@
 <div class="mapping-chart-container">
-    <!-- front -->
+    <!-- FRONT -->
     <div class="circular-section">
         <div class="circular-container">
-            <img src="../../../../assets/images/idms/mapping-chart/front.png" class="circular-image" alt="Front view">
+            <!-- <img src="../../../../assets/images/idms/mapping-chart/front.png" class="circular-image" alt="Front view"> -->
 
             <svg class="circular-overlay" viewBox="0 0 200 200">
-                <!-- Center circle (innermost) -->
-                <circle cx="100" cy="100" r="15" class="ring center"
-                    [class.marked]="isCircularSectionMarked('front', 'center')"
-                    [attr.fill]="getCircularSectionColor('front', 'center')"
-                    (mousedown)="onCircularSectionClick('front', 'center', $event)" />
-
                 <!-- 12 o'clock quarter (3 rings) -->
                 <path [attr.d]="getArcPath(100, 100, 30, -90, 0)" class="ring inner"
                     [class.marked]="isCircularSectionMarked('front', '12-inner')"
-                    [attr.fill]="getCircularSectionColor('front', '12-inner')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '12-inner')}"
                     (mousedown)="onCircularSectionClick('front', '12-inner', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 30, 60, -90, 0)" class="ring middle"
                     [class.marked]="isCircularSectionMarked('front', '12-middle')"
-                    [attr.fill]="getCircularSectionColor('front', '12-middle')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '12-middle')}"
                     (mousedown)="onCircularSectionClick('front', '12-middle', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 60, 90, -90, 0)" class="ring outer"
                     [class.marked]="isCircularSectionMarked('front', '12-outer')"
-                    [attr.fill]="getCircularSectionColor('front', '12-outer')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '12-outer')}"
                     (mousedown)="onCircularSectionClick('front', '12-outer', $event)" />
 
                 <!-- 3 o'clock quarter (3 rings) -->
                 <path [attr.d]="getArcPath(100, 100, 30, 0, 90)" class="ring inner"
                     [class.marked]="isCircularSectionMarked('front', '3-inner')"
-                    [attr.fill]="getCircularSectionColor('front', '3-inner')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '3-inner')}"
                     (mousedown)="onCircularSectionClick('front', '3-inner', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 30, 60, 0, 90)" class="ring middle"
                     [class.marked]="isCircularSectionMarked('front', '3-middle')"
-                    [attr.fill]="getCircularSectionColor('front', '3-middle')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '3-middle')}"
                     (mousedown)="onCircularSectionClick('front', '3-middle', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 60, 90, 0, 90)" class="ring outer"
                     [class.marked]="isCircularSectionMarked('front', '3-outer')"
-                    [attr.fill]="getCircularSectionColor('front', '3-outer')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '3-outer')}"
                     (mousedown)="onCircularSectionClick('front', '3-outer', $event)" />
 
                 <!-- 6 o'clock quarter (3 rings) -->
                 <path [attr.d]="getArcPath(100, 100, 30, 90, 180)" class="ring inner"
                     [class.marked]="isCircularSectionMarked('front', '6-inner')"
-                    [attr.fill]="getCircularSectionColor('front', '6-inner')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '6-inner')}"
                     (mousedown)="onCircularSectionClick('front', '6-inner', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 30, 60, 90, 180)" class="ring middle"
                     [class.marked]="isCircularSectionMarked('front', '6-middle')"
-                    [attr.fill]="getCircularSectionColor('front', '6-middle')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '6-middle')}"
                     (mousedown)="onCircularSectionClick('front', '6-middle', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 60, 90, 90, 180)" class="ring outer"
                     [class.marked]="isCircularSectionMarked('front', '6-outer')"
-                    [attr.fill]="getCircularSectionColor('front', '6-outer')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '6-outer')}"
                     (mousedown)="onCircularSectionClick('front', '6-outer', $event)" />
 
                 <!-- 9 o'clock quarter (3 rings) -->
                 <path [attr.d]="getArcPath(100, 100, 30, 180, 270)" class="ring inner"
                     [class.marked]="isCircularSectionMarked('front', '9-inner')"
-                    [attr.fill]="getCircularSectionColor('front', '9-inner')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '9-inner')}"
                     (mousedown)="onCircularSectionClick('front', '9-inner', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 30, 60, 180, 270)" class="ring middle"
                     [class.marked]="isCircularSectionMarked('front', '9-middle')"
-                    [attr.fill]="getCircularSectionColor('front', '9-middle')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '9-middle')}"
                     (mousedown)="onCircularSectionClick('front', '9-middle', $event)" />
                 <path [attr.d]="getRingArcPath(100, 100, 60, 90, 180, 270)" class="ring outer"
                     [class.marked]="isCircularSectionMarked('front', '9-outer')"
-                    [attr.fill]="getCircularSectionColor('front', '9-outer')"
+                    [ngStyle]="{'fill': getCircularSectionColor('front', '9-outer')}"
                     (mousedown)="onCircularSectionClick('front', '9-outer', $event)" />
             </svg>
+
+            <div class="shape-overlay-container">
+                @if (isCircularSectionMarked('front', 'center')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', 'center') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', 'center') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', 'center') === 'triangle'"
+                    [style.top]="getShapePosition('center').top" [style.left]="getShapePosition('center').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '12-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '12-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '12-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '12-inner') === 'triangle'"
+                    [style.top]="getShapePosition('12-inner').top" [style.left]="getShapePosition('12-inner').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '12-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '12-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '12-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '12-middle') === 'triangle'"
+                    [style.top]="getShapePosition('12-middle').top" [style.left]="getShapePosition('12-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '12-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '12-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '12-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '12-outer') === 'triangle'"
+                    [style.top]="getShapePosition('12-outer').top" [style.left]="getShapePosition('12-outer').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '3-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '3-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '3-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '3-inner') === 'triangle'"
+                    [style.top]="getShapePosition('3-inner').top" [style.left]="getShapePosition('3-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '3-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '3-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '3-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '3-middle') === 'triangle'"
+                    [style.top]="getShapePosition('3-middle').top" [style.left]="getShapePosition('3-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '3-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '3-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '3-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '3-outer') === 'triangle'"
+                    [style.top]="getShapePosition('3-outer').top" [style.left]="getShapePosition('3-outer').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '6-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '6-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '6-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '6-inner') === 'triangle'"
+                    [style.top]="getShapePosition('6-inner').top" [style.left]="getShapePosition('6-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '6-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '6-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '6-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '6-middle') === 'triangle'"
+                    [style.top]="getShapePosition('6-middle').top" [style.left]="getShapePosition('6-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '6-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '6-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '6-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '6-outer') === 'triangle'"
+                    [style.top]="getShapePosition('6-outer').top" [style.left]="getShapePosition('6-outer').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '9-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '9-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '9-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '9-inner') === 'triangle'"
+                    [style.top]="getShapePosition('9-inner').top" [style.left]="getShapePosition('9-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('front', '9-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '9-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '9-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '9-middle') === 'triangle'"
+                    [style.top]="getShapePosition('9-middle').top" [style.left]="getShapePosition('9-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('front', '9-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('front', '9-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('front', '9-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('front', '9-outer') === 'triangle'"
+                    [style.top]="getShapePosition('9-outer').top" [style.left]="getShapePosition('9-outer').left"></div>
+                }
+            </div>
         </div>
     </div>
 
-    <!-- tank (unchanged) -->
+    <!-- TANK -->
     <div class="image-container">
         <img [src]="imageUrl" class="chart-image" alt="Mapping chart">
 
@@ -93,7 +199,7 @@
                     [class.shape-square]="getShapeClass(index) === 'square'"
                     [class.shape-cross]="getShapeClass(index) === 'cross'"
                     [class.shape-diagonal]="getShapeClass(index) === 'diagonal'"
-                    [style.background-color]="getShapeColor(index)">
+                    [style.--shape-color]="getShapeColor(index)">
                 </div>
                 }
             </div>
@@ -101,18 +207,12 @@
         </div>
     </div>
 
-    <!-- rear -->
+    <!-- REAR -->
     <div class="circular-section">
         <div class="circular-container">
-            <img src="../../../../assets/images/idms/mapping-chart/front.png" class="circular-image" alt="Rear view">
+            <!-- <img src="../../../../assets/images/idms/mapping-chart/front.png" class="circular-image" alt="Rear view"> -->
 
             <svg class="circular-overlay" viewBox="0 0 200 200">
-                <!-- Center circle (innermost) -->
-                <circle cx="100" cy="100" r="15" class="ring center"
-                    [class.marked]="isCircularSectionMarked('rear', 'center')"
-                    [attr.fill]="getCircularSectionColor('rear', 'center')"
-                    (mousedown)="onCircularSectionClick('rear', 'center', $event)" />
-
                 <!-- 12 o'clock quarter (3 rings) -->
                 <path [attr.d]="getArcPath(100, 100, 30, -90, 0)" class="ring inner"
                     [class.marked]="isCircularSectionMarked('rear', '12-inner')"
@@ -169,6 +269,118 @@
                     [attr.fill]="getCircularSectionColor('rear', '9-outer')"
                     (mousedown)="onCircularSectionClick('rear', '9-outer', $event)" />
             </svg>
+
+            <div class="shape-overlay-container">
+                @if (isCircularSectionMarked('rear', 'center')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', 'center') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', 'center') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', 'center') === 'triangle'"
+                    [style.top]="getShapePosition('center').top" [style.left]="getShapePosition('center').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '12-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '12-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '12-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '12-inner') === 'triangle'"
+                    [style.top]="getShapePosition('12-inner').top" [style.left]="getShapePosition('12-inner').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '12-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '12-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '12-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '12-middle') === 'triangle'"
+                    [style.top]="getShapePosition('12-middle').top" [style.left]="getShapePosition('12-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '12-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '12-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '12-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '12-outer') === 'triangle'"
+                    [style.top]="getShapePosition('12-outer').top" [style.left]="getShapePosition('12-outer').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '3-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '3-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '3-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '3-inner') === 'triangle'"
+                    [style.top]="getShapePosition('3-inner').top" [style.left]="getShapePosition('3-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '3-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '3-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '3-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '3-middle') === 'triangle'"
+                    [style.top]="getShapePosition('3-middle').top" [style.left]="getShapePosition('3-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '3-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '3-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '3-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '3-outer') === 'triangle'"
+                    [style.top]="getShapePosition('3-outer').top" [style.left]="getShapePosition('3-outer').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '6-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '6-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '6-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '6-inner') === 'triangle'"
+                    [style.top]="getShapePosition('6-inner').top" [style.left]="getShapePosition('6-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '6-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '6-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '6-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '6-middle') === 'triangle'"
+                    [style.top]="getShapePosition('6-middle').top" [style.left]="getShapePosition('6-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '6-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '6-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '6-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '6-outer') === 'triangle'"
+                    [style.top]="getShapePosition('6-outer').top" [style.left]="getShapePosition('6-outer').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '9-inner')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '9-inner') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '9-inner') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '9-inner') === 'triangle'"
+                    [style.top]="getShapePosition('9-inner').top" [style.left]="getShapePosition('9-inner').left"></div>
+                }
+
+                @if (isCircularSectionMarked('rear', '9-middle')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '9-middle') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '9-middle') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '9-middle') === 'triangle'"
+                    [style.top]="getShapePosition('9-middle').top" [style.left]="getShapePosition('9-middle').left">
+                </div>
+                }
+
+                @if (isCircularSectionMarked('rear', '9-outer')) {
+                <div class="circular-shape-overlay"
+                    [class.shape-circle]="getCircularSectionShape('rear', '9-outer') === 'circle'"
+                    [class.shape-square]="getCircularSectionShape('rear', '9-outer') === 'square'"
+                    [class.shape-triangle]="getCircularSectionShape('rear', '9-outer') === 'triangle'"
+                    [style.top]="getShapePosition('9-outer').top" [style.left]="getShapePosition('9-outer').left"></div>
+                }
+            </div>
         </div>
     </div>
 </div>

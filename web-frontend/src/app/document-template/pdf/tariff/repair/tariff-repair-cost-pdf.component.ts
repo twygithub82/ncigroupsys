@@ -315,6 +315,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     LABOUR_HOUR:'COMMON-FORM.LABOUR-HOUR',
     LENGTH:'COMMON-FORM.LENGTH',
     MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
+    REPAIR_TARIFF:'COMMON-FORM.REPAIR-TARIFF',
 
   }
 
@@ -1014,7 +1015,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     ]];
 
     const comStyles: any = {
-     0: { cellWidth: 12 },    // "No."
+     0: { cellWidth: 12 , valign: 'middle', halign: 'center'},    // "No."
       1: { cellWidth: 108 },   // "Part Name"
       2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Length"
       3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Labour Hour"
@@ -1055,7 +1056,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, '',subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    startPostY+=5;
+    startPostY+=2;
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
@@ -1377,10 +1378,10 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
   }
 
   GetReportTitle(): string {
-    var title: string = 'RepairTariff';
+    var title: string = `${this.translatedLangText.REPAIR_TARIFF}`;
     // switch (this.repType) {
     //   case "CLEANING":
-    //     title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
+    //     title =REPAIR_TARIFF
     //     break;
     //   case "STEAMING":
     //     title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`

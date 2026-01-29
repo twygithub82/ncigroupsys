@@ -1424,7 +1424,9 @@
     "INSPECTION-TYPES": "Inspection Types",
     "SELECT-TYPE-TO-MARK-DAMAGE": "Select a type to mark damage",
     "PLEASE-SELECT-INSPECTION-TYPE": "Please select an inspection type to start marking",
-    "CLEANING-TARIFF": "Cleaning Tariff"
+    "CLEANING-TARIFF": "Cleaning Tariff",
+    "CLICK-ON-SYMBOL-TO-SELECT": "Click on the symbol to select",
+    "REPAIR-TARIFF": "Repair Tariff"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
