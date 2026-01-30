@@ -1022,4 +1022,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
                   });
           
             }
+        getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+            const centerClass = isCenter ? 'justify-content-center' : '';
+            return `${baseClasses} ${centerClass}`.trim();
+          }
 }
