@@ -230,7 +230,8 @@ export class FormDialogComponent {
           searchCriteria = value.description;
         }
         this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
-          this.cleanFormulaList = data
+
+          this.cleanFormulaList = data.filter(i => i.delete_dt == null);
           this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
         });
       })

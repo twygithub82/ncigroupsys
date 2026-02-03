@@ -1426,7 +1426,11 @@
     "PLEASE-SELECT-INSPECTION-TYPE": "Please select an inspection type to start marking",
     "CLEANING-TARIFF": "Cleaning Tariff",
     "CLICK-ON-SYMBOL-TO-SELECT": "Click on the symbol to select",
-    "REPAIR-TARIFF": "Repair Tariff"
+    "REPAIR-TARIFF": "Repair Tariff",
+    "CLEANING-REPORT": "Cleaning Report",
+    "CERTIFICATE-CLEANILINESS": "Certificate of Cleanliness",
+    "CERTIFICATE-NO": "Certificate No",
+    "REFERENCE-NO":"Reference No"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

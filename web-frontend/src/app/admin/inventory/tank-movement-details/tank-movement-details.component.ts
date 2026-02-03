@@ -103,6 +103,7 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { InspectionsDS } from 'app/data-sources/inspections';
+import { CleanReportPdfComponent } from 'app/document-template/pdf/cleaning-report-pdf/cleaning-report-pdf.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -529,6 +530,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     INSPECTION_TYPES: 'COMMON-FORM.INSPECTION-TYPES',
     PLEASE_SELECT_INSPECTION_TYPE: 'COMMON-FORM.PLEASE-SELECT-INSPECTION-TYPE',
     CLICK_ON_SYMBOL_TO_SELECT: 'COMMON-FORM.CLICK-ON-SYMBOL-TO-SELECT',
+    CLEANING_REPORT:'COMMON-FORM.CLEANING-REPORT',
   }
 
   sot_guid: string | null | undefined;
@@ -3525,6 +3527,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     let tempDirection: Direction = this.getViewDirection();
 
     const dialogRef = this.dialog.open(CleaningEstimatePdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        cleaning_guid: cleaning_guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+   exportCleaningReport(event: Event, cleaning_guid?: string) {
+    let tempDirection: Direction = this.getViewDirection();
+
+    const dialogRef = this.dialog.open(CleanReportPdfComponent, {
       position: { top: '-9999px', left: '-9999px' },
       width: '794px',
       height: '80vh',
