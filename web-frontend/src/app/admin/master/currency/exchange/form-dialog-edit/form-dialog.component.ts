@@ -338,6 +338,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   updateCurrencyRate()
   {
     var updateCurrency= new CurrencyItem(this.selectedItem);
+       updateCurrency.currency_code=this.pcForm?.value['code'];
+    updateCurrency.currency_name=this.pcForm?.value['description'];
     updateCurrency.rate=Number(this.pcForm?.value['rate']);
     this.currencyDS.updateCurrency(updateCurrency).subscribe(result => {
       this.handleSaveSuccess(result?.data?.updateCurrency);

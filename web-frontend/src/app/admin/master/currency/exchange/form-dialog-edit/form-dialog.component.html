@@ -17,7 +17,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CODE}}</mat-label>
                 <input matInput formControlName="code"  type="text" required maxlength="5"
-                  #preinspection_cost  [readonly]="!isNew()">
+                  #preinspection_cost  >
                    @if (pcForm.get('code')?.hasError('duplicated')) {
                   <mat-error>
                     {{translatedLangText.CODE }} {{translatedLangText.EXISTED }}
@@ -34,7 +34,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
                 <input matInput formControlName="description"  type="text" required  #lolo_cost maxlength="50"
-                    [readonly]="!isNew()">
+                    >
                 <!-- @if (pcForm.get('lolo_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED }}

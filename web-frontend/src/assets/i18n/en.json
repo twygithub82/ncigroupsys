@@ -1430,7 +1430,13 @@
     "CLEANING-REPORT": "Cleaning Report",
     "CERTIFICATE-CLEANILINESS": "Certificate of Cleanliness",
     "CERTIFICATE-NO": "Certificate No",
-    "REFERENCE-NO":"Reference No"
+    "REFERENCE-NO":"Reference No",
+    "CLEANING-DETAILS": "Cleaning Details",
+    "CLEANING-PROCEDURE":"Cleaning Procedure",
+    "CLEANING-DATE": "Cleaning Date",
+    "CLEANED-BY": "Cleaned By",
+    "COMPLETION-DATE": "Completion Date",
+    "DESCRIPTION-STEPS": "Description / Steps"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

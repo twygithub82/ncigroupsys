@@ -644,6 +644,20 @@ const SEARCH_CLEANING_REPORT = gql`
         status_cv
         update_by
         update_dt
+        job_order {
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          start_dt
+          status_cv
+          team_guid
+          total_hour
+          update_by
+          update_dt
+          working_hour
+        }
         storing_order_tank {
           certificate_cv
           clean_status_cv

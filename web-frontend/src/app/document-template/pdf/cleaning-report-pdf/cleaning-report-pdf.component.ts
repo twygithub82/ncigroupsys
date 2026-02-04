@@ -250,7 +250,12 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
     CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
     UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    
+    CLEANING_DETAILS:'COMMON-FORM.CLEANING-DETAILS',
+    CLEANING_PROCEDURE: "COMMON-FORM.CLEANING-PROCEDURE",
+    CLEANING_DATE: "COMMON-FORM.CLEANING-DATE",
+    CLEANED_BY: "COMMON-FORM.CLEANED-BY",
+    COMPLETION_DATE:"COMMON-FORM.COMPLETION-DATE",
+    DESCRIPTION_STEPS:'COMMON-FORM.DESCRIPTION-STEPS',
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
 
@@ -1231,13 +1236,19 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
         var w= 70;
         var h=10;
-       var startX=pageWidth-rightMargin-2-w;
+       var startX=pageWidth-rightMargin-w;
       
-       PDFUtility.drawBoxWithText(pdf,{x:startX,y:startY-8,width:w,height:h,text:`${this.translatedLangText.CERTIFICATE_NO}: ${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`});
+       PDFUtility.drawBoxWithText(pdf,{x:startX,y:startY-8,width:w,height:h,radius:0,text:`${this.translatedLangText.CERTIFICATE_NO}: ${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`});
     startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     
-     this.AddCustomerInfoTable(pdf, pageWidth, leftMargin, rightMargin,startY);
-   
+    startY= await this.AddCustomerInfoTable(pdf, pageWidth, leftMargin, rightMargin,startY);
+    w= (pageWidth+2)-rightMargin-leftMargin;
+    h=8;
+    PDFUtility.drawBoxWithText(pdf,{x:leftMargin,y:startY+1,width:w,height:h,text:`${this.translatedLangText.CLEANING_DETAILS}`,fontSize:10,paddingY:-5,paddingX:3,radius:0});
+
+    startY+=h+2;
+    startY=await this.AddCleaningDetailsTable(pdf, pageWidth, leftMargin, rightMargin,startY);
+    PDFUtility.addText(pdf, this.translatedLangText.DESCRIPTION_STEPS, startY+4, leftMargin, 10, true);
     // var offhireCodeHeight=49;
     
     // var totalCostTableHeight=45;
@@ -1265,13 +1276,141 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
 
-
-  async AddCustomerInfoTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number)
+async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number):Promise<number>
   {
 
     const lColor = 180;
     var grayColor=255;
-     const contentWidth = pageWidth - leftMargin - rightMargin;
+     const contentWidth = (pageWidth+2) - leftMargin - rightMargin;
+     let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 7;
+    let fontSz = 8.5;
+    //  let lastTableFinalY = posY;
+
+    let startY = posY ; // Start table 20mm below the customer name
+    var item = this.cleanItem[0];
+    var cc = item.storing_order_tank?.storing_order?.customer_company;
+    
+    
+     const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+    };
+
+    
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [grayColor, grayColor, grayColor], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: [lColor, lColor, lColor],
+       lineWidth: 0
+    };
+
+    
+    var data: any[][] = [
+      [
+        { content: `${this.translatedLangText.CLEANING_PROCEDURE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tariff_cleaning?.cleaning_method?.description}` },
+        { content: `${this.translatedLangText.CLEANING_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDateTime(item?.job_order?.start_dt)||"-"}` }
+      ],
+      [
+        { content: `${this.translatedLangText.CLEANED_BY}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.update_by}` },
+        { content: `${this.translatedLangText.COMPLETION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDateTime(item?.update_dt)}` }
+      ]
+    ];
+
+     var offhireCodeHeight=49;
+     var lastTableFinalY =posY;
+
+     autoTable(pdf, {
+  body: data,
+  startY: startY,
+  theme: 'grid',
+  margin: { left: leftMargin },
+  styles: {
+    cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+    fontSize: fontSz,
+    minCellHeight: minHeightHeaderCol,
+    lineWidth: 0, // Set all lines to 0 width
+    lineColor: [255, 255, 255], // Make lines invisible
+  },
+  headStyles: headStyles,
+  tableWidth: contentWidth,
+  columnStyles: {
+    0: { cellWidth: 35, lineWidth: 0 },
+    1: { cellWidth: 61, lineWidth: 0 },
+    2: { cellWidth: 35, lineWidth: 0 },
+    3: { cellWidth: 61, lineWidth: 0 }
+  },
+  bodyStyles: {
+    fillColor: [255, 255, 255],
+    halign: 'left',
+    valign: 'middle',
+    lineWidth: 0 // Ensure body cells have no lines
+  },
+    didDrawCell: function(data) {
+            pdf.setDrawColor(lColor, lColor, lColor);
+            pdf.setLineWidth(0.1);
+            
+             if ((data.column.index%2) === 0) {
+               pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x,
+                data.cell.y + data.cell.height);
+             }
+            // Draw top line (for every cell in first column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x + data.cell.width,
+                data.cell.y
+              );
+            
+            
+            // Draw bottom line (for every cell in last column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y + data.cell.height,
+                data.cell.x + data.cell.width,
+                data.cell.y + data.cell.height
+              );
+            
+          },
+  // Add didDrawPage to manually draw outer border
+  didDrawPage: (data: any) => {
+    const pageCount = pdf.getNumberOfPages();
+    lastTableFinalY = data.cursor.y;
+    
+    // Manually draw outer border
+    pdf.setDrawColor(lColor, lColor, lColor);
+    pdf.setLineWidth(0.1);
+    pdf.rect(leftMargin, startY, contentWidth, lastTableFinalY - startY);
+  },
+});
+
+   
+  
+     return lastTableFinalY;
+
+  }
+  async AddCustomerInfoTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number):Promise<number>
+  {
+
+    const lColor = 180;
+    var grayColor=255;
+     const contentWidth = (pageWidth+2) - leftMargin - rightMargin;
      let minHeightHeaderCol = 3;
     let minHeightBodyCell = 7;
     let fontSz = 8.5;
@@ -1308,7 +1447,7 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.customer_company?.code}` },
         { content: `${this.translatedLangText.REFERENCE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.estimate_no}` }
+        { content: `-` }
       ],
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
@@ -1339,47 +1478,73 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
      var offhireCodeHeight=49;
      var lastTableFinalY =posY;
 
-    autoTable(pdf, {
-      body: data,
-       startY: startY, // Start table at the current startY value
-      theme: 'grid',
-      margin: { left: leftMargin},
-      styles: {
-        cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
-        fontSize: fontSz,
-        minCellHeight: minHeightHeaderCol,
-        // lineWidth:0.1,
-        // lineColor: [lColor, lColor, lColor], // black
-      },
-       headStyles: headStyles,
-      tableWidth: contentWidth,
-      columnStyles: {
-        0: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        1: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        2: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        3: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], }
-      },
-      // headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        halign: 'left', // Left-align content for body by default
-        valign: 'middle', // Vertically align content
-        // lineWidth:0.1,
-        // lineColor: [lColor, lColor, lColor], 
-      },
-      //  didDrawCell: function (data) {
-      //   const doc = data.doc;
-      //   doc.setDrawColor(lColor, lColor, lColor);
-      //    doc.setLineWidth(0.1);
-      //   },
-      didDrawPage: (data: any) => {
-      
-        const pageCount = pdf.getNumberOfPages();
-        lastTableFinalY = data.cursor.y;
-
-      },
-    });
-
+      autoTable(pdf, {
+          body: data,
+          startY: startY,
+          theme: 'plain',
+          margin: { left: leftMargin },
+          styles: {
+            cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+            fontSize: fontSz,
+            minCellHeight: minHeightHeaderCol,
+            lineWidth: 0,
+          },
+          headStyles: headStyles,
+          tableWidth: contentWidth,
+          columnStyles: {
+            0: { cellWidth: 35, lineWidth: 0 },
+            1: { cellWidth: 61, lineWidth: 0 },
+            2: { cellWidth: 35, lineWidth: 0 },
+            3: { cellWidth: 61, lineWidth: 0 }
+          },
+          bodyStyles: {
+            fillColor: [255, 255, 255],
+            halign: 'left',
+            valign: 'middle',
+            lineWidth: 0
+          },
+          // Draw both top and bottom lines for each cell
+          didDrawCell: function(data) {
+            pdf.setDrawColor(lColor, lColor, lColor);
+            pdf.setLineWidth(0.05);
+             if ((data.column.index%2) === 0) {
+               pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x,
+                data.cell.y + data.cell.height);
+             }
+            // Draw top line (for every cell in first column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x + data.cell.width,
+                data.cell.y
+              );
+            
+            
+            // Draw bottom line (for every cell in last column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y + data.cell.height,
+                data.cell.x + data.cell.width,
+                data.cell.y + data.cell.height
+              );
+            
+          },
+          
+          didDrawPage: (data: any) => {
+            const pageCount = pdf.getNumberOfPages();
+            lastTableFinalY = data.cursor.y;
+            
+            // Manually draw outer border
+            pdf.setDrawColor(lColor, lColor, lColor);
+            pdf.setLineWidth(0.1);
+            pdf.rect(leftMargin, startY, contentWidth, lastTableFinalY - startY);
+          },
+        });
   
      return lastTableFinalY;
 
@@ -3411,5 +3576,7 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
       
     }
+
+    
 
 }
