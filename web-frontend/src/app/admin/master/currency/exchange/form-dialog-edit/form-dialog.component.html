@@ -16,7 +16,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CODE}}</mat-label>
-                <input matInput formControlName="code"  type="text" required maxlength="5"
+                <input matInput formControlName="code"  type="text" required maxlength="3"  (input)="toUppercase($event)"
                   #preinspection_cost  >
                    @if (pcForm.get('code')?.hasError('duplicated')) {
                   <mat-error>

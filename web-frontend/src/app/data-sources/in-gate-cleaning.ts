@@ -732,6 +732,8 @@ const SEARCH_CLEANING_REPORT = gql`
             eir_no
             eir_status_cv
             delete_dt
+            vehicle_no
+            driver_name
             guid
             in_gate_survey {
               last_test_cv
@@ -742,6 +744,7 @@ const SEARCH_CLEANING_REPORT = gql`
           }
           customer_company {
             code
+            name
             country
             create_by
             create_dt
