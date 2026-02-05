@@ -130,7 +130,8 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                     if (item.action.EqualsIgnore(ObjectAction.EDIT))
                     {
-                        var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
+                        //var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
+                        var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.guid == item.guid).FirstOrDefault();
                         if (updateCMF != null)
                         {
                             updateCMF.sequence = item.sequence;
@@ -146,7 +147,8 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                     if (item.action.EqualsIgnore(ObjectAction.CANCEL))
                     {
-                        var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
+                        //var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
+                        var updateCMF = dbCleanMethod.cleaning_method_formula.Where(c => c.guid == item.guid).FirstOrDefault();
                         if (updateCMF != null)
                         {
                             updateCMF.delete_dt = currentDateTime;

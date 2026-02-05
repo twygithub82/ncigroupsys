@@ -409,9 +409,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result > 0) {
         this.handleSaveSuccess(result);
         //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        this.refreshProcessList();
-        this.refreshDescriptionList();
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.refreshProcessList();
+        // this.refreshDescriptionList();
+        this.resetForm();
+        this.search();
       }
     });
   }
@@ -439,10 +441,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        this.refreshProcessList();
-        this.refreshDescriptionList();
+        this.search();
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.refreshProcessList();
+        // this.refreshDescriptionList();
       }
     });
   }

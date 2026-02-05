@@ -7,6 +7,30 @@ import html2canvas from "html2canvas";
 import { CustomerCompanyItem } from "app/data-sources/customer-company";
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
+
+interface BoxTextOptions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+
+  text: string | string[];
+
+  borderColor?: [number, number, number];
+  fillColor?: [number, number, number];
+  textColor?: [number, number, number];
+
+  font?: 'helvetica' | 'times' | 'courier';
+  fontStyle?: 'normal' | 'bold' | 'italic';
+  fontSize?: number;
+
+  paddingX?: number;
+  paddingY?: number;
+  radius?: number; // for rounded rectangle
+  lineWidth?:number;
+}
+
+
 export class PDFUtility {
   // static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
   //   bold: boolean = false, fontFamily: string = 'helvetica', wrap: boolean = false, maxWidth: number = 0,
@@ -38,6 +62,8 @@ export class PDFUtility {
   //   pdf.restoreGraphicsState();
   //   return crtY + fontSize * 0.3528; // return next Y (bottom of printed text)
   // }
+
+
 
   static addText(
   pdf: jsPDF,
@@ -1653,4 +1679,59 @@ export class PDFUtility {
   static GapBetweenSubTitleAndTable_Landscape() {
     return ((this.SubTitleFontSize_Landscape() / 2) + 1);;
   }
+
+  static drawBoxWithText(
+  doc: jsPDF,
+  options: BoxTextOptions
+) {
+  const {
+    x,
+    y,
+    width,
+    height,
+    text,
+    borderColor = [240, 240, 240],
+    fillColor= [240, 240, 240],
+    textColor = [0, 0, 0],
+    font = 'helvetica',
+    fontStyle = 'normal',
+    fontSize = 13,
+    paddingY = -6,
+    paddingX = 7,
+    radius = 1.5,
+    lineWidth=0
+  } = options;
+
+  // Border
+  doc.setDrawColor(...borderColor);
+  doc.setLineWidth(lineWidth);
+
+  // Fill (optional)
+  if (fillColor) {
+    doc.setFillColor(...fillColor);
+  }
+
+  const drawMode = fillColor ? 'FD' : 'S';
+
+  // Rectangle
+  if (radius > 0) {
+    doc.roundedRect(x, y, width, height, radius, radius, drawMode);
+  } else {
+    doc.rect(x, y, width, height, drawMode);
+  }
+
+  // Text
+  doc.setTextColor(...textColor);
+  doc.setFont(font, fontStyle);
+  doc.setFontSize(fontSize);
+
+  const lines = Array.isArray(text) ? text : [text];
+
+  let textY = y +paddingY+  fontSize;
+
+  lines.forEach(line => {
+    doc.text(line, x+paddingX , textY);
+    textY += fontSize + 2;
+  });
+}
 }

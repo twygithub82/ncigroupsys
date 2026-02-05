@@ -610,6 +610,194 @@ const ROLLBACK_COMPLETED_CLEANING = gql`
   }
 `
 
+const SEARCH_CLEANING_REPORT = gql`
+  query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    inGates: queryCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        customer_billing_guid
+        buffer_cost
+        cleaning_cost
+        est_buffer_cost
+        est_cleaning_cost
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_no
+        na_dt
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        job_order {
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          start_dt
+          status_cv
+          team_guid
+          total_hour
+          update_by
+          update_dt
+          working_hour
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          preinspect_job_no
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          release_job_no
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          job_no
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tank{
+            unit_type
+          }
+          repair {
+            guid
+            status_cv
+          }
+          residue {
+            status_cv
+          }
+          storing_order {
+            customer_company_guid
+            guid
+            haulier
+            remarks
+            so_no
+            so_notes
+            status_cv
+            update_by
+            update_dt
+            customer_company {
+              code
+              name
+              currency_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              email
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+              update_by
+              update_dt
+            }
+          }
+          in_gate {
+            eir_dt
+            eir_no
+            eir_status_cv
+            delete_dt
+            vehicle_no
+            driver_name
+            guid
+            in_gate_survey {
+              last_test_cv
+              test_class_cv
+              test_dt
+              next_test_cv
+            }
+          }
+          customer_company {
+            code
+            name
+            country
+            create_by
+            create_dt
+            currency_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            email
+            guid
+          }
+          tariff_cleaning {
+            alias
+            un_no
+            ban_type_cv
+            in_gate_alert
+            nature_cv
+            cargo
+            class_cv
+            remarks
+            cleaning_category_guid
+            cleaning_method_guid
+            cleaning_method   {
+              description
+              guid
+              name
+              cleaning_method_formula {
+              delete_dt
+              sequence
+              update_by
+              update_dt
+              cleaning_formula {
+                delete_dt
+                description
+                duration
+                guid
+                update_by
+                update_dt
+                  }
+                }
+            }
+            cleaning_category {
+            cost
+            description
+            guid
+            name
+            } 
+          }
+        }
+      }
+    }
+  }
+`;
+
 export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -723,6 +911,30 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       );
   }
 
+   searchCleaningReport(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateCleaningItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: SEARCH_CLEANING_REPORT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        })
+      );
+  }
   updateInGateCleaning(clean: any, in_gate_survey?: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_IN_GATE_CLEANING,
