@@ -424,6 +424,8 @@ namespace IDMS.Customer.GqlTypes
                     throw new GraphQLException(new Error($"Currency not found", "ERROR"));
                 }
 
+                updateCurrency.currency_code = updateCurrency.currency_code;    
+                updateCurrency.currency_name = updateCurrency.currency_name;
                 updateCurrency.rate = editCurrency.rate;
                 updateCurrency.is_active = editCurrency.is_active;
                 updateCurrency.sequence = editCurrency.sequence;
