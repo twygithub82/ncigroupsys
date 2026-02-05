@@ -188,6 +188,7 @@ export class FormDialogComponent {
   ) {
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
+    this.removeDeletedSteps();
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
     this.catDS = new CleaningCategoryDS(this.apollo);
@@ -198,6 +199,9 @@ export class FormDialogComponent {
     this.initializeValueChanges();
   }
 
+  removeDeletedSteps() {
+    this.updatedMethodFormulaLinkList = this.updatedMethodFormulaLinkList.filter(f => f.delete_dt==0||f.delete_dt==null);
+  }
   loadData() {
     const where: any = { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] };
 
@@ -231,7 +235,11 @@ export class FormDialogComponent {
         }
         this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
 
-          this.cleanFormulaList = data.filter(i => i.delete_dt == null);
+          this.cleanFormulaList = data.filter(f => f.delete_dt == 0 || f.delete_dt == null);
+          this.cleanFormulaList.forEach(f => {
+            var cfm=f.cleaning_method_formula?.filter(f => f.delete_dt == 0 || f.delete_dt == null);
+            f.cleaning_method_formula = cfm;
+          })
           this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
         });
       })

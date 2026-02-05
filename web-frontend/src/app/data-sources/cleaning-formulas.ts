@@ -32,6 +32,7 @@ export const SEARCH_CLEANING_FORMULA_QUERY = gql`
             formula_guid
             guid
             method_guid
+            delete_dt
             cleaning_method {
               category_guid
               create_by

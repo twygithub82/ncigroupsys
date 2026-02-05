@@ -28,6 +28,7 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
+import { AuthService } from '@core';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -256,6 +257,13 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     CLEANED_BY: "COMMON-FORM.CLEANED-BY",
     COMPLETION_DATE:"COMMON-FORM.COMPLETION-DATE",
     DESCRIPTION_STEPS:'COMMON-FORM.DESCRIPTION-STEPS',
+    MINUTES:'COMMON-FORM.MINUTES',
+    COMMENTS:'COMMON-FORM.COMMENTS',
+    GENERATED_DATE:'COMMON-FORM.GENERATED-DATE',
+    GENERATED_BY:'COMMON-FORM.GENERATED-BY',
+    
+
+    
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
 
@@ -313,7 +321,10 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
-    private sanitizer: DomSanitizer) {
+    private sanitizer: DomSanitizer,
+    private authService: AuthService
+
+  ) {
     super();
     this.translateLangText();
     this.cleanDS = new InGateCleaningDS(this.apollo);
@@ -1248,35 +1259,237 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
 
     startY+=h+2;
     startY=await this.AddCleaningDetailsTable(pdf, pageWidth, leftMargin, rightMargin,startY);
-    PDFUtility.addText(pdf, this.translatedLangText.DESCRIPTION_STEPS, startY+4, leftMargin, 10, true);
-    // var offhireCodeHeight=49;
-    
-    // var totalCostTableHeight=45;
-    // var bufferY=67;
-    // startY = lastTableFinalY + bufferY+offhireCodeHeight;
-    // var bufferHeight=10;
-    // var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,bottomMargin,pagePositions,bufferHeight);
-    
-    // // var TotalCostStartY=topMargin+bottomMargin+repairDetailLastRowY+totalCostTableHeight;
+    PDFUtility.addText(pdf, this.translatedLangText.DESCRIPTION_STEPS, startY+6, leftMargin+1, 10, true);
+    startY+=PDFUtility.GapBetweenLeftTitleAndTable()+6;
+    startY=await this.AddCleaningStepsTable(pdf, pageWidth, leftMargin, rightMargin, startY);
 
-    // var buffer=pageHeight/3.8;
-    // if((repairDetailLastRowY+buffer)>=pageHeight)
-    // {
-    //    pdf.addPage();
-    //    const pageCount = pdf.getNumberOfPages();
-
-    //    pagePositions.push({ page: pageCount, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-    // }
-
-  // await this.addFooterCompanyLogo_Portrait(pdf,pageWidth,pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions,0);
-
-
+     w= (pageWidth+2)-rightMargin-leftMargin;
+    h=40;
+    PDFUtility.drawBoxWithText(pdf,{x:leftMargin,y:startY+1,width:w,height:h,text:`${this.translatedLangText.COMMENTS}`,fontStyle:'bold',fontSize:10,paddingY:-5,paddingX:3,radius:0});
+    startY+=h+3;
+    PDFUtility.addText(pdf, this.translatedLangText.REMARKS, startY+5, leftMargin+1, 10, true);
+    PDFUtility.addText(pdf,  item.remarks||'', startY+12, leftMargin+1, 10, true);
+    startY=pageHeight-bottomMargin-40;
+    this.AddHeaderInfoTable(pdf, pageWidth, leftMargin, rightMargin, startY);
     this.downloadFile(pdf.output('blob'), this.getReportTitle())
     this.dialogRef.close();
   }
 
+  AddHeaderInfoTable(
+  pdf: jsPDF,
+  pageWidth: number,
+  leftMargin: number,
+  rightMargin: number,
+  startY: number
+): number {
 
-async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number):Promise<number>
+   const lColor = 180;
+    var grayColor=255;
+  const contentWidth = pageWidth - leftMargin - rightMargin;
+  const lineColor = 180;
+  const fontSize = 9;
+ var item = this.cleanItem[0];
+  var data: any[][]  = [
+    [
+      {
+        content: `${customerInfo.companyName}`,
+        styles: { fontStyle: 'bold' }
+      },
+      {
+        content: `${item.storing_order_tank?.customer_company?.name||''}`,
+        styles: { fontStyle: 'bold' }
+      }
+    ],
+    [
+       `${this.translatedLangText.GENERATED_BY}: ${this.authService.currentUserName}`,
+       `${this.translatedLangText.HAULIER}: ${item.storing_order_tank?.storing_order?.haulier||''}`
+    ],
+    [
+      `${this.translatedLangText.GENERATED_DATE}: ${ Utility.convertDateToStr(new Date())}`,
+      `${this.translatedLangText.VEHICLE_NO}: ${item.storing_order_tank?.in_gate?.[0]?.vehicle_no||''}`
+    ],
+    [
+      '',
+       `${this.translatedLangText.DRIVER_NAME}: ${item.storing_order_tank?.in_gate?.[0]?.driver_name||''}`
+    ]
+  ];
+
+  var lastTableFinalY =startY;
+  let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 10;
+    let fontSz =9;
+  autoTable(pdf, {
+    startY: startY,
+    body: data,
+    theme: 'plain',
+    tableWidth: contentWidth,
+    margin: { left: leftMargin },
+
+     styles: {
+            cellPadding: { left: 2, right: 2, top: 2, bottom: 2 },
+            fontSize: fontSz,
+            minCellHeight: minHeightHeaderCol,
+            lineWidth: 0,
+          },
+
+    columnStyles: {
+      0: { cellWidth: contentWidth / 2 },
+      1: { cellWidth: contentWidth / 2 }
+    },
+
+    didDrawCell: function(data) {
+            pdf.setDrawColor(lColor, lColor, lColor);
+            pdf.setLineWidth(0.05);
+             if ((data.column.index%2) === 0) {
+               pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x,
+                data.cell.y + data.cell.height);
+             }
+            // Draw top line (for every cell in first column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y,
+                data.cell.x + data.cell.width,
+                data.cell.y
+              );
+            
+            
+            // Draw bottom line (for every cell in last column to avoid duplicates)
+            
+              pdf.line(
+                data.cell.x,
+                data.cell.y + data.cell.height,
+                data.cell.x + data.cell.width,
+                data.cell.y + data.cell.height
+              );
+            
+          },
+          
+          didDrawPage: (data: any) => {
+            const pageCount = pdf.getNumberOfPages();
+            lastTableFinalY = data.cursor.y;
+            
+            // Manually draw outer border
+            pdf.setDrawColor(lColor, lColor, lColor);
+            pdf.setLineWidth(0.1);
+            pdf.rect(leftMargin, startY, contentWidth, lastTableFinalY - startY);
+          },
+  });
+
+  return (pdf as any).lastAutoTable.finalY;
+}
+
+async AddCleaningStepsTable(
+  pdf: jsPDF,
+  pageWidth: number,
+  leftMargin: number,
+  rightMargin: number,
+  posY: number
+): Promise<number> {
+
+  const lColor = 180;
+  const grayColor = 255;
+  const contentWidth = (pageWidth + 2) - leftMargin - rightMargin;
+
+  const minHeightHeaderCol = 3;
+  const minHeightBodyCell = 7;
+  const fontSz = 8;
+
+  const startY = posY;
+  let lastTableFinalY = posY;
+
+  const item = this.cleanItem[0];
+  const cm = item.storing_order_tank?.tariff_cleaning?.cleaning_method;
+
+  /* ---------- Column styles (3 columns) ---------- */
+  const comStyles: any = {
+    0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+    1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+    2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+  };
+
+  /* ---------- Header styles ---------- */
+  const headStyles: Partial<Styles> = {
+    fillColor: [grayColor, grayColor, grayColor],
+    textColor: 0,
+    fontStyle: 'bold',
+    halign: 'center',
+    valign: 'middle',
+    lineColor: [lColor, lColor, lColor],
+    lineWidth: 0
+  };
+
+  /* ---------- Build table data (3 cols x 4 rows, column-wise) ---------- */
+  const rows = 3;
+  const cols = 3;
+
+  const data: string[][] = Array.from({ length: rows }, () =>
+    Array(cols).fill('')
+  );
+
+  cm.cleaning_method_formula
+    .filter((x: any) => x.delete_dt==0||x.delete_dt==null)
+    .sort((a: any, b: any) => a.sequence - b.sequence)
+    .slice(0, rows * cols)
+    .forEach((element: any, index: number) => {
+
+      const rowIndex = index % rows;
+      const colIndex = Math.floor(index / rows);
+
+      const cnt =
+        `- ${element.cleaning_formula?.description}  ` +
+        `${element.cleaning_formula?.duration} ${this.translatedLangText.MINUTES}`;
+
+      if (colIndex < cols) {
+        data[rowIndex][colIndex] = cnt;
+      }
+    });
+
+  /* ---------- AutoTable ---------- */
+  autoTable(pdf, {
+    body: data,
+    startY: startY,
+    theme: 'grid',
+    margin: { left: leftMargin },
+    tableWidth: contentWidth,
+
+    styles: {
+      cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+      fontSize: fontSz,
+      minCellHeight: minHeightHeaderCol,
+      lineWidth: 0,
+      lineColor: [255, 255, 255],
+    },
+
+    headStyles: headStyles,
+    columnStyles: comStyles,
+
+    bodyStyles: {
+      fillColor: [255, 255, 255],
+      halign: 'left',
+      valign: 'middle',
+      lineWidth: 0
+    },
+
+    
+
+    didDrawPage: (data: any) => {
+      lastTableFinalY = data.cursor.y;
+
+      // // outer border
+      // pdf.setDrawColor(lColor, lColor, lColor);
+      // pdf.setLineWidth(0.1);
+      // pdf.rect(leftMargin, startY, contentWidth, lastTableFinalY - startY);
+    }
+  });
+
+  return lastTableFinalY;
+}
+
+ async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number):Promise<number>
   {
 
     const lColor = 180;
@@ -1284,7 +1497,7 @@ async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number,
      const contentWidth = (pageWidth+2) - leftMargin - rightMargin;
      let minHeightHeaderCol = 3;
     let minHeightBodyCell = 7;
-    let fontSz = 8.5;
+    let fontSz = 9;
     //  let lastTableFinalY = posY;
 
     let startY = posY ; // Start table 20mm below the customer name
@@ -1337,7 +1550,7 @@ async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number,
   theme: 'grid',
   margin: { left: leftMargin },
   styles: {
-    cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+    cellPadding: { left: 2, right: 2, top: 2, bottom: 2 },
     fontSize: fontSz,
     minCellHeight: minHeightHeaderCol,
     lineWidth: 0, // Set all lines to 0 width
@@ -1413,7 +1626,7 @@ async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number,
      const contentWidth = (pageWidth+2) - leftMargin - rightMargin;
      let minHeightHeaderCol = 3;
     let minHeightBodyCell = 7;
-    let fontSz = 8.5;
+    let fontSz = 9;
     //  let lastTableFinalY = posY;
 
     let startY = posY ; // Start table 20mm below the customer name
@@ -1484,7 +1697,7 @@ async AddCleaningDetailsTable(pdf: jsPDF, pageWidth: number, leftMargin: number,
           theme: 'plain',
           margin: { left: leftMargin },
           styles: {
-            cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+            cellPadding: { left: 2, right: 2, top: 2, bottom: 2 },
             fontSize: fontSz,
             minCellHeight: minHeightHeaderCol,
             lineWidth: 0,
