@@ -409,6 +409,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
-  
+  toUppercase(event: Event) {
+  const input = event.target as HTMLInputElement;
+  input.value = input.value.toUpperCase();
+  this.pcForm.get('code')?.setValue(input.value, { emitEvent: false });
+}
     
 }
