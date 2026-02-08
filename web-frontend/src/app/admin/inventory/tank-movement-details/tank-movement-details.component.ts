@@ -104,6 +104,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { InspectionsDS } from 'app/data-sources/inspections';
 import { CleanReportPdfComponent } from 'app/document-template/pdf/cleaning-report-pdf/cleaning-report-pdf.component';
+import { UpdateCleanSealNoFormDialogComponent } from './update-clean-seal-no-form-dialog/update-clean-seal-no-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -531,6 +532,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     PLEASE_SELECT_INSPECTION_TYPE: 'COMMON-FORM.PLEASE-SELECT-INSPECTION-TYPE',
     CLICK_ON_SYMBOL_TO_SELECT: 'COMMON-FORM.CLICK-ON-SYMBOL-TO-SELECT',
     CLEANING_REPORT:'COMMON-FORM.CLEANING-REPORT',
+    UPDATE_SEAL_NO:'COMMON-FORM.UPDATE-SEAL-NO',
+    SEAL_NO:'COMMON-FORM.SEAL-NO',
+    UPDATE_CLEANING:'COMMON-FORM.UPDATE-CLEANING',
   }
 
   sot_guid: string | null | undefined;
@@ -3909,4 +3913,34 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
+
+   canExportCleanReport() {
+    return (this.cleaningItem?.length||0) > 0 ;
+  }
+
+  UpdateSealNo(row: InGateCleaningItem) {
+    let r = new InGateCleaningItem(row);
+    
+    let tempDirection: Direction = this.getViewDirection();
+    const dialogRef = this.dialog.open(UpdateCleanSealNoFormDialogComponent, {
+      width: '55vw',
+      maxWidth:'450px',
+      data: {
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+        selectedItem: r,
+        nextTestDesc: this.next_test_desc!,
+        lastTestDesc: this.last_test_desc!
+      }
+    });
+
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.data.updateCleaning > 0) {
+              console.log('valid');
+              this.handleSaveSuccess(result.data.updateCleaning);
+      }
+
+     });
+  }
+
 }
