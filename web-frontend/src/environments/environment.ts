@@ -50,6 +50,7 @@ export const reportPreviewWindowDimension = {
   report_maxHeight: '85vh'
 };
 
+
 export const refreshTokenWithin: number = 1200000;
 
 export const modulePackage: string = "customized";
@@ -59,3 +60,53 @@ export const maxTankCount: number = 5;
 export const systemCurrencyCode: string = "SGD";
 
 export const defaultDiscountThreshold: number = 25;
+
+
+export interface cleanlinessReportTextBlock {
+  text: string | ((data: any) => string);
+  x?: number;
+  y?: number;
+  maxWidth?: number;
+  style?: {
+    font?: 'normal' | 'bold' | 'italic';
+    size?: number;
+    align?: 'left' | 'center' | 'right';
+  };
+  marginTop?: number;
+}
+
+export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
+  {
+    text: 'Comments',
+    style: { font: 'bold', size: 16 },
+    marginTop: 10
+  },
+  {
+    text: 'Dear Sir / Madam,',
+    style: { size: 11 },
+    marginTop: 0
+  },
+  {
+    text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
+    style: { size: 11 },
+    marginTop: 10
+  },
+  {
+    text: `The above-mentioned tank, including all valves, was inspected and found to be
+dry, odorless, residue-free, and visually clean
+at the time of inspection.`,
+    style: { size: 11 },
+    marginTop: 10
+  },
+  {
+    text: (data) => `Seal No.: ${data.sealNo || '____________________'}`,
+    style: { font: 'bold', size: 11 },
+    marginTop: 15
+  },
+  {
+    text: `This report refers only to the condition of the above-mentioned tank
+at the time and place of inspection.`,
+    style: { size: 9 },
+    marginTop: 25
+  }
+];
