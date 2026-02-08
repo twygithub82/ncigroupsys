@@ -36,6 +36,7 @@ export class InGateCleaningGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public seal_no?: string;
 
   constructor(item: Partial<InGateCleaningGO> = {}) {
     this.action = item.action || '';
@@ -64,6 +65,7 @@ export class InGateCleaningGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.seal_no=item.seal_no;
   }
 }
 
@@ -644,6 +646,7 @@ const SEARCH_CLEANING_REPORT = gql`
         status_cv
         update_by
         update_dt
+        seal_no
         job_order {
           complete_dt
           create_by
