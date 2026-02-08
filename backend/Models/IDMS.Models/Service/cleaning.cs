@@ -42,6 +42,7 @@ namespace IDMS.Models.Service
         public string? owner_billing_guid { get; set; }
         public string? overwrite_remarks { get; set; }
         public long? clean_statement_dt { get; set; }
+        public string? seal_no { get; set; }    
 
         [NotMapped]
         public string action { get; set; } 
