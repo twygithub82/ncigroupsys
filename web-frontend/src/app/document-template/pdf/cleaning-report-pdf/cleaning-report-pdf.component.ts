@@ -780,8 +780,9 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     // h=40;
     // PDFUtility.drawBoxWithText(pdf,{x:leftMargin,y:startY+1,width:w,height:h,text:`${this.translatedLangText.COMMENTS}`,fontStyle:'bold',fontSize:10,paddingY:-5,paddingX:3,radius:0});
     startY=pageHeight-bottomMargin-70;
-    PDFUtility.addText(pdf, this.translatedLangText.REMARKS, startY+5, leftMargin+1, 10, true);
-    PDFUtility.addText(pdf,  item.remarks||'', startY+12, leftMargin+1, 10, false);
+    var buffer=14;
+    PDFUtility.addText(pdf, this.translatedLangText.REMARKS, startY+buffer, leftMargin+1, 10, true);
+    PDFUtility.addText(pdf,  item.remarks||'', startY+buffer+4, leftMargin+1, 10, false);
     startY=pageHeight-bottomMargin-40;
     this.AddHeaderInfoTable(pdf, pageWidth, leftMargin, rightMargin, startY);
     this.downloadFile(pdf.output('blob'), this.getReportTitle())
@@ -1436,7 +1437,7 @@ async AddCleaningStepsTable(
     doc.setFont('helvetica', font);
     doc.setFontSize(size);
 
-    let x = 10;
+    let x = 12;
     if (align === 'center') x = pageWidth / 2;
     if (align === 'right') x = pageWidth - 20;
 

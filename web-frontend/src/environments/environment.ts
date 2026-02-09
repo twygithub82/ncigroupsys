@@ -76,38 +76,41 @@ export interface cleanlinessReportTextBlock {
   marginTop?: number;
 }
 
+const fzSize=12.5;
 export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
-  {
-    text: 'Comments',
-    style: { font: 'bold', size: 16 },
-    marginTop: 10
-  },
+  // {
+  //   text: 'Comments',
+  //   style: { font: 'bold', size: 16, align: 'left' },
+  //   marginTop: 10
+  // },
   {
     text: 'Dear Sir / Madam,',
-    style: { size: 11 },
-    marginTop: 0
+    style: { size: fzSize },
+    marginTop: 8
   },
   {
     text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
-    style: { size: 11 },
-    marginTop: 10
+    style: { size: fzSize },
+    marginTop: 2
   },
   {
-    text: `The above-mentioned tank, including all valves, was inspected and found to be
-dry, odorless, residue-free, and visually clean
-at the time of inspection.`,
-    style: { size: 11 },
-    marginTop: 10
+    text: `The above-mentioned tank, including all valves, was inspected and found to be dry, odorless, residue-free, and visually clean at the time of inspection.`,
+    style: { size: fzSize },
+    marginTop: 5
   },
   {
     text: (data) => `Seal No.: ${data.sealNo || '____________________'}`,
-    style: { font: 'bold', size: 11 },
-    marginTop: 15
+    style: { font: 'bold', size: fzSize },
+    marginTop: 8
   },
   {
-    text: `This report refers only to the condition of the above-mentioned tank
-at the time and place of inspection.`,
-    style: { size: 9 },
-    marginTop: 25
+    text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
+    style: { size: fzSize-2 },
+    marginTop: 2
+  },
+   {
+    text: `This is a computer generated document, no signature is required.`,
+    style: { size: 7.5 ,align: 'center'},
+    marginTop: 126
   }
 ];
