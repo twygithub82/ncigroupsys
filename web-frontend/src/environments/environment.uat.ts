@@ -58,6 +58,8 @@ export interface cleanlinessReportTextBlock {
     font?: 'normal' | 'bold' | 'italic';
     size?: number;
     align?: 'left' | 'center' | 'right';
+    lineWidth?: number;     // 👈 for horizontal line
+    underline?: boolean;
   };
   marginTop?: number;
 }

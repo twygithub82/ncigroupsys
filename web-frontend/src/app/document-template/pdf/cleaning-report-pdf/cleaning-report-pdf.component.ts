@@ -261,6 +261,7 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     COMMENTS:'COMMON-FORM.COMMENTS',
     GENERATED_DATE:'COMMON-FORM.GENERATED-DATE',
     GENERATED_BY:'COMMON-FORM.GENERATED-BY',
+    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
     
 
     
@@ -766,7 +767,12 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     //  w= (pageWidth+2)-rightMargin-leftMargin;
 
      startY+=5;
-    startY= this.AddCleanlinessComments(pdf, CLEANLINESS_COMMENT_CONFIG,  { sealNo: `${item.seal_no||"-"}` }, startY);
+    startY= this.AddCleanlinessComments(pdf, CLEANLINESS_COMMENT_CONFIG,  
+      { sealNo: `${item.seal_no||"-"}`
+        ,remark: `${item.remarks||"-"}`
+        ,generatedBy: `${this.authService.currentUserName||"-"}`
+        ,generatedDate: `${this.formatDateToString(new Date())||""}`
+      }, startY);
     // h=8;
     // PDFUtility.drawBoxWithText(pdf,{x:leftMargin,y:startY+1,width:w,height:h,text:`${this.translatedLangText.CLEANING_DETAILS}`,fontSize:10,paddingY:-5,paddingX:3,radius:0});
 
@@ -779,12 +785,12 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     //  w= (pageWidth+2)-rightMargin-leftMargin;
     // h=40;
     // PDFUtility.drawBoxWithText(pdf,{x:leftMargin,y:startY+1,width:w,height:h,text:`${this.translatedLangText.COMMENTS}`,fontStyle:'bold',fontSize:10,paddingY:-5,paddingX:3,radius:0});
-    startY=pageHeight-bottomMargin-70;
-    var buffer=14;
-    PDFUtility.addText(pdf, this.translatedLangText.REMARKS, startY+buffer, leftMargin+1, 10, true);
-    PDFUtility.addText(pdf,  item.remarks||'', startY+buffer+4, leftMargin+1, 10, false);
-    startY=pageHeight-bottomMargin-40;
-    this.AddHeaderInfoTable(pdf, pageWidth, leftMargin, rightMargin, startY);
+    // startY=pageHeight-bottomMargin-70;
+    // var buffer=14;
+    // PDFUtility.addText(pdf, this.translatedLangText.REMARKS, startY+buffer, leftMargin+1, 10, true);
+    // PDFUtility.addText(pdf,  item.remarks||'', startY+buffer+4, leftMargin+1, 10, false);
+    // startY=pageHeight-bottomMargin-40;
+    // this.AddHeaderInfoTable(pdf, pageWidth, leftMargin, rightMargin, startY);
     this.downloadFile(pdf.output('blob'), this.getReportTitle())
     this.dialogRef.close();
   }
@@ -1176,7 +1182,7 @@ async AddCleaningStepsTable(
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.customer_company?.code}` },
+        { content: `${item?.storing_order_tank?.customer_company?.name}` },
        { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
       ],
@@ -1187,7 +1193,7 @@ async AddCleaningStepsTable(
         { content: `${this.displayDateTime(item?.complete_dt) || "-"}` }
       ],
       [
-        { content: `${this.translatedLangText.CARGO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}`, colSpan: 3 },
       ]
      
@@ -1308,7 +1314,7 @@ async AddCleaningStepsTable(
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.customer_company?.code}` },
+        { content: `${item?.storing_order_tank?.customer_company?.name}` },
         { content: `${this.translatedLangText.REFERENCE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `-` }
       ],
@@ -1413,16 +1419,158 @@ async AddCleaningStepsTable(
 
   }
 
-   AddCleanlinessComments(
+ AddCleanlinessComments(
   doc: jsPDF,
   blocks: cleanlinessReportTextBlock[],
   data: any = {},
-  startY: number = 20   // 👈 NEW
+  startY: number = 20
 ) {
   let currentY = startY;
+
+  const marginX = 10;
+  let currentX = marginX;
+
   const pageWidth = doc.internal.pageSize.getWidth();
+  const usableWidth = pageWidth - marginX * 2;
+  const lineHeight = 5.5;
+
+  const getTextWidth = (text: string, fontSize: number) =>
+    doc.getStringUnitWidth(text) * fontSize / doc.internal.scaleFactor;
 
   blocks.forEach(block => {
+
+    /* ---------- HORIZONTAL LINE ---------- */
+    if (block.type === 'line') {
+      currentY += block.marginTop || 0;
+
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(block.style?.lineWidth || 0.3);
+      doc.line(marginX, currentY, pageWidth - marginX, currentY);
+
+      currentY += lineHeight;
+      currentX = marginX;
+      return;
+    }
+
+    if (!block.text) return;
+
+    /* ---------- TEXT RESOLUTION ---------- */
+    const text =
+      typeof block.text === 'function'
+        ? block.text(data)
+        : block.text;
+
+    const font = block.style?.font || 'normal';
+    const size = block.style?.size || 11;
+    const align = block.style?.align || 'left';
+     const underline = block.style?.underline || false;
+    const fontFamily=  'helvetica';
+    doc.setFont(fontFamily, font);
+    doc.setFontSize(size);
+
+   /* ---------- NEW PARAGRAPH ---------- */
+    currentY += block.marginTop || 0;
+    if (!block.inline) {
+      // currentY += block.marginTop || 0;
+      currentX = marginX;
+
+      const lines = doc.splitTextToSize(text, usableWidth);
+      if (align === 'center' || align === 'right') {
+          // Calculate X for each line individually
+          lines.forEach((line:any, index:number) => {
+            const textWidth = doc.getStringUnitWidth(line) * size / doc.internal.scaleFactor;
+            let lineX = marginX;
+            if (align === 'center') lineX = marginX + (usableWidth - textWidth) / 2;
+            if (align === 'right') lineX = marginX + (usableWidth - textWidth);
+
+            // Draw the line
+            doc.text(line, lineX, currentY + index * lineHeight);
+          });
+        } else {
+          // Left align (default)
+          doc.text(lines, currentX, currentY);
+        }
+      // this.drawTextAligned(doc,text, currentY, align, size,marginX,usableWidth,lineHeight);
+      //  if(align === 'center')
+      //   { 
+      //      currentX= (usableWidth - doc.getStringUnitWidth(lines) * size / doc.internal.scaleFactor) / 2
+      //   }
+       
+      //  doc.text(lines, currentX, currentY, { align });
+
+      const textWidth =
+      doc.getStringUnitWidth(text) * size / doc.internal.scaleFactor;
+
+    if (underline) {
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth( 0.3);
+      const y = currentY + 1; // slightly below text
+      doc.line(currentX, y, currentX + textWidth, y);
+    }
+
+      currentY += lines.length * (lineHeight);
+      return;
+    }
+
+    /* ---------- INLINE TEXT (NO WRAP) ---------- */
+    // currentY += block.marginTop || 0;
+    if(block.marginTop){
+        currentX = marginX;
+    }
+    // this.drawTextAligned(doc,text, currentY, align, size,marginX,usableWidth,lineHeight);
+     doc.text(text, currentX, currentY);
+
+    const textWidth =
+      doc.getStringUnitWidth(text) * size / doc.internal.scaleFactor;
+
+    if (underline) {
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth( 0.3);
+      const y = currentY + 2; // slightly below text
+      doc.line(currentX, y, currentX + textWidth, y);
+    }
+
+    currentX += textWidth + 2;
+  });
+
+  return currentY;
+}
+
+
+
+
+   AddCleanlinessComments1(  doc: jsPDF,  blocks: cleanlinessReportTextBlock[],  data: any = {},  startY: number = 20) {
+  let currentY = startY;
+
+  const marginX = 10;
+  let currentX = marginX;
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const usableWidth = pageWidth - marginX * 2;
+  const lineHeight = 5.5;
+  const getTextWidth = (text: string, fontSize: number) =>
+    doc.getStringUnitWidth(text) * fontSize / doc.internal.scaleFactor;
+
+
+  blocks.forEach(block => {
+
+    /* ---------- HORIZONTAL LINE ---------- */
+    if (block.type === 'line') {
+      currentY += block.marginTop || 0;
+       doc.setDrawColor(0, 0, 0); 
+      doc.setLineWidth(block.style?.lineWidth || 0.3);
+      doc.line(marginX, currentY, pageWidth - marginX, currentY);
+
+       currentY += lineHeight;
+      currentX = marginX;
+      return;
+    }
+
+    if (!block.text) {
+      return;
+    }
+
+    /* ---------- TEXT RESOLUTION ---------- */
     const text =
       typeof block.text === 'function'
         ? block.text(data)
@@ -1432,25 +1580,71 @@ async AddCleaningStepsTable(
     const size = block.style?.size || 11;
     const align = block.style?.align || 'left';
 
-    currentY += block.marginTop || 0;
-
     doc.setFont('helvetica', font);
     doc.setFontSize(size);
 
-    let x = 12;
-    if (align === 'center') x = pageWidth / 2;
-    if (align === 'right') x = pageWidth - 20;
+    /* ---------- NEW PARAGRAPH ---------- */
+    if (!block.inline) {
+      currentY += block.marginTop || 0;
+      currentX = marginX;
 
-    doc.text(text, x, currentY, {
-      maxWidth: pageWidth - 25,
-      align
+      const lines = doc.splitTextToSize(text, usableWidth);
+      doc.text(lines, marginX, currentY, { align });
+
+       currentY += lines.length * (lineHeight);
+      return;
+    }
+
+   const words = text.split(' ');
+
+    words.forEach((word, index) => {
+      const token = index === 0 ? word : ' ' + word;
+      const tokenWidth = getTextWidth(token, size);
+
+      // auto wrap
+      if (currentX + tokenWidth > marginX + usableWidth) {
+        currentY += lineHeight;
+        currentX = marginX;
+      }
+
+      doc.text(token, currentX, currentY);
+      currentX += tokenWidth;
     });
-
-    currentY += size ;
   });
 
-  return currentY; // 👈 OPTIONAL: return last Y
+  return currentY;
 }
-    
+
+
+formatDateToString(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  let hours = date.getHours();
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // months are 0-based
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year} ${pad(hours)}:${minutes}:${seconds} ${ampm}`;
+}
+
+ drawTextAligned(doc: jsPDF, text: string | string[], y: number, align: 'left' | 'center' | 'right', 
+  fontSize: number,marginX:number,usableWidth:number,lineHeight:number) {
+   const lines = Array.isArray(text) ? text : [text];
+
+  lines.forEach((line, index) => {
+    const textWidth = doc.getStringUnitWidth(line) * fontSize / doc.internal.scaleFactor;
+    let x = marginX;
+
+    if (align === 'center') x = marginX + (usableWidth - textWidth) / 2;
+    if (align === 'right') x = marginX + (usableWidth - textWidth);
+
+    doc.text(line, x, y + index * lineHeight);
+  });
+}
 
 }

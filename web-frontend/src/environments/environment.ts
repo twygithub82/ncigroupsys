@@ -65,13 +65,17 @@ export const defaultDiscountThreshold: number = 25;
 
 export interface cleanlinessReportTextBlock {
   text: string | ((data: any) => string);
+  type?: 'text' | 'line';   // 👈 NEW
   x?: number;
   y?: number;
   maxWidth?: number;
+  inline?: boolean; 
   style?: {
     font?: 'normal' | 'bold' | 'italic';
     size?: number;
     align?: 'left' | 'center' | 'right';
+    lineWidth?: number;     // 👈 for horizontal line
+    underline?: boolean;
   };
   marginTop?: number;
 }
@@ -93,10 +97,25 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
     style: { size: fzSize },
     marginTop: 2
   },
-  {
-    text: `The above-mentioned tank, including all valves, was inspected and found to be dry, odorless, residue-free, and visually clean at the time of inspection.`,
+   {
+    text: `The above-mentioned tank, including all valves, was inspected and found to be `,
     style: { size: fzSize },
     marginTop: 5
+  },
+   {
+    text: `dry2, `,
+    style: { font: 'bold', size: fzSize },
+    inline: true
+  },
+  {
+    text: `odorless, residue-free and visually clean `,
+    style: { font: 'bold', size: fzSize },
+    inline: true
+  },
+  {
+    text: `at the time of inspection.`,
+    style: { size: 11 },
+    inline: true
   },
   {
     text: (data) => `Seal No.: ${data.sealNo || '____________________'}`,
