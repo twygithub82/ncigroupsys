@@ -1167,17 +1167,22 @@ namespace IDMS.Inventory.GqlTypes
                     IList<surface_types> surTypeList = new List<surface_types>();
                     foreach (var surface in surfaceTypesList)
                     {
-                        var newSurfaceType = new surface_types();
-                        newSurfaceType.guid = Util.GenerateGUID();
-                        newSurfaceType.create_by = user;
-                        newSurfaceType.create_dt = currentDateTime;
-                        newSurfaceType.update_by = user;
-                        newSurfaceType.update_dt = currentDateTime;
 
-                        newSurfaceType.inspection_guid = newInspection.guid;
-                        newSurfaceType.type_cv = surface?.type_cv;    
-                        newSurfaceType.remarks = surface?.remarks;
-                        surTypeList.Add(newSurfaceType);
+                        if (surface.action.EqualsIgnore(SOTankAction.NEW))
+                        {
+                            var newSurfaceType = new surface_types();
+                            newSurfaceType.guid = Util.GenerateGUID();
+                            newSurfaceType.create_by = user;
+                            newSurfaceType.create_dt = currentDateTime;
+                            newSurfaceType.update_by = user;
+                            newSurfaceType.update_dt = currentDateTime;
+
+                            newSurfaceType.inspection_guid = newInspection.guid;
+                            newSurfaceType.type_cv = surface?.type_cv;
+                            newSurfaceType.remarks = surface?.remarks;
+                            newSurfaceType.value = surface?.value;
+                            surTypeList.Add(newSurfaceType);
+                        }
                     }
                     await context.AddRangeAsync(surfaceTypesList);
                 }
@@ -1229,17 +1234,47 @@ namespace IDMS.Inventory.GqlTypes
                     IList<surface_types> surTypeList = new List<surface_types>();
                     foreach (var surface in surfaceTypesList)
                     {
-                        var newSurfaceType = new surface_types();
-                        newSurfaceType.guid = Util.GenerateGUID();
-                        newSurfaceType.create_by = user;
-                        newSurfaceType.create_dt = currentDateTime;
-                        newSurfaceType.update_by = user;
-                        newSurfaceType.update_dt = currentDateTime;
+                        if (surface.action.EqualsIgnore(SOTankAction.NEW))
+                        {
+                            var newSurfaceType = new surface_types();
+                            newSurfaceType.guid = Util.GenerateGUID();
+                            newSurfaceType.create_by = user;
+                            newSurfaceType.create_dt = currentDateTime;
+                            newSurfaceType.update_by = user;
+                            newSurfaceType.update_dt = currentDateTime;
 
-                        newSurfaceType.inspection_guid = curInspection.guid;
-                        newSurfaceType.type_cv = surface?.type_cv;
-                        newSurfaceType.remarks = surface?.remarks;
-                        surTypeList.Add(newSurfaceType);
+                            newSurfaceType.inspection_guid = curInspection.guid;
+                            newSurfaceType.type_cv = surface?.type_cv;
+                            newSurfaceType.remarks = surface?.remarks;
+                            newSurfaceType.value = surface?.value;
+                            surTypeList.Add(newSurfaceType);
+                        }
+
+                        if (surface.action.EqualsIgnore(SOTankAction.CANCEL))
+                        {
+                            var delSurfaceType = await context.surface_types.Where(s => s.guid == surface.guid
+                                                        && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+                            if (delSurfaceType != null)
+                            {
+                                delSurfaceType.update_by = user;
+                                delSurfaceType.update_dt = currentDateTime;
+                                delSurfaceType.delete_dt = currentDateTime;
+                            }
+                        }
+
+                        if (surface.action.EqualsIgnore(SOTankAction.EDIT))
+                        {
+                            var editSurfaceType = await context.surface_types.Where(s => s.guid == surface.guid
+                                                        && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+                            if (editSurfaceType != null)
+                            {
+                                editSurfaceType.update_by = user;
+                                editSurfaceType.update_dt = currentDateTime;
+                                editSurfaceType.type_cv = surface?.type_cv;
+                                editSurfaceType.remarks = surface?.remarks;
+                                editSurfaceType.value = surface?.value;
+                            }
+                        }
                     }
                     await context.AddRangeAsync(surfaceTypesList);
                 }
