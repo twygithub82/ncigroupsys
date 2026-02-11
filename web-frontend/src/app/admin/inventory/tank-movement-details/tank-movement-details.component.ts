@@ -3938,6 +3938,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (result.data.updateCleaning > 0) {
               console.log('valid');
               this.handleSaveSuccess(result.data.updateCleaning);
+              this.loadDataHandling_cleaning(this.sot_guid!);
       }
 
      });

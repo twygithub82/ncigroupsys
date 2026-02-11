@@ -748,19 +748,27 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 2; // Start table 20mm below the customer name
+    let startY = lastTableFinalY ; // Start table 20mm below the customer name
     var item = this.cleanItem[0];
     var cc = item.storing_order_tank?.storing_order?.customer_company;
     
      await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
        this.translate, '', '');
-       PDFUtility.addText(pdf,reportTitle,  startY,leftMargin,23);
+       
+       this.addStyledTextArrayRTL(pdf, 
+        [
+          { text: `${this.translatedLangText.CERTIFICATE_NO}: `, fontSize: 12, textColor: [0, 0, 0] },
+          { text: `${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`, fontSize: 12, textColor: [0, 0, 0], underline: true }
+        ], 
+        startY-3, rightMargin+2);
+        startY+=9;
+        PDFUtility.AddTextAtCenterPage(pdf,reportTitle.toUpperCase(),  pageWidth,leftMargin,rightMargin,startY,22,'',true);
 
         var w= 70;
         var h=10;
        var startX=pageWidth-rightMargin-w;
       
-       PDFUtility.drawBoxWithText(pdf,{x:startX,y:startY-8,width:w,height:h,radius:0,text:`${this.translatedLangText.CERTIFICATE_NO}: ${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`});
+      //  PDFUtility.drawBoxWithText(pdf,{x:startX,y:startY-8,width:w,height:h,radius:0,text:`${this.translatedLangText.CERTIFICATE_NO}: ${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`});
     startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     
     startY= await this.AddCustomerInfoTable_r1(pdf, pageWidth, leftMargin, rightMargin,startY);
@@ -1646,5 +1654,58 @@ formatDateToString(date: Date): string {
     doc.text(line, x, y + index * lineHeight);
   });
 }
+
+addStyledTextArrayRTL(
+  doc: jsPDF,
+  items: {
+    text: string;
+    fontSize?: number;
+    fontName?: string;
+    fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic';
+    textColor?: [number, number, number];
+    underline?: boolean;
+  }[],
+  y: number,
+  marginRight: number = 20
+): number {
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let currentX = pageWidth - marginRight;
+
+  // Loop in reverse (RTL)
+  for (let i = items.length - 1; i >= 0; i--) {
+
+    const item = items[i];
+
+    const fontSize = item.fontSize ?? 12;
+    const fontName = item.fontName ?? 'helvetica';
+    const fontStyle = item.fontStyle ?? 'normal';
+    const textColor = item.textColor ?? [0, 0, 0];
+    const underline = item.underline ?? false;
+
+    doc.setFont(fontName, fontStyle);
+    doc.setFontSize(fontSize);
+    doc.setTextColor(...textColor);
+
+    const textWidth = doc.getTextWidth(item.text);
+
+    // Move left
+    currentX -= textWidth;
+
+    // Draw text
+    doc.text(item.text, currentX, y);
+
+    // Underline if needed
+    if (underline) {
+      const underlineY = y + 2;
+      doc.setLineWidth(0.5);
+      doc.line(currentX, underlineY, currentX + textWidth, underlineY);
+    }
+  }
+
+  return y + 8;
+}
+
+
 
 }
