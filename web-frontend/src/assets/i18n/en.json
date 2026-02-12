@@ -1442,7 +1442,11 @@
     "GENERATED-DATE": "Generated Date",
     "SEAL-NO": "Seal No",
     "UPDATE-SEAL-NO": "Update Seal No",
-    "UPDATE-CLEANING": "Update Cleaning"
+    "UPDATE-CLEANING": "Update Cleaning",
+    "ADDRESS-1": "Address 1",
+    "ADDRESS-2": "Address 2"
+    
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
