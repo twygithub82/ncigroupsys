@@ -5367,6 +5367,47 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+  searchAllStoringOrderTanksForBooking(
+  where: any,
+  order?: any,
+  batchSize: number = 100
+): Observable<StoringOrderTankItem[]> {
+
+  this.loadingSubject.next(true);
+
+  let allItems: StoringOrderTankItem[] = [];
+  let after: string | undefined = undefined;
+
+  const loadBatch = (): Observable<StoringOrderTankItem[]> => {
+    return this.searchStoringOrderTanksForBooking(
+      where,
+      order,
+      batchSize,
+      after   
+    ).pipe(
+      switchMap(items => {
+
+        allItems = [...allItems, ...items];
+
+        if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
+          after = this.pageInfo.endCursor;   // update cursor
+          return loadBatch();                // load next page
+        }
+
+        return of(allItems); // stop recursion
+      })
+    );
+  };
+
+  return loadBatch().pipe(
+    finalize(() => {
+      this.loadingSubject.next(false);
+      this.totalCount = allItems.length;
+    })
+  );
+}
+
+
   getStoringOrderTankByIDForRepair(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     let where: any = { guid: { eq: id } }

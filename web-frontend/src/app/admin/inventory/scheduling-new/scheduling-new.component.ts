@@ -48,6 +48,8 @@ import { pageSizeInfo, TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utilit
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { InventorySchedulingExcelComponent } from 'app/document-template/excel/inventory/scheduling/inventory-scheduling-excel.component';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -210,6 +212,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE"];
 
   todayDt: Date = new Date();
+  isGeneratingReport: boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -949,4 +952,80 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   getLastLocation(row: any) {
     return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
+
+     export_excel()
+          {
+            this.isGeneratingReport=true;
+             const where: any = {
+                and: [
+                  { status_cv: { eq: "ACCEPTED" } },
+                ]
+              };
+           this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+
+                const prcList: StoringOrderTankItem[] = res.map(item => ({
+                  ...item,
+
+                  tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),
+
+                  in_gate: item.in_gate?.map(i => ({
+                    ...i,
+                    yard_cv: this.getYardDescription(this.getLastLocation(item)),
+                  })),
+
+                  scheduling_sot: item.scheduling_sot?.map(b => ({
+                    ...b,
+                    scheduling: b.scheduling ? {
+                      ...b.scheduling,   
+                      book_type_cv: this.getBookTypeDescription(
+                        b.scheduling?.book_type_cv
+                      )
+                    } : undefined,
+
+                    status_cv: this.getBookingStatusDescription(b.status_cv)
+                  }))
+                }));
+
+                this.exportExcelReport(prcList);
+              });
+
+        
+              
+          }
+          exportExcelReport(repData:any) {
+              
+                 //this.preventDefault(event);
+                  let cut_off_dt = new Date();
+              
+              
+                  let tempDirection: Direction;
+                  if (localStorage.getItem('isRtl') === 'true') {
+                    tempDirection = 'rtl';
+                  } else {
+                    tempDirection = 'ltr';
+                  }
+              
+                  const dialogRef = this.dialog.open(InventorySchedulingExcelComponent, {
+                    width: reportPreviewWindowDimension.portrait_width_rate,
+                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                    
+                    data: {
+                      repData: repData
+                    },
+              
+                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                    direction: tempDirection
+                  });
+              
+                    dialogRef.updatePosition({
+                    top: '-90vh',  // Move far above the screen
+                    left: '0px'  // Move far to the left of the screen
+                  });
+              
+                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                    this.isGeneratingReport = false;
+                  });
+          
+            }
 }
