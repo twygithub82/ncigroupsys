@@ -1147,20 +1147,20 @@ namespace IDMS.Inventory.GqlTypes
                 _logger.LogInformation("AddInspections invoked by {User} (SOT: {SotGuid})", user, newInspections?.sot_guid);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var newInspection = new inspections();
-                newInspection.guid = Util.GenerateGUID();
-                newInspection.create_by = user;
-                newInspection.create_dt = currentDateTime;
-                newInspection.update_by = user;
-                newInspection.update_dt = currentDateTime;
+                var newInspec = new inspections();
+                newInspec.guid = Util.GenerateGUID();
+                newInspec.create_by = user;
+                newInspec.create_dt = currentDateTime;
+                newInspec.update_by = user;
+                newInspec.update_dt = currentDateTime;
 
-                newInspection.sot_guid = newInspections?.sot_guid;
-                newInspection.type_cv = newInspections?.type_cv;
-                newInspection.inspect_dt = currentDateTime;
+                newInspec.sot_guid = newInspections?.sot_guid;
+                newInspec.type_cv = newInspections?.type_cv;
+                newInspec.inspect_dt = currentDateTime;
 
-                newInspection.marked_tank_section = newInspection.marked_tank_section;
-                newInspection.marked_front_section = newInspection.marked_front_section;
-                newInspection.marked_rear_section = newInspection.marked_rear_section;
+                newInspec.marked_tank_section = newInspections?.marked_tank_section;
+                newInspec.marked_front_section = newInspections?.marked_front_section;
+                newInspec.marked_rear_section = newInspections?.marked_rear_section;
 
                 if (surfaceTypesList != null && surfaceTypesList.Count > 0)
                 {
@@ -1177,17 +1177,17 @@ namespace IDMS.Inventory.GqlTypes
                             newSurfaceType.update_by = user;
                             newSurfaceType.update_dt = currentDateTime;
 
-                            newSurfaceType.inspection_guid = newInspection.guid;
+                            newSurfaceType.inspection_guid = newInspec.guid;
                             newSurfaceType.type_cv = surface?.type_cv;
                             newSurfaceType.remarks = surface?.remarks;
                             newSurfaceType.value = surface?.value;
                             surTypeList.Add(newSurfaceType);
                         }
                     }
-                    await context.AddRangeAsync(surfaceTypesList);
+                    await context.AddRangeAsync(surTypeList);
                 }
 
-                await context.AddAsync(newInspection);
+                await context.AddAsync(newInspec);
                 var res = await context.SaveChangesAsync();
                 _logger.LogInformation("AddInspections saved changes {Count} for SOT {SotGuid}", res, newInspections?.sot_guid);
                 return res;
@@ -1225,9 +1225,9 @@ namespace IDMS.Inventory.GqlTypes
                 curInspection.type_cv = editInspections?.type_cv;
                 curInspection.inspect_dt = currentDateTime;
 
-                curInspection.marked_tank_section = curInspection.marked_tank_section;
-                curInspection.marked_front_section = curInspection.marked_front_section;
-                curInspection.marked_rear_section = curInspection.marked_rear_section;
+                curInspection.marked_tank_section = editInspections.marked_tank_section;
+                curInspection.marked_front_section = editInspections.marked_front_section;
+                curInspection.marked_rear_section = editInspections.marked_rear_section;
 
                 if (surfaceTypesList != null && surfaceTypesList.Count > 0)
                 {
@@ -1276,7 +1276,7 @@ namespace IDMS.Inventory.GqlTypes
                             }
                         }
                     }
-                    await context.AddRangeAsync(surfaceTypesList);
+                    await context.AddRangeAsync(surTypeList);
                 }
 
                 await context.AddAsync(curInspection);
