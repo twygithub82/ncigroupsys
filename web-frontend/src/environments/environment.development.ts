@@ -136,13 +136,13 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
     inline: true
   },
   {
-    text: `residue-free and visually clean `,
+    text: `residue-free and visually clean`,
     style: { font: 'bold', size: fzSize },
     marginTop: 5,
     inline: true
   },
   {
-    text: `at the time of inspection.`,
+    text: 'at the time of inspection.',
     style: { size: fzSize },
     inline: true
   },

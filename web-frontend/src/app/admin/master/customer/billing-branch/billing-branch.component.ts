@@ -38,11 +38,13 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { BilingBranchExcelComponent } from 'app/document-template/excel/master/billing-branch/billing-branch-excel.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -237,6 +239,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
+  isGeneratingReport: boolean=false;
 
   constructor(
     private router: Router,
@@ -248,7 +251,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.initPcForm();
@@ -814,5 +817,58 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
     return retval;
   }
+
+  export_excel()
+      {
+        this.isGeneratingReport=true;
+        const where: any = {};
+         where.and = [
+            { type_cv: { in: ["BRANCH"] } } ,
+           { delete_dt: { eq: null } } 
+        ];
+        this.ccDS.searchAll(where).subscribe(res=>{
+              var prcList:CustomerCompanyItem[]=res;
+              this.exportExcelReport(prcList);
+    
+          })
+    
+          
+      }
+      exportExcelReport(repData:any) {
+          
+             //this.preventDefault(event);
+              let cut_off_dt = new Date();
+          
+          
+              let tempDirection: Direction;
+              if (localStorage.getItem('isRtl') === 'true') {
+                tempDirection = 'rtl';
+              } else {
+                tempDirection = 'ltr';
+              }
+          
+              const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
+                width: reportPreviewWindowDimension.portrait_width_rate,
+                maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                
+                data: {
+                  repData: repData
+                },
+          
+                // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                direction: tempDirection
+              });
+          
+                dialogRef.updatePosition({
+                top: '-90vh',  // Move far above the screen
+                left: '0px'  // Move far to the left of the screen
+              });
+          
+              this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                this.isGeneratingReport = false;
+              });
+      
+        }
 }
 

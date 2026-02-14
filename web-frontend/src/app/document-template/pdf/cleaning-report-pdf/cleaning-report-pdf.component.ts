@@ -758,7 +758,7 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
        this.addStyledTextArrayRTL(pdf, 
         [
           { text: `${this.translatedLangText.CERTIFICATE_NO}: `, fontSize: 12, textColor: [0, 0, 0] },
-          { text: `${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`, fontSize: 12, textColor: [0, 0, 0], underline: true }
+          { text: `${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`, fontSize: 12, textColor: [0, 0, 0], underline: false }
         ], 
         startY-3, rightMargin+2);
         startY+=9;
@@ -1538,7 +1538,7 @@ async AddCleaningStepsTable(
       doc.line(currentX, y, currentX + textWidth, y);
     }
 
-    currentX += textWidth + 2;
+    currentX += textWidth+1 ;
   });
 
   return currentY;

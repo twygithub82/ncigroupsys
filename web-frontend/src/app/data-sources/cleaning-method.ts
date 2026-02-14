@@ -199,41 +199,30 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
   let after: string | undefined;
   let totalCount: number = 0;
     
-  const loadNextBatch = (): Observable<CleaningMethodItem[]> => {
-    return this.apollo.query<any>({
-      query: GET_CLEANING_METHOD_QUERY,
-      variables: { where, order, first: batchSize, after },
-      fetchPolicy: 'no-cache'
-    }).pipe(
-      map(result => result.data?.queryCleaningMethod || { nodes: [], pageInfo: { hasNextPage: false } }),
-      switchMap(result => {
-        const batchItems = result.nodes || [];
-        allItems = [...allItems, ...batchItems];
+ const loadBatch = (): Observable<CleaningCategoryItem[]> => {
+    return this.loadItems(
+      where,
+      order,
+      batchSize
+    ).pipe(
+      switchMap(items => {
+        allItems = [...allItems, ...items];
         
-        if (totalCount === 0 && result.totalCount != null) {
-          totalCount = result.totalCount;
+        if (this.pageInfo?.hasNextPage) {
+          after = this.pageInfo.endCursor;
+          return loadBatch();
         }
-
-        if (result.pageInfo?.hasNextPage) {
-          after = result.pageInfo.endCursor;
-          return loadNextBatch();
-        }
-       this.totalCount = allItems.length;
-        return of(allItems);
-      }),
-      catchError(error => {
-        console.error('Error loading batch:', error);
-        // Return what we've loaded so far
+        
         return of(allItems);
       })
     );
   };
 
   this.loadingSubject.next(true);
-  return loadNextBatch().pipe(
-     finalize(() => {
+  return loadBatch().pipe(
+    finalize(() => {
       this.loadingSubject.next(false);
-      
+      this.totalCount = allItems.length;
     })
   );
 }

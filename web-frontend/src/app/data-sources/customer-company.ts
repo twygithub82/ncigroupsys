@@ -32,6 +32,7 @@ export class CustomerCompanyGO {
   public currency_guid?: string;
   public main_customer_guid?: string;
   public approval_threshold?: number;
+  public main_customer_company?: CustomerCompanyItem;
 
 
   public create_dt?: number;
@@ -148,6 +149,10 @@ export const SEARCH_COMPANY_QUERY = gql`
         update_dt
         website
         main_customer_guid
+        main_customer_company {
+          code
+          name
+        }
         remarks
         cc_contact_person {
           create_by
