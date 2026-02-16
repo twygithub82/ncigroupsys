@@ -525,7 +525,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY",
     BY_HOUR: "COMMON-FORM.BY-HOUR",
     CLEANING_QUOTATION: "COMMON-FORM.CLEANING-QUOTATION",
-    INTERNAL_INSPECTION_MAPPING: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING",
+    INTERNAL_INSPECTION_MAPPING_IN: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING-IN",
+    INTERNAL_INSPECTION_MAPPING_OUT: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING-OUT",
     INSPECTION_DATE: 'COMMON-FORM.INSPECTION-DATE',
     SELECT_TYPE_TO_MARK_DAMAGE: 'COMMON-FORM.SELECT-TYPE-TO-MARK-DAMAGE',
     INSPECTION_TYPES: 'COMMON-FORM.INSPECTION-TYPES',
@@ -2730,7 +2731,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canAddMappingChartIn() {
-    return true; // TODO :: implement permission check
+    return this.isAllowViewInspectionMapping() || this.isAllowEditInspectionMapping(); // TODO :: implement permission check
+  }
+
+  canAddMappingChartOut() {
+    return this.isAllowViewOutgoingInspectionMapping() || this.isAllowEditOutgoingInspectionMapping(); // TODO :: implement permission check
   }
 
   canOverwriteCleanStatus() {
@@ -3731,6 +3736,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   isAllowViewCost() {
     return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
+  }
+
+  isAllowViewInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_IN_VIEW']);
+  }
+
+  isAllowEditInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_IN_EDIT']);
+  }
+
+  isAllowViewOutgoingInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_OUT_VIEW']);
+  }
+
+  isAllowEditOutgoingInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_OUT_EDIT']);
   }
 
   getViewDirection() {

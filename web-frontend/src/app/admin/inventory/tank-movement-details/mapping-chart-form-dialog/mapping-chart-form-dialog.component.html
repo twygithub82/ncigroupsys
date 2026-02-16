@@ -156,8 +156,16 @@
         </div>
       </div>
       <div mat-dialog-actions class="align-right">
+        @if (canDownload()) {
+        <button mat-flat-button class="m-l-5 mb-2 orange-button" (click)="download()">
+          <mat-icon>
+            file_download
+          </mat-icon>
+          {{ data.translatedLangText.DOWNLOAD }}
+        </button>
+        }
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="false" class="m-l-5 mb-2" (click)="submit()">
+        <button mat-flat-button color="primary" class="m-l-5 mb-2" (click)="submit()">
           <mat-icon>
             save
           </mat-icon>
