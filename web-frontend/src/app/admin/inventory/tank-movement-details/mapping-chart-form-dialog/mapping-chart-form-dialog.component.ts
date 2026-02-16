@@ -89,7 +89,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   type_cv: string;
   action: string;
   index: number;
-  dialogTitle: string;
+  dialogTitle: string = '';
   customer_company_guid: string;
 
   inspectionForm: UntypedFormGroup;
@@ -127,10 +127,10 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     this.type_cv = data.type_cv!;
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
-    if (this.action === 'edit') {
-      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING}`;
-    } else {
-      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING}`;
+    if (this.type_cv === '1') {
+      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}`;
+    } else if (this.type_cv === '2') {
+      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}`;
     }
     this.sot = data.sot;
     this.inspection = data.inspection || new InspectionsItem({ inspect_dt: Utility.convertDate(new Date()) as number });
@@ -267,6 +267,10 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     // }
   }
 
+  download() {
+
+  }
+
   confirmationDialog(addAnother: boolean, rep: any) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -390,6 +394,10 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   canEdit() {
     return this.isAllowEdit() && this.inspectDS.canAmend(this.inspection);
+  }
+
+  canDownload() {
+    return !!this.inspection?.guid;
   }
 
   isAllowEdit() {

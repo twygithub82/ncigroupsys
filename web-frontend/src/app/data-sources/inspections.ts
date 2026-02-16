@@ -180,6 +180,34 @@ export class InspectionsDS extends BaseDataSource<InspectionsItem> {
       );
   }
 
+  getInspectionByIDForEirPdf(inspection_guid?: any): Observable<InspectionsItem[]> {
+    const where = {
+      guid: { eq: inspection_guid }
+    }
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_INSPECTIONS_FOR_TANK_MOVEMENT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InspectionsItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        })
+      );
+  }
+
   addInspections(newInspections: any, surfaceTypesList: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
