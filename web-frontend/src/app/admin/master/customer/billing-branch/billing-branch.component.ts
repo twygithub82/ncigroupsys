@@ -38,11 +38,13 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { BilingBranchExcelComponent } from 'app/document-template/excel/master/billing-branch/billing-branch-excel.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -210,7 +212,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
-  depotProfileList : TariffDepotItem[] = [];
+  depotProfileList: TariffDepotItem[] = [];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   all_customer_companyList: CustomerCompanyItem[] = [];
@@ -237,7 +239,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
-  isMobile:boolean=false;
+  isGeneratingReport: boolean = false;
+  isMobile: boolean = false;
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -248,7 +251,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.isMobile = Utility.isMobile();
@@ -258,7 +261,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.branchCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
-    this.tfDepotDS=new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -581,8 +584,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   public loadData() {
 
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = [{ guid: '', profile_name: 'All' }, ...data];
 
     });
 
@@ -804,23 +807,75 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
   }
-   getDepotProfileName(guid:String):String{
-    var retval:String="-";
+  getDepotProfileName(guid: String): String {
+    var retval: String = "-";
 
     if (this.depotProfileList && this.depotProfileList.length > 0) {
       var depotProfile = this.depotProfileList.find(x => x.guid == guid);
       if (depotProfile) {
-        retval = depotProfile.profile_name??"-";
+        retval = depotProfile.profile_name ?? "-";
       }
     }
     return retval;
   }
 
-   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,Padding:boolean=false,isEnd:boolean=false): string {
+  export_excel() {
+    this.isGeneratingReport = true;
+    const where: any = {};
+    where.and = [
+      { type_cv: { in: ["BRANCH"] } },
+      { delete_dt: { eq: null } }
+    ];
+    this.ccDS.searchAll(where).subscribe(res => {
+      var prcList: CustomerCompanyItem[] = res;
+      this.exportExcelReport(prcList);
+
+    })
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false, isEnd: boolean = false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
-    if(isStart) centerClass =  'justify-content-start ' ;
-    if(isEnd) centerClass =  'justify-content- ' ;
-    if(Padding) centerClass +=  'left-padding-cell ' ;
+    if (isStart) centerClass = 'justify-content-start ';
+    if (isEnd) centerClass = 'justify-content- ';
+    if (Padding) centerClass += 'left-padding-cell ';
     return `${baseClasses} ${centerClass}`.trim();
   }
 

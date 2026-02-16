@@ -50,7 +50,7 @@
         </div>
       </div>
       <div class="row justify-content-center mt-3">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
+        <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
           <!-- @if (!selectedInspectionType) {
           <div class="alert alert-info m-b-10">
             <mat-icon>info</mat-icon>
@@ -62,28 +62,23 @@
             (cellMarked)="onCellMarked($event)" (circularSectionMarked)="onCircularSectionMarked($event)">
           </app-mapping-chart>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+        <div class="col-xl-7-5 col-lg-7-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
+          <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
               <!-- Legend -->
               <div class="card modal-card">
                 <div class="header header-custom-padding">
                   <h2>
                     {{data.translatedLangText.INSPECTION_TYPES}}
+                    @if (!selectedInspectionType) {
+                    <span class="legend-subtitle-error">{{data.translatedLangText.CLICK_ON_SYMBOL_TO_SELECT}}</span>
+                    }
                   </h2>
                 </div>
                 <div class="body">
-                  <mat-card-content>
-                    <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-                        <div class="legend-subtitle-wrapper">
-                          <span class="legend-subtitle">{{data.translatedLangText.SELECT_TYPE_TO_MARK_DAMAGE}}</span>
-                          @if (!selectedInspectionType) {
-                          <span
-                            class="legend-subtitle-error">{{data.translatedLangText.CLICK_ON_SYMBOL_TO_SELECT}}</span>
-                          }
-                        </div>
-
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                      <mat-card-content>
                         <div class="legend-items">
                           @for (type of inspectionTypes; track type.type) {
                           <div class="legend-item" [class.selected]="selectedInspectionType?.type === type.type"
@@ -113,20 +108,47 @@
                           </div>
                           }
                         </div>
-                      </div>
+                      </mat-card-content>
                     </div>
-                  </mat-card-content>
+                  </div>
                 </div>
               </div>
             </div>
             <!-- Marked Data -->
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
               <div class="card p-0 tlx-card">
-                <mat-card-content>
-                  <div class="row">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
+                <mat-card-content class="p-2">
+                  @for (item of activeSurfaceTypes; track item.type_cv; let i = $index) {
+                  <div class="row mb-2 pb-2" [formGroup]="getSurfaceTypeFormGroup(i)">
+                    <div class="col-auto d-flex align-items-center">
+                      <span class="header-label font-bold">{{ i + 1 }}</span>
+                    </div>
+                    <div class="col-2-5 d-flex align-items-center">
+                      <div class="shape-wrapper" [ngStyle]="getSurfaceTypeSymbolStyle(item)">
+                        <div [ngClass]="'shape-' + getInspectionTypeShape(item.type_cv)"></div>
+                      </div>
+                      <span class="type-description">{{ getInspectionTypeDesc(item.type_cv) }}</span>
+                    </div>
+                    <div class="col">
+                      <mat-form-field class="w-100" subscriptSizing="dynamic">
+                        <mat-label>{{ data.translatedLangText.PERCENTAGE_SYMBOL }}</mat-label>
+                        <input matInput formControlName="value" appNumericText [allowDecimal]="false"
+                          (focus)="selectText($event)" type="text">
+                      </mat-form-field>
+                    </div>
+                    <div class="col">
+                      <mat-form-field class="w-100" subscriptSizing="dynamic">
+                        <mat-label>{{ data.translatedLangText.REMARKS }}</mat-label>
+                        <input matInput formControlName="remarks" (focus)="selectText($event)" type="text">
+                      </mat-form-field>
                     </div>
                   </div>
+                  }
+                  @empty {
+                  <div class="text-center text-muted py-3">
+                    {{ data.translatedLangText.NO_MARKED_TYPES }}
+                  </div>
+                  }
                 </mat-card-content>
               </div>
             </div>
@@ -135,7 +157,7 @@
       </div>
       <div mat-dialog-actions class="align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="false" class="m-l-5 mb-2" (click)="submit(false)">
+        <button mat-flat-button color="primary" [disabled]="false" class="m-l-5 mb-2" (click)="submit()">
           <mat-icon>
             save
           </mat-icon>
