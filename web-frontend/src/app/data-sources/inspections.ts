@@ -80,10 +80,12 @@ export class SurfaceTypesGO {
 
 export class SurfaceTypesItem extends SurfaceTypesGO {
   public inspection?: InspectionsItem;
+  public action?: 'new' | 'edit' | 'cancel';
 
   constructor(item: Partial<SurfaceTypesItem> = {}) {
     super(item)
     this.inspection = item?.inspection;
+    this.action = item?.action;
   }
 }
 
@@ -139,6 +141,12 @@ export const ADD_INSPECTIONS = gql`
   }
 `;
 
+export const UPDATE_INSPECTIONS = gql`
+  mutation updateInspections($editInspections: inspectionsInput!, $surfaceTypesList: [surface_typesInput!]!) {
+    updateInspections(editInspections: $editInspections, surfaceTypesList: $surfaceTypesList)
+  }
+`;
+
 export class InspectionsDS extends BaseDataSource<InspectionsItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -172,12 +180,28 @@ export class InspectionsDS extends BaseDataSource<InspectionsItem> {
       );
   }
 
-  addInGate(inspect: any): Observable<any> {
+  addInspections(newInspections: any, surfaceTypesList: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_INSPECTIONS,
       variables: {
-        inspect
+        newInspections,
+        surfaceTypesList
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateInspections(editInspections: any, surfaceTypesList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_INSPECTIONS,
+      variables: {
+        editInspections,
+        surfaceTypesList
       }
     }).pipe(
       finalize(() => {
