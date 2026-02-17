@@ -102,7 +102,7 @@ import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose
 import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { InspectionsDS } from 'app/data-sources/inspections';
+import { InspectionsDS, InspectionsItem } from 'app/data-sources/inspections';
 import { CleanReportPdfComponent } from 'app/document-template/pdf/cleaning-report-pdf/cleaning-report-pdf.component';
 import { UpdateCleanSealNoFormDialogComponent } from './update-clean-seal-no-form-dialog/update-clean-seal-no-form-dialog.component';
 
@@ -525,16 +525,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY",
     BY_HOUR: "COMMON-FORM.BY-HOUR",
     CLEANING_QUOTATION: "COMMON-FORM.CLEANING-QUOTATION",
-    INTERNAL_INSPECTION_MAPPING: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING",
+    INTERNAL_INSPECTION_MAPPING_IN: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING-IN",
+    INTERNAL_INSPECTION_MAPPING_OUT: "COMMON-FORM.INTERNAL-INSPECTION-MAPPING-OUT",
     INSPECTION_DATE: 'COMMON-FORM.INSPECTION-DATE',
     SELECT_TYPE_TO_MARK_DAMAGE: 'COMMON-FORM.SELECT-TYPE-TO-MARK-DAMAGE',
     INSPECTION_TYPES: 'COMMON-FORM.INSPECTION-TYPES',
     PLEASE_SELECT_INSPECTION_TYPE: 'COMMON-FORM.PLEASE-SELECT-INSPECTION-TYPE',
     CLICK_ON_SYMBOL_TO_SELECT: 'COMMON-FORM.CLICK-ON-SYMBOL-TO-SELECT',
-    CLEANING_REPORT:'COMMON-FORM.CLEANING-REPORT',
-    UPDATE_SEAL_NO:'COMMON-FORM.UPDATE-SEAL-NO',
-    SEAL_NO:'COMMON-FORM.SEAL-NO',
-    UPDATE_CLEANING:'COMMON-FORM.UPDATE-CLEANING',
+    CLEANING_REPORT: 'COMMON-FORM.CLEANING-REPORT',
+    UPDATE_SEAL_NO: 'COMMON-FORM.UPDATE-SEAL-NO',
+    SEAL_NO: 'COMMON-FORM.SEAL-NO',
+    UPDATE_CLEANING: 'COMMON-FORM.UPDATE-CLEANING',
   }
 
   sot_guid: string | null | undefined;
@@ -556,6 +557,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   transferList: TransferItem[] = [];
   latestSurveyDetailItem: SurveyDetailItem[] = [];
   unit_typeList: TankItem[] = []
+  inspectionList: InspectionsItem[] = [];
   allowAddPurposeTankStatuses: string[] = [
     'SO_GENERATED',
     'IN_GATE',
@@ -655,46 +657,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   last_test_desc?: string = "";
   next_test_desc?: string = "";
 
-  private sotPurposeChangeSubscriptions: Subscription[] = [];
-
-  dateOfInspection: Date = new Date();
-  startDateTest: Date = new Date();
-  maxManuDOMDt: Date = new Date();
-  defaultImg: string = '/assets/images/no_image.svg';
-
-  // Stepper
-  isLinear = false;
-
-  rowSize = 11;
-  colSize = 19;
-  rowSizeSquare = 11;
-  colSizeSquare = 11;
-  cells: number[] = [];
-  cellsSquare: number[] = [];
-
-  // Walkway
-  // outerRowSize = 10;
-  // outerColSize = 19;
-  innerColSize = 4;
-  innerMiddleColSize = 12;
-  cellsOuterTopBottom: number[] = [];
-  cellsOuterLeftRight: number[] = [];
-  cellsInnerTopBottom: number[] = [];
-  cellsInnerMiddle: number[] = [];
-  highlightedCellsWalkwayTop: boolean[] = [];
-  highlightedCellsWalkwayMiddle: boolean[] = [];
-  highlightedCellsWalkwayBottom: boolean[] = [];
-
-  highlightedCellsLeft: boolean[] = [];
-  highlightedCellsRear: boolean[] = [];
-  highlightedCellsRight: boolean[] = [];
-  highlightedCellsTop: boolean[] = [];
-  highlightedCellsFront: boolean[] = [];
-  highlightedCellsBottom: boolean[] = [];
-  isDrawing = false;
-  isMarkDmg = false;
-  toggleState = true; // State to track whether to highlight or unhighlight
-  currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   igsImages: any[] = [];
   ogsImages: any[] = [];
@@ -785,11 +747,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.isImageLoading$ = this.fileManagerService.loading$;
-    this.cells = Array(this.rowSize * this.colSize).fill(0);
-    this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
-
-    this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
-    this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
     this.loadData();
   }
@@ -1137,32 +1094,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   isDisabled(index: number): boolean {
     return index === 4 || index === 5 || index === 9 || index === 10;
-  }
-
-  getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {
-    const coordinates: any[] = [];
-    for (let i = 0; i < highlightedCells.length; i++) {
-      if (highlightedCells[i]) {
-        const x = i % this.colSize;
-        const y = Math.floor(i / this.colSize);
-        coordinates.push({ x, y });
-      }
-    }
-    return coordinates;
-  }
-
-  getTopCoordinates(): { x: number, y: number }[] {
-    const dmg = this.getHighlightedCoordinates(this.highlightedCellsTop);
-    const walkwayTop = this.getHighlightedCoordinates(this.highlightedCellsWalkwayTop);
-    const walkwayMiddle = this.getHighlightedCoordinates(this.highlightedCellsWalkwayMiddle);
-    const walkwayBottom = this.getHighlightedCoordinates(this.highlightedCellsWalkwayBottom);
-    const result: any = {
-      dmg,
-      walkwayTop,
-      walkwayMiddle,
-      walkwayBottom,
-    }
-    return result;
   }
 
   onFileSelectedTankSide(event: Event, tankSideForm: any): void {
@@ -2272,7 +2203,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  mappingChartDialog(event: Event, type: string) {
+  mappingChartDialog(event: Event, type_cv: string) {
     this.preventDefault(event);
 
     let tempDirection: Direction = this.getViewDirection();
@@ -2288,8 +2219,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       maxHeight: '90vh',
       data: {
         sot: this.sot,
-        tcDS: this.tcDS,
         translatedLangText: this.translatedLangText,
+        inspection: this.inspectionList.find(x => x.type_cv === type_cv),
+        type_cv: type_cv
       },
       direction: tempDirection
     });
@@ -2422,10 +2354,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
     this.getNextTest();
     datepicker.close();
-  }
-
-  selectMarkDmg() {
-    this.isMarkDmg = !this.isMarkDmg;
   }
 
   getLastTest(): string | undefined {
@@ -2803,7 +2731,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canAddMappingChartIn() {
-    return true; // TODO :: implement permission check
+    return this.isAllowViewInspectionMapping() || this.isAllowEditInspectionMapping(); // TODO :: implement permission check
+  }
+
+  canAddMappingChartOut() {
+    return this.isAllowViewOutgoingInspectionMapping() || this.isAllowEditOutgoingInspectionMapping(); // TODO :: implement permission check
   }
 
   canOverwriteCleanStatus() {
@@ -3394,6 +3326,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = this.inspectDS.getInspectionsForTankMovement(this.sot_guid).subscribe(data => {
       if (data.length > 0) {
         console.log(`inspections: `, data)
+        this.inspectionList = data;
       }
     });
   }
@@ -3543,7 +3476,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-   exportCleaningReport(event: Event, cleaning_guid?: string) {
+  exportCleaningReport(event: Event, cleaning_guid?: string) {
     let tempDirection: Direction = this.getViewDirection();
 
     const dialogRef = this.dialog.open(CleanReportPdfComponent, {
@@ -3805,6 +3738,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 
+  isAllowViewInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_IN_VIEW']);
+  }
+
+  isAllowEditInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_IN_EDIT']);
+  }
+
+  isAllowViewOutgoingInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_OUT_VIEW']);
+  }
+
+  isAllowEditOutgoingInspectionMapping() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_INSPECTION_MAPPING_OUT_EDIT']);
+  }
+
   getViewDirection() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3914,17 +3863,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-   canExportCleanReport() {
-    return (this.cleaningItem?.length||0) > 0 ;
+  canExportCleanReport() {
+    return (this.cleaningItem?.length || 0) > 0;
   }
 
   UpdateSealNo(row: InGateCleaningItem) {
     let r = new InGateCleaningItem(row);
-    
+
     let tempDirection: Direction = this.getViewDirection();
     const dialogRef = this.dialog.open(UpdateCleanSealNoFormDialogComponent, {
       width: '55vw',
-      maxWidth:'450px',
+      maxWidth: '450px',
       data: {
         action: 'edit',
         translatedLangText: this.translatedLangText,
@@ -3934,14 +3883,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       }
     });
 
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.data.updateCleaning > 0) {
-              console.log('valid');
-              this.handleSaveSuccess(result.data.updateCleaning);
-              this.loadDataHandling_cleaning(this.sot_guid!);
+        console.log('valid');
+        this.handleSaveSuccess(result.data.updateCleaning);
+        this.loadDataHandling_cleaning(this.sot_guid!);
       }
 
-     });
+    });
   }
 
 }

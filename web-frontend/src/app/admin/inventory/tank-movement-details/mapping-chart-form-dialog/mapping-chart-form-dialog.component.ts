@@ -1,7 +1,7 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,15 +20,18 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CellMark, MappingChartComponent } from '@shared/components/mapping-chart/mapping-chart.component';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType } from 'app/data-sources/inspections';
+import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType, SurfaceTypesItem } from 'app/data-sources/inspections';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -37,10 +40,11 @@ import { provideNgxMask } from 'ngx-mask';
 import { Subject } from 'rxjs';
 
 export interface DialogData {
+  type_cv?: string;
   action?: string;
   sot?: StoringOrderTankItem;
   repair?: RepairItem;
-  inspect?: InspectionsItem;
+  inspection?: InspectionsItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -75,42 +79,38 @@ export interface DialogData {
     PreventNonNumericDirective,
     MappingChartComponent,
     MatCardModule,
+    TlxCardListComponent,
+    TlxFormFieldComponent,
+    NumericTextDirective
   ],
 })
 export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter {
   public dataSubject: Subject<any> = new Subject();
+  type_cv: string;
   action: string;
   index: number;
-  dialogTitle: string;
+  dialogTitle: string = '';
   customer_company_guid: string;
 
   inspectionForm: UntypedFormGroup;
-  partNameControl: UntypedFormControl;
-  partNameList?: string[];
-  partNameFilteredList?: string[];
-  dimensionList?: string[];
-  lengthList?: any[];
-  valueChangesDisabled: boolean = false;
-  subgroupNameCvList?: CodeValuesItem[];
-  existedPart?: RepairPartItem[];
-  selected4XRepair = "";
   sot?: StoringOrderTankItem;
-  inspect?: InspectionsItem;
+  inspection?: InspectionsItem;
+  existingSurfaceTypes: SurfaceTypesItem[] = [];
+  private cachedSurfaceTypes: SurfaceTypesItem[] = [];
+  uniqueSurfaceTypes: SurfaceTypesItem[] = [];
+  activeSurfaceTypes: SurfaceTypesItem[] = [];
+
   inspectionTypes: InspectionType[] = [];
   selectedInspectionType?: InspectionType;
 
   cvDS: CodeValuesDS;
-  trDS: TariffRepairDS;
-  repDrDS: RPDamageRepairDS;
-  prDS: PackageRepairDS;
   inspectDS: InspectionsDS;
-  clnRepairPart: RepairPartItem = new RepairPartItem();
 
   markedCells: Map<number, CellMark> = new Map();
-  circularMarkedSections: Map<string, Map<string, CellMark>> = new Map([
-    ['front', new Map<string, CellMark>()],
-    ['rear', new Map<string, CellMark>()]
-  ]);
+  circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
+    front: new Map(),
+    rear: new Map()
+  };
   constructor(
     public dialogRef: MatDialogRef<MappingChartFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -123,24 +123,25 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     super();
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new RPDamageRepairDS(this.apollo);
-    this.prDS = new PackageRepairDS(this.apollo);
     this.inspectDS = new InspectionsDS(this.apollo);
+    this.type_cv = data.type_cv!;
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
-    if (this.action === 'edit') {
-      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING}`;
-    } else {
-      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING}`;
+    if (this.type_cv === '1') {
+      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}`;
+    } else if (this.type_cv === '2') {
+      this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}`;
     }
     this.sot = data.sot;
-    this.inspect = data.inspect || new InspectionsItem({ inspect_dt: Utility.convertDate(new Date()) as number });
+    this.inspection = data.inspection || new InspectionsItem({ inspect_dt: Utility.convertDate(new Date()) as number });
+    this.existingSurfaceTypes = this.inspection?.surface_types || [];
     this.index = data.index;
-    this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.inspectionForm = this.createForm();
     this.inspectionTypes = getDefaultInspectionTypes();
+    console.log(this.inspection)
+    this.loadMarkedSections();
     this.initializeValueChange();
+    this.updateSurfaceTypesLists(); // Initialize the lists
     this.patchForm();
   }
 
@@ -149,21 +150,81 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      guid: [this.inspect?.guid],
+      guid: [this.inspection?.guid],
+      surface_types: this.fb.array([])
     });
   }
 
   patchForm() {
+    // Clear existing form array
+    this.surfaceTypesFormArray.clear();
+
+    // Populate the form array with data from uniqueSurfaceTypes
+    this.uniqueSurfaceTypes.forEach(item => {
+      this.surfaceTypesFormArray.push(this.createSurfaceTypeFormGroup(item));
+    });
   }
 
+  get surfaceTypesFormArray(): UntypedFormArray {
+    return this.inspectionForm.get('surface_types') as UntypedFormArray;
+  }
+
+  createSurfaceTypeFormGroup(item: any): UntypedFormGroup {
+    return this.fb.group({
+      type_cv: [item.type_cv],
+      value: [item.value || ''], // percentage value
+      remarks: [item.remarks || '']
+    });
+  }
 
   resetForm() {
 
   }
 
-  submit(addAnother: boolean) {
-    console.log(this.markedCells)
-    console.log(this.circularMarkedSections)
+  submit() {
+    this.markFormGroupTouched(this.inspectionForm);
+
+    if (!this.validateSubmission()) {
+      return;
+    }
+
+    this.updateSurfaceTypesFromForm();
+    const surfaceTypes = this.getValidSurfaceTypes();
+
+    // Construct the inspection object
+    const inspection = new InspectionsItem({
+      guid: this.inspection?.guid,
+      sot_guid: this.sot?.guid,
+      inspect_dt: this.inspection?.inspect_dt,
+      marked_tank_section: this.serializeMarkedCells(),
+      marked_front_section: this.serializeCircularSection('front'),
+      marked_rear_section: this.serializeCircularSection('rear'),
+      type_cv: this.inspection?.type_cv || this.type_cv,
+      surface_types: [],
+    });
+
+    console.log('Submitting inspection:', inspection);
+    console.log('Surface types from form:', surfaceTypes); // Debug log
+
+    if (!this.inspection?.guid) {
+      this.inspectDS.addInspections(inspection, surfaceTypes).subscribe(result => {
+        if (result?.data?.addInspections) {
+          console.log('result:', result);
+          this.addedSuccessfully();
+          this.returnAndCloseDialog(false);
+        }
+      });
+    } else {
+      this.inspectDS.updateInspections(inspection, surfaceTypes).subscribe(result => {
+        if (result?.data?.updateInspections) {
+          console.log('result:', result);
+          this.addedSuccessfully();
+          this.returnAndCloseDialog(false);
+        }
+      });
+    }
+
+
     // if (this.repairPartForm?.valid) {
     //   if (this.action === 'new') {
     //     this.repairPart.action = 'new';
@@ -206,6 +267,10 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     // }
   }
 
+  download() {
+
+  }
+
   confirmationDialog(addAnother: boolean, rep: any) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -223,12 +288,12 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.returnAndCloseDialog(addAnother, rep);
+        this.returnAndCloseDialog(addAnother);
       }
     });
   }
 
-  returnAndCloseDialog(addAnother: boolean, rep: any) {
+  returnAndCloseDialog(addAnother: boolean) {
     const returnDialog: DialogData = {
       index: this.index
     }
@@ -266,37 +331,6 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  onRepairSelectionChange(event: any) {
-    if (event.value.includes('4X')) {
-      this.selected4XRepair = "4X";
-    } else {
-      if (event.value.length) {
-        this.selected4XRepair = "oth";
-      } else {
-        this.selected4XRepair = "";
-      }
-    }
-  }
-
-  isDisabledOption(compareValue?: string) {
-    if (!this.selected4XRepair) return false;
-
-    if (this.selected4XRepair === "oth") {
-      if (compareValue !== "4X") {
-        return false;
-      } else {
-        return true;
-      }
-    } else if (this.selected4XRepair === "4X") {
-      if (compareValue !== "4X") {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    return false;
-  }
-
   displayPartNameFn(tr: string): string {
     return tr;
   }
@@ -323,7 +357,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   addedSuccessfully() {
-    ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.ADD_SUCCESS, 'top', 'center', this.snackBar);
+    ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
   }
 
   extractDescription(rep: RepairPartItem) {
@@ -331,26 +365,6 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
       : '';
     return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
-  }
-
-  validateExistedPart(toValidatePart: any): boolean {
-    return this.existedPart?.some((part: any) => {
-      const existingPartDesc = this.extractDescription(part);
-      const newPartDesc = this.extractDescription(toValidatePart);
-
-      const isSameDescription = existingPartDesc === newPartDesc;
-      if (!isSameDescription) return false;
-
-      if (this.action === 'edit') {
-        const sameGuid = part.guid && toValidatePart.guid && part.guid === toValidatePart.guid;
-        const sameIndex = toValidatePart.index === part.index;
-
-        // If it's the same item (same guid or same index), skip
-        if (sameGuid || (!part.guid && sameIndex)) return false;
-      }
-
-      return true;
-    }) || false;
   }
 
   onSelectObjectSelectionChange(event: MatSelectChange, formControlName: string): void {
@@ -379,7 +393,11 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   canEdit() {
-    return this.isAllowEdit() && this.inspectDS.canAmend(this.inspect);
+    return this.isAllowEdit() && this.inspectDS.canAmend(this.inspection);
+  }
+
+  canDownload() {
+    return !!this.inspection?.guid;
   }
 
   isAllowEdit() {
@@ -398,25 +416,204 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getInspectionDateDisplay() {
-    return this.inspect?.inspect_dt ? Utility.convertEpochToDateStr(this.inspect?.inspect_dt) : '';
+    return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
   }
 
   selectInspectionType(type: InspectionType): void {
     this.selectedInspectionType = type;
-    console.log('Selected type:', type);
   }
 
   onCellMarked(event: { index: number, mark: CellMark }): void {
-    this.markedCells.set(event.index, event.mark);
-    console.log('Cell marked:', event);
+    if (event.mark && event.mark.typeId) {
+      this.markedCells.set(event.index, event.mark);
+      this.updateSurfaceTypeAction(event.mark.typeId, 'mark');
+    } else {
+      this.markedCells.delete(event.index);
+      const typeId = this.markedCells.get(event.index)?.typeId;
+      if (typeId) {
+        this.updateSurfaceTypeAction(typeId, 'unmark');
+      }
+    }
+
+    // Update lists when marks change
+    this.updateSurfaceTypesLists();
   }
 
   onCircularSectionMarked(event: { surface: string, section: string, mark: CellMark }): void {
-    const surfaceMap = this.circularMarkedSections.get(event.surface);
-    if (surfaceMap) {
+    const surfaceMap = event.surface === 'front'
+      ? this.circularMarkedSections.front
+      : this.circularMarkedSections.rear;
+
+    if (event.mark && event.mark.typeId) {
       surfaceMap.set(event.section, event.mark);
+      this.updateSurfaceTypeAction(event.mark.typeId, 'mark');
+    } else {
+      const existingMark = surfaceMap.get(event.section);
+      surfaceMap.delete(event.section);
+      if (existingMark?.typeId) {
+        this.updateSurfaceTypeAction(existingMark.typeId, 'unmark');
+      }
     }
-    console.log('Circular section marked:', event);
+
+    // Update lists when marks change
+    this.updateSurfaceTypesLists();
+  }
+
+  private updateSurfaceTypesLists(): void {
+    this.uniqueSurfaceTypes = this.calculateUniqueSurfaceTypes();
+    this.activeSurfaceTypes = this.uniqueSurfaceTypes.filter(type => type.action !== 'cancel');
+  }
+
+  private calculateUniqueSurfaceTypes(): SurfaceTypesItem[] {
+    const surfaceTypeMap = new Map<string, SurfaceTypesItem>();
+
+    // First, populate map with existing surface types and their current actions
+    this.existingSurfaceTypes.forEach((surfaceType) => {
+      if (surfaceType.type_cv) {
+        surfaceTypeMap.set(surfaceType.type_cv, {
+          ...surfaceType,
+          action: surfaceType.action
+        });
+      }
+    });
+
+    // Track which type_cv values are currently in use
+    const currentlyUsedTypes = new Set<string>();
+
+    // Collect marks from markedCells Map
+    this.markedCells.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Collect marks from front circular sections
+    this.circularMarkedSections.front.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Collect marks from rear circular sections
+    this.circularMarkedSections.rear.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Update actions for all surface types based on usage
+    surfaceTypeMap.forEach((surfaceType, type_cv) => {
+      const isCurrentlyUsed = currentlyUsedTypes.has(type_cv);
+      const existedBefore = this.existingSurfaceTypes.some(st => st.type_cv === type_cv);
+
+      if (existedBefore) {
+        if (isCurrentlyUsed) {
+          if (surfaceType.action !== 'new') {
+            surfaceType.action = 'edit';
+          }
+        } else {
+          surfaceType.action = 'cancel';
+        }
+      } else {
+        if (isCurrentlyUsed) {
+          surfaceType.action = 'new';
+        } else {
+          surfaceType.action = 'cancel';
+        }
+      }
+    });
+
+    const result = Array.from(surfaceTypeMap.values());
+
+    // Sync form array with the new structure
+    this.syncSurfaceTypesFormArray(result);
+
+    return result;
+  }
+
+  private updateSurfaceTypeAction(typeId: string, operation: 'mark' | 'unmark'): void {
+    const existingType = this.existingSurfaceTypes.find(st => st.type_cv === typeId);
+
+    if (operation === 'mark') {
+      // When marking, ensure the type exists with proper action
+      if (existingType) {
+        // If it was marked for cancellation, restore it to edit
+        if (existingType.action === 'cancel') {
+          existingType.action = 'edit';
+        }
+      }
+      // If it doesn't exist in existingSurfaceTypes, it will be created as 'new' in getUniqueSurfaceTypes
+    } else {
+      // When unmarking, check if this type is still used anywhere
+      const isStillUsed = this.isTypeIdStillInUse(typeId);
+
+      if (!isStillUsed) {
+        if (existingType) {
+          // If it's an existing type, mark it as 'cancel' instead of deleting
+          if (existingType.action === 'edit' || !existingType.action) {
+            existingType.action = 'cancel';
+          } else if (existingType.action === 'new') {
+            // If it's a new type, remove it from existingSurfaceTypes
+            const index = this.existingSurfaceTypes.findIndex(st => st.type_cv === typeId);
+            if (index !== -1) {
+              this.existingSurfaceTypes.splice(index, 1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private isTypeIdStillInUse(typeId: string): boolean {
+    // Check in markedCells
+    for (const mark of this.markedCells.values()) {
+      if (mark.typeId === typeId) {
+        return true;
+      }
+    }
+
+    // Check in front circular sections
+    for (const mark of this.circularMarkedSections.front.values()) {
+      if (mark.typeId === typeId) {
+        return true;
+      }
+    }
+
+    // Check in rear circular sections
+    for (const mark of this.circularMarkedSections.rear.values()) {
+      if (mark.typeId === typeId) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getSymbolStyle(type: InspectionType): any {
@@ -443,5 +640,282 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     return {
       'background-color': 'transparent'
     };
+  }
+
+  getInspectionTypeShape(type_cv: string | undefined): string {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type_cv);
+    return inspectionType?.shape || 'circle';
+  }
+
+  getInspectionTypeDesc(type_cv: string | undefined): string {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type_cv);
+    return inspectionType?.displayName || '';
+  }
+
+  getSurfaceTypeSymbolStyle(type: SurfaceTypesItem): any {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type.type_cv);
+
+    if (!inspectionType) {
+      return { 'background-color': 'transparent' };
+    }
+
+    if (inspectionType.shape === 'triangle' || inspectionType.shape === 'cross' || inspectionType.shape === 'diagonal') {
+      return {
+        'background-color': inspectionType.backgroundColor || 'transparent',
+        '--shape-color': inspectionType.color || '#FFFFFF'
+      };
+    }
+
+    // For circle and square
+    return {
+      'background-color': inspectionType.backgroundColor || 'transparent',
+      '--shape-color': inspectionType.color || '#FFFFFF'
+    };
+  }
+
+  selectText(event: FocusEvent) {
+    Utility.selectText(event)
+  }
+
+  private syncSurfaceTypesFormArray(surfaceTypes: SurfaceTypesItem[]): void {
+    const formArray = this.surfaceTypesFormArray;
+
+    // Filter out 'cancel' items - form should only show active types
+    const activeTypes = surfaceTypes.filter(type => type.action !== 'cancel');
+
+    // Only sync if the length or type_cv values have changed
+    const needsSync = formArray.length !== activeTypes.length ||
+      activeTypes.some((type, index) => {
+        const formGroup = formArray.at(index) as UntypedFormGroup;
+        return !formGroup || formGroup.get('type_cv')?.value !== type.type_cv;
+      });
+
+    if (!needsSync) {
+      return; // Structure hasn't changed, don't touch the form
+    }
+
+    // CRITICAL: Save current form values before clearing
+    const existingValues = new Map<string, { value: any, remarks: any }>();
+    for (let i = 0; i < formArray.length; i++) {
+      const formGroup = formArray.at(i) as UntypedFormGroup;
+      const type_cv = formGroup.get('type_cv')?.value;
+      if (type_cv) {
+        existingValues.set(type_cv, {
+          value: formGroup.get('value')?.value,
+          remarks: formGroup.get('remarks')?.value
+        });
+      }
+    }
+
+    // Clear existing form array
+    while (formArray.length) {
+      formArray.removeAt(0);
+    }
+
+    // Add form groups for each ACTIVE surface type only
+    activeTypes.forEach(type => {
+      // Check if we have existing form values for this type
+      const savedValues = existingValues.get(type.type_cv || '');
+
+      formArray.push(this.fb.group({
+        type_cv: [type.type_cv],
+        value: [savedValues?.value ?? type.value ?? '', Validators.required],
+        remarks: [savedValues?.remarks ?? type.remarks ?? ''],
+        action: [type.action]
+      }));
+    });
+  }
+
+  getSurfaceTypeFormGroup(index: number): UntypedFormGroup {
+    const formGroup = this.surfaceTypesFormArray.at(index) as UntypedFormGroup;
+    return formGroup;
+  }
+
+  private validateSubmission(): boolean {
+    // Check if any marks exist
+    if (this.markedCells.size === 0 &&
+      this.circularMarkedSections.front.size === 0 &&
+      this.circularMarkedSections.rear.size === 0) {
+      ComponentUtil.showNotification(
+        'snackbar-danger',
+        this.data.translatedLangText.PLEASE_MARK_INSPECTION_AREAS,
+        'top',
+        'center',
+        this.snackBar
+      );
+      return false;
+    }
+
+    // Check if surface types form is valid
+    if (this.surfaceTypesFormArray.invalid) {
+      ComponentUtil.showNotification(
+        'snackbar-danger',
+        this.data.translatedLangText.PLEASE_FILL_REQUIRED_FIELDS,
+        'top',
+        'center',
+        this.snackBar
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  private updateSurfaceTypesFromForm(): void {
+    // Use activeSurfaceTypes since form array only contains active ones
+    this.activeSurfaceTypes.forEach((type, index) => {
+      const formGroup = this.getSurfaceTypeFormGroup(index);
+      if (formGroup) {
+        type.value = formGroup.get('value')?.value;
+        type.remarks = formGroup.get('remarks')?.value;
+      }
+    });
+  }
+
+  private serializeMarkedCells(): string {
+    const markedArray = Array.from(this.markedCells.entries()).map(([index, mark]) => ({
+      index,
+      type_cv: mark.inspectionType
+    }));
+
+    return JSON.stringify(markedArray);
+  }
+
+  private serializeCircularSection(surface: 'front' | 'rear'): string {
+    const sectionMap = this.circularMarkedSections[surface];
+    const sectionArray = Array.from(sectionMap.entries()).map(([section, mark]) => ({
+      section,
+      type_cv: mark.inspectionType
+    }));
+
+    return JSON.stringify(sectionArray);
+  }
+
+  // private getValidSurfaceTypes(): SurfaceTypesItem[] {
+  //   return this.uniqueSurfaceTypes
+  //     .map(type => {
+  //       const surfaceType = new SurfaceTypesItem({
+  //         guid: type.action === 'new' ? undefined : type.guid,
+  //         inspection_guid: this.inspection?.guid,
+  //         type_cv: type.type_cv,
+  //         value: type.value,
+  //         remarks: type.remarks,
+  //         action: type.action,
+  //       });
+
+  //       return surfaceType;
+  //     });
+  // }
+
+  getValidSurfaceTypes(): SurfaceTypesItem[] {
+    // Get all surface types (including 'cancel')
+    const allTypes = this.uniqueSurfaceTypes;
+
+    return allTypes.map(type => {
+      // Find matching form data for active types only
+      const activeIndex = this.activeSurfaceTypes.findIndex(t => t.type_cv === type.type_cv);
+
+      let value = type.value;
+      let remarks = type.remarks;
+
+      // If this type is active and has a form control, get the latest form values
+      if (activeIndex !== -1 && activeIndex < this.surfaceTypesFormArray.length) {
+        const formGroup = this.surfaceTypesFormArray.at(activeIndex);
+        value = formGroup.get('value')?.value;
+        remarks = formGroup.get('remarks')?.value;
+      }
+
+      return new SurfaceTypesItem({
+        guid: type.guid || '',
+        inspection_guid: this.inspection?.guid,
+        type_cv: type.type_cv,
+        value: value ? Number(value) : undefined,
+        remarks: remarks || undefined,
+        action: type.action
+      });
+    });
+  }
+
+  private loadMarkedSections(): void {
+    if (this.inspection?.marked_tank_section) {
+      const markedData = JSON.parse(this.inspection.marked_tank_section);
+      markedData.forEach((item: { index: number, type_cv: string }) => {
+        const inspectionType = this.inspectionTypes.find(t => t.type === item.type_cv);
+        if (inspectionType) {
+          const mark: CellMark = {
+            typeId: item.type_cv,
+            inspectionType: item.type_cv,
+            color: inspectionType.color,
+            backgroundColor: inspectionType.backgroundColor,
+            shape: inspectionType.shape,
+            style: {
+              type: 'shape',
+              shape: inspectionType.shape,
+              color: inspectionType.color,
+              backgroundColor: inspectionType.backgroundColor
+            },
+            timestamp: Date.now(),
+            surface: 'tank',
+            position: item.index.toString()
+          };
+          this.markedCells.set(item.index, mark);
+        }
+      });
+    }
+
+    if (this.inspection?.marked_front_section) {
+      const frontData = JSON.parse(this.inspection.marked_front_section);
+      frontData.forEach((item: { section: string, type_cv: string }) => {
+        const inspectionType = this.inspectionTypes.find(t => t.type === item.type_cv);
+        if (inspectionType) {
+          const mark: CellMark = {
+            typeId: item.type_cv,
+            inspectionType: item.type_cv,
+            color: inspectionType.color,
+            backgroundColor: inspectionType.backgroundColor,
+            shape: inspectionType.shape,
+            style: {
+              type: 'shape',
+              shape: inspectionType.shape,
+              color: inspectionType.color,
+              backgroundColor: inspectionType.backgroundColor
+            },
+            timestamp: Date.now(),
+            surface: 'front',
+            position: item.section
+          };
+          this.circularMarkedSections.front.set(item.section, mark);
+        }
+      });
+    }
+
+    if (this.inspection?.marked_rear_section) {
+      const rearData = JSON.parse(this.inspection.marked_rear_section);
+      rearData.forEach((item: { section: string, type_cv: string }) => {
+        const inspectionType = this.inspectionTypes.find(t => t.type === item.type_cv);
+        if (inspectionType) {
+          const mark: CellMark = {
+            typeId: item.type_cv,
+            inspectionType: item.type_cv,
+            color: inspectionType.color,
+            backgroundColor: inspectionType.backgroundColor,
+            shape: inspectionType.shape,
+            style: {
+              type: 'shape',
+              shape: inspectionType.shape,
+              color: inspectionType.color,
+              backgroundColor: inspectionType.backgroundColor
+            },
+            timestamp: Date.now(),
+            surface: 'rear',
+            position: item.section
+          };
+          this.circularMarkedSections.rear.set(item.section, mark);
+        }
+      });
+    }
+
+    // Trigger update of surface types list
+    // this.updateUniqueSurfaceTypes();
   }
 }
