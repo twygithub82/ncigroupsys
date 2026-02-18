@@ -461,6 +461,7 @@ const GET_IN_GATE_CLEANING_BY_SOT_FOR_MOVEMENT = gql`
         job_no
         na_dt
         remarks
+        seal_no
         sot_guid
         status_cv
         update_by

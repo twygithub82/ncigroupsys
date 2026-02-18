@@ -45,16 +45,16 @@ export interface CellMark {
     styleUrl: './mapping-chart.component.scss',
 })
 export class MappingChartComponent implements OnInit, OnChanges {
-    @Input() gridRows: number = 11;
-    @Input() gridCols: number = 11;
+    @Input() gridRows: number = 8;
+    @Input() gridCols: number = 12;
     @Input() disabledCells: number[] = [];
     @Input() showGrid: boolean = true;
     @Input() readonly: boolean = false;
     @Input() selectedInspectionType?: InspectionType; // NEW: Selected type from legend
-    @Input() circularMarkedSections: Map<string, Map<string, CellMark>> = new Map([
-        ['front', new Map<string, CellMark>()],
-        ['rear', new Map<string, CellMark>()]
-    ]);
+    @Input() circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
+        front: new Map(),
+        rear: new Map()
+    };
     @Input() markedCells: Map<number, CellMark> = new Map();
     @Input() disabledCircularSections: { front: string[], rear: string[] } = { front: [], rear: [] };
 
@@ -198,13 +198,13 @@ export class MappingChartComponent implements OnInit, OnChanges {
                 typeId: this.selectedInspectionType.type,
                 inspectionType: this.selectedInspectionType.type,
                 color: this.selectedInspectionType.color,
-                backgroundColor: this.selectedInspectionType.backgroundColor, // IMPORTANT
+                backgroundColor: this.selectedInspectionType.backgroundColor,
                 shape: this.selectedInspectionType.shape,
                 style: {
                     type: 'shape',
                     shape: this.selectedInspectionType.shape,
                     color: this.selectedInspectionType.color,
-                    backgroundColor: this.selectedInspectionType.backgroundColor // IMPORTANT
+                    backgroundColor: this.selectedInspectionType.backgroundColor
                 },
                 timestamp: Date.now(),
                 surface: 'tank',
@@ -217,6 +217,8 @@ export class MappingChartComponent implements OnInit, OnChanges {
             const existingMark = this.markedCells.get(index);
             if (existingMark && existingMark.inspectionType === this.selectedInspectionType.type) {
                 this.markedCells.delete(index);
+                // ADD THIS LINE - emit null mark when unmarking
+                this.cellMarked.emit({ index, mark: null as any });
             }
         }
 
@@ -282,7 +284,7 @@ export class MappingChartComponent implements OnInit, OnChanges {
     }
 
     isCircularSectionMarked(view: 'front' | 'rear', section: string): boolean {
-        return this.circularMarkedSections.get(view)?.has(section) || false;
+        return this.circularMarkedSections[view].has(section);
     }
 
     isCircularSectionDisabled(view: 'front' | 'rear', section: string): boolean {
@@ -290,7 +292,7 @@ export class MappingChartComponent implements OnInit, OnChanges {
     }
 
     getCircularSectionColor(view: 'front' | 'rear', section: string): string {
-        const mark = this.circularMarkedSections.get(view)?.get(section);
+        const mark = this.circularMarkedSections[view].get(section);
 
         if (!mark) {
             return 'rgba(200, 200, 200, 0.15)'; // Default unfilled color
@@ -309,11 +311,13 @@ export class MappingChartComponent implements OnInit, OnChanges {
         event.preventDefault();
         event.stopPropagation();
 
-        const viewMap = this.circularMarkedSections.get(view)!;
+        const viewMap = this.circularMarkedSections[view];
         const existingMark = viewMap.get(section);
 
         if (existingMark && existingMark.inspectionType === this.selectedInspectionType.type) {
             viewMap.delete(section);
+            // Emit null mark when unmarking
+            this.circularSectionMarked.emit({ surface: view, section, mark: null as any });
         } else {
             const mark: CellMark = {
                 typeId: this.selectedInspectionType.type,
@@ -340,7 +344,7 @@ export class MappingChartComponent implements OnInit, OnChanges {
     }
 
     getCircularSectionShape(view: 'front' | 'rear', section: string): string {
-        const mark = this.circularMarkedSections.get(view)?.get(section);
+        const mark = this.circularMarkedSections[view].get(section);
         const shape = mark?.shape || '';
         return shape;
     }
@@ -391,8 +395,8 @@ export class MappingChartComponent implements OnInit, OnChanges {
     }
 
     clearAllCircular() {
-        this.circularMarkedSections.get('front')?.clear();
-        this.circularMarkedSections.get('rear')?.clear();
+        this.circularMarkedSections.front.clear();
+        this.circularMarkedSections.rear.clear();
         this.cdr.markForCheck();
     }
 }

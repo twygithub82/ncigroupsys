@@ -195,7 +195,9 @@ export class PDFUtility {
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
-  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, 
+    topPosition: number, fontSize: number,fontFamily: string = 'helvetica', bold: boolean = false) {
+    pdf.setFont(fontFamily, bold ? "bold" : "normal");
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     var titleX = (pageWidth - titleWidth) / 2; // Centering the title
