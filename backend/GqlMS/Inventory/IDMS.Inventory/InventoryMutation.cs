@@ -1279,7 +1279,7 @@ namespace IDMS.Inventory.GqlTypes
                     await context.AddRangeAsync(surTypeList);
                 }
 
-                await context.AddAsync(curInspection);
+                //await context.AddAsync(curInspection);
                 var res = await context.SaveChangesAsync();
                 _logger.LogInformation("UpdateInspections saved changes {Count} for SOT {SotGuid}", res, editInspections?.sot_guid);
                 return res;
