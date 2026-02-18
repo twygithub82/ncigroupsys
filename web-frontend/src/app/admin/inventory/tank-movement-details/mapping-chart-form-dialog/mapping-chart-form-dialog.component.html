@@ -118,6 +118,16 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
               <div class="card p-0 tlx-card">
                 <mat-card-content class="p-2">
+                  @if (validationErrorMessage) {
+                  <div class="row mb-2">
+                    <div class="col-12">
+                      <div class="text-danger d-flex align-items-center">
+                        <mat-icon class="me-2">error</mat-icon>
+                        <span>{{ validationErrorMessage }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  }
                   @for (item of activeSurfaceTypes; track item.type_cv; let i = $index) {
                   <div class="row mb-2 pb-2" [formGroup]="getSurfaceTypeFormGroup(i)">
                     <div class="col-auto d-flex align-items-center">
