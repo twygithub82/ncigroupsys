@@ -33,6 +33,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { InGateMappingPdfComponent } from 'app/document-template/pdf/inventory/in-gate-mapping-pdf/in-gate-mapping-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -228,6 +229,26 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   download() {
 
+     let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(InGateMappingPdfComponent, {
+      width: '90vw',
+      data: {
+        reportTitle : this.dialogTitle,
+        sot : this.sot,
+        markedCells: this.markedCells,
+        circularMarkedSections: this.circularMarkedSections,
+        translatedLangText: this.data.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+     
+    });
   }
 
   confirmationDialog(addAnother: boolean, rep: any) {
