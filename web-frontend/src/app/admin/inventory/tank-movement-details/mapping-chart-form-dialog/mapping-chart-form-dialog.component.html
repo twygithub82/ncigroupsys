@@ -166,23 +166,23 @@
         </div>
       </div>
       <div mat-dialog-actions class="align-right">
-        <!-- @if (canDownload()) {
-        <button mat-flat-button class="m-l-5 mb-2 orange-button" (click)="download()">
+        @if (canDownload()) {
+        <button mat-flat-button class="m-l-5 mb-2 orange-button" (click)="download()" [disabled]="isGeneratingReport">
           <mat-icon>
             file_download
           </mat-icon>
           {{ data.translatedLangText.DOWNLOAD }}
         </button>
-        } -->
+        }
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="m-l-5 mb-2" (click)="submit()">
+        <button mat-flat-button color="primary" class="m-l-5 mb-2" (click)="submit()" [disabled]="isGeneratingReport">
           <mat-icon>
             save
           </mat-icon>
           {{ isEdit() ? data.translatedLangText.UPDATE : data.translatedLangText.SAVE }}
         </button>
         }
-        <button mat-stroked-button (click)="onNoClick()" tabindex="-1"
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" [disabled]="isGeneratingReport"
           class="m-l-5 mb-2">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>

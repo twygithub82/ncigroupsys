@@ -101,6 +101,52 @@
                     </div>
                   </div>
                 </div> 
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+              <div class="card p-0 tlx-card">
+                <mat-card-content class="p-2">
+                  @for (item of activeSurfaceTypes; track item.type_cv; let i = $index) {
+                  <div class="row mb-2 pb-2" [formGroup]="getSurfaceTypeFormGroup(i)">
+                    <div class="col-auto d-flex align-items-center">
+                      <span class="header-label font-bold">{{ i + 1 }}</span>
+                    </div>
+                    <div class="col-2-5 d-flex align-items-center">
+                      <div class="shape-wrapper" [ngStyle]="getSurfaceTypeSymbolStyle(item)">
+                        <div [ngClass]="'shape-' + getInspectionTypeShape(item.type_cv)"></div>
+                      </div>
+                      <span class="type-description">{{ getInspectionTypeDesc(item.type_cv) }}</span>
+                    </div>
+                    <div class="col">
+                      <div class="w-100">
+                        <div>
+                          {{ item.value }} {{ data.translatedLangText.PERCENTAGE_SYMBOL }}
+                        </div>
+                      </div>
+                      <!-- <mat-form-field class="w-100" subscriptSizing="dynamic">
+                        <mat-label>{{ data.translatedLangText.PERCENTAGE_SYMBOL }}</mat-label>
+                       
+                        <input matInput formControlName="value" appNumericText [allowDecimal]="false" max="100"
+                          (focus)="selectText($event)" type="text">
+                      </mat-form-field> -->
+                    </div>
+                    <div class="col">
+                      <div class="w-100">
+                        <!-- <label class="mat-body-1">
+                          {{ data.translatedLangText.REMARKS }}
+                        </label> -->
+                        <div>
+                          {{ item.remarks }}
+                        </div>
+                      </div>
+                      <!-- <mat-form-field class="w-100" subscriptSizing="dynamic">
+                        <mat-label>{{ data.translatedLangText.REMARKS }}</mat-label>
+                        <input matInput formControlName="remarks" (focus)="selectText($event)" type="text">
+                      </mat-form-field> -->
+                    </div>
+                  </div>
+                  }
+                </mat-card-content>
+              </div>
             </div>  
     </div>
     

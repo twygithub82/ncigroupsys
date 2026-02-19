@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, AfterViewInit, Output, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,15 +28,20 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 import * as domtoimage from 'dom-to-image-more';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { getDefaultInspectionTypes, InspectionsDS, InspectionType } from 'app/data-sources/inspections';
+import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType, SurfaceTypesItem } from 'app/data-sources/inspections';
 import { CellMark, MappingChartComponent } from '@shared/components/mapping-chart/mapping-chart.component';
 import { MatCardModule } from '@angular/material/card';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 export interface DialogData {
   reportTitle:string;
   sot: StoringOrderTankItem;
   markedCells: Map<number, CellMark>;
   circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> };
   translatedLangText:any;
+  activeSurfaceTypes: SurfaceTypesItem[];
+  inspection: InspectionsItem;
 }
 
 declare const html2canvas: any;
@@ -46,6 +51,7 @@ declare const html2canvas: any;
   styleUrls: ['./in-gate-mapping-pdf.component.scss'],
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     FormsModule,
     MatButtonModule,
     NgClass,
@@ -55,6 +61,10 @@ declare const html2canvas: any;
     MatProgressBarModule,
     MappingChartComponent,
     MatCardModule,
+    MatCardModule,
+    TlxCardListComponent,
+    TlxFormFieldComponent,
+    MatFormFieldModule
   ],
 })
 export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -298,6 +308,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
   reportTitle?: string;
   sot?: StoringOrderTankItem;
   inspectDS?: InspectionsDS;
+  inspectionForm?: UntypedFormGroup;
+  inspection?: InspectionsItem;
+  activeSurfaceTypes: SurfaceTypesItem[] = [];
+  uniqueSurfaceTypes: SurfaceTypesItem[] = [];
+  existingSurfaceTypes: SurfaceTypesItem[] = [];
   inspectionTypes: InspectionType[] = getDefaultInspectionTypes();
     markedCells: Map<number, CellMark> = new Map();
     circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
@@ -314,7 +329,8 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
     private sanitizer: DomSanitizer,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private fb: UntypedFormBuilder) {
     super();
     this.translateLangText();
     // this.type = data.type;
@@ -327,7 +343,12 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // this.eirPdf = data.eirPdf;
     // this.toDownload = data.toDownload || true;
     // this.toUpload = data.toUpload || false;
+    this.translatedLangText = data.translatedLangText;
+    this.inspection = data.inspection || [];
+    this.inspectionForm = this.createForm();
+    this.activeSurfaceTypes = data.activeSurfaceTypes || [];
     this.inspectionTypes = getDefaultInspectionTypes();
+    this.existingSurfaceTypes = this.inspection?.surface_types || [];
     this.reportTitle= data.reportTitle ||'';
     this.sot = data.sot ||null;
     this.markedCells = data.markedCells || new Map();
@@ -337,10 +358,12 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
     this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
-    this.eirDisclaimerNote = customerInfo.eirDisclaimerNote
-      .replace(/{companyName}/g, this.customerInfo.companyName)
-      .replace(/{companyUen}/g, this.customerInfo.companyUen)
-      .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
+    // this.eirDisclaimerNote = customerInfo.eirDisclaimerNote
+    //   .replace(/{companyName}/g, this.customerInfo.companyName)
+    //   .replace(/{companyUen}/g, this.customerInfo.companyUen)
+    //   .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
+       this.updateSurfaceTypesLists(); // Initialize the lists
+       this.patchForm();
   }
 
   StartGeneratingPDF(): void {
@@ -359,28 +382,13 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
       // this.eirDetails = data[0];
       console.log(this.eirDetails);
       
-      
-      // this.publish_by = this.getGate()?.publish_by || this.authService.currentUserName;
-      // this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(this.eirDetails?.left_coord || '[]'));
-      // this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(this.eirDetails?.rear_coord || '[]'));
-      // this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(this.eirDetails?.right_coord || '[]'));
-      // this.populateTopSideCells(JSON.parse(this.eirDetails?.top_coord || '{}'));
-      // this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(this.eirDetails?.front_coord || '[]'));
-      // this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(this.eirDetails?.bottom_coord || '[]'));
+    
 
       // this.cdr.detectChanges();
       this.StartGeneratingPDF();
       //  this.updateCellValues();
 
 
-      // if (!this.eirPdf?.length) {
-      //   await this.generatePDF();
-      // }
-      //  else {
-      //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-      //   const pdfUrl = URL.createObjectURL(eirBlob);
-      //   this.eirPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-      // }
     }
   }
 
@@ -442,84 +450,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     var body = await domtoimage.toJpeg(element, options);
     console.log(body);
-    // const element = document.getElementById("capture");
-
-    // html2canvas(element,{ allowTaint: true,
-    //               useCORS: true})
-    // .then((canvas: HTMLCanvasElement) => {
-    //   console.log("Canvas created!");
-    //   document.body.appendChild(canvas); // Optional: display it
-    // })
-    // .catch((err: any) => {
-    //   console.error("Canvas conversion failed:", err);
-    // });
-    //    const canvas = await html2canvas(element, {
-    //   foreignObjectRendering: true
-    // });
-
-    // const clippedImgData = canvas.toDataURL('image/png');
-
-    // html2canvas(this.captureElement.nativeElement).then((canvas) => {
-    //   const clippedImgData = canvas.toDataURL('image/png');
-    // });
-
-    // const element = document.getElementById('eir-form-template');
-    // if (!element) {
-    //   console.error('Template element not found');
-    //   return;
-    // }
-
-    // html2canvas(element).then((canvas) => {
-    //   const pdf = new jsPDF('p', 'mm', 'a4');
-    //   const pageWidth = 190; // A4 page width minus margins
-    //   const pageHeight = pdf.internal.pageSize.height; // A4 page height
-    //   const margin = 10; // Top and bottom margins
-    //   const usableHeight = pageHeight - margin * 2; // Content area height
-    //   const imgHeight = (canvas.height * pageWidth) / canvas.width;
-
-    //   let yOffset = 0; // Track vertical offset for each page
-
-    //   while (yOffset < imgHeight) {
-    //     if (yOffset > 0) pdf.addPage(); // Add a new page if not the first
-
-    //     // Add Header
-    //     this.addHeader(pdf, pageWidth, margin);
-
-    //     // Calculate the portion of the canvas to clip
-    //     const clipStartY = yOffset * canvas.height / imgHeight; // Map PDF offset to canvas pixels
-    //     const clipHeight = Math.min(usableHeight * canvas.height / imgHeight, canvas.height - clipStartY);
-
-    //     // Create a temporary canvas to extract the clipped portion
-    //     const tempCanvas = document.createElement('canvas');
-    //     tempCanvas.width = canvas.width;
-    //     tempCanvas.height = clipHeight;
-    //     const tempContext = tempCanvas.getContext('2d');
-    //     if (tempContext) {
-    //       tempContext.drawImage(canvas, 0, -clipStartY, canvas.width, canvas.height);
-    //     }
-
-    //     const clippedImgData = tempCanvas.toDataURL('image/png');
-
-    //     // Add the clipped image to the PDF without stretching
-    //     const renderedHeight = clipHeight * pageWidth / canvas.width;
-    //     pdf.addImage(clippedImgData, 'PNG', 10, margin, pageWidth, renderedHeight);
-
-    //     // Add Footer
-    //     this.addFooter(pdf, pageWidth, pageHeight, margin);
-
-    //     yOffset += usableHeight; // Move to the next page chunk
-    //   }
-
-    //   const pdfBlob = pdf.output('blob');
-    //   const pdfURL = URL.createObjectURL(pdfBlob);
-
-    //   // Open PDF in a MatDialog
-    //   this.dialog.open(PdfDialogComponent, {
-    //     width: '80%',
-    //     height: '90%',
-    //     data: { pdfUrl: pdfURL },
-    //   });
-    // });
+    
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
@@ -555,13 +486,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     const reportTitle = this.GetReportTitle();
 
-    // const headers = [[
-    //   this.translatedLangText.NO,
-    //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-    //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-    //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-    //   this.translatedLangText.PROCEDURE
-    // ]];
+   
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -598,88 +523,23 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-    PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
+
+    var inspect_dt = `${this.translatedLangText.INSPECTION_DATE}: ${this.getInspectionDateDisplay()}`;
+    PDFUtility.AddTextAtRightCornerPage(pdf, inspect_dt, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+    var tnkNo = `${this.translatedLangText.TANK_NO} : ${this.sot?.tank_no}`;
+    PDFUtility.addText(pdf, tnkNo, lastTableFinalY + 5, leftMargin, 8);
+
+    var cargo = `${this.translatedLangText.LAST_CARGO} : ${this.sot?.tariff_cleaning?.cargo}`;
+    PDFUtility.AddTextAtCenterPage(pdf, cargo, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+
 
     var data:any = [];
-      // [
-      //   { content: `${this.getNoLabel()}: ${this.getGate()?.tank?.storing_order?.so_no}` },
-      //   { content: `${this.getDateLabel()}: ${this.displayDate(this.getGate()?.tank?.storing_order?.create_dt)}` },
-      //   { content: `${this.translatedLangText.LAST_CARGO}: ${(this.getGate()?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
-      // ],
-      // [`${this.translatedLangText.TANK_NO}: ${this.getGate()?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.getGate()?.eir_no}`,
-      // `${this.getJobReferenceLabel()}: ${this.getGate()?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
-      // [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
-      // `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
-      // [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
-      // //  { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
-      // [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity, 0)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight, 0)} KG`,
-      // `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
-    // ];
-
-    // autoTable(pdf, {
-    //   body: data,
-    //   startY: startY, // Start table at the current startY value
-    //   theme: 'grid',
-    //   margin: { left: leftMargin },
-    //   styles: {
-    //     fontSize: 6.5,
-    //     textColor: [0, 0, 0],
-    //     minCellHeight: minHeightHeaderCol,
-    //     // overflow:'ellipsize',
-    //     lineWidth: 0.35, // cell border thickness
-    //     lineColor: [0, 0, 0], // black
-    //     cellPadding: 2, // ← Add some padding
-    //   },
-    //   tableWidth: contentWidth,
-    //   columnStyles: comStyles,
-    //   // headStyles: headStyles, // Custom header styles
-    //   bodyStyles: {
-    //     fillColor: [255, 255, 255],
-    //     halign: 'left', // Left-align content for body by default
-    //     valign: 'middle', // Vertically align content
-    //   },
-    //   didDrawPage: (data: any) => {
-    //     const pageCount = pdf.getNumberOfPages();
-
-    //     lastTableFinalY = data.cursor.y;
-
-    //     var pg = pagePositions.find(p => p.page == pageCount);
-    //     if (!pg) {
-    //       pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    //       if (pageCount > 1) {
-    //         Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-    //       }
-    //     }
-    //   },
-    // });
-
-
-
-    //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    
     startY = lastTableFinalY + 2;
-    // Get the element correctly (remove the dot from className)
-    // const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
-
-    // if (!elements || elements.length === 0) {
-    //   console.error('Element not found');
-    //   return;
-    // }
-
-    // Get the first element with the class
-    //const element = elements[0];
-    // const element =document.getElementById('test1') as HTMLElement;
-    // const styles = window.getComputedStyle(element);
-    // console.log(`Computed styles count: ${styles.length}`);
-    //const contentWidth = pageWidth - leftMargin - rightMargin;
+    
     const chartContentWidth = contentWidth/2;
 
-    // const canvas = await html2canvas(element as HTMLElement, { scale: scale });
-    // let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-    // const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
-    // const walkwayEl = this.captureWalkwayElementRef.nativeElement as HTMLElement;
-    //  const clonedEl= element.cloneNode(true) as HTMLElement;
-    // this.copyComputedStyles(originalEl,clonedEl);
+    
     const element = this.captureWalkwayElementRef.nativeElement as HTMLElement
 
     
@@ -697,10 +557,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
     // Calculate scaled height based on available width
-    var bufferRatio=0.82;
+    var bufferRatio=0.72;
     let imgHeight = (chartContentWidth / aspectRatio)*bufferRatio;
     const chartContentWidth1=chartContentWidth*bufferRatio;
-    pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth1, imgHeight);
+    startY+=8;
+    pdf.addImage(imgData, 'JPEG', leftMargin+5, startY, chartContentWidth1, imgHeight);
 
 
     const element1 = this.captureMalidElementRef.nativeElement as HTMLElement
@@ -715,100 +576,9 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // Calculate scaled height based on available width
     let imgHeight1 = chartContentWidth / aspectRatio1
 
-    pdf.addImage(imgData1, 'JPEG', leftMargin+chartContentWidth+5, startY, chartContentWidth, imgHeight1);
-    // var startRectY = startY + imgHeight + 2;
-    // var rectBoxHeight = 13;
-    // var bufferLabel = 16;
-    // var textContent = `${this.translatedLangText.REMARKS}:`;
-    // await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + 2, 8, true);
-    // textContent = this.eirDetails?.comments || '';
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
-    // startRectY += rectBoxHeight + 2;
-    // textContent = `${this.translatedLangText.PURPOSE}:`;
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + 2, 8, true);
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
-    // await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
-    // startRectY += rectBoxHeight + 2;
-    // rectBoxHeight = pageHeight - rectBoxHeight - startRectY + 2;
-
-    // await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
-    // await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth / 2, rectBoxHeight);
-
-    // var textWrapWidth = chartContentWidth / 2;
-    // var rightRectBoxStartX = leftMargin + (chartContentWidth / 2) + 2;
-    // var leftRectBoxStartX = leftMargin + 2;
-    // var bufferLabelY = 9;
-    // textContent = `${customerInfo.companyName}`;
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
-
-    // textContent = `${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
-    // PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
-
-    // textContent = `${this.translatedLangText.EIR_COMPANY_DECLARATION}`;
-    // PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
-
-    // textContent = `${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
-    // PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
-
-    // var tempY = bufferLabelY;
-    // bufferLabelY = pageHeight - bottomMargin - (6 * 2);
-
-    // var gapLabel = (textWrapWidth / 2);
-
-    // textContent = `${this.translatedLangText.SURVEY_BY}:`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX, 8);
-
-    // textContent = `${this.translatedLangText.REVIEW_BY}:`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
-
-
-    // gapLabel = (textWrapWidth / 3);
-
-    // textContent = `${this.translatedLangText.HAULIER}:`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX, 8);
-
-    // textContent = `${this.translatedLangText.VEHICLE_NO}:`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
-
-    // textContent = `${this.translatedLangText.DRIVER_NAME}:`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
-
-    // gapLabel = (textWrapWidth / 2);
-    // bufferLabelY += 4;
-
-    // textContent = `${this.eirDetails?.create_by}`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX, 8, true);
-
-    // textContent = `${this.publish_by}`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
-
-    // gapLabel = (textWrapWidth / 3);
-    // textContent = `${this.getGate()?.tank?.storing_order?.haulier}`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX, 8, true);
-
-    // textContent = `${this.getGate()?.vehicle_no}`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
-
-    // textContent = `${this.getGate()?.driver_name}`;
-    // PDFUtility.addText(pdf, textContent, bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
-
-    // //lastTableFinalY = startRectY + bufferLabelY;
-    // textContent = `${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
-    // // PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, 8);
-    // PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, pageHeight - (bottomMargin), 8);
-    //const totalPages = pdf.getNumberOfPages();
-
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.001, 0.001], 0);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
+    startY+=12;
+    pdf.addImage(imgData1, 'JPEG', leftMargin+chartContentWidth, startY, chartContentWidth, imgHeight1);
+    
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -1021,7 +791,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
   getReportTitle(): string {
     var title: string = '';
-    title = `EIR-${this.getGate()?.eir_no}-${this.getGate()?.tank?.tank_no}.pdf`
+    title = `${this.reportTitle}.pdf`
     return `${title}`
   }
 
@@ -1232,4 +1002,221 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
       'background-color': 'transparent'
     };
   }
+
+   getSurfaceTypeFormGroup(index: number): UntypedFormGroup {
+      const formGroup = this.surfaceTypesFormArray.at(index) as UntypedFormGroup;
+      return formGroup;
+    }
+    get surfaceTypesFormArray(): UntypedFormArray {
+        return this.inspectionForm?.get('surface_types') as UntypedFormArray;
+      }
+    
+    createForm(): UntypedFormGroup {
+    return this.fb.group({
+      guid: [this.inspection?.guid],
+      surface_types: this.fb.array([])
+    });
+  }
+  getSurfaceTypeSymbolStyle(type: SurfaceTypesItem): any {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type.type_cv);
+
+    if (!inspectionType) {
+      return { 'background-color': 'transparent' };
+    }
+
+    if (inspectionType.shape === 'triangle' || inspectionType.shape === 'cross' || inspectionType.shape === 'diagonal') {
+      return {
+        'background-color': inspectionType.backgroundColor || 'transparent',
+        '--shape-color': inspectionType.color || '#FFFFFF'
+      };
+    }
+
+    // For circle and square
+    return {
+      'background-color': inspectionType.backgroundColor || 'transparent',
+      '--shape-color': inspectionType.color || '#FFFFFF'
+    };
+  }
+
+  getInspectionTypeShape(type_cv: string | undefined): string {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type_cv);
+    return inspectionType?.shape || 'circle';
+  }
+
+  getInspectionTypeDesc(type_cv: string | undefined): string {
+    const inspectionType = this.inspectionTypes.find(t => t.type === type_cv);
+    return inspectionType?.displayName || '';
+  }
+
+  patchForm() {
+    // Clear existing form array
+    this.surfaceTypesFormArray.clear();
+
+    // Populate the form array with data from uniqueSurfaceTypes
+    this.uniqueSurfaceTypes.forEach(item => {
+      this.surfaceTypesFormArray.push(this.createSurfaceTypeFormGroup(item));
+    });
+  }
+
+   private updateSurfaceTypesLists(): void {
+    this.uniqueSurfaceTypes = this.calculateUniqueSurfaceTypes();
+    this.activeSurfaceTypes = this.uniqueSurfaceTypes.filter(type => type.action !== 'cancel');
+  }
+
+  private calculateUniqueSurfaceTypes(): SurfaceTypesItem[] {
+    const surfaceTypeMap = new Map<string, SurfaceTypesItem>();
+
+    // First, populate map with existing surface types and their current actions
+    this.existingSurfaceTypes.forEach((surfaceType) => {
+      if (surfaceType.type_cv) {
+        surfaceTypeMap.set(surfaceType.type_cv, {
+          ...surfaceType,
+          action: surfaceType.action
+        });
+      }
+    });
+
+    // Track which type_cv values are currently in use
+    const currentlyUsedTypes = new Set<string>();
+
+    // Collect marks from markedCells Map
+    this.markedCells.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Collect marks from front circular sections
+    this.circularMarkedSections.front.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Collect marks from rear circular sections
+    this.circularMarkedSections.rear.forEach((mark) => {
+      if (mark?.typeId) {
+        currentlyUsedTypes.add(mark.typeId);
+
+        if (!surfaceTypeMap.has(mark.typeId)) {
+          const surfaceType = new SurfaceTypesItem({
+            type_cv: mark.typeId,
+            inspection_guid: this.inspection?.guid,
+            action: 'new'
+          });
+          surfaceTypeMap.set(mark.typeId, surfaceType);
+        }
+      }
+    });
+
+    // Update actions for all surface types based on usage
+    surfaceTypeMap.forEach((surfaceType, type_cv) => {
+      const isCurrentlyUsed = currentlyUsedTypes.has(type_cv);
+      const existedBefore = this.existingSurfaceTypes.some(st => st.type_cv === type_cv);
+
+      if (existedBefore) {
+        if (isCurrentlyUsed) {
+          if (surfaceType.action !== 'new') {
+            surfaceType.action = 'edit';
+          }
+        } else {
+          surfaceType.action = 'cancel';
+        }
+      } else {
+        if (isCurrentlyUsed) {
+          surfaceType.action = 'new';
+        } else {
+          surfaceType.action = 'cancel';
+        }
+      }
+    });
+
+    const result = Array.from(surfaceTypeMap.values());
+
+    // Sync form array with the new structure
+    this.syncSurfaceTypesFormArray(result);
+
+    return result;
+  }
+
+ 
+  createSurfaceTypeFormGroup(item: any): UntypedFormGroup {
+    return this.fb.group({
+      type_cv: [item.type_cv],
+      value: [item.value || ''], // percentage value
+      remarks: [item.remarks || '']
+    });
+  }
+
+  private syncSurfaceTypesFormArray(surfaceTypes: SurfaceTypesItem[]): void {
+      const formArray = this.surfaceTypesFormArray;
+  
+      // Filter out 'cancel' items - form should only show active types
+      const activeTypes = surfaceTypes.filter(type => type.action !== 'cancel');
+  
+      // Only sync if the length or type_cv values have changed
+      const needsSync = formArray.length !== activeTypes.length ||
+        activeTypes.some((type, index) => {
+          const formGroup = formArray.at(index) as UntypedFormGroup;
+          return !formGroup || formGroup.get('type_cv')?.value !== type.type_cv;
+        });
+  
+      if (!needsSync) {
+        return; // Structure hasn't changed, don't touch the form
+      }
+  
+      // CRITICAL: Save current form values before clearing
+      const existingValues = new Map<string, { value: any, remarks: any }>();
+      for (let i = 0; i < formArray.length; i++) {
+        const formGroup = formArray.at(i) as UntypedFormGroup;
+        const type_cv = formGroup.get('type_cv')?.value;
+        if (type_cv) {
+          existingValues.set(type_cv, {
+            value: formGroup.get('value')?.value,
+            remarks: formGroup.get('remarks')?.value
+          });
+        }
+      }
+  
+      // Clear existing form array
+      while (formArray.length) {
+        formArray.removeAt(0);
+      }
+  
+      // Add form groups for each ACTIVE surface type only
+      activeTypes.forEach(type => {
+        // Check if we have existing form values for this type
+        const savedValues = existingValues.get(type.type_cv || '');
+  
+        formArray.push(this.fb.group({
+          type_cv: [type.type_cv],
+          value: [savedValues?.value ?? type.value ?? ''],
+          remarks: [savedValues?.remarks ?? type.remarks ?? ''],
+          action: [type.action]
+        }));
+      });
+    }
+
+      getInspectionDateDisplay() {
+        return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
+      }
+
 }
