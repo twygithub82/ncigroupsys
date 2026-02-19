@@ -75,10 +75,10 @@
                     }
                   </h2>
                 </div>
-                <div class="body">
+                <div class="body" >
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-                      <mat-card-content>
+                      <mat-card-content >
                         <div class="legend-items">
                           @for (type of inspectionTypes; track type.type) {
                           <div class="legend-item" [class.selected]="selectedInspectionType?.type === type.type"
@@ -142,7 +142,7 @@
                     <div class="col">
                       <mat-form-field class="w-100" subscriptSizing="dynamic">
                         <mat-label>{{ data.translatedLangText.PERCENTAGE_SYMBOL }}</mat-label>
-                        <input matInput formControlName="value" appNumericText [allowDecimal]="false"
+                        <input matInput formControlName="value" appNumericText [allowDecimal]="false" max="100"
                           (focus)="selectText($event)" type="text">
                       </mat-form-field>
                     </div>
@@ -166,14 +166,14 @@
         </div>
       </div>
       <div mat-dialog-actions class="align-right">
-        @if (canDownload()) {
+        <!-- @if (canDownload()) {
         <button mat-flat-button class="m-l-5 mb-2 orange-button" (click)="download()">
           <mat-icon>
             file_download
           </mat-icon>
           {{ data.translatedLangText.DOWNLOAD }}
         </button>
-        }
+        } -->
         @if (canEdit()) {
         <button mat-flat-button color="primary" class="m-l-5 mb-2" (click)="submit()">
           <mat-icon>
