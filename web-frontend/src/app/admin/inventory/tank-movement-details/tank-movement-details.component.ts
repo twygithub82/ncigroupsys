@@ -536,6 +536,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     UPDATE_SEAL_NO: 'COMMON-FORM.UPDATE-SEAL-NO',
     SEAL_NO: 'COMMON-FORM.SEAL-NO',
     UPDATE_CLEANING: 'COMMON-FORM.UPDATE-CLEANING',
+    PLEASE_MARK_INSPECTION_AREAS: 'COMMON-FORM.PLEASE-MARK-INSPECTION-AREAS',
+    PLEASE_FILL_REQUIRED_FIELDS: 'COMMON-FORM.PLEASE-FILL-REQUIRED-FIELDS',
   }
 
   sot_guid: string | null | undefined;
@@ -2227,6 +2229,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
+        this.loadDataHandling_inspection();
       }
     });
   }

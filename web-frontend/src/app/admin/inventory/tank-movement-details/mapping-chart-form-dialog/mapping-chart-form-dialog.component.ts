@@ -33,6 +33,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { InGateMappingPdfComponent } from 'app/document-template/pdf/inventory/in-gate-mapping-pdf/in-gate-mapping-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -102,6 +103,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   inspectionTypes: InspectionType[] = [];
   selectedInspectionType?: InspectionType;
+  validationErrorMessage: string = '';
 
   cvDS: CodeValuesDS;
   inspectDS: InspectionsDS;
@@ -223,52 +225,30 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
         }
       });
     }
-
-
-    // if (this.repairPartForm?.valid) {
-    //   if (this.action === 'new') {
-    //     this.repairPart.action = 'new';
-    //   } else {
-    //     if (this.repairPart.action !== 'new') {
-    //       this.repairPart.action = 'edit';
-    //     }
-    //   }
-
-    //   var rep: any = {
-    //     ...this.repairPart,
-    //     location_cv: this.repairPartForm.get('location_cv')?.value,
-    //     comment: this.repairPartForm.get('comment')?.value?.trim(),
-    //     tariff_repair_guid: this.repairPart?.tariff_repair_guid,
-    //     tariff_repair: this.repairPart?.tariff_repair,
-    //     rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-    //     quantity: this.repairPartForm.get('quantity')?.value,
-    //     hour: this.repairPartForm.get('hour')?.value,
-    //     material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
-    //     remarks: this.repairPartForm.get('remarks')?.value,
-    //     create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
-    //   }
-    //   const concludeLength = this.getPartLength(rep);
-
-    //   let prefix = (`${rep.location_cv ? this.getLocationDescription(rep.location_cv) : ''}` + ' ' + (rep.comment ? rep.comment : '')).trim();
-    //   prefix = prefix ? `${prefix} - ` : '';
-
-    //   rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
-    //   console.log(rep)
-
-    //   // they agreed to allow add same part
-    //   // if (this.validateExistedPart(rep)) {
-    //   //   this.confirmationDialog(addAnother, rep);
-    //   // } else {
-    //   //   this.returnAndCloseDialog(addAnother, rep);
-    //   // }
-    //   this.returnAndCloseDialog(addAnother, rep);
-    // } else {
-    //   this.findInvalidControls();
-    // }
   }
 
   download() {
 
+     let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(InGateMappingPdfComponent, {
+      width: '90vw',
+      data: {
+        reportTitle : this.dialogTitle,
+        sot : this.sot,
+        markedCells: this.markedCells,
+        circularMarkedSections: this.circularMarkedSections,
+        translatedLangText: this.data.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+     
+    });
   }
 
   confirmationDialog(addAnother: boolean, rep: any) {
@@ -435,6 +415,8 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
+    this.validationErrorMessage = '';
+
     // Update lists when marks change
     this.updateSurfaceTypesLists();
   }
@@ -454,6 +436,8 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
         this.updateSurfaceTypeAction(existingMark.typeId, 'unmark');
       }
     }
+
+    this.validationErrorMessage = '';
 
     // Update lists when marks change
     this.updateSurfaceTypesLists();
@@ -732,29 +716,18 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   private validateSubmission(): boolean {
+    this.validationErrorMessage = '';
     // Check if any marks exist
     if (this.markedCells.size === 0 &&
       this.circularMarkedSections.front.size === 0 &&
       this.circularMarkedSections.rear.size === 0) {
-      ComponentUtil.showNotification(
-        'snackbar-danger',
-        this.data.translatedLangText.PLEASE_MARK_INSPECTION_AREAS,
-        'top',
-        'center',
-        this.snackBar
-      );
+      this.validationErrorMessage = this.data.translatedLangText.PLEASE_MARK_INSPECTION_AREAS;
       return false;
     }
 
     // Check if surface types form is valid
     if (this.surfaceTypesFormArray.invalid) {
-      ComponentUtil.showNotification(
-        'snackbar-danger',
-        this.data.translatedLangText.PLEASE_FILL_REQUIRED_FIELDS,
-        'top',
-        'center',
-        this.snackBar
-      );
+      this.validationErrorMessage = this.data.translatedLangText.PLEASE_FILL_REQUIRED_FIELDS;
       return false;
     }
 
