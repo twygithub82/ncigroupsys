@@ -2229,6 +2229,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
+        this.loadDataHandling_inspection();
       }
     });
   }
