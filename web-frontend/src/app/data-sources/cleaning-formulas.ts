@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CleaningMethodItem } from './cleaning-method';
 
@@ -32,6 +32,7 @@ export const SEARCH_CLEANING_FORMULA_QUERY = gql`
             formula_guid
             guid
             method_guid
+            delete_dt
             cleaning_method {
               category_guid
               create_by
@@ -156,6 +157,41 @@ export class CleaningFormulaDS extends BaseDataSource<CleaningFormulaItem> {
         })
       );
   }
+
+  searchAll(where?: any, order?: any,batchSize: number = 100): Observable<CleaningFormulaItem[]> {
+  this.loadingSubject.next(true);
+
+ let allItems: CleaningFormulaItem[] = [];
+   let after: string | undefined;
+ 
+   const loadBatch = (): Observable<CleaningFormulaItem[]> => {
+     return this.search(
+       where,
+       order,
+       batchSize
+     ).pipe(
+       switchMap(items => {
+         allItems = [...allItems, ...items];
+         
+         if (this.pageInfo?.hasNextPage) {
+           after = this.pageInfo.endCursor;
+           return loadBatch();
+         }
+         
+         return of(allItems);
+       })
+     );
+   };
+ 
+   this.loadingSubject.next(true);
+   return loadBatch().pipe(
+     finalize(() => {
+       this.loadingSubject.next(false);
+       this.totalCount = allItems.length;
+     })
+   );
+}
+
 
   getCheckExist(where?: any): Observable<number> {
     this.loadingSubject.next(true);

@@ -44,6 +44,8 @@ import { MOBILE_DIALOG_WIDTH, Utility, maxLengthDisplaySingleSelectedItem, pageS
 import { Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { CleaningFormulaExcelComponent } from 'app/document-template/excel/parameters/cleaning-formula/cleaning-formula-excel.component';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -167,6 +169,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  isGeneratingReport: boolean=false;
+
   isMobile : boolean = false;
   constructor(
     public httpClient: HttpClient,
@@ -674,6 +678,55 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     const existingValue = this.searchForm?.get('description')?.value;
     this.searchForm?.get('description')?.setValue(existingValue);
   }
+
+  export_excel()
+        {
+          this.isGeneratingReport=true;
+          const where={ delete_dt: { eq: null } };
+          this.fmlDS.searchAll(where).subscribe(res=>{
+                var prcList:CleaningFormulaItem[]=res;
+                this.exportExcelReport(prcList);
+      
+            })
+      
+            
+        }
+        exportExcelReport(repData:any) {
+            
+               //this.preventDefault(event);
+                let cut_off_dt = new Date();
+            
+            
+                let tempDirection: Direction;
+                if (localStorage.getItem('isRtl') === 'true') {
+                  tempDirection = 'rtl';
+                } else {
+                  tempDirection = 'ltr';
+                }
+            
+                const dialogRef = this.dialog.open(CleaningFormulaExcelComponent, {
+                  width: reportPreviewWindowDimension.portrait_width_rate,
+                  maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                  maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                  
+                  data: {
+                    repData: repData
+                  },
+            
+                  // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                  direction: tempDirection
+                });
+            
+                  dialogRef.updatePosition({
+                  top: '-90vh',  // Move far above the screen
+                  left: '0px'  // Move far to the left of the screen
+                });
+            
+                this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                  this.isGeneratingReport = false;
+                });
+        
+          }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
       const centerClass = isCenter ? 'justify-content-center' : '';

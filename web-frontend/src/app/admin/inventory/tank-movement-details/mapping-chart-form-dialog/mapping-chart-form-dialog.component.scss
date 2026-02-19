@@ -42,8 +42,8 @@
 
 .legend-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
 
     @media (max-width: 768px) {
         grid-template-columns: 1fr;
@@ -95,10 +95,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    .legend-item:hover:not(.disabled) & {
-        transform: scale(1.1);
-    }
 
     &.shape-circle {
         &::before {
@@ -252,7 +248,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap; // Allow wrapping on small screens
+    flex-wrap: wrap;
 
     .legend-subtitle {
         font-size: 13px;
@@ -261,12 +257,111 @@
     }
 
     .legend-subtitle-error {
-        font-size: 13px; // Same size as legend-subtitle
-        color: #dc3545; // Red color
+        font-size: 13px;
+        color: #dc3545;
         font-style: italic;
-        font-weight: 600; // Slightly bolder to stand out
-        animation: pulse 2s ease-in-out infinite; // Optional: subtle pulse animation
+        font-weight: 600;
+        animation: pulse 2s ease-in-out infinite;
     }
+}
+
+// Surface Types List - Shape Wrapper and Shapes
+.shape-wrapper {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 4px;
+    // Background color set via [ngStyle]
+}
+
+.shape-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+}
+
+.shape-square {
+    width: 18px;
+    height: 18px;
+    background-color: #FFFFFF;
+    border-radius: 2px;
+}
+
+.shape-triangle {
+    width: 0;
+    height: 0;
+    background: transparent !important;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 17px solid #FFFFFF;
+}
+
+.shape-cross {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background: transparent !important;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        background-color: #FFFFFF;
+    }
+
+    &::before {
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        transform: translateY(-50%);
+    }
+
+    &::after {
+        top: 0;
+        left: 50%;
+        width: 3px;
+        height: 100%;
+        transform: translateX(-50%);
+    }
+}
+
+.shape-diagonal {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background: transparent !important;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background-color: #FFFFFF;
+        top: 50%;
+        left: 0;
+    }
+
+    &::before {
+        transform: translateY(-50%) rotate(45deg);
+    }
+
+    &::after {
+        transform: translateY(-50%) rotate(-45deg);
+    }
+}
+
+.type-description {
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
 }
 
 @keyframes pulse {

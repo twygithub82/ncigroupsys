@@ -38,6 +38,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { CleaningMethodsExcelComponent } from 'app/document-template/excel/parameters/cleaning-methods/cleaning-methods-excel.component';
 
 
 @Component({
@@ -158,6 +160,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  isGeneratingReport: boolean=false;
+
   isMobile : boolean = false;
   constructor(
     public httpClient: HttpClient,
@@ -409,9 +413,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result > 0) {
         this.handleSaveSuccess(result);
         //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        this.refreshProcessList();
-        this.refreshDescriptionList();
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.refreshProcessList();
+        // this.refreshDescriptionList();
+        this.resetForm();
+        this.search();
       }
     });
   }
@@ -439,10 +445,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        this.refreshProcessList();
-        this.refreshDescriptionList();
+        this.search();
+        // this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // this.refreshProcessList();
+        // this.refreshDescriptionList();
       }
     });
   }
@@ -768,6 +774,55 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const existingValue = this.descriptionControl?.value;
     this.descriptionControl?.setValue(existingValue);
   }
+
+   export_excel()
+          {
+            this.isGeneratingReport=true;
+            const where={ delete_dt: { eq: null } };
+            this.mthDS.loadAllItems(where).subscribe(res=>{
+                  var prcList:CleaningMethodItem[]=res;
+                  this.exportExcelReport(prcList);
+        
+              })
+        
+              
+          }
+          exportExcelReport(repData:any) {
+              
+                 //this.preventDefault(event);
+                  let cut_off_dt = new Date();
+              
+              
+                  let tempDirection: Direction;
+                  if (localStorage.getItem('isRtl') === 'true') {
+                    tempDirection = 'rtl';
+                  } else {
+                    tempDirection = 'ltr';
+                  }
+              
+                  const dialogRef = this.dialog.open(CleaningMethodsExcelComponent, {
+                    width: reportPreviewWindowDimension.portrait_width_rate,
+                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                    
+                    data: {
+                      repData: repData
+                    },
+              
+                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                    direction: tempDirection
+                  });
+              
+                    dialogRef.updatePosition({
+                    top: '-90vh',  // Move far above the screen
+                    left: '0px'  // Move far to the left of the screen
+                  });
+              
+                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                    this.isGeneratingReport = false;
+                  });
+          
+            }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
       const centerClass = isCenter ? 'justify-content-center' : '';

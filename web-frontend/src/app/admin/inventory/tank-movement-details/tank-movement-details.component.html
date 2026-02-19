@@ -76,10 +76,14 @@
                         <button mat-menu-item
                           (click)="overwriteCleanStatusDialog($event)">{{translatedLangText.OVERWRITE_CONDITION}}</button>
                         } -->
-                        <!-- @if (canAddMappingChartIn()) {
+                        @if (canAddMappingChartIn()) {
                         <button mat-menu-item
-                          (click)="mappingChartDialog($event, 'in')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING}}</button>
-                        } -->
+                          (click)="mappingChartDialog($event, '1')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}}</button>
+                        }
+                        @if (canAddMappingChartOut()) {
+                        <button mat-menu-item
+                          (click)="mappingChartDialog($event, '2')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}}</button>
+                        }
                       </mat-menu>
                       }
                     </div>
@@ -1348,9 +1352,17 @@
                               | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
+                                 <!-- <div class="position-absolute purpose-absolute-menu" [matTooltip]="translatedLangText.CLEANING_REPORT">
+                                  <button mat-mini-fab color="primary" 
+                                    [disabled]="(cleaningDS.loading$ | async)"
+                                    class="link-button position-absolute purpose-absolute-menu"
+                                    (click)="exportCleaningReport($event, cleaningItem?.[0]?.guid)">
+                                    <mat-icon>assessment</mat-icon>
+                                  </button>
+                                </div> -->
                                 @if ((canOverwriteCleaningApproval() && allowPerformAction()) ||
                                 canRollbackCleaningCompleted(cleaningItem?.[0])
-                                || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
+                                || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()||canExportCleanReport()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
                                   class="link-button position-absolute purpose-absolute-menu">
@@ -1358,6 +1370,10 @@
                                 </button>
 
                                 <mat-menu #menu="matMenu">
+                                  <button mat-menu-item class=""
+                                    (click)="exportCleaningReport($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CLEANING_REPORT}}</button>
+                                  <button mat-menu-item class=""
+                                    (click)="UpdateSealNo(cleaningItem?.[0]!)">{{translatedLangText.UPDATE_SEAL_NO}}</button>
                                   <button mat-menu-item class=""
                                     (click)="exportCleaningQuotation($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CLEANING_QUOTATION}}</button>
                                   @if (canOverwriteCleaningApproval() && allowPerformAction()) {

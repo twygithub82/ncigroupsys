@@ -17,13 +17,13 @@
                       </mat-panel-title>
                       <mat-panel-description>
                         <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                          <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                          <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"  [disabled]="isGeneratingReport">
                             <mat-icon>search</mat-icon>
                           </button>
                         </div>
                         @if (isAllowAdd()) {
                         <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                          <button mat-mini-fab (click)="addBookingDetails($event)" (click)="$event.stopPropagation()"
+                          <button mat-mini-fab (click)="addBookingDetails($event)" (click)="$event.stopPropagation()"  [disabled]="isGeneratingReport"
                             [disabled]="!sotSelection.hasValue()"
                             [ngClass]="{ 'primary-light': sotSelection.hasValue() }">
                             <mat-icon>add</mat-icon>
@@ -31,16 +31,29 @@
                         </div>
                         }
                         <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                          <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                          <button mat-mini-fab color="accent" (click)="resetDialog($event)"  [disabled]="isGeneratingReport"
                             (click)="$event.stopPropagation()">
                             <mat-icon>clear_all</mat-icon>
                           </button>
                         </div>
+                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                          <button mat-mini-fab
+                              class="light-green-button m-l-10"
+                              (click)="export_excel()"
+                              (click)="$event.stopPropagation()"
+                              [disabled]="isGeneratingReport"
+                              matTooltip="{{ translatedLangText.EXPORT }}">
+                              <img src="assets/images/icons/xlsx1_64x64.png"
+                                  alt="{{ translatedLangText.EXPORT }}"
+                                  class="fab-icon">
+                          </button>
+                    
+                        }
                         @if (isAllowAdd() || isAllowEdit()) {
                         <div class="m-l-5">
                           <mat-checkbox color="primary" class="card-checkbox ms-1" (change)="masterToggle()"
-                            (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
-                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
+                            (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()" [disabled]="isGeneratingReport"
+                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length" >
                             {{translatedLangText.SELECT_ALL}}
                           </mat-checkbox>
                         </div>
@@ -206,7 +219,7 @@
                       <mat-expansion-panel-header class="tank-header">
                         <mat-panel-description>
                           @if (isAllowAdd() || isAllowEdit()) {
-                          <mat-checkbox color="primary" (change)="$event ? toggleRow(row) : null"
+                          <mat-checkbox color="primary" (change)="$event ? toggleRow(row) : null" [disabled]="isGeneratingReport"
                             [checked]="sotSelection.isSelected(row)" class="card-checkbox"
                             (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
                           </mat-checkbox>

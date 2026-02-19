@@ -37,11 +37,13 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { CustomerExcelComponent } from 'app/document-template/excel/master/customer/customer-excel.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 @Component({
@@ -232,6 +234,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  isGeneratingReport: boolean=false;
 
 
   constructor(
@@ -859,6 +862,55 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     const existingValue = this.pcForm?.get('customer_code')?.value;
     this.pcForm?.get('customer_code')?.setValue(existingValue);
   }
+
+   export_excel()
+    {
+      this.isGeneratingReport=true;
+      const where={ delete_dt: { eq: null } };
+      this.ccDS.searchAll(where).subscribe(res=>{
+            var prcList:CustomerCompanyItem[]=res;
+            this.exportExcelReport(prcList);
+  
+        })
+  
+        
+    }
+    exportExcelReport(repData:any) {
+        
+           //this.preventDefault(event);
+            let cut_off_dt = new Date();
+        
+        
+            let tempDirection: Direction;
+            if (localStorage.getItem('isRtl') === 'true') {
+              tempDirection = 'rtl';
+            } else {
+              tempDirection = 'ltr';
+            }
+        
+            const dialogRef = this.dialog.open(CustomerExcelComponent, {
+              width: reportPreviewWindowDimension.portrait_width_rate,
+              maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+              maxHeight: reportPreviewWindowDimension.report_maxHeight,
+              
+              data: {
+                repData: repData
+              },
+        
+              // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+              direction: tempDirection
+            });
+        
+              dialogRef.updatePosition({
+              top: '-90vh',  // Move far above the screen
+              left: '0px'  // Move far to the left of the screen
+            });
+        
+            this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+              this.isGeneratingReport = false;
+            });
+    
+      }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,Padding:boolean=false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';

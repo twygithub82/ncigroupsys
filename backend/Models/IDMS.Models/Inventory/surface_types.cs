@@ -20,5 +20,8 @@ namespace IDMS.Models.Inventory
         public string? remarks { get; set; }
         public double? value { get; set; }
         public inspections? inspection { get; set; }
+
+        [NotMapped]
+        public string? action { get; set; }
     }
 }
