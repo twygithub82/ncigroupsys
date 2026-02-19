@@ -404,7 +404,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     var row = new CleaningMethodItem();
     const dialogRef = this.dialog.open(FormDialogComponent, {
       // width: '50vw',
-      width: this.isMobile?MOBILE_DIALOG_WIDTH: '50vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '50vw',
       //maxWidth: '600px',
       disableClose: true,
       data: {

@@ -399,7 +399,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     //  rows.push(row);
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH: '600px',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '600px',
       maxHeight: '80vh',
       disableClose: true,
       data: {

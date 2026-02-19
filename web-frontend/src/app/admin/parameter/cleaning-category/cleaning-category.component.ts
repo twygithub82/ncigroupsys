@@ -423,7 +423,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       // width: '50vw',
-       width: this.isMobile?MOBILE_DIALOG_WIDTH: '50vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '50vw',
       disableClose: true,
       data: {
         action: 'new',

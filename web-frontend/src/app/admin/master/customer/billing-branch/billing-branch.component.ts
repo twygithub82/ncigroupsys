@@ -212,7 +212,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
-  depotProfileList : TariffDepotItem[] = [];
+  depotProfileList: TariffDepotItem[] = [];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   all_customer_companyList: CustomerCompanyItem[] = [];
@@ -239,9 +239,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
-  isMobile:boolean=false;
-  isGeneratingReport: boolean=false;
-
+  isGeneratingReport: boolean = false;
+  isMobile: boolean = false;
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -262,7 +261,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.branchCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
-    this.tfDepotDS=new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -585,8 +584,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   public loadData() {
 
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = [{ guid: '', profile_name: 'All' }, ...data];
 
     });
 
@@ -808,13 +807,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
   }
-   getDepotProfileName(guid:String):String{
-    var retval:String="-";
+  getDepotProfileName(guid: String): String {
+    var retval: String = "-";
 
     if (this.depotProfileList && this.depotProfileList.length > 0) {
       var depotProfile = this.depotProfileList.find(x => x.guid == guid);
       if (depotProfile) {
-        retval = depotProfile.profile_name??"-";
+        retval = depotProfile.profile_name ?? "-";
       }
     }
     return retval;

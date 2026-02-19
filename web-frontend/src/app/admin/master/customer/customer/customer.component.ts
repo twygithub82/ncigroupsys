@@ -234,7 +234,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   id?: number;
   pcForm?: UntypedFormGroup;
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
 
   constructor(
@@ -263,7 +263,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  isMobile:boolean = false;
+  isMobile: boolean = false;
   ngOnInit() {
     this.isMobile = Utility.isMobile();
     this.countryCodes = Utility.getCountryCodes("country", true);
