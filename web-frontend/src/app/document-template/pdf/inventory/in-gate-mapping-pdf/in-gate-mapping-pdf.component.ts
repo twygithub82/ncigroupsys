@@ -557,7 +557,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
     // Calculate scaled height based on available width
-    var bufferRatio=0.72;
+    var bufferRatio=0.735;
     let imgHeight = (chartContentWidth / aspectRatio)*bufferRatio;
     const chartContentWidth1=chartContentWidth*bufferRatio;
     startY+=8;
@@ -573,11 +573,14 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const conversionTime1 = perf.now() - startConversion;
     console.log(`HTML To Base64 Conversion took ${conversionTime1}ms`);
 
+    var buffer=25;
+    const chartContentWidth2=chartContentWidth+buffer;
     // Calculate scaled height based on available width
-    let imgHeight1 = chartContentWidth / aspectRatio1
+    let imgHeight1 = (chartContentWidth2) / aspectRatio1
 
-    startY+=12;
-    pdf.addImage(imgData1, 'JPEG', leftMargin+chartContentWidth, startY, chartContentWidth, imgHeight1);
+    startY+=8;
+    
+    pdf.addImage(imgData1, 'JPEG', (leftMargin+chartContentWidth)-buffer, startY, chartContentWidth2, imgHeight1);
     
 
     this.generatingPdfProgress = 100;
