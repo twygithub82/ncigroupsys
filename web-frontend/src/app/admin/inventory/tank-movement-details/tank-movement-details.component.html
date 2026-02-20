@@ -76,14 +76,6 @@
                         <button mat-menu-item
                           (click)="overwriteCleanStatusDialog($event)">{{translatedLangText.OVERWRITE_CONDITION}}</button>
                         } -->
-                        @if (canAddMappingChartIn()) {
-                        <button mat-menu-item
-                          (click)="mappingChartDialog($event, '1')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}}</button>
-                        }
-                        @if (canAddMappingChartOut()) {
-                        <button mat-menu-item
-                          (click)="mappingChartDialog($event, '2')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}}</button>
-                        }
                       </mat-menu>
                       }
                     </div>
@@ -458,6 +450,14 @@
                             @if (canOverwriteOutGateDetails()) {
                             <button mat-menu-item (click)="overwriteGateDetailsDialog($event, og, 'out')">
                               {{translatedLangText.OUT_GATE}}</button>
+                            }
+                            @if (canAddMappingChartIn()) {
+                            <button mat-menu-item
+                              (click)="mappingChartDialog($event, '1')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}}</button>
+                            }
+                            @if (canAddMappingChartOut()) {
+                            <button mat-menu-item
+                              (click)="mappingChartDialog($event, '2')">{{translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}}</button>
                             }
                           </mat-menu>
                           }
@@ -1352,7 +1352,7 @@
                               | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
-                                 <!-- <div class="position-absolute purpose-absolute-menu" [matTooltip]="translatedLangText.CLEANING_REPORT">
+                                <!-- <div class="position-absolute purpose-absolute-menu" [matTooltip]="translatedLangText.CLEANING_REPORT">
                                   <button mat-mini-fab color="primary" 
                                     [disabled]="(cleaningDS.loading$ | async)"
                                     class="link-button position-absolute purpose-absolute-menu"
@@ -1362,7 +1362,8 @@
                                 </div> -->
                                 @if ((canOverwriteCleaningApproval() && allowPerformAction()) ||
                                 canRollbackCleaningCompleted(cleaningItem?.[0])
-                                || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()||canExportCleanReport()) {
+                                || canRollbackCleaning(cleaningItem?.[0]) ||
+                                canRemoveCleanPurpose()||canExportCleanReport()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
                                   class="link-button position-absolute purpose-absolute-menu">
