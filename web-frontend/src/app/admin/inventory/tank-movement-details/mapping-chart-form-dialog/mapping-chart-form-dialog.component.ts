@@ -40,6 +40,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { Subject } from 'rxjs';
 
+
 export interface DialogData {
   type_cv?: string;
   action?: string;
@@ -60,6 +61,7 @@ export interface DialogData {
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
+    ReactiveFormsModule   ,
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
@@ -107,7 +109,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   cvDS: CodeValuesDS;
   inspectDS: InspectionsDS;
-
+  isGeneratingReport: boolean = false;
   markedCells: Map<number, CellMark> = new Map();
   circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
     front: new Map(),
@@ -229,6 +231,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
   download() {
 
+    this.isGeneratingReport=true;
      let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -242,12 +245,18 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
         sot : this.sot,
         markedCells: this.markedCells,
         circularMarkedSections: this.circularMarkedSections,
-        translatedLangText: this.data.translatedLangText
+        activeSurfaceTypes: this.activeSurfaceTypes,
+        translatedLangText: this.data.translatedLangText,
+        inspection: this.inspection
       },
       direction: tempDirection
     });
+     dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-     
+      this.isGeneratingReport=false;
     });
   }
 
