@@ -61,7 +61,7 @@ export interface DialogData {
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
-    ReactiveFormsModule   ,
+    ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
@@ -230,9 +230,8 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   download() {
-
-    this.isGeneratingReport=true;
-     let tempDirection: Direction;
+    this.isGeneratingReport = true;
+    let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -241,8 +240,8 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(InGateMappingPdfComponent, {
       width: '90vw',
       data: {
-        reportTitle : this.dialogTitle,
-        sot : this.sot,
+        reportTitle: this.dialogTitle,
+        sot: this.sot,
         markedCells: this.markedCells,
         circularMarkedSections: this.circularMarkedSections,
         activeSurfaceTypes: this.activeSurfaceTypes,
@@ -251,12 +250,12 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
       },
       direction: tempDirection
     });
-     dialogRef.updatePosition({
+    dialogRef.updatePosition({
       top: '-9999px',  // Move far above the screen
       left: '-9999px'  // Move far to the left of the screen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 

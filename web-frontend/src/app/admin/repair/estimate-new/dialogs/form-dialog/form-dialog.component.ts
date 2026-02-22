@@ -625,7 +625,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPartLength(rep: any) {
-    const concludeLength = rep?.tariff_repair?.length
+    const concludeLength = (rep?.tariff_repair?.length || rep?.tariff_repair?.length > 0)
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
       : '';
     return concludeLength;

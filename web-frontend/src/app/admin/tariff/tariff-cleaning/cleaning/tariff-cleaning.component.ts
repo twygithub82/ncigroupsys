@@ -516,7 +516,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   getbanTypeDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.banTypeCvList);
+    let retval: string | undefined;
+    if(codeValType)
+    {
+      retval=this.cvDS.getCodeDescription(codeValType, this.banTypeCvList);
+    }
+    return retval;
   }
 
   initializeValueChanges() {

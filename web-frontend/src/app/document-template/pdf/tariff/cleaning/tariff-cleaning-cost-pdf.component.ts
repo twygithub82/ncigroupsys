@@ -633,16 +633,35 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     var items = this.repData!;
     var index = 1;
-    const data: any[][] = items.map((item) => {
-                const row = [
-                    index++, // increment index for each item
-                    item.Descripton,
-                    `${item.Unit || "-"}`,
-                    item.ManHour|| "-" ,
-                    item.Material||"-",
-                ];
-                return row;
-            });
+    const data: any[][] = items
+        .map((item) => {
+          if (!item.Descripton || item.Descripton.trim() === '') {
+            return null;
+          }
+
+          const row = [
+            index++, // increment index for each item
+            item.Descripton,
+            item.Unit || "-",
+            item.ManHour || "-",
+            item.Material || "-",
+          ];
+
+          return row;
+        })
+    .filter((row): row is any[] => row !== null);
+
+    // const data: any[][] = items.map((item) => {
+      
+    //             const row = [
+    //                 index++, // increment index for each item
+    //                 item.Descripton,
+    //                 `${item.Unit || "-"}`,
+    //                 item.ManHour|| "-" ,
+    //                 item.Material||"-",
+    //             ];
+    //             return row;
+    //         });
 
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
