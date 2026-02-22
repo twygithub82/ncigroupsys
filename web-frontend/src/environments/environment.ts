@@ -1,4 +1,4 @@
-export const environment1 = {
+export const environment = {
   production: true,
   title: 'IDMS',
   companyNameShort: 'NCI Global',
@@ -10,7 +10,7 @@ export const environment1 = {
   topicSubscribe: '/idms/all/*'
 };
 
-export const environment= {
+export const environment1= {
   production: false,
   title: 'SIT IDMS',
   companyNameShort: 'NCI Global',
