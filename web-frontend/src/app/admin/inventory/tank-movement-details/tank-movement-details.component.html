@@ -704,8 +704,9 @@
                                   <tr>
                                     <th>{{ translatedLangText.REFERENCE }}:</th>
                                     <td><span
-                                        [ngClass]="{'text-decoration-underline cursor-pointer': ogsImages.length > 0}">{{
-                                        ogsImages.length || "-" }}</span></td>
+                                        [ngClass]="{'text-decoration-underline cursor-pointer': ogsImages.length > 0}"
+                                        (click)="previewImagesDialog($event, ogsImages)">{{ ogsImages.length || "-"
+                                        }}</span></td>
                                   </tr>
                                 </tbody>
                               </table>
