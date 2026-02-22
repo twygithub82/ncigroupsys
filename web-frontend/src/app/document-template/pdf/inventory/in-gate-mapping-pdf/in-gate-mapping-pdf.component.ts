@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, AfterViewInit, Output, ViewChild } from '@angular/core';
-import { FormsModule,ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,11 +35,11 @@ import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 export interface DialogData {
-  reportTitle:string;
+  reportTitle: string;
   sot: StoringOrderTankItem;
   markedCells: Map<number, CellMark>;
   circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> };
-  translatedLangText:any;
+  translatedLangText: any;
   activeSurfaceTypes: SurfaceTypesItem[];
   inspection: InspectionsItem;
 }
@@ -314,11 +314,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
   uniqueSurfaceTypes: SurfaceTypesItem[] = [];
   existingSurfaceTypes: SurfaceTypesItem[] = [];
   inspectionTypes: InspectionType[] = getDefaultInspectionTypes();
-    markedCells: Map<number, CellMark> = new Map();
-    circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
-      front: new Map(),
-      rear: new Map()
-    };
+  markedCells: Map<number, CellMark> = new Map();
+  circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> } = {
+    front: new Map(),
+    rear: new Map()
+  };
 
   constructor(
     public dialogRef: MatDialogRef<InGateMappingPdfComponent>,
@@ -349,11 +349,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.activeSurfaceTypes = data.activeSurfaceTypes || [];
     this.inspectionTypes = getDefaultInspectionTypes();
     this.existingSurfaceTypes = this.inspection?.surface_types || [];
-    this.reportTitle= data.reportTitle ||'';
-    this.sot = data.sot ||null;
+    this.reportTitle = data.reportTitle || '';
+    this.sot = data.sot || null;
     this.markedCells = data.markedCells || new Map();
     this.circularMarkedSections = data.circularMarkedSections || { front: new Map(), rear: new Map() };
-    this.inspectDS =new InspectionsDS(this.apollo);
+    this.inspectDS = new InspectionsDS(this.apollo);
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
     this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
@@ -362,8 +362,8 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     //   .replace(/{companyName}/g, this.customerInfo.companyName)
     //   .replace(/{companyUen}/g, this.customerInfo.companyUen)
     //   .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
-       this.updateSurfaceTypesLists(); // Initialize the lists
-       this.patchForm();
+    this.updateSurfaceTypesLists(); // Initialize the lists
+    this.patchForm();
   }
 
   StartGeneratingPDF(): void {
@@ -378,11 +378,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // Await the data fetching
     // const data = this.isInGate() ? await this.getInGateSurveyData() : await this.getOutGateSurveyData();
     // if (data?.length > 0) 
-      {
+    {
       // this.eirDetails = data[0];
       console.log(this.eirDetails);
-      
-    
+
+
 
       // this.cdr.detectChanges();
       this.StartGeneratingPDF();
@@ -450,7 +450,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     var body = await domtoimage.toJpeg(element, options);
     console.log(body);
-    
+
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
@@ -485,8 +485,6 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-
-   
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -533,16 +531,15 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     PDFUtility.AddTextAtCenterPage(pdf, cargo, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
 
 
-    var data:any = [];
-    
-    startY = lastTableFinalY + 2;
-    
-    const chartContentWidth = contentWidth/2;
+    var data: any = [];
 
-    
+    startY = lastTableFinalY + 2;
+
+    const chartContentWidth = contentWidth / 2;
+
     const element = this.captureWalkwayElementRef.nativeElement as HTMLElement
 
-    
+
     const perf = window.performance;
     const startTotal = perf.now();
 
@@ -557,11 +554,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
     // Calculate scaled height based on available width
-    var bufferRatio=0.735;
-    let imgHeight = (chartContentWidth / aspectRatio)*bufferRatio;
-    const chartContentWidth1=chartContentWidth*bufferRatio;
-    startY+=8;
-    pdf.addImage(imgData, 'JPEG', leftMargin+5, startY, chartContentWidth1, imgHeight);
+    var bufferRatio = 0.735;
+    let imgHeight = (chartContentWidth / aspectRatio) * bufferRatio;
+    const chartContentWidth1 = chartContentWidth * bufferRatio;
+    startY += 8;
+    pdf.addImage(imgData, 'JPEG', leftMargin + 5, startY, chartContentWidth1, imgHeight);
 
 
     const element1 = this.captureMalidElementRef.nativeElement as HTMLElement
@@ -573,15 +570,15 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const conversionTime1 = perf.now() - startConversion;
     console.log(`HTML To Base64 Conversion took ${conversionTime1}ms`);
 
-    var buffer=25;
-    const chartContentWidth2=chartContentWidth+buffer;
+    var buffer = 25;
+    const chartContentWidth2 = chartContentWidth + buffer;
     // Calculate scaled height based on available width
     let imgHeight1 = (chartContentWidth2) / aspectRatio1
 
-    startY+=8;
-    
-    pdf.addImage(imgData1, 'JPEG', (leftMargin+chartContentWidth)-buffer, startY, chartContentWidth2, imgHeight1);
-    
+    startY += 8;
+
+    pdf.addImage(imgData1, 'JPEG', (leftMargin + chartContentWidth) - buffer, startY, chartContentWidth2, imgHeight1);
+
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -672,7 +669,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
   async generatePDF(): Promise<void> {
     // this.showPDF();
     await this.exportToPDF_r1();
-  
+
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
@@ -726,9 +723,9 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  
 
-  
+
+
 
 
 
@@ -772,11 +769,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsWalkwayBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottom, walkwayBottom);
   }
 
- 
 
- 
 
-  
+
+
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -1006,15 +1003,15 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     };
   }
 
-   getSurfaceTypeFormGroup(index: number): UntypedFormGroup {
-      const formGroup = this.surfaceTypesFormArray.at(index) as UntypedFormGroup;
-      return formGroup;
-    }
-    get surfaceTypesFormArray(): UntypedFormArray {
-        return this.inspectionForm?.get('surface_types') as UntypedFormArray;
-      }
-    
-    createForm(): UntypedFormGroup {
+  getSurfaceTypeFormGroup(index: number): UntypedFormGroup {
+    const formGroup = this.surfaceTypesFormArray.at(index) as UntypedFormGroup;
+    return formGroup;
+  }
+  get surfaceTypesFormArray(): UntypedFormArray {
+    return this.inspectionForm?.get('surface_types') as UntypedFormArray;
+  }
+
+  createForm(): UntypedFormGroup {
     return this.fb.group({
       guid: [this.inspection?.guid],
       surface_types: this.fb.array([])
@@ -1061,7 +1058,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-   private updateSurfaceTypesLists(): void {
+  private updateSurfaceTypesLists(): void {
     this.uniqueSurfaceTypes = this.calculateUniqueSurfaceTypes();
     this.activeSurfaceTypes = this.uniqueSurfaceTypes.filter(type => type.action !== 'cancel');
   }
@@ -1160,7 +1157,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     return result;
   }
 
- 
+
   createSurfaceTypeFormGroup(item: any): UntypedFormGroup {
     return this.fb.group({
       type_cv: [item.type_cv],
@@ -1170,56 +1167,56 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   private syncSurfaceTypesFormArray(surfaceTypes: SurfaceTypesItem[]): void {
-      const formArray = this.surfaceTypesFormArray;
-  
-      // Filter out 'cancel' items - form should only show active types
-      const activeTypes = surfaceTypes.filter(type => type.action !== 'cancel');
-  
-      // Only sync if the length or type_cv values have changed
-      const needsSync = formArray.length !== activeTypes.length ||
-        activeTypes.some((type, index) => {
-          const formGroup = formArray.at(index) as UntypedFormGroup;
-          return !formGroup || formGroup.get('type_cv')?.value !== type.type_cv;
-        });
-  
-      if (!needsSync) {
-        return; // Structure hasn't changed, don't touch the form
-      }
-  
-      // CRITICAL: Save current form values before clearing
-      const existingValues = new Map<string, { value: any, remarks: any }>();
-      for (let i = 0; i < formArray.length; i++) {
-        const formGroup = formArray.at(i) as UntypedFormGroup;
-        const type_cv = formGroup.get('type_cv')?.value;
-        if (type_cv) {
-          existingValues.set(type_cv, {
-            value: formGroup.get('value')?.value,
-            remarks: formGroup.get('remarks')?.value
-          });
-        }
-      }
-  
-      // Clear existing form array
-      while (formArray.length) {
-        formArray.removeAt(0);
-      }
-  
-      // Add form groups for each ACTIVE surface type only
-      activeTypes.forEach(type => {
-        // Check if we have existing form values for this type
-        const savedValues = existingValues.get(type.type_cv || '');
-  
-        formArray.push(this.fb.group({
-          type_cv: [type.type_cv],
-          value: [savedValues?.value ?? type.value ?? ''],
-          remarks: [savedValues?.remarks ?? type.remarks ?? ''],
-          action: [type.action]
-        }));
+    const formArray = this.surfaceTypesFormArray;
+
+    // Filter out 'cancel' items - form should only show active types
+    const activeTypes = surfaceTypes.filter(type => type.action !== 'cancel');
+
+    // Only sync if the length or type_cv values have changed
+    const needsSync = formArray.length !== activeTypes.length ||
+      activeTypes.some((type, index) => {
+        const formGroup = formArray.at(index) as UntypedFormGroup;
+        return !formGroup || formGroup.get('type_cv')?.value !== type.type_cv;
       });
+
+    if (!needsSync) {
+      return; // Structure hasn't changed, don't touch the form
     }
 
-      getInspectionDateDisplay() {
-        return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
+    // CRITICAL: Save current form values before clearing
+    const existingValues = new Map<string, { value: any, remarks: any }>();
+    for (let i = 0; i < formArray.length; i++) {
+      const formGroup = formArray.at(i) as UntypedFormGroup;
+      const type_cv = formGroup.get('type_cv')?.value;
+      if (type_cv) {
+        existingValues.set(type_cv, {
+          value: formGroup.get('value')?.value,
+          remarks: formGroup.get('remarks')?.value
+        });
       }
+    }
+
+    // Clear existing form array
+    while (formArray.length) {
+      formArray.removeAt(0);
+    }
+
+    // Add form groups for each ACTIVE surface type only
+    activeTypes.forEach(type => {
+      // Check if we have existing form values for this type
+      const savedValues = existingValues.get(type.type_cv || '');
+
+      formArray.push(this.fb.group({
+        type_cv: [type.type_cv],
+        value: [savedValues?.value ?? type.value ?? ''],
+        remarks: [savedValues?.remarks ?? type.remarks ?? ''],
+        action: [type.action]
+      }));
+    });
+  }
+
+  getInspectionDateDisplay() {
+    return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
+  }
 
 }
