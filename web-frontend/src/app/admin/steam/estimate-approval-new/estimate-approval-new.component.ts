@@ -55,7 +55,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { ESTIMATE_APPROVED_STATUS, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
@@ -1669,8 +1669,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   IsApproved() {
-    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
-    return validStatus.includes(this.steamItem?.status_cv!);
+    // const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return ESTIMATE_APPROVED_STATUS.includes(this.steamItem?.status_cv!);
   }
 
   updateAction(steamPart: any) {
@@ -1822,7 +1822,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       data: {
         steam_guid: this.steamItem?.guid,
         estimate_no: this.steamItem?.estimate_no,
-        packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
+        // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
+        packageLabourCost: this.getRate()
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

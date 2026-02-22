@@ -2,7 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+export const environment1 = {
   production: true,
   title: 'IDMS',
   companyNameShort: 'NCI Global',
@@ -14,7 +14,7 @@ export const environment = {
   topicSubscribe: '/idms/all/*'
 };
 
-export const environment1= {
+export const environment= {
   production: false,
   title: 'SIT IDMS',
   companyNameShort: 'NCI Global',

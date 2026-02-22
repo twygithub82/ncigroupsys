@@ -258,6 +258,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     if (data?.length > 0) {
       data[0].steaming_part = data[0].steaming_part.filter((data: any) => !data.delete_dt);
       this.steamItem = data[0];
+      this.steamItem.flat_rate=((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       this.estimate_no = this.steamItem.estimate_no;
       await this.getCodeValuesData();
       console.log(this.steamItem)
@@ -1328,7 +1329,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       item.approve_part = item.approve_part ?? true;
       if (!item.approve_part) return;
       var qty = "-";
-      var cost = this.steamItem.rate;
+      // var cost = this.steamItem.rate;
+      var cost = this.packageLabourCost;
       var labour = this.isEstimateApproved ? this.steamItem.total_hour : this.steamItem.est_hour;
       var totalCost = isFlat ? cost : (item.approve_part ? (labour * cost) : '-');
 
