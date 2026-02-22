@@ -27,7 +27,7 @@
     </div>
     <hr class="mt-1 mb-2" />
   </div>
-  
+
   <!-- <div id="capture">
     <h3>Hello Canvas</h3>
     <p>This content will be converted into a canvas image.</p>
@@ -108,8 +108,8 @@
         </tbody>
       </table>
     </div>
-    <div #frameinfosection class="d-flex align-items-center frame-info-section" >
-      <div  #captureWalkwayElement class="frame-info-content mt-1 mb-3">
+    <div #frameinfosection class="d-flex align-items-center frame-info-section">
+      <div #captureWalkwayElement class="frame-info-content mt-1 mb-3">
         <div class="frame-walkway-legend mb-2">
           <div class="d-flex align-items-center pt-5px">
             <div class="me-4 d-flex align-items-center">
@@ -124,14 +124,14 @@
             </div>
           </div>
         </div>
-        <div   class="frame-type-info">
+        <div class="frame-type-info">
           <div class="frame-line mt-1">
-            <div  class="frame-type me-3">
-              
+            <div class="frame-type me-3">
+
               <div class="frame-title">
                 {{translatedLangText.TOP_SIDE}}
               </div>
-              <div  #test1 class="image-container frame-rect">
+              <div #test1 class="image-container frame-rect">
                 <img mat-card-image src="assets/images/idms/tank_frame_type/top_side.png" class="img-fluid">
                 <div [ngClass]="{'grid-overlay': true, 'to-mark': true}">
                   <!-- <div *ngFor="let cell of renderedCells; let i = index">
@@ -165,7 +165,7 @@
                         </div>
 
                         <div class="grid-middle-row">
-                          
+
                           @for (cell of cellsInnerMiddle; track cell; let index = $index) {
                           <div class="grid-cell"
                             [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index]}"
@@ -174,7 +174,7 @@
                         </div>
 
                         <div class="grid-bottom-row">
-                          
+
                           @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                           <div class="grid-cell"
                             [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
@@ -268,14 +268,14 @@
           </div>
         </div>
       </div>
-      <div  #captureMalidElement class="manlid-info-content mt-1">
+      <div #captureMalidElement class="manlid-info-content mt-1">
         <table class="manlid-info">
           <tbody>
             <tr class="th">
               <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
               </td>
-             
+
             </tr>
             <tr>
               <td>
@@ -334,7 +334,7 @@
                 }
               </td>
             </tr>
-           
+
             <tr>
               <td>
                 {{translatedLangText.TYPE}}
@@ -440,7 +440,7 @@
               <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.TOP_DIS_COMP}}</b>
               </td>
-         
+
             </tr>
             <tr>
               <td>
@@ -575,7 +575,7 @@
                 }
                 }
                 )
-              
+
                 }
               </td>
               <td class="eir-mark">
@@ -621,13 +621,13 @@
               </td>
             </tr>
           </tbody>
-       
+
           <tbody>
             <tr class="th">
               <td class="td-col-11" colspan="2">
                 <b>{{translatedLangText.MANLID_COMPARTMENT}}</b>
               </td>
-       
+
             </tr>
             <tr>
               <td>
@@ -884,10 +884,10 @@
 
   <div id="eir-form-footer" class="pdf-container pdf-footer">
     <hr class="mt-0 mb-1" />
- 
+
     <div class="footer-info-content">
       <span>
- 
+
       </span>
       <span>
         {{translatedLangText.COMPUTER_GENERATED_NOTE}}
