@@ -683,7 +683,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           // const valveValue = btmThermoCtrl.value;
           const specValue = btmThermoSpecCvCtrl.value;
 
-          if (specValue?.length) {
+          if (specValue?.length && !BusinessLogicUtil.isThermometerMandatory(specValue)) {
             btmThermoCtrl.setValidators([Validators.required]);
             btmThermoSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -2477,7 +2477,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return emails;
   }
 
-
   preventBackButton() {
     // Clear existing history
     // history.replaceState(null, '', window.location.href);
@@ -2513,6 +2512,4 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
   }
-
-
 }
