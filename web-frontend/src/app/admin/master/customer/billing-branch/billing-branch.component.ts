@@ -390,20 +390,23 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-      if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.guid = { eq: customerCode.guid };
+      where.and.push({ customer_company:{ main_customer_company: { guid: { eq: customerCode.guid } } }});
+      // if (where.main_customer_company == null) where.main_customer_company = {};
+      // where.main_customer_company.guid = { eq: customerCode.guid };
     }
 
     if (this.pcForm!.value["branch_code"]) {
       var branch = this.pcForm!.value["branch_code"];
-      where.and = [{ customer_company: { code: { contains: branch.code } } }];
+      // where.and = [{ customer_company: { code: { contains: branch.code } } }];
+      where.and.push({ customer_company: { code: { contains: branch.code } } });
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
       // const tankSearch: any = {};
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.def_tank_guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      // if (where.customer_company == null) where.customer_company = {};
+      // where.customer_company.def_tank_guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+       where.and.push({ customer_company: { def_tank_guid:{ eq: this.pcForm!.get("default_profile")?.value?.guid } } });
       // const tankSearch: any = {};
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       // if (where.customer_company == null) where.customer_company = {};
@@ -411,13 +414,15 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
-      if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.country = { contains: this.pcForm!.value["country"] };
+      // if (where.customer_company == null) where.customer_company = {};
+      // where.customer_company.country = { contains: this.pcForm!.value["country"] };
+       where.and.push({ customer_company: { country:{ contains: this.pcForm!.value["country"] } } });
     }
 
     if (this.pcForm!.value["contact_person"]) {
-      if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+      // if (where.customer_company == null) where.customer_company = {};
+      // where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+      where.and.push({ customer_company: { cc_contact_person:{ some: { name: { eq: this.pcForm!.value["contact_person"] } }} } });
     }
 
     this.lastSearchCriteria = where;
@@ -822,11 +827,22 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   export_excel()
       {
         this.isGeneratingReport=true;
-        const where: any = {};
-         where.and = [
-            { type_cv: { in: ["BRANCH"] } } ,
-           { delete_dt: { eq: null } } 
-        ];
+        // const where: any = {};
+        //  where.and = [
+        //     { type_cv: { in: ["BRANCH"] } } ,
+        //    { delete_dt: { eq: null } } 
+        // ];
+        const filters=this.lastSearchCriteria.and||[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
+        var where: any= {};
+        if (filters.length>0){
+           where.and=filters.map((item:any) => item.customer_company);
+        }
+        else
+        {
+          where=[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
+        }
+        
+        // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
         this.ccDS.searchAll(where).subscribe(res=>{
               var prcList:CustomerCompanyItem[]=res;
               this.exportExcelReport(prcList);

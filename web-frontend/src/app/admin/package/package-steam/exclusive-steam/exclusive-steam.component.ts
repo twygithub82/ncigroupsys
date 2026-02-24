@@ -906,7 +906,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   export_excel() {
   
       this.isGeneratingReport=true;
-               const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+              //  const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+              const where = this.lastSearchCriteria;
               const order=this.lastOrderBy;
               this.packSteamExclDS.SearchAllExclusiveSteam(where,order).subscribe(res=>{
                    var prcList: PackageSteamingItem[] = [];

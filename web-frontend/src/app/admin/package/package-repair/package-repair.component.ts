@@ -1220,7 +1220,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   export_excel() {
 
      this.isGeneratingReport=true;
-      const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+      // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+      const where =this.lastSearchCriteria.package_repair;
     const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
     this.packRepairDS.SearchAllPackageRepair(where,order).subscribe(res=>{
           var prcList: PackageRepairItem[] = [];

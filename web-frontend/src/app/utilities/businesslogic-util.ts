@@ -259,6 +259,11 @@ export class BusinessLogicUtil {
         const result = remainder === 0 ? hour : Math.ceil(hour / 0.25) * 0.25;
         return Math.round(result * 100) / 100;
     }
+
+    static isThermometerMandatory(spec_cv?: string[]): boolean {
+        const required = ['MISSING', 'BROKEN'];
+        return !!spec_cv?.length && required.some(item => spec_cv.includes(item));
+    }
 }
 
 export const invoice_type_mapping: any = {

@@ -48,7 +48,7 @@
                       @for (cc of customerTypeCvList; track cc) {
                       @if ((modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) ||
                       !starterPackageNotAllowCustomerType.includes(cc.code_val || '')) {
-                      @if (cc.code_val !== "SURVEYOR") {
+                      @if ((cc.code_val !== "SURVEYOR")&&(cc.code_val !== "BRANCH")) {
                       <mat-option [value]="cc">
                         {{ cc.description }}
                       </mat-option>

@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve",
+    "start-uat": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve --configuration=uat",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint"

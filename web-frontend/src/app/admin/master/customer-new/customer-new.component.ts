@@ -1374,4 +1374,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return `${baseClasses} ${centerClass}`.trim();
   }
 
+  canAddBillingBranch()
+  {
+    let retval=false;
+    if(this.repList)
+    {
+      retval=this.repList.data.length>0;
+    }
+    return retval;
+  }
 }
