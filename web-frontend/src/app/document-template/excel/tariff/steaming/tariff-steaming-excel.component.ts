@@ -514,7 +514,7 @@ async exportExcel(items: TariffSteamingItem[]) {
 
     const data: any[][] = items.map((item) => {
                 const row = [
-                    item.temp_min||"-",
+                    item.temp_min||0,
                     item.temp_max||"-",
                     this.parse2Decimal(item.cost!)||"-",
                     this.parse2Decimal(item.labour!)||"-",
@@ -537,6 +537,13 @@ async exportExcel(items: TariffSteamingItem[]) {
       ...data
     ];
    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+   worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    const maxLength = rows.reduce((max, row) => {
+      const cell = row[colIndex];
+      return Math.max(max, cell ? cell.toString().length : 0);
+    }, 10);
+    return { wch: maxLength + 2 };
+  });
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");

@@ -864,7 +864,17 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
    export_excel()
     {
       this.isGeneratingReport=true;
-      const where={ delete_dt: { eq: null } };
+      // const where={ delete_dt: { eq: null } };
+        const filters=this.lastSearchCriteria.and||{ delete_dt: { eq: null } };
+        var where: any= {};
+        if (filters.length>0){
+          where.and=filters.map((item:any) => item.customer_company);
+        }
+        else
+        {
+          where={ delete_dt: { eq: null } }
+        }
+      // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
       this.ccDS.searchAll(where).subscribe(res=>{
             var prcList:CustomerCompanyItem[]=res;
             this.exportExcelReport(prcList);

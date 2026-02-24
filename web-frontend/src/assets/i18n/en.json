@@ -1447,7 +1447,9 @@
     "ADDRESS-1": "Address 1",
     "ADDRESS-2": "Address 2",
     "PLEASE-MARK-INSPECTION-AREAS": "Please mark the inspection areas",
-    "PLEASE-FILL-REQUIRED-FIELDS": "Please fill in the required fields"
+    "PLEASE-FILL-REQUIRED-FIELDS": "Please fill in the required fields",
+    "HH-MM": "(hh:mm)",
+    "TOTAL-DURATION-ONLY": "Total Duration"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

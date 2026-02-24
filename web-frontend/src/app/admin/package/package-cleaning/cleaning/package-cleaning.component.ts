@@ -981,7 +981,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
    export_excel()
           {
             this.isGeneratingReport=true;
-            const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            const where = this.lastSearchCriteria;
             const order=this.lastOrderBy;
             this.custCompClnCatDS.searchAll(where,order).subscribe(data => {
               var prcList:CustomerCompanyCleaningCategoryItem[]=data;

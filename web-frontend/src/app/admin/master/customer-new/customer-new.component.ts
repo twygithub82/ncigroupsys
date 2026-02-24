@@ -1361,4 +1361,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return (!row?.so_count && !row?.sot_count && !row?.tank_info_count);
   }
 
+  canAddBillingBranch()
+  {
+    let retval=false;
+    if(this.repList)
+    {
+      retval=this.repList.data.length>0;
+    }
+    return retval;
+  }
 }

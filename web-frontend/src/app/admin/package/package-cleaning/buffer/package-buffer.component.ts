@@ -960,7 +960,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
           
            this.isGeneratingReport=true;
            var prcList:PackageBufferItem[]=[];
-           const where ={ delete_dt: { eq: null } };
+          //  const where ={ delete_dt: { eq: null } };
+          const where = this.lastSearchCriteria;
            const order=this.lastOrderBy;
            this.packBuffDS.SearchAllPackageBuffer(where,order).subscribe(data => {
              

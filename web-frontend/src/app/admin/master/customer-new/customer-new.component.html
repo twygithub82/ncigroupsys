@@ -48,7 +48,7 @@
                       @for (cc of customerTypeCvList; track cc) {
                       @if ((modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) ||
                       !starterPackageNotAllowCustomerType.includes(cc.code_val || '')) {
-                      @if (cc.code_val !== "SURVEYOR") {
+                      @if ((cc.code_val !== "SURVEYOR")&&(cc.code_val !== "BRANCH")) {
                       <mat-option [value]="cc">
                         {{ cc.description }}
                       </mat-option>
@@ -231,7 +231,7 @@
                 </div>
                   @if (canEdit() && canEditBillingBranch()) {
                   <div class="col-xl-1-5 col-lg-2 col-md-12 col-sm-12 mb-0">
-                    <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
+                    <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'" [disabled]="!canAddBillingBranch()"
                       (click)="addBillingBranch($event)">
                       <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
                     </button>
