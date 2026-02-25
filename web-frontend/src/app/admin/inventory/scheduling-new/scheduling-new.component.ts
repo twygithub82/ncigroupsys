@@ -167,7 +167,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     'STEAM',
     'RESIDUE',
     'STORAGE',
-    'RELEASED'
+    // 'RELEASED'
   ]
 
   customerCodeControl = new UntypedFormControl();
