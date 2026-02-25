@@ -543,7 +543,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.cargo ?? "-"}}
+                            {{cargoDetails?.cargo || "-"}}
                           </span>
                         </div>
                       </div>
@@ -553,7 +553,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.description ?? "-"}}
+                            {{cargoDetails?.description || "-"}}
                           </span>
                         </div>
                       </div>
@@ -563,7 +563,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.alias ?? "-"}}
+                            {{cargoDetails?.alias || "-"}}
                           </span>
                         </div>
                       </div>
@@ -573,7 +573,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.class_cv ?? "-"}}
+                            {{cargoDetails?.class_cv || "-"}}
                           </span>
                         </div>
                       </div>
@@ -583,7 +583,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.un_no ?? "-"}}
+                            {{cargoDetails?.un_no || "-"}}
                           </span>
                         </div>
                       </div>
@@ -593,7 +593,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.flash_point ?? "-"}}
+                            {{cargoDetails?.flash_point || "-"}}
                           </span>
                         </div>
                       </div>
@@ -603,7 +603,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) ?? "-"}}
+                            {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) || "-"}}
                           </span>
                         </div>
                       </div>
@@ -613,7 +613,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{getBanTypeDescription(cargoDetails?.ban_type_cv) ?? "-"}}
+                            {{getBanTypeDescription(cargoDetails?.ban_type_cv) || "-"}}
                           </span>
                         </div>
                       </div>
@@ -623,7 +623,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{getNatureTypeDescription(cargoDetails?.nature_cv) ?? "-"}}
+                            {{getNatureTypeDescription(cargoDetails?.nature_cv) || "-"}}
                           </span>
                         </div>
                       </div>
@@ -633,7 +633,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.cleaning_category?.name ?? "-"}}
+                            {{cargoDetails?.cleaning_category?.name || "-"}}
                           </span>
                         </div>
                       </div>
@@ -643,7 +643,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
-                            {{cargoDetails?.cargo ?? "-"}}
+                            {{cargoDetails?.cargo || "-"}}
                           </span>
                         </div>
                       </div>
@@ -653,7 +653,7 @@
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info text-danger-bright">
-                            {{cargoDetails?.in_gate_alert ?? "-"}}
+                            {{cargoDetails?.in_gate_alert || "-"}}
                           </span>
                         </div>
                       </div>
