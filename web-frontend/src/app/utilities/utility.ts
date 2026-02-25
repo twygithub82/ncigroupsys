@@ -10,6 +10,24 @@ import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { systemCurrencyCode } from '../../environments/environment';
 import { PDFUtility } from "./pdf-utility";
+import {
+  ApexAxisChartSeries, ApexChart,
+  ApexDataLabels,
+  ApexFill,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers, ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexResponsive,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
+import * as XLSX from 'xlsx-js-style';
+// import * as XLSX from "xlsx-js-style";
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -1949,6 +1967,57 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
 
        var mobileWidth = 768;
        return window.innerWidth < mobileWidth;
+  }
+
+  static saveExcel(rows:any[],fileName:string ,totalColumns:number):void
+  {
+     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+        //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
+        //   const maxLength = rows.reduce((max, row) => {
+        //     const cell = row[colIndex];
+        //     return Math.max(max, cell ? cell.toString().length : 0);
+        //   }, 10);
+        //   return { wch: maxLength + 2 };
+        // });
+    
+        const headerRowIndex = 2;
+
+          // Use header row to determine number of columns
+          const columnCount = rows[headerRowIndex].length;
+
+          // Skip title and empty row when calculating width
+          const dataRows = rows.slice(headerRowIndex);
+
+          worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
+            const maxLength = dataRows.reduce((max, row) => {
+              const cell = row[colIndex];
+              return Math.max(max, cell ? cell.toString().length : 0);
+            }, 10);
+
+            return { wch: maxLength + 1 };
+          });
+
+        worksheet['!merges'] = [
+          {
+            s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
+            e: { r: 0, c: totalColumns - 1 }  // end at last column
+          }
+        ];
+        worksheet["A1"].s = {
+          alignment: {
+            horizontal: "center",
+            vertical: "center"
+          },
+          font: {
+            bold: true,
+            sz: 14
+          }
+        };
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    
+        XLSX.writeFile(workbook, fileName);
   }
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {

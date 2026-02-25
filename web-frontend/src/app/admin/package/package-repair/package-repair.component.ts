@@ -49,7 +49,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { pack } from 'd3';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { PackageBufferCleaningCostExcelComponent } from 'app/document-template/excel/package/cleaning/buffer-cleaning/package-buffer-cleaning-cost-excel.component';
-import { PackageRepairCostExcelComponent } from 'app/document-template/excel/repair/package-repair-cost-excel.component';
+import { PackageRepairCostExcelComponent } from 'app/document-template/excel/package/repair/package-repair-cost-excel.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -273,6 +273,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_REPAIR:'COMMON-FORM.PACKAGE-REPAIR',
   }
 
   @ViewChild('custInput', { static: true })

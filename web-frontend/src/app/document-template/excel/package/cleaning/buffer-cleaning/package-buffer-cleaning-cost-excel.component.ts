@@ -189,6 +189,8 @@ export class PackageBufferCleaningCostExcelComponent extends UnsubscribeOnDestro
     ALL: 'COMMON-FORM.ALL',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_BUFFER_CLEANING: "COMMON-FORM.PACKAGE-BUFFER-CLEANING",
 
   }
 
@@ -426,19 +428,21 @@ export class PackageBufferCleaningCostExcelComponent extends UnsubscribeOnDestro
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
-      const row = [
+    // 1️⃣ Prepare data with S/N column
+    const data: any[][] = items.map((item, index) => {
+      return [
+        index + 1, // S/N
         item.customer_company?.name || "-",
         item.tariff_buffer?.buffer_type || "-",
         this.parse2Decimal(item.cost!) || "-",
         this.parse2Decimal(item.tariff_buffer?.cost!) || "-",
-        this.displayLastUpdated(item) || "-",
-
+        this.displayLastUpdated(item) || "-"
       ];
-      return row;
     });
+
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.BUFFER_TYPE,
       this.translatedLangText.CUSTOMER_COST,
@@ -446,23 +450,40 @@ export class PackageBufferCleaningCostExcelComponent extends UnsubscribeOnDestro
       this.translatedLangText.LAST_UPDATE
     ]];
 
-    const rows: (string | number)[][] = [
+    const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.PACKAGE_BUFFER_CLEANING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-     worksheet['!cols'] = rows[0].map((_, colIndex) => {
-      const maxLength = rows.reduce((max, row) => {
-        const cell = row[colIndex];
-        return Math.max(max, cell ? cell.toString().length : 0);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    const totalColumns = head[0].length;
+    var fileName ="BufferCleaningPackage.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[2].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
 
-    XLSX.writeFile(workbook, "BufferCleaningPackage.xlsx");
+    // worksheet['!merges'] = [
+    //   {
+    //     s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
+    //     e: { r: 0, c: totalColumns - 1 }  // end at last column
+    //   }
+    // ];
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "BufferCleaningPackage.xlsx");
     this.dialogRef.close();
   }
 

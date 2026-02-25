@@ -223,6 +223,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     EXPORT: 'COMMON-FORM.EXPORT',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    LABOUR_COST:'COMMON-FORM.LABOUR-COST',
   }
 
 
