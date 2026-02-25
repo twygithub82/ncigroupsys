@@ -114,7 +114,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   heightDiameterUnitControl = new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
-  isMobile=false;
+  isMobile = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -251,7 +251,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     if (this.selectedItems.length == 1) {
       var rec = this.selectedItems[0];
       this.pcForm.patchValue({
@@ -478,7 +478,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       this.pcForm?.get('labour_hour')?.setErrors(null);
       this.pcForm?.get('material_cost')?.setErrors(null);
     }
+
     if (!this.pcForm?.valid) return;
+
+    if (!this.pcForm!.value['material_cost'] || this.pcForm?.get('material_cost')?.value <= 0) {
+      this.pcForm?.get('material_cost')?.setErrors({ invalid: true });
+      this.markFormGroupTouched(this.pcForm);
+      return;
+    }
 
     if (this.selectedItems.length == 1) {
       let where: any = {};
@@ -740,13 +747,13 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
   }
 
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
-     getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 }
