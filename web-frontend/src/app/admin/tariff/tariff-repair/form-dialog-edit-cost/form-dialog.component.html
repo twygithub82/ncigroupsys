@@ -14,11 +14,11 @@
   }
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
-     
-     <div class="row justify-content-center col-xl-12 col-lg-12 col-md-12 col-sm-12">
+
+      <div class="row justify-content-center col-xl-12 col-lg-12 col-md-12 col-sm-12">
         <div [ngClass]="getColumnClasses('card info-card col-lg-12 col-md-12 col-sm-12 mb-1 p-0 pt-5 me-1',isMobile)">
           <div class="info-box8">
-             <i class="bg-purple card1-icon fas fa-search"></i>
+            <i class="bg-purple card1-icon fas fa-search"></i>
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
@@ -28,7 +28,7 @@
                       {{ t.description }}
                     </mat-option>
                   </mat-select>
-           
+
                 </mat-form-field>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
@@ -39,7 +39,7 @@
                       {{ t.description }}
                     </mat-option>
                   </mat-select>
-               
+
                 </mat-form-field>
               </div>
             </div>
@@ -84,26 +84,10 @@
             </div>
           </div>
         </div>
-        
-        <div 
-        [ngClass]="getColumnClasses('card info-card col-lg-12 col-md-12 col-sm-12 mb-1 p-0 pt-5',isMobile)">
+
+        <div [ngClass]="getColumnClasses('card info-card col-lg-12 col-md-12 col-sm-12 mb-1 p-0 pt-5',isMobile)">
           <div class="info-box8">
             <i class="bg-purple card1-icon fas fa-edit"></i>
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="text" [min]="minMaterialCost"
-                    [allowNegative]="true" appNumericText [max]="maxMaterialCost" (focus)="selectAll($event)">
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
-                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                  </mat-error>
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('mark-up-warning')">
-                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{warningMaterialCost}}%
-                  </mat-error>
-                </mat-form-field>
-              </div>
-            </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
@@ -119,12 +103,28 @@
                 </mat-form-field>
               </div>
             </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
+                  <input matInput formControlName="material_cost_percentage" type="text" [min]="minMaterialCost"
+                    [allowNegative]="true" appNumericText [max]="maxMaterialCost" (focus)="selectAll($event)">
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
+                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                  </mat-error>
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('mark-up-warning')">
+                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{warningMaterialCost}}%
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 mt-3 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="trfRepairDS.loading$ | async" [class.auth-spinner]="trfRepairDS.loading$ | async">
+        <button mat-flat-button color="primary" class="me-1" (click)="update()"
+          [disabled]="trfRepairDS.loading$ | async" [class.auth-spinner]="trfRepairDS.loading$ | async">
           <ng-container *ngIf="!(this.UpdateInProgress); else loading">
             <mat-icon class="icon-align">save</mat-icon>
             {{ translatedLangText.UPDATE }}
