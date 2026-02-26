@@ -1260,9 +1260,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
                
               const c: TariffRepairItem = {
                 ...itm,
-                part_name : this.getTariffRepairAlias(itm),
-                group_name_cv: this.displayGroupNameCodeValue_Description(itm.group_name_cv),
-                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.subgroup_name_cv),
+                part_name : this.getTariffRepairAlias(itm.tariff_repair),
+                group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair.group_name_cv),
+                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv),
                 handled:this.getHandledItemDescription(itm.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
               };
               prcList.push(c);

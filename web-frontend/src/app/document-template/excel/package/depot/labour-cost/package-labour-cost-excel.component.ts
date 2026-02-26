@@ -188,6 +188,7 @@ export class PackageLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
      S_N: 'COMMON-FORM.S_N',
     PACKAGE_LABOUR_COST:'COMMON-FORM.PACKAGE-LABOUR-COST',
+    LABOUR_COST:'COMMON-FORM.LABOUR-COST',
 
   }
 
@@ -442,7 +443,7 @@ export class PackageLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter
     const head: (string | number)[][] = [[
       this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
-      this.translatedLangText.CUSTOMER_COST,
+      this.translatedLangText.LABOUR_COST,
       this.translatedLangText.LAST_UPDATE
     ]];
 
@@ -456,7 +457,7 @@ export class PackageLabourCostExcelComponent extends UnsubscribeOnDestroyAdapter
         ...data
       ];
       const totalColumns = head[0].length;
-      var fileName ="ResidueDisposePackage.xlsx";
+      var fileName ="LabourCostPackage.xlsx";
       Utility.saveExcel(rows, fileName, totalColumns);
 
 

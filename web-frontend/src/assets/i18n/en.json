@@ -1461,7 +1461,9 @@
     "CUSTOMER-LIST":"Customer List",
     "STEAMING-TARIFF":"Steaming Tariff",
     "DEPOT-COST-TARIFF":"Depot Cost Tariff",
-    "CLEANING-FORMULA":"Cleaning Formula"
+    "CLEANING-FORMULA":"Cleaning Formula",
+    "TARIFF-STEAMING":"Tariff Steaming"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
