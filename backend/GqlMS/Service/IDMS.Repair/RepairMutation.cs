@@ -145,6 +145,8 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_cost);
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.remarks = repair.remarks;
+                    if(!string.IsNullOrEmpty(repair.job_no))
+                        appvRepair.job_no = repair.job_no;
 
                     //-----------------------------------------------
                     appvRepair.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.est_cost);
