@@ -88,7 +88,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     'estimate_no',
     'complete_dt',
     'repair_type',
-    'status_cv'
+    // 'status_cv'
   ];
 
   translatedLangText: any = {};
