@@ -309,7 +309,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       ban_type: this.banTypeControl,
       open_gate: this.openGateControl,
       flash_point: [''],
-      un_no: ['', [ this.onlyNumbersDashValidator]],
+      un_no: ['', [this.onlyNumbersDashValidator]],
       nature: this.natureCvList,
       in_gate_alert: [''],
       depot_note: [''],
@@ -515,7 +515,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       tc.cleaning_method = undefined;
       if (tc.guid) {
         var cargo_guid = await this.getTariffCleaningGuid(tc.cargo!);
-        if (cargo_guid == tc.guid) {
+        if (cargo_guid == tc.guid || !cargo_guid) {
           this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
             console.log(result)
             var guid = tc.guid;
@@ -523,8 +523,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             this.trfCleaningSubmitting = false;
             this.submitForSaving.next(this.trfCleaningSubmitting);
           });
-        }
-        else {
+        } else {
           this.ShowDuplicateCargoMessage();
         }
       }
@@ -540,8 +539,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             this.submitForSaving.next(this.trfCleaningSubmitting);
 
           });
-        }
-        else {
+        } else {
           this.ShowDuplicateCargoMessage();
         }
       }
@@ -643,7 +641,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -692,9 +690,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onFileSelected(event: Event): void {
-    
 
-    if (this.tcForm!.value["guid"]|| (!this.tcForm!.value["guid"] && this.canEdit())) {
+
+    if (this.tcForm!.value["guid"] || (!this.tcForm!.value["guid"] && this.canEdit())) {
       const input = event.target as HTMLInputElement;
       if (input.files && input.files.length > 0) {
         this.selectedFile = input.files[0];
@@ -908,15 +906,15 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   isRequired_FlashPoint() {
-    const un_no : string = (this.tcForm?.get('un_no')?.value||'');
+    const un_no: string = (this.tcForm?.get('un_no')?.value || '');
     if (un_no == '') return false;
     else return true;
   }
 
   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'mx-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    const centerClass = Padding ? 'mx-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
 }
 

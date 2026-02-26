@@ -202,7 +202,9 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     CONFIRM_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
-    APPROVED: 'COMMON-FORM.APPROVED'
+    APPROVED: 'COMMON-FORM.APPROVED',
+    QC_REJECTED: 'COMMON-FORM.QC-REJECTED',
+    ARE_YOU_SURE: 'COMMON-FORM.ARE-YOU-SURE',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -587,7 +589,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_ROLLBACK,
+        headerText: this.translatedLangText.ARE_YOU_SURE,
         action: 'rollback',
       },
       direction: tempDirection
