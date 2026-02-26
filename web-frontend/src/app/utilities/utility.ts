@@ -26,7 +26,8 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import * as XLSX from 'xlsx-js-style';
+import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx-js-style';
 // import * as XLSX from "xlsx-js-style";
 
 export class Utility {
@@ -1969,7 +1970,63 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
        return window.innerWidth < mobileWidth;
   }
 
-  static saveExcel(rows:any[],fileName:string ,totalColumns:number):void
+
+  static padTitleToCenter(title: string, worksheet: XLSX.WorkSheet, totalColumns: number): string {
+
+  // Get total width of all columns (wch)
+  const totalWidth = (worksheet['!cols'] || [])
+    .slice(0, totalColumns)
+    .reduce((sum: number, col: any) => sum + (col?.wch || 10), 0);
+
+  // const titleLength = title.length;
+const titleLength =0;
+  // Calculate padding
+  const padding = Math.max(Math.floor((totalWidth - titleLength) / 2), 0);
+
+  return " ".repeat(padding) + title;
+}
+
+static saveExcel(rows: any[], fileName: string, totalColumns: number): void {
+
+  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+
+  const headerRowIndex = 2;
+  const columnCount = rows[headerRowIndex].length;
+  const dataRows = rows.slice(headerRowIndex);
+
+  // ===== 1️⃣ Calculate column widths =====
+  worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
+    const maxLength = dataRows.reduce((max, row) => {
+      const cell = row[colIndex];
+      return Math.max(max, cell ? cell.toString().length : 0);
+    }, 10);
+
+    return { wch: maxLength + 1 };
+  });
+
+  // ===== 2️⃣ Center title using padding trick =====
+  const originalTitle = rows[0][0];
+  const paddedTitle = this.padTitleToCenter(originalTitle, worksheet, totalColumns);
+  rows[0][0] = paddedTitle;
+
+  // Re-apply title cell manually
+  worksheet["A1"] = { t: "s", v: paddedTitle };
+
+  // ===== 3️⃣ Merge title row =====
+  worksheet['!merges'] = [
+    {
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: totalColumns - 1 }
+    }
+  ];
+
+  // ===== 4️⃣ Create workbook =====
+  const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  XLSX.writeFile(workbook, fileName);
+}
+
+  static saveExcel_old(rows:any[],fileName:string ,totalColumns:number):void
   {
      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
         //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
@@ -2003,6 +2060,8 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
             e: { r: 0, c: totalColumns - 1 }  // end at last column
           }
         ];
+
+      
         worksheet["A1"].s = {
           alignment: {
             horizontal: "center",
