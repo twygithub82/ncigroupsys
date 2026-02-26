@@ -1379,6 +1379,7 @@
     "STEAMING-TARIFF": "Steaming Tariff",
     "DEPOT-COST-TARIFF": "Depot Cost Tariff",
     "CLEANING-FORMULA": "Cleaning Formula",
-    "CONDITIONS": "Conditions"
+    "CONDITIONS": "Conditions",
+    "QC-REJECTED": "QC Rejected"
   }
 }
