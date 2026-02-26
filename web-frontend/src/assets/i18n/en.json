@@ -1380,31 +1380,5 @@
     "DEPOT-COST-TARIFF": "Depot Cost Tariff",
     "CLEANING-FORMULA": "Cleaning Formula",
     "CONDITIONS": "Conditions"
-  },
-  "CLEAN-PROCEDURES": {
-    "TEXT": "Cleaning Procedures",
-    "FORMS": {
-      "PROCEDURE-DETAILS": "Procedure Details",
-      "PROCEDURE-NAME": "Procedure Name",
-      "DESCRIPTION": "Description",
-      "CLEAN-CATEGORY": "Cleaning Category",
-      "CLEAN-GROUP": "Cleaning Group",
-      "MIN-COST": "Minimum Cost $",
-      "MAX-COST": "Maximum Cost $",
-      "TOTAL-DURATION": "Total Duration [mins]",
-      "IS-REQUIRED": "is required",
-      "PROCEDURE-STEPS": "Procedure Steps",
-      "STEP-NAME": "Step Name",
-      "STEP-DURATION": "Duration",
-      "STEP-DURATION-TOOLTIP": "Duration minutes"
-    }
-  },
-  "CLEAN-GROUPS": {
-    "TEXT": "Cleaning Groups",
-    "FORMS": {
-      "GROUP-DETAILS": "Group Details",
-      "GROUP-NAME": "Group Name",
-      "BAY": "Bay"
-    }
   }
 }
