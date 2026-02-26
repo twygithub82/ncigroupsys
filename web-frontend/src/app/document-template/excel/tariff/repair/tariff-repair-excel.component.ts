@@ -192,7 +192,10 @@ export class TariffRepairExcelComponent extends UnsubscribeOnDestroyAdapter impl
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.SELECTED',
     EXPORT:'COMMON-FORM.EXPORT',
-
+    GROUP:'COMMON-FORM.GROUP-NAME',
+    SUB_GROUP:'COMMON-FORM.SUB-GROUP-NAME',
+    S_N:'COMMON-FORM.S_N',
+    
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -519,48 +522,75 @@ async exportExcel(items: TariffRepairItem[]) {
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
                 var itm:any = item;
                 const row = [
+                    index+1,
                     itm.part_name||"-",
                     itm.group_name_cv||"-",
                     itm.subgroup_name_cv||"-",
-                    itm.labour_hour||"-",
-                    this.parse2Decimal(itm.material_cost!)||"-",
-                    this.displayLastUpdated(itm) || "-",
+                    itm.tariff_repair.length||"-",
+                    itm.tariff_repair.labour_hour||"-",
+                    this.parse2Decimal(itm.tariff_repair.material_cost!)||"-",
                     itm.handled||"-",
+                    this.displayLastUpdated(itm.tariff_repair) || "-",
+                    
                     
                 ];
                 return row;
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-   const head: (string | number)[][] = [[
-  this.translatedLangText.PART_NAME,
-  this.translatedLangText.GROUP_NAME,
-  this.translatedLangText.SUB_GROUP_NAME,
-  this.translatedLangText.LABOUR_HOUR,
-  this.translatedLangText.MATERIAL$,
-  this.translatedLangText.LAST_UPDATED,
-  this.translatedLangText.HANDLED_ITEM,
-]];
+    const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
+      this.translatedLangText.PART_NAME,
+      this.translatedLangText.GROUP,
+      this.translatedLangText.SUB_GROUP,
+      this.translatedLangText.LENGTH,
+      this.translatedLangText.LABOUR_HOUR,
+      this.translatedLangText.MATERIAL_COST$,
+      this.translatedLangText.HANDLED_ITEM,
+      this.translatedLangText.LAST_UPDATED
+    ]];
 
-    const rows: (string | number)[][] = [
+    const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.TARIFF_REPAIR}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    worksheet['!cols'] = rows[0].map((_, colIndex) => {
-      const maxLength = rows.reduce((max, row) => {
-        const cell = row[colIndex];
-        return Math.max(max, cell ? cell.toString().length : 0);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="RepairTariff.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+//    const head: (string | number)[][] = [[
+//   this.translatedLangText.PART_NAME,
+//   this.translatedLangText.GROUP_NAME,
+//   this.translatedLangText.SUB_GROUP_NAME,
+//   this.translatedLangText.LABOUR_HOUR,
+//   this.translatedLangText.MATERIAL$,
+//   this.translatedLangText.LAST_UPDATED,
+//   this.translatedLangText.HANDLED_ITEM,
+// ]];
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+//     const rows: (string | number)[][] = [
+//       ...head,
+//       ...data
+//     ];
+//    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+//     worksheet['!cols'] = rows[0].map((_, colIndex) => {
+//       const maxLength = rows.reduce((max, row) => {
+//         const cell = row[colIndex];
+//         return Math.max(max, cell ? cell.toString().length : 0);
+//       }, 10);
+//       return { wch: maxLength + 2 };
+//     });
+//     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.writeFile(workbook, "RepairTariff.xlsx");
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+//     XLSX.writeFile(workbook, "RepairTariff.xlsx");
     this.dialogRef.close();
 }
 

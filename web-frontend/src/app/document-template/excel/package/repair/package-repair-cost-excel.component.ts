@@ -174,8 +174,8 @@ export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter
     STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-    GROUP: "COMMON-FORM.GROUP",
-    SUB_GROUP: "COMMON-FORM.SUB-GROUP",
+    GROUP: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP: "COMMON-FORM.SUB-GROUP-NAME",
     PART_NAME: "COMMON-FORM.PART-NAME",
     MIN_COST: "COMMON-FORM.MIN-COST",
     MAX_COST: "COMMON-FORM.MAX-COST",
@@ -199,6 +199,7 @@ export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     S_N: 'COMMON-FORM.S_N',
     PACKAGE_REPAIR:'COMMON-FORM.PACKAGE-REPAIR',
+    
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -412,7 +413,7 @@ export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  async exportExcel(items: PackageRepairItem[]) {
+  async exportExcel(items: any[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -438,13 +439,14 @@ export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter
     const data: any[][] = items.map((item,index) => {
       const row = [
         index + 1,
-        item.customer_company?.code || "-",
-        item.tariff_repair?.part_name || "-",
-        item.tariff_repair?.group_name_cv || "-",
-        item.tariff_repair?.subgroup_name_cv=="NA"?"-":item.tariff_repair?.subgroup_name_cv || "-",
-        item.labour_hour || 0,
-        this.parse2Decimal(item.material_cost!) || "-",
-        this.displayLastUpdated(item) || "-",
+        item.package_repair.customer_company?.code || "-",
+        item.part_name || "-",
+        item.group_name_cv || "-",
+        item.subgroup_name_cv=="NA"?"-":item.subgroup_name_cv || "-",
+        item.package_repair.labour_hour || 0,
+        this.parse2Decimal(item.package_repair.material_cost!) || "-",
+        item.handled || "-",
+        this.displayLastUpdated(item.package_repair) || "-",
 
       ];
       return row;
@@ -458,6 +460,7 @@ export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter
       this.translatedLangText.SUB_GROUP,
       this.translatedLangText.LABOUR_HOUR,
       this.translatedLangText.MATERIAL_COST$,
+      this.translatedLangText.HANDLED_ITEM,
       this.translatedLangText.LAST_UPDATED
     ]];
 
