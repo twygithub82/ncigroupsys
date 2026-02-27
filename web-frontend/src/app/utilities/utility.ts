@@ -26,9 +26,9 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import * as XLSX from 'xlsx';
-// import * as XLSX from 'xlsx-js-style';
-// import * as XLSX from "xlsx-js-style";
+// import * as XLSX from 'xlsx';
+ import * as XLSX from 'xlsx-js-style';
+
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -1986,7 +1986,7 @@ const titleLength =0;
   return " ".repeat(padding) + title;
 }
 
-static saveExcel(rows: any[], fileName: string, totalColumns: number): void {
+static saveExcel_xlsx(rows: any[], fileName: string, totalColumns: number): void {
 
   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
 
@@ -2026,7 +2026,7 @@ static saveExcel(rows: any[], fileName: string, totalColumns: number): void {
   XLSX.writeFile(workbook, fileName);
 }
 
-  static saveExcel_old(rows:any[],fileName:string ,totalColumns:number):void
+  static saveExcel(rows:any[],fileName:string ,totalColumns:number):void
   {
      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
         //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {

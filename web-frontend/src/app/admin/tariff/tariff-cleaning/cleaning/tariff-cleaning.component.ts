@@ -910,20 +910,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
           this.exportExcelReport(prcList);
 
       })
-  //  if(this.tcList)
-  //  {
-  //   this.isGeneratingReport=true;
-  //   var prcList:TariffCleaningItem[]=[];
-  //       this.tcList.forEach((item)=>{
-  //         var itm:any = item;
-  //        const c: TariffCleaningItem = {
-  //           ...itm.tariff_cleaning,
-  //           ban_type_cv: this.getbanTypeDescription(itm.tariff_cleaning.ban_type_cv)
-  //         };
-  //         prcList.push(c);
-  //       });
-  //   this.exportExcelReport(prcList);
-  //  }
 
   }
    export_report()
@@ -936,35 +922,19 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       // this.subs.sink = this.cMethodDS.searchAllCleaningMethods(where, order).subscribe(data => 
         this.subs.sink = this.tcDS.getAllTariffCleaning(where, 500).subscribe(data =>
         {
-        var Items = data;
   
-        var prcList:CleaningPriceList[]=[];
-        Items.forEach((item)=>{
-          var prc:CleaningPriceList=new CleaningPriceList();
-          // prc.Descripton=item.description||'';
-          prc.Descripton=item.cargo||'';
-          prc.Unit=this.translatedLangText.PER_TANK;
-          prc.Material=Utility.formatNumberDisplay(item.cleaning_category?.cost);
-          prcList.push(prc);
-        });
+          var items = data;
+        var prcList:TariffCleaningItem[]= [];
 
-        this.subs.sink =this.tLabourDS.SearchTariffLabour(where,order).subscribe(data=>{
-          var lbrItem=data;
-          if(lbrItem.length>0){
-          var prc:CleaningPriceList=new CleaningPriceList();
-          var item=lbrItem[0];
-          prc.Descripton=item.description||'';
-          prc.Unit=this.translatedLangText.PER_HOUR;
-          prc.Material=Utility.formatNumberDisplay(item.cost||0);
-          prcList.push(prc);
-          }
-          
-            this.ShowReport(prcList);
-          
-
-        })
-
-  
+         data.forEach((item) => {
+                    var itm:any = item;
+                    const c: TariffCleaningItem = {
+                      ...itm,
+                      ban_type_cv:this.getbanTypeDescription(itm.ban_type_cv)
+                    };
+                    prcList.push(c);
+                  });
+            this.ShowReport(prcList!);
       });
     }
 

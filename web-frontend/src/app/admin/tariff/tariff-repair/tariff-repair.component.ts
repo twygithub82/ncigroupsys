@@ -1147,15 +1147,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var order={};
     var where={};
     this.subs.sink = this.trfRepairDS.SearchAllTariffRepairs(where, order).subscribe(data => {
-      var Items = data;
+     const itms: any[] = data ?? [];
+     const tariffRepairArray = itms.map((itm: any) => itm?.tariff_repair);
+     var Items :TariffRepairItem[] = tariffRepairArray;
 
       
       // Extract group and subgroup names
-      const groupnames = data
+      
+      const groupnames = Items
         .filter(a => a.group_name_cv && a.group_name_cv !== "")
         .map(a => a.group_name_cv);
 
-      const subgroupnames = data
+      const subgroupnames = Items
         .filter(a => a.subgroup_name_cv && a.subgroup_name_cv !== "")
         .map(a => a.subgroup_name_cv);
 

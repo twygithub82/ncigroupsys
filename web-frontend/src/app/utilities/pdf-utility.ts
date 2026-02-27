@@ -292,6 +292,7 @@ export class PDFUtility {
     var startY = topMargin;
     await this.addHeaderWithCompanyLogo_Portriat_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
     if (title != null && title != '') {
+      title=title.toUpperCase();
       startY = this.addReportTitle_Portrait(pdf, title, pageWidth, leftMargin, rightMargin);
     }
 
@@ -306,6 +307,7 @@ export class PDFUtility {
     let startY = 0;
     var titleFontSize = this.TitleFontSize();
     startY = this.TitlePositionY_Portrait();
+    title=title.toUpperCase();
     this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize);
     return startY;
   }
@@ -588,6 +590,7 @@ export class PDFUtility {
       // var titleFontSize = this.TitleFontSize();
       // startY = this.TitlePositionY_Landscape();
       // this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize); 
+      title=title.toUpperCase();
       startY = this.addReportTitle_Landscape(pdf, title, pageWidth, leftMargin, rightMargin);
 
     }
@@ -606,6 +609,7 @@ export class PDFUtility {
     let startY = 0;
     var titleFontSize = this.TitleFontSize();
     startY = this.TitlePositionY_Landscape();
+    title=title.toUpperCase();
     this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize);
     return startY;
   }

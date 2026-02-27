@@ -199,6 +199,29 @@ export const GET_ALL_TARIFF_CLEANING = gql`
         un_no
         update_by
         update_dt
+        cleaning_category {
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
+        cleaning_method {
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          sequence
+          update_by
+          update_dt
+        }
       }
       pageInfo {
         endCursor
@@ -236,18 +259,29 @@ export const GET_ALL_TARIFF_CLEANING_WITH_CATEGORY = gql`
         un_no
         update_by
         update_dt
-        cleaning_category{
-          cost
-          create_by
-          create_dt
-          delete_dt
-          description
-          guid
-          name
-          sequence
-          update_by
-          update_dt
-        }
+         cleaning_category {
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            name
+            sequence
+            update_by
+            update_dt
+          }
+          cleaning_method {
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            name
+            sequence
+            update_by
+            update_dt
+          }
       }
       pageInfo {
         endCursor
@@ -633,13 +667,6 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
   );
   }
 
-/*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Adds a new TariffCleaning item
-   * @param tc The TariffCleaning item to be added
-   * @returns An observable that resolves to the result of the mutation
-   */
-/*******  8d007ff6-6b1f-491e-a88b-342f17c994ac  *******/
   addNewTariffCleaning(tc: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_CLEANING,
