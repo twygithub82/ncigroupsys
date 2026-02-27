@@ -195,6 +195,7 @@ export class TariffRepairExcelComponent extends UnsubscribeOnDestroyAdapter impl
     GROUP:'COMMON-FORM.GROUP-NAME',
     SUB_GROUP:'COMMON-FORM.SUB-GROUP-NAME',
     S_N:'COMMON-FORM.S_N',
+    REPAIR_TARIFF:'COMMON-FORM.REPAIR-TARIFF',
     
   }
 
@@ -527,8 +528,8 @@ async exportExcel(items: TariffRepairItem[]) {
                 const row = [
                     index+1,
                     itm.part_name||"-",
-                    itm.group_name_cv||"-",
-                    itm.subgroup_name_cv||"-",
+                    itm.group_name_desc||"-",
+                    itm.subgroup_name_desc||"-",
                     itm.tariff_repair.length||"-",
                     itm.tariff_repair.labour_hour||"-",
                     this.parse2Decimal(itm.tariff_repair.material_cost!)||"-",
@@ -553,7 +554,7 @@ async exportExcel(items: TariffRepairItem[]) {
     ]];
 
     const reportTitle: (string | number)[][] = [
-      [`${this.translatedLangText.TARIFF_REPAIR}`]
+      [`${this.translatedLangText.REPAIR_TARIFF}`]
     ];
    const rows: (string | number)[][] = [
       ...reportTitle,

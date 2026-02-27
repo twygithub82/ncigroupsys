@@ -1,7 +1,7 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -239,6 +239,7 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.loadData();
     this.EnableValidator('material_cost_percentage');
     this.EnableValidator('labour_hour_percentage');
+   
     this.initializeFilterCustomerCompany();
   }
 
@@ -278,7 +279,14 @@ customer_companyList: CustomerCompanyItem[] = [];
       length: this.lengthControl,
       material_cost_percentage: [''],
       labour_hour_percentage: [''],
-    });
+    },
+      {
+        validators: this.atLeastOneRequiredValidator(
+          'material_cost_percentage',
+          'labour_hour_percentage'
+        )
+      }
+  );
   }
 
   displayPartNameFn(tr: string): string {
@@ -486,11 +494,26 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.pcForm.get(path)?.setValidators([
       Validators.min(this.minMaterialCost),
       Validators.max(this.maxMaterialCost),
-      Validators.required  // If you have a required validator
+      // Validators.required  // If you have a required validator
     ]);
     this.pcForm.get(path)?.updateValueAndValidity();  // Revalidate the control
   }
 
+  atLeastOneRequiredValidator(
+  field1: string,
+  field2: string
+): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const value1 = group.get(field1)?.value;
+    const value2 = group.get(field2)?.value;
+
+    if (!value1 && !value2) {
+      return { atLeastOneRequired: true };
+    }
+
+    return null;
+  };
+}
   DisableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
@@ -736,4 +759,22 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.selected(fakeEvent);
 
   }
+
+  isAtLeastOneInvalid(): boolean {
+  return (
+    this.pcForm.errors?.['atLeastOneRequired'] &&
+    (this.pcForm.get('material_cost_percentage')?.touched ||
+     this.pcForm.get('labour_hour_percentage')?.touched)
+  );
+}
+
+isFieldInvalid(field: string): boolean {
+  const control = this.pcForm.get(field);
+
+  return (
+    this.pcForm.errors?.['atLeastOneRequired'] &&
+    control?.touched &&
+    !control?.value
+  );
+}
 }

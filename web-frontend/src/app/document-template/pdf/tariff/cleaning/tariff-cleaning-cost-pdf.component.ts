@@ -48,11 +48,12 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: CleaningPriceList[],
+  repData: TariffCleaningItem[],
   date: string
 }
 
@@ -75,23 +76,7 @@ export type ChartOptions = {
   markers?: ApexMarkers;
   labels: string[];
   responsive: ApexResponsive[];
-  // series?: ApexAxisChartSeries;
-  // series2?: ApexNonAxisChartSeries;
-  // chart?: ApexChart;
-  // dataLabels?: ApexDataLabels;
-  // plotOptions?: ApexPlotOptions;
-  // yaxis?: ApexYAxis;
-  // xaxis?: ApexXAxis;
-  // fill?: ApexFill;
-  // tooltip?: ApexTooltip;
-  // stroke?: ApexStroke;
-  // legend?: ApexLegend;
-  // title?: ApexTitleSubtitle;
-  // colors?: string[];
-  // grid?: ApexGrid;
-  // markers?: ApexMarkers;
-  // labels: string[];
-  // responsive: ApexResponsive[];
+  
 };
 
 @Component({
@@ -114,14 +99,12 @@ export type ChartOptions = {
 export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
-    STATUS: 'COMMON-FORM.STATUS',
+     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
-    NO_OF_ESTIMATE: 'COMMON-FORM.NO-OF-ESTIMATE',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -133,194 +116,33 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE",
-    ORDER_DETAILS: "COMMON-FORM.ORDER-DETAILS",
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
-    OWNER: "COMMON-FORM.OWNER",
-    CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
-    SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
-    DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
-    PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
-    LAST_TEST: "COMMON-FORM.LAST-TEST",
-    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
-    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
-    DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS",
-    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
-    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
-    HAULIER: 'COMMON-FORM.HAULIER',
-    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
-    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
-    LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
-    LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
-    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
-    CLADDING: 'COMMON-FORM.CLADDING',
-    CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
-    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
-    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
-    WALKWAY: 'COMMON-FORM.WALKWAY',
-    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
-    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
-    BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
-    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
-    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
-    THERMOMETER: 'COMMON-FORM.THERMOMETER',
-    LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
-    TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
-    TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
-    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
-    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
-    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
-    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
-    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
-    PV: 'COMMON-FORM.PV',
-    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
-    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
-    RESIDUE: 'COMMON-FORM.RESIDUE',
-    DIPSTICK: 'COMMON-FORM.DIPSTICK',
-    SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
-    DIAMITER: 'COMMON-FORM.DIAMITER',
-    PIECES: 'COMMON-FORM.PIECES',
-    VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND',
-    BOTTOM: 'COMMON-FORM.BOTTOM',
-    TOP: 'COMMON-FORM.TOP',
-    MANLID: 'COMMON-FORM.MANLID',
-    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
-    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
-    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
-    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
-    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
-    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
-    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
-    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
-    FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
-    LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
-    REAR_REMARKS: 'COMMON-FORM.REAR-REMARKS',
-    RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
-    TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
-    FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
-    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS',
-    SIDES: 'COMMON-FORM.SIDES',
-    SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
-    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
-    PREVIEW: 'COMMON-FORM.PREVIEW',
-    DELETE: 'COMMON-FORM.DELETE',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS',
-    PUBLISH: 'COMMON-FORM.PUBLISH',
-    PHONE: 'COMMON-FORM.PHONE',
-    FAX: 'COMMON-FORM.FAX',
-    EMAIL: 'COMMON-FORM.EMAIL',
-    WEB: 'COMMON-FORM.WEB',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
-    EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
-    TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
-    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
-    OPERATOR: 'COMMON-FORM.OPERATOR',
-    TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
-    YES: 'COMMON-FORM.YES',
-    NO: 'COMMON-FORM.NO',
-    BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
-    BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
-    TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
-    TOP_DIS_VALVE__ABB: 'COMMON-FORM.TOP-DIS-VALVE--ABB',
-    MANLID_COMP__ABB: 'COMMON-FORM.MANLID-COMP--ABB',
-    CRN: 'COMMON-FORM.CRN',
-    EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
-    EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
-    SURVEY_BY: 'COMMON-FORM.SURVEY-BY',
-    REVIEW_BY: 'COMMON-FORM.REVIEW-BY',
-    DISCLAIMER: 'COMMON-FORM.DISCLAIMER',
-    COMPUTER_GENERATED_NOTE: 'COMMON-FORM.COMPUTER-GENERATED-NOTE',
-    DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
-    EXPORT_NEW: 'COMMON-FORM.EXPORT-NEW',
-    PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
-    EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
-    IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
-    OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
-    REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
-    NO_DOT: 'COMMON-FORM.NO-DOT',
-    ITEM: 'COMMON-FORM.ITEM',
-    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
-    CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
-    QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
-    LESSEE_OWNER__ABB: 'COMMON-FORM.LESSEE-OWNER--ABB',
+    ADD: 'COMMON-FORM.ADD',
+    NEW: 'COMMON-FORM.NEW',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
-    APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
-    RATE_PERC: 'COMMON-FORM.RATE-PERC',
-    ESTIMATE_COST: 'COMMON-FORM.ESTIMATE-COST',
-    FOR: 'COMMON-FORM.FOR',
-    NET_COST: 'COMMON-FORM.NET-COST',
-    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
-    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
-    PAGE: 'COMMON-FORM.PAGE',
-    OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE: 'COMMON-FORM.IN-DATE',
-    OUT_DATE: 'COMMON-FORM.OUT-DATE',
-    TOTAL: 'COMMON-FORM.TOTAL',
-    DAYS: 'COMMON-FORM.DAYS',
-    GATEIO: 'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
-    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
-    STEAM: 'COMMON-FORM.STEAM',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    PENDING: 'COMMON-FORM.PENDING',
-    WITH_RO: 'COMMON-FORM.WITH-RO',
-    LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
-    RESIDUE_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
-    REPAIR_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
-    CLEAN_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
-    S_N: 'COMMON-FORM.S_N',
-    DAY: 'COMMON-FORM.DAY',
-    MONTH: 'COMMON-FORM.MONTH',
-    AVERAGE: 'COMMON-FORM.AVERAGE',
-    TOTAL_TANK: 'COMMON-FORM.TOTAL-TANK',
-    PART_NAME:'COMMON-FORM.PART-NAME',
-    LABOUR_HOUR:'COMMON-FORM.LABOUR-HOUR',
-    LENGTH:'COMMON-FORM.LENGTH',
-    MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    PER_TANK:'COMMON-FORM.PER-TANK',
-    PER_HOUR:'COMMON-FORM.PER-HOUR',
-    UNIT:"COMMON-FORM.UNIT",
-    MANHOUR:"COMMON-FORM.MANHOUR",
-    CLEANING_TARIFF:'COMMON-FORM.CLEANING-TARIFF',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    NAME: 'COMMON-FORM.NAME',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    TARIFF_CARGO_ASSIGNED: 'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    DELETE: 'COMMON-FORM.DELETE',
+    SEARCH: "COMMON-FORM.SEARCH",
+    CARGO_SELECTED: 'COMMON-FORM.SELECTED',
+    PER_TANK: 'COMMON-FORM.PER-TANK',
+    PER_HOUR: 'COMMON-FORM.PER-HOUR',
+    S_N:'COMMON-FORM.S_N',
+    CLEANING_TARIFF: 'COMMON-FORM.CLEANING-TARIFF',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -370,7 +192,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: CleaningPriceList[];
+  repData?: TariffCleaningItem[];
   date?: string;
   repType?: string;
   customer?: string;
@@ -393,17 +215,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.translateLangText();
     this.InitialDefaultData();
     this.date = this.data.date;
-    // this.processTankStatus(data.repData);
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-
+  
 
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
@@ -635,34 +447,25 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     var index = 1;
     const data: any[][] = items
         .map((item) => {
-          if (!item.Descripton || item.Descripton.trim() === '') {
+          if (!item.cargo || item.cargo.trim() === '') {
             return null;
           }
 
           const row = [
             index++, // increment index for each item
-            item.Descripton,
-            item.Unit || "-",
-            item.ManHour || "-",
-            item.Material || "-",
+            item.cargo || "-",
+            item.class_cv || "-",
+            item.un_no || "-",
+            item.cleaning_method?.name || "-",
+            item.cleaning_category?.name || "-",
+            item.flash_point || "-",
+            item.ban_type_cv || "-",
+            Utility.formatNumberDisplay(item.cleaning_category?.cost)||"-", //.numb item.cleaning_category?.cost || "-",
           ];
 
           return row;
         })
     .filter((row): row is any[] => row !== null);
-
-    // const data: any[][] = items.map((item) => {
-      
-    //             const row = [
-    //                 index++, // increment index for each item
-    //                 item.Descripton,
-    //                 `${item.Unit || "-"}`,
-    //                 item.ManHour|| "-" ,
-    //                 item.Material||"-",
-    //             ];
-    //             return row;
-    //         });
-
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -670,18 +473,27 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N,
-      this.translatedLangText.DESCRIPTION,
-      this.translatedLangText.UNIT,
-      this.translatedLangText.MANHOUR,
-      `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
+      this.translatedLangText.NAME,
+      this.translatedLangText.CARGO_CLASS,
+      this.translatedLangText.CARGO_UN_NO,
+      this.translatedLangText.CARGO_METHOD,
+      this.translatedLangText.CARGO_CATEGORY,
+      this.translatedLangText.CARGO_FLASH_POINT,
+      this.translatedLangText.CARGO_BAN_TYPE,
+      this.translatedLangText.CARGO_COST,
+      
     ]];
 
     const comStyles: any = {
       0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-      1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
-      2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
-      3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
-      4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
+      1: { cellWidth: 46 ,valign: 'middle', halign: 'left'},   // "NAME"
+      2: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
+      3: { cellWidth: 19, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      4: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
+      5: { cellWidth: 19, valign: 'middle', halign: 'center' },   // "CARGO_CATEGORY"
+      6: { cellWidth: 19, valign: 'middle', halign: 'center' },   // "CARGO_FLASH_POINT"
+      7: { cellWidth: 18, valign: 'middle', halign: 'center' },   // "CARGO_BAN_TYPE"
+      8: { cellWidth: 18, valign: 'middle', halign: 'center' },   // "CARGO_COST"
     };
 
     // Define headStyles with valid fontStyle
@@ -711,8 +523,9 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     // const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
     const cutoffDate ='';
      const subtitlePos=0;
-    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, cutoffDate,subtitlePos);
+    startY +=  6;
     // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
@@ -1071,7 +884,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
- async export(items: CleaningPriceList[]) {
+ async export(items: TariffCleaningItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -1096,11 +909,15 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const data: any[][] = items.map((item) => {
                 const row = [
-                    index++, // increment index for each item
-                    item.Descripton,
-                    `${item.Unit || "-"}`,
-                    item.ManHour|| "-" ,
-                    item.Material||"-",
+                  index++, // increment index for each item
+                  item.cargo || "-",
+                  item.class_cv || "-",
+                  item.un_no || "-",
+                  item.cleaning_method?.name || "-",
+                  item.cleaning_category?.name || "-",
+                  item.flash_point || "-",
+                  item.ban_type_cv || "-",
+                  item.cleaning_category?.cost || "-",
                 ];
                 return row;
             });
