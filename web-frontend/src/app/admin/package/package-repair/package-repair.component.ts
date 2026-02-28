@@ -49,7 +49,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { pack } from 'd3';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { PackageBufferCleaningCostExcelComponent } from 'app/document-template/excel/package/cleaning/buffer-cleaning/package-buffer-cleaning-cost-excel.component';
-import { PackageRepairCostExcelComponent } from 'app/document-template/excel/repair/package-repair-cost-excel.component';
+import { PackageRepairCostExcelComponent } from 'app/document-template/excel/package/repair/package-repair-cost-excel.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -274,6 +274,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
+    
+   
   }
 
   @ViewChild('custInput', { static: true })
@@ -1221,17 +1223,19 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
      this.isGeneratingReport=true;
       // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
-      const where =this.lastSearchCriteria.package_repair;
-    const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
+      const where =this.lastSearchCriteria;
+      const order=this.lastOrderBy;
+    // const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
     this.packRepairDS.SearchAllPackageRepair(where,order).subscribe(res=>{
           var prcList: PackageRepairItem[] = [];
           res.forEach((item) => {
             var itm:any = item;
             const c: PackageRepairItem = {
               ...itm,
-              part_name:this.getTariffRepairAlias(itm.tariff_repair),
-              group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair),
-              subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv)
+              part_name:this.getTariffRepairAlias(itm.package_repair.tariff_repair),
+              group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair.tariff_repair.group_name_cv),
+              subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.package_repair.tariff_repair.subgroup_name_cv),
+              handled:this.getHandledItemDescription(itm.count > 0 ? 'HANDLED' : 'NON_HANDLED')
             };
             prcList.push(c);
           });
@@ -1255,6 +1259,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // }
 
   }
+
+  getHandledItemDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS.getCodeDescription(codeVal, this.handledItemCvList);
+  }
+
 
   exportExcelReport(repData: any) {
 

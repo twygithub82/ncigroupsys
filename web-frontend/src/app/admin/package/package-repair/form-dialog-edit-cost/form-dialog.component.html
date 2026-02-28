@@ -140,7 +140,7 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
                   <input matInput formControlName="material_cost_percentage" type="text" appnumerictext [min]="minMaterialCost" #material_cost_percentage (focus)="material_cost_percentage.select()"
-                    [max]="maxMaterialCost">
+                    [max]="maxMaterialCost"  [required]="isFieldInvalid('material_cost_percentage')">
                   <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text" >
                     {{translatedLangText.MATERIAL_COST}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
@@ -149,6 +149,7 @@
                     {{translatedLangText.MATERIAL_COST}}
                     {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
                   </mat-error>
+                 
                 </mat-form-field>
               </div>
             </div>
@@ -157,7 +158,7 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
                   <input matInput formControlName="labour_hour_percentage" type="text" appnumerictext (change)="updateLabourHourPercentage()"  (blur)="updateLabourHourPercentage()" #labour_hour_percentage (focus)="labour_hour_percentage.select()"
-                    [max]="maxMaterialCost">
+                    [max]="maxMaterialCost"  [required]="isFieldInvalid('labour_hour_percentage')">
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.LABOUR_HOUR}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%

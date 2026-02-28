@@ -76,9 +76,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-package-steaming-cost-report-excel',
-  templateUrl: './package-steaming-cost-excel.component.html',
-  styleUrls: ['./package-steaming-cost-excel.component.scss'],
+  selector: 'app-package-exclusive-steaming-cost-report-excel',
+  templateUrl: './package-exclusive-steaming-cost-excel.component.html',
+  styleUrls: ['./package-exclusive-steaming-cost-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -92,7 +92,7 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class PackageSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -193,6 +193,8 @@ export class PackageSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapt
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_EXCLUSIVE_STEAMING:'COMMON-FORM.PACKAGE-EXCLUSIVE-STEAMING',
 
   }
 
@@ -254,7 +256,7 @@ export class PackageSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapt
 
 
   constructor(
-    public dialogRef: MatDialogRef<PackageSteamingCostExcelComponent>,
+    public dialogRef: MatDialogRef<PackageExclusiveSteamingCostExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -408,70 +410,86 @@ export class PackageSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapt
 
 
   async exportExcel(items: PackageSteamingItem[]) {
-    const doc = new jsPDF();
-
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
-
-    let lastTableFinalY = 25;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
-
-    const data: any[][] = items.map((item) => {
-      var itm:any=item;
-      const row = [
-        itm.customer_company?.name || "-",
-        itm.tariff_steaming?.temp_min || "-",
-        itm.tariff_steaming?.temp_max  || "-",
-        this.parse2Decimal(itm.cost!) || "-",
-        this.parse2Decimal(itm.labour!) || "-",
-        this.displayLastUpdated(itm) || "-",
-
-      ];
-      return row;
-    });
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-    const head: (string | number)[][] = [[
-      this.translatedLangText.CUSTOMER,
-      this.translatedLangText.MIN_TEMP,
-      this.translatedLangText.MAX_TEMP,
-      this.translatedLangText.FLAT_RATE,
-      this.translatedLangText.HOURLY_RATE,
-      this.translatedLangText.LAST_UPDATED
-    ]];
-
-    const rows: (string | number)[][] = [
+      const doc = new jsPDF();
+  
+      const pageWidth = 210; // A4 width in mm (portrait)
+      const pageHeight = 297; // A4 height in mm (portrait)
+      const leftMargin = 10;
+      const rightMargin = 10;
+      const topMargin = 5;
+      const bottomMargin = 5;
+  
+      const contentWidth = pageWidth - leftMargin - rightMargin;
+      const maxContentHeight = pageHeight - topMargin - bottomMargin;
+  
+      let fontSize = 12;
+      doc.setFontSize(fontSize);
+      doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+  
+      let lastTableFinalY = 25;
+      const pagePositions: { page: number; x: number; y: number }[] = [];
+      const table_body_fontsize = 8;
+      const startX = leftMargin;
+      let index = 1;
+  
+      const data: any[][] = items.map((item,index) => {
+        var itm:any=item;
+        const row = [
+          index+1,
+          itm.package_steaming?.customer_company?.name || "-",
+          itm.tariff_cleaning?.cargo || "-",
+          itm.temp_min || "-",
+          itm.temp_max  || "-",
+          this.parse2Decimal(itm.package_steaming?.cost!) || "-",
+          this.parse2Decimal(itm.package_steaming?.labour!) || "-",
+          this.displayLastUpdated(itm) || "-",
+  
+        ];
+        return row;
+      });
+      var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+      const head: (string | number)[][] = [[
+        this.translatedLangText.S_N,
+        this.translatedLangText.CUSTOMER,
+        this.translatedLangText.LAST_CARGO,
+        this.translatedLangText.MIN_TEMP,
+        this.translatedLangText.MAX_TEMP,
+        this.translatedLangText.FLAT_RATE,
+        this.translatedLangText.HOURLY_RATE,
+        this.translatedLangText.LAST_UPDATED
+      ]];
+  
+       const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.PACKAGE_EXCLUSIVE_STEAMING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-     worksheet['!cols'] = rows[0].map((_, colIndex) => {
-      const maxLength = rows.reduce((max, row) => {
-        const cell = row[colIndex];
-        return Math.max(max, cell ? cell.toString().length : 0);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-    XLSX.writeFile(workbook, "SteamingPackage.xlsx");
-    this.dialogRef.close();
-  }
+ const totalColumns = head[0].length;
+    var fileName ="ExclusiveSteamingPackage.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+      // const rows: (string | number)[][] = [
+      //   ...head,
+      //   ...data
+      // ];
+      // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+      //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+      //   const maxLength = rows.reduce((max, row) => {
+      //     const cell = row[colIndex];
+      //     return Math.max(max, cell ? cell.toString().length : 0);
+      //   }, 10);
+      //   return { wch: maxLength + 2 };
+      // });
+      // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+  
+      // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  
+      // XLSX.writeFile(workbook, "ExclusiveSteamingPackage.xlsx");
+      this.dialogRef.close();
+    }
 
 
   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,

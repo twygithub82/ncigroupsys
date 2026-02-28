@@ -42,7 +42,7 @@ import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem, MOBILE_DIALO
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { PackageSteamingCostExcelComponent } from 'app/document-template/excel/steaming/steaming/package-steaming-cost-excel.component';
+import { PackageSteamingCostExcelComponent } from 'app/document-template/excel/package/steaming/steaming/package-steaming-cost-excel.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-package-steam',

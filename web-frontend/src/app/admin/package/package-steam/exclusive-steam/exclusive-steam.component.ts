@@ -41,7 +41,7 @@ import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, 
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
-import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
+import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/package/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({

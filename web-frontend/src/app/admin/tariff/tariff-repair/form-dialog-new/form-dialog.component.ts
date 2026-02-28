@@ -364,6 +364,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
+    if (this.pcForm.invalid) {
+      this.markFormGroupTouched(this.pcForm);
+      return;
+    }
+
+    if (!this.pcForm!.value['material_cost'] || this.pcForm!.value['material_cost'] <= 0) {
+      this.pcForm?.get('material_cost')?.setErrors({ invalid: true });
+      this.markFormGroupTouched(this.pcForm);
+      return;
+    }
+
     let newRepair = new TariffRepairItem();
     newRepair.part_name = String(this.pcForm.value['part_name']);
     newRepair.alias = String(this.pcForm.get('alias')?.value || this.pcForm.value['part_name']);

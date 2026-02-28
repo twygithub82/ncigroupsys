@@ -604,7 +604,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     const fetchPage = () => {
       this.apollo
         .query<any>({
-          query: GET_TARIFF_REPAIR_QUERY,
+          query: GET_TARIFF_REPAIR_QUERY_WITH_COUNT,
           variables: {
             where,
             order,

@@ -457,6 +457,12 @@
                                   <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
+                                @if (isAllowExport() ) {
+                                <button mat-menu-item (click)="onExport($event,steamRow)">
+                                  <i class="fas fa-file-export"></i>
+                                    {{translatedLangText.EXPORT}}
+                                </button>
+                                }
                               </mat-menu>
                             </mat-cell>
                           </ng-container>

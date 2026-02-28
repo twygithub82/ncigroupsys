@@ -219,7 +219,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   ) {
     super();
     this.translateLangText();
-     this.initSearchForm();
+    this.initSearchForm();
     this.initInvoiceForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -323,13 +323,13 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = data;
       this.searchForm?.patchValue({
-         inv_type:'MASTER_IN'
+        inv_type: 'MASTER_IN'
       });
       // if(this.inventoryTypeCvList.length > 0) 
       // {
       //   this.setSelectedIndex(0);
       // }
-      
+
     });
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
     //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
@@ -428,23 +428,23 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
-     var cond:any={ some: { eir_dt: { lte: Utility.convertDate(new Date(), true) } } };
+    var cond: any = { some: { eir_dt: { lte: Utility.convertDate(new Date(), true) }, delete_dt: { eq: null } } }; //Added delete_dt condition to filter out deleted records
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      cond = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) } } };
+      cond = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'], true) }, delete_dt: { eq: null } } }; //Added delete_dt condition to filter out deleted records
       date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
-      
+
       cond_counter++;
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (queryType == 1) {
-        where.in_gate = {};
-        where.in_gate = cond;
-      }
-      else {
-        where.out_gate = {};
-        where.out_gate = cond;
-      }
+      where.in_gate = {};
+      where.in_gate = cond;
+    }
+    else {
+      where.out_gate = {};
+      where.out_gate = cond;
+    }
 
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
@@ -728,15 +728,15 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     this.resetForm();
   }
 
- setSelectedIndex(index: number) {
-  const options = this.inventoryTypeCvList.filter(
-    cv => this.availableReportTypes.includes(cv.code_val ?? '')
-  );
-  const selectedValue = options[index]?.code_val;
-  if (selectedValue !== undefined) {
-    this.searchForm?.get('inv_type')?.setValue(selectedValue);
+  setSelectedIndex(index: number) {
+    const options = this.inventoryTypeCvList.filter(
+      cv => this.availableReportTypes.includes(cv.code_val ?? '')
+    );
+    const selectedValue = options[index]?.code_val;
+    if (selectedValue !== undefined) {
+      this.searchForm?.get('inv_type')?.setValue(selectedValue);
+    }
   }
-}
 
 
 }

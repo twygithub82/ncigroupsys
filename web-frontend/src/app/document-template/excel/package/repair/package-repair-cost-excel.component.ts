@@ -45,12 +45,11 @@ import {
 } from 'ng-apexcharts';
 import * as XLSX from 'xlsx';
 import { PackageRepairItem } from 'app/data-sources/package-repair';
-import { PackageSteamingItem } from 'app/data-sources/package-steam';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: PackageSteamingItem[],
+  repData: PackageRepairItem[],
   date: string
 }
 
@@ -76,9 +75,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-package-exclusive-steaming-cost-report-excel',
-  templateUrl: './package-exclusive-steaming-cost-excel.component.html',
-  styleUrls: ['./package-exclusive-steaming-cost-excel.component.scss'],
+  selector: 'app-package-repair-cost-report-excel',
+  templateUrl: './package-repair-cost-excel.component.html',
+  styleUrls: ['./package-repair-cost-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -92,7 +91,7 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageRepairCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -154,46 +153,53 @@ export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDes
     CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_MIN_LABOUR: 'COMMON-FORM.PACKAGE-MIN-LABOUR',
-    PACKAGE_MAX_LABOUR: 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    EMAIL: 'COMMON-FORM.EMAIL',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
     COST: 'COMMON-FORM.COST',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP: "COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
+    DIMENSION: "COMMON-FORM.DIMENSION",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
-    MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
-    QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
     EXPORT: 'COMMON-FORM.EXPORT',
-    ADD: 'COMMON-FORM.ADD',
-    REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
-    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
-    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
-
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_REPAIR:'COMMON-FORM.PACKAGE-REPAIR',
+    
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -254,7 +260,7 @@ export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDes
 
 
   constructor(
-    public dialogRef: MatDialogRef<PackageExclusiveSteamingCostExcelComponent>,
+    public dialogRef: MatDialogRef<PackageRepairCostExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -407,73 +413,88 @@ export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDes
   }
 
 
-  async exportExcel(items: PackageSteamingItem[]) {
-      const doc = new jsPDF();
-  
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10;
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-  
-      const contentWidth = pageWidth - leftMargin - rightMargin;
-      const maxContentHeight = pageHeight - topMargin - bottomMargin;
-  
-      let fontSize = 12;
-      doc.setFontSize(fontSize);
-      doc.text("Cleaning Tariff", 105, 15, { align: "center" });
-  
-      let lastTableFinalY = 25;
-      const pagePositions: { page: number; x: number; y: number }[] = [];
-      const table_body_fontsize = 8;
-      const startX = leftMargin;
-      let index = 1;
-  
-      const data: any[][] = items.map((item) => {
-        var itm:any=item;
-        const row = [
-          itm.package_steaming?.customer_company?.name || "-",
-          itm.tariff_cleaning?.cargo || "-",
-          itm.temp_min || "-",
-          itm.temp_max  || "-",
-          this.parse2Decimal(itm.package_steaming?.cost!) || "-",
-          this.parse2Decimal(itm.package_steaming?.labour!) || "-",
-          this.displayLastUpdated(itm) || "-",
-  
-        ];
-        return row;
-      });
-      var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-      const head: (string | number)[][] = [[
-        this.translatedLangText.CUSTOMER,
-        this.translatedLangText.LAST_CARGO,
-        this.translatedLangText.MIN_TEMP,
-        this.translatedLangText.MAX_TEMP,
-        this.translatedLangText.FLAT_RATE,
-        this.translatedLangText.HOURLY_RATE,
-        this.translatedLangText.LAST_UPDATED
-      ]];
-  
-      const rows: (string | number)[][] = [
-        ...head,
-        ...data
+  async exportExcel(items: any[]) {
+    const doc = new jsPDF();
+
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    let fontSize = 12;
+    doc.setFontSize(fontSize);
+    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+
+    let lastTableFinalY = 25;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const table_body_fontsize = 8;
+    const startX = leftMargin;
+    let index = 1;
+
+    const data: any[][] = items.map((item,index) => {
+      const row = [
+        index + 1,
+        item.package_repair.customer_company?.code || "-",
+        item.part_name || "-",
+        item.group_name_cv || "-",
+        item.subgroup_name_cv=="NA"?"-":item.subgroup_name_cv || "-",
+        item.package_repair.labour_hour || 0,
+        this.parse2Decimal(item.package_repair.material_cost!) || "-",
+        item.handled || "-",
+        this.displayLastUpdated(item.package_repair) || "-",
+
       ];
-      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-       worksheet['!cols'] = rows[0].map((_, colIndex) => {
-        const maxLength = rows.reduce((max, row) => {
-          const cell = row[colIndex];
-          return Math.max(max, cell ? cell.toString().length : 0);
-        }, 10);
-        return { wch: maxLength + 2 };
-      });
-      const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-  
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-  
-      XLSX.writeFile(workbook, "ExclusiveSteamingPackage.xlsx");
-      this.dialogRef.close();
-    }
+      return row;
+    });
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+    const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
+      this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.PART_NAME,
+      this.translatedLangText.GROUP,
+      this.translatedLangText.SUB_GROUP,
+      this.translatedLangText.LABOUR_HOUR,
+      this.translatedLangText.MATERIAL_COST$,
+      this.translatedLangText.HANDLED_ITEM,
+      this.translatedLangText.LAST_UPDATED
+    ]];
+
+    const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.PACKAGE_REPAIR}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
+      ...head,
+      ...data
+    ];
+ const totalColumns = head[0].length;
+    var fileName ="RepairPackage.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "repairPackage.xlsx");
+    this.dialogRef.close();
+  }
 
 
   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,

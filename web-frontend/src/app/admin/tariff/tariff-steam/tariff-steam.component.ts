@@ -214,6 +214,7 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
     QTY: 'COMMON-FORM.QTY',
     LABOUR: 'COMMON-FORM.LABOUR$'
+    
   }
   isGeneratingReport: boolean=false;
 

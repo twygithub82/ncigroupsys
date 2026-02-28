@@ -169,6 +169,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     TOTAL: 'COMMON-FORM.TOTAL',
     RESIDUE_QUOTATION: 'COMMON-FORM.RESIDUE-QUOTATION',
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
+    RESIDUE_DISPOSAL_ESTIMATE: 'COMMON-FORM.RESIDUE-DISPOSAL-ESTIMATE',
     APPROVED: 'COMMON-FORM.APPROVED',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
   }
@@ -232,7 +233,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
+    this.pdfTitle = this.translatedLangText.RESIDUE_DISPOSAL_ESTIMATE;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
@@ -817,7 +818,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
      startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
        this.translate, this.pdfTitle, '');
-    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+       startY +=  6;
+    // startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
 
     // startY = 43;
@@ -846,7 +848,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       [
         { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
-        { content: `${this.translatedLangText.QUOTATION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.ESTIMATE_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
       ]
     ];
@@ -926,7 +928,12 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         {
           content: this.translatedLangText.QTY,
 
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: {
+            top: 2,
+            bottom: 2,
+            left: 4,
+            right: 2
+          } }
         },
         {
           content: this.translatedLangText.PRICE,
@@ -977,8 +984,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     const comStyles: any = {
       0: { cellWidth: 11, halign: 'center', valign: 'middle' },
-      1: { cellWidth: 105, halign: 'left', valign: 'middle' },
-      2: { cellWidth: 20, halign: 'center', valign: 'middle' },
+      1: { cellWidth: 112, halign: 'left', valign: 'middle' },
+      2: { cellWidth: 15, halign: 'right', valign: 'middle' },
       3: { cellWidth: 25, halign: 'center', valign: 'middle' },
       4: { halign: 'right', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},

@@ -1147,15 +1147,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var order={};
     var where={};
     this.subs.sink = this.trfRepairDS.SearchAllTariffRepairs(where, order).subscribe(data => {
-      var Items = data;
+     const itms: any[] = data ?? [];
+     const tariffRepairArray = itms.map((itm: any) => itm?.tariff_repair);
+     var Items :TariffRepairItem[] = tariffRepairArray;
 
       
       // Extract group and subgroup names
-      const groupnames = data
+      
+      const groupnames = Items
         .filter(a => a.group_name_cv && a.group_name_cv !== "")
         .map(a => a.group_name_cv);
 
-      const subgroupnames = data
+      const subgroupnames = Items
         .filter(a => a.subgroup_name_cv && a.subgroup_name_cv !== "")
         .map(a => a.subgroup_name_cv);
 
@@ -1260,9 +1263,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
                
               const c: TariffRepairItem = {
                 ...itm,
-                part_name : this.getTariffRepairAlias(itm),
-                group_name_cv: this.displayGroupNameCodeValue_Description(itm.group_name_cv),
-                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.subgroup_name_cv),
+                part_name : this.getTariffRepairAlias(itm.tariff_repair),
+                group_name_cv: this.displayGroupNameCodeValue_Description(itm.tariff_repair.group_name_cv),
+                subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.tariff_repair.subgroup_name_cv),
                 handled:this.getHandledItemDescription(itm.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')
               };
               prcList.push(c);

@@ -205,6 +205,8 @@ export class PackageResidueCostExcelComponent extends UnsubscribeOnDestroyAdapte
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_RESIDUE: 'COMMON-FORM.PACKAGE-RESIDUE',
 
   }
 
@@ -435,8 +437,9 @@ export class PackageResidueCostExcelComponent extends UnsubscribeOnDestroyAdapte
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
       const row = [
+        index + 1,
         item.customer_company?.name || "-",
         item.tariff_residue?.description || "-",
         this.parse2Decimal(item.cost!) || "-",
@@ -448,6 +451,7 @@ export class PackageResidueCostExcelComponent extends UnsubscribeOnDestroyAdapte
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.RESIDUE_TYPE,
       this.translatedLangText.CUSTOMER_COST,
@@ -455,23 +459,36 @@ export class PackageResidueCostExcelComponent extends UnsubscribeOnDestroyAdapte
       this.translatedLangText.LAST_UPDATED_DT
     ]];
 
-    const rows: (string | number)[][] = [
-      ...head,
-      ...data
-    ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-     worksheet['!cols'] = rows[0].map((_, colIndex) => {
-      const maxLength = rows.reduce((max, row) => {
-        const cell = row[colIndex];
-        return Math.max(max, cell ? cell.toString().length : 0);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+      const reportTitle: (string | number)[][] = [
+        [`${this.translatedLangText.PACKAGE_RESIDUE}`]
+      ];
+      const rows: (string | number)[][] = [
+        ...reportTitle,
+        [], // empty row after title
+        ...head,
+        ...data
+      ];
+      const totalColumns = head[0].length;
+      var fileName ="ResidueDisposePackage.xlsx";
+      Utility.saveExcel(rows, fileName, totalColumns);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.writeFile(workbook, "ResidueDisposePackage.xlsx");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "ResidueDisposePackage.xlsx");
     this.dialogRef.close();
   }
 
