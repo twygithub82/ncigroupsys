@@ -1906,7 +1906,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     var totalCost = this.parse2Decimal(cost);
     if (!this.flat_rate) {
       cost *= this.labourHour;
-      totalCost = this.translatedLangText.BY_HOUR;
+      totalCost = this.translatedLangText.HOURLY;
     }
     this.autosteamCost = this.parse2Decimal(this.roundUpCost(cost));
     this.autosteamTotalCost = totalCost;

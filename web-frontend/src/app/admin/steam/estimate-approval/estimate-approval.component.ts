@@ -43,6 +43,7 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -222,6 +223,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   touchStartX = 0;
 
   plDS: PackageLabourDS;
+  isExportingPDF: boolean =false;
 
   // isSteamRepair?: boolean = true;
 
@@ -971,19 +973,26 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     };
     this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data.length > 0) {
+        
         var cost: number = data[0].cost;
         sot.steaming = sot.steaming?.map(stm => {
           var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
+          var isFlateRate = Boolean(stm.flat_rate)
           var net_cost = "";
+           var isApproved = this.IsApproved(stm);
           if (isAutoApproveSteaming) {
+           
             net_cost = this.displayNumber(stm.rate || 0);
             if (!stm.flat_rate) {
+              if(isApproved){
+                cost = Number(stm?.steaming_part?.[0]?.approve_labour || 0);
+              }
               net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
             }
           }
           else {
-            var isApproved = true;
-            isApproved = BusinessLogicUtil.isEstimateApproved(stm);
+            // var isApproved = true;
+            // isApproved = BusinessLogicUtil.isEstimateApproved(stm);
             if (isApproved) {
               net_cost = this.displayNumber(this.steamDS.getApprovalTotalWithLabourCost(stm?.steaming_part, cost).total_mat_cost || 0);
             }
@@ -992,7 +1001,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             }
           }
 
-          return { ...stm, net_cost: net_cost };
+          return { ...stm, net_cost: net_cost,labour_cost:cost };
         });
         // var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
         // if (isAutoApproveSteaming) {
@@ -1167,6 +1176,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (bRetval) return bRetval;
     bRetval = this.isAllowDelete() && this.steamDS.canCancel(steamRow);
     if (bRetval) return bRetval;
+    bRetval = this.isAllowExport() 
+    if (bRetval) return bRetval;
 
     return bRetval;
   }
@@ -1196,4 +1207,74 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   isAllowView() {
     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
   }
+
+  isAllowExport() {
+    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
+  }
+
+  
+
+  onExport(event: Event, item: any) {
+      this.preventDefault(event);
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      this.isExportingPDF = true;
+      const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+        width: '794px',
+        height: '80vh',
+        data: {
+          steam_guid: item?.guid,
+          estimate_no: item?.estimate_no,
+          // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
+          packageLabourCost: this.getRate(item)
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      dialogRef.updatePosition({
+        top: '-9999px',  // Move far above the screen
+        left: '-9999px'  // Move far to the left of the screen
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isExportingPDF = false;
+      });
+    }
+
+     getRate(item:any): number {
+    //   var rate = 0;
+    //   var isSteamRepair=this.steamDS.IsSteamRepair(item!);
+    //   if (isSteamRepair) {
+    //    return item?.labour_cost || 0;
+    //  }
+      return item?.labour_cost||0;
+    // if (isSteamRepair) {
+    //   return this.packageLabourItem?.cost || 0;
+    // }
+    // else {
+    //   if (!this.flat_rate) {
+    //     if (this.IsApproved()) {
+    //       return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
+    //     }
+    //     else {
+    //       return this.packageLabourItem?.cost || 0;
+    //     }
+    //   }
+    //   else {
+    //     if (this.IsApproved()) {
+    //       return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
+    //     }
+    //     else {
+    //       return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
+    //     }
+    //   }
+    // }
+  }
+
+  
+
+  
 }

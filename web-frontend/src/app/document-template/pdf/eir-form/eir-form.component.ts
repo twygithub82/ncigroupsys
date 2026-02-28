@@ -646,73 +646,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
-    // Get the element correctly (remove the dot from className)
-    // const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
-
-    // if (!elements || elements.length === 0) {
-    //   console.error('Element not found');
-    //   return;
-    // }
-
-    // Get the first element with the class
-    //const element = elements[0];
-    // const element =document.getElementById('test1') as HTMLElement;
-    // const styles = window.getComputedStyle(element);
-    // console.log(`Computed styles count: ${styles.length}`);
-    //const contentWidth = pageWidth - leftMargin - rightMargin;
+    
     const chartContentWidth = contentWidth;
 
-    // const canvas = await html2canvas(element as HTMLElement, { scale: scale });
-    // let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-    // const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
-    // const walkwayEl = this.captureWalkwayElementRef.nativeElement as HTMLElement;
-    //  const clonedEl= element.cloneNode(true) as HTMLElement;
-    // this.copyComputedStyles(originalEl,clonedEl);
     const element = this.captureInfoElementRef.nativeElement as HTMLElement
 
-    //   const clonedEl= element.cloneNode(true) as HTMLElement;
-    //  const computedStyle = window.getComputedStyle(element);
-    //   Array.from(computedStyle).forEach(prop => {
-    //     clonedEl.style.setProperty(prop, computedStyle.getPropertyValue(prop), 
-    //       computedStyle.getPropertyPriority(prop));
-    //   });
-
-    //   clonedEl.style.position = 'fixed';
-    //   clonedEl.style.top = '-9999px';
-    //   clonedEl.style.left = '-9999px';
-    //   clonedEl.style.zIndex = '-9999';
-    //   //clonedEl.style.opacity = '0'; // make sure it's invisible
-
-    //   // Append to DOM
-    //   document.body.appendChild(clonedEl);
-
-    //   // Wait for layout, fonts, images (especially if any are async)
-    //   await new Promise(resolve => requestAnimationFrame(resolve));
-    //   await new Promise(resolve => setTimeout(resolve, 100)); // give it a moment more
-
-    // // Append to body temporarily (but off-screen)
-    //  clonedEl.style.position = 'absolute';
-    // // clonedEl.style.left = '-9999px';
-    //  document.body.appendChild(clonedEl)
-
-    // //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
-    // //const imgData = await Utility.convertToImage(originalEl as HTMLElement,"jpeg");
-
-    //   const imgData = await Utility.convertWithDomToImage(clonedEl as HTMLElement,"jpeg");
-    //   const imgInfo = await Utility.getImageSizeFromBase64(imgData);
-    //   const aspectRatio = imgInfo.width / imgInfo.height;
-
-
-    //   const element1 =document.getElementById('test2') as HTMLElement;
-    //    const styles1 = window.getComputedStyle(element);
-    //   console.log(`Computed styles count: ${styles1.length}`);
-
-    // const MalidEl = this.captureMalidElementRef.nativeElement as HTMLElement;
-    //   // const clonedEl= element.cloneNode(true) as HTMLElement;
-    // this.copyComputedStyles(originalEl,clonedEl);
-
-    //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
-    //const imgData = await Utility.convertToImage(originalEl as HTMLElement,"jpeg");
+    
 
     const perf = window.performance;
     const startTotal = perf.now();
@@ -760,6 +699,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
 
     textContent = `${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
+    textContent = textContent.toUpperCase();
     PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
 
     textContent = `${this.translatedLangText.EIR_COMPANY_DECLARATION}`;
