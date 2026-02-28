@@ -773,7 +773,7 @@ customer_companyList: CustomerCompanyItem[] = [];
       const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
       return `${baseClasses} ${centerClass}`.trim();
     }
-  }
+  
 
   isAtLeastOneInvalid(): boolean {
   return (
