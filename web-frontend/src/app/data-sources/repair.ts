@@ -562,6 +562,7 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
         update_by
         update_dt
         bill_to_guid
+        job_no
         repair_part {
           action
           create_by
@@ -902,6 +903,7 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
         approve_dt
         allocate_by
         allocate_dt
+        job_no
         repair_part(where: $repair_part_where) {
           action
           create_by

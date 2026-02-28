@@ -866,11 +866,11 @@
     "TAKE-IN-STATUS": "Take-in Status",
     "YES": "Yes",
     "NO": "No",
-    "BOTTOM-DIS-COMP--ABB": "Btm. dis. type",
-    "BOTTOM-DIS-VALVE--ABB": "Btm. dis. valve",
-    "TOP-DIS-COMP--ABB": "Top. dis. type",
-    "TOP-DIS-VALVE--ABB": "Top. dis. valve",
-    "MANLID-COMP--ABB": "Manlid type",
+    "BOTTOM-DIS-COMP--ABB": "Bottom Discharge Type",
+    "BOTTOM-DIS-VALVE--ABB": "Bottom Discharge Valve",
+    "TOP-DIS-COMP--ABB": "Top. Discharge Type",
+    "TOP-DIS-VALVE--ABB": "Top Discharge Valve",
+    "MANLID-COMP--ABB": "Manlid Type",
     "CRN": "CRN",
     "EIR-COMPANY-DECLARATION": "Document reports only the present external condition and it is subject to later internal check after cleaning of the unit",
     "EIR-HAULIER-DECLARATION": "Equipment is delivered in good condition except as noted above",
@@ -1296,6 +1296,7 @@
     "FEATURES": "Features",
     "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
     "STEAMING-ESTIMATE-DETAILS": "Steaming Estimate Details",
+    "STEAMING-ESTIMATE": "Steaming Estimate",
     "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
     "APPROVAL_DATE": "Approval Date",
     "CLEAN-DURATION": "Cleaning Duration",
@@ -1381,7 +1382,12 @@
     "CLEANING-FORMULA": "Cleaning Formula",
     "CONDITIONS": "Conditions",
     "QC-REJECTED": "QC Rejected",
-    "TARIFF-STEAMING":"Tariff Steaming"
+    "TARIFF-STEAMING":"Tariff Steaming",
+    "TBA": "TBA",
+    "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
+    "CLEANING-ESTIMATE": "Cleaning Estimate",
+    "TOTAL-LABOUR": "Total Labour"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

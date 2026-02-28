@@ -164,7 +164,9 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
     CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
-    TOTAL: 'COMMON-FORM.TOTAL'
+    TOTAL: 'COMMON-FORM.TOTAL',
+    CLEANING_ESTIMATE: 'COMMON-FORM.CLEANING-ESTIMATE',
+    COST: 'COMMON-FORM.COST',
   }
 
 
@@ -229,7 +231,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.LAST_CARGO_CLEANING_QUOTATION;
+    this.pdfTitle = this.translatedLangText.CLEANING_ESTIMATE;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
@@ -342,7 +344,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
       this.generatingPdfProgress = 100;
 
       // Save PDF
-      pdf.save(`CLEANING_QUOTATION-${this.cleaningItem?.storing_order_tank?.in_gate?.[0]?.eir_no}.pdf`);
+      pdf.save(`CLEANING_ESTIMATE-${this.cleaningItem?.storing_order_tank?.in_gate?.[0]?.eir_no}.pdf`);
       this.generatedPDF = pdf.output('blob');
       // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
       this.generatingPdfLoadingSubject.next(false);
@@ -773,7 +775,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     startY += 4;
     this.createCleaningEstimateDetail(pdf, startY, leftMargin, rightMargin, pageWidth);
 
-    var pdfFileName = `CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
+    var pdfFileName = `CLEANING_ESTIMATE-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
     this.downloadFile(pdf.output('blob'), pdfFileName)
     // this.generatedPDF = pdf.output('blob');
     // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
@@ -978,7 +980,8 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
      startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
        this.translate, this.pdfTitle, '');
-    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+       startY +=  6;
+    // startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
 
     // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, item.customer_company);
 
@@ -1003,7 +1006,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
       [
         { content: `${this.translatedLangText.JOB_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.job_no}` },
-        { content: `${this.translatedLangText.QUOTATION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.translatedLangText.ESTIMATE_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${this.displayDate(item?.create_dt)}` }
       ]
       // [
@@ -1103,9 +1106,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           styles: { fontSize: fontSz, halign: 'left', valign: vAlign, fillColor: 255, lineWidth: 0.0, cellPadding: 2 }
         },
         {
-          content: this.translatedLangText.CLEANING_COST,
+          content: this.translatedLangText.COST,
 
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 255, lineWidth: 0.0, cellPadding: 2 }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 255, lineWidth: 0.0, cellPadding: {
+            top:2,bottom:2,right:2,left:7
+          } }
         },
 
       ]
