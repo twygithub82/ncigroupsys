@@ -29,14 +29,6 @@
                             <mat-icon>add</mat-icon>
                           </button>
                         </div>
-                        <div class="m-l-10" [matTooltip]="translatedLangText.SELECT_ALL">
-                          <mat-checkbox class="card-checkbox ms-1" color="primary" (change)="masterToggle()"
-                            (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
-                            [disabled]="isGeneratingReport"
-                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
-                            {{translatedLangText.SELECT_ALL}}
-                          </mat-checkbox>
-                        </div>
                         <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
                           <button mat-mini-fab color="accent" (click)="resetDialog($event)"
                             [disabled]="isGeneratingReport" (click)="$event.stopPropagation()">
@@ -51,6 +43,14 @@
                             class="fab-icon">
                         </button>
                         }
+                                                <div class="m-l-10" [matTooltip]="translatedLangText.SELECT_ALL">
+                          <mat-checkbox class="card-checkbox ms-1" color="primary" (change)="masterToggle()"
+                            (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
+                            [disabled]="isGeneratingReport"
+                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
+                            {{translatedLangText.SELECT_ALL}}
+                          </mat-checkbox>
+                        </div>
                       </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div class="row">
