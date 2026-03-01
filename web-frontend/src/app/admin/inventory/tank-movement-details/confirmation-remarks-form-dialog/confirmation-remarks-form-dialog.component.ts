@@ -71,6 +71,7 @@ export class ConfirmationRemarksFormDialogComponent {
   estCompleteDt?: moment.Moment;
   last_remarks?: string;
   startDateQC = new Date();
+  maxManuDOMDt: Date = new Date();
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmationRemarksFormDialogComponent>,
