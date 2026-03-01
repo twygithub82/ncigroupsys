@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { CleaningCategoryExcelComponent } from "./cleaning-category-excel.component"
-describe("CleaningCategoryExcelComponent", () => {
-  let component: CleaningCategoryExcelComponent;
-  let fixture: ComponentFixture<CleaningCategoryExcelComponent>;
+import { YardSummaryReportExcelComponent } from "./summary-report-excel.component"
+describe("YardSummaryReportExcelComponent", () => {
+  let component: YardSummaryReportExcelComponent;
+  let fixture: ComponentFixture<YardSummaryReportExcelComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [CleaningCategoryExcelComponent],
+    imports: [YardSummaryReportExcelComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(CleaningCategoryExcelComponent);
+    fixture = TestBed.createComponent(YardSummaryReportExcelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
