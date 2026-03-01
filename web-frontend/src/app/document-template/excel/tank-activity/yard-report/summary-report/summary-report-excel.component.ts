@@ -45,15 +45,13 @@ import {
 } from 'ng-apexcharts';
 import * as XLSX from 'xlsx';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: StoringOrderTankItem[],
-  date: string
+  repData: any[],
+  date: string,
+  title:string
 }
 
 export type ChartOptions = {
@@ -78,9 +76,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-inventory-booking-excel',
-  templateUrl: './inventory-booking-excel.component.html',
-  styleUrls: ['./inventory-booking-excel.component.scss'],
+  selector: 'app-summary-report-excel',
+  templateUrl: './summary-report-excel.component.html',
+  styleUrls: ['./summary-report-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -94,10 +92,9 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class YardSummaryReportExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-      NEW: 'COMMON-FORM.NEW',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -113,46 +110,25 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
+    DELETE: 'COMMON-FORM.DELETE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE",
-    BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
-    YARD: "COMMON-FORM.YARD",
-    BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
-    REFERENCE: "COMMON-FORM.REFERENCE",
-    SURVEYOR: "COMMON-FORM.SURVEYOR",
-    BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
-    CAPACITY: "COMMON-FORM.CAPACITY",
-    TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
-    ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
-    BOOKINGS: "COMMON-FORM.BOOKINGS",
-    SELECT_ALL: "COMMON-FORM.SELECT-ALL",
-    ACTION_DATE: "COMMON-FORM.ACTION-DATE",
-    BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
-    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
-    SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
+    NAME: "COMMON-FORM.NAME",
+    DESCRIPTION: "COMMON-FORM.DESCRIPTION",
+    CATEGORY_COST: "COMMON-FORM.CARGO-COST",
+    NEW: 'COMMON-FORM.NEW',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
-    BOOKED: 'COMMON-FORM.BOOKED',
-    SCHEDULED: 'COMMON-FORM.SCHEDULED',
-    REMARKS: 'COMMON-FORM.REMARKS',
-    CONFIRM: 'COMMON-FORM.CONFIRM',
-    EXISTED: 'COMMON-FORM.EXISTED',
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    SAVE: 'COMMON-FORM.SAVE',
-    UPDATE: 'COMMON-FORM.UPDATE',
-    DATE: 'COMMON-FORM.DATE',
+    CATEGORY_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
+    CATEGORY_NAME_SELECTED: 'COMMON-FORM.SELECTED',
+    NO_TANK: 'COMMON-FORM.NO-TANK',
     S_N:'COMMON-FORM.S_N',
-    BOOKING:'COMMON-FORM.BOOKING',
-
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -170,6 +146,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
+  report_title:string="";
   repairItem: any;
 
   last_test_desc?: string = ""
@@ -207,14 +184,13 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
   repType?: string;
   customer?: string;
   index: number = 0;
-  ccDS:CustomerCompanyDS;
   // date:string='';
   // invType:string='';
 
 
 
   constructor(
-    public dialogRef: MatDialogRef<InventoryBookingExcelComponent>,
+    public dialogRef: MatDialogRef<YardSummaryReportExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -226,18 +202,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
     this.translateLangText();
     this.InitialDefaultData();
     this.date = this.data.date;
-    // this.processTankStatus(data.repData);
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-
-
+    // this.report_title=this.data.title;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -367,7 +332,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-  async exportExcel(items: StoringOrderTankItem[]) {
+  async exportExcel(items: any[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -382,7 +347,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
 
     let fontSize = 12;
     doc.setFontSize(fontSize);
-    doc.text("Inventory Booking", 105, 15, { align: "center" });
+    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
 
     let lastTableFinalY = 25;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -390,46 +355,25 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
     const startX = leftMargin;
     let index = 1;
 
-   const data: any[][] = items.flatMap((item) => {
-      if (!item.booking || item.booking.length === 0) {
-        return []; // Skip this item completely
-      }
-
-      return item.booking.map((b) => {
-        return [
-          index++,
-          item.tank_no || "-",
-          `${this.ccDS.displayCodeDashName(item.storing_order?.customer_company)}`,
-          item.in_gate?.[0]?.eir_no || "-",
-          this.displayDate(item.in_gate?.[0]?.eir_dt) || "-",
-          item.tank_status_cv || "-",
-          item.in_gate?.[0]?.yard_cv || "-",
-          this.displayDate(b?.booking_dt) || "-",
-          b?.book_type_cv || "-",
-          b?.reference || "-",
-          b?.test_class_cv || "-"
-        ];
-      });
+    const data: any[][] = items.map((item,index) => {
+      const row = [
+        index + 1,
+        item.code|| "-",
+        item.customer || "-",
+        item.number_tank || "-"
+      ];
+      return row;
     });
-
-
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-    const head: (string | number)[][] = [[
-      this.translatedLangText.S_N,
-      this.translatedLangText.TANK_NO,
-      this.translatedLangText.CUSTOMER,
-      this.translatedLangText.EIR_NO,
-      this.translatedLangText.EIR_DATE,
-      this.translatedLangText.STATUS,
-      this.translatedLangText.YARD,
-      this.translatedLangText.BOOKING_DATE,
-      this.translatedLangText.BOOKING_TYPE,
-      this.translatedLangText.REFERENCE,
-      this.translatedLangText.SURVEYOR
+     const head: (string | number)[][] = [[
+       this.translatedLangText.S_N,
+      this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.CUSTOMER_NAME,
+      this.translatedLangText.NO_TANK
     ]];
 
-     const reportTitle: (string | number)[][] = [
-      [`${this.translatedLangText.BOOKING}`]
+    const reportTitle: (string | number)[][] = [
+      [`${this.data.title}`],
     ];
    const rows: (string | number)[][] = [
       ...reportTitle,
@@ -437,19 +381,35 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
       ...head,
       ...data
     ];
- const totalColumns = head[0].length;
-    var fileName ="Inventory_Booking.xlsx";
+
+    const totalColumns = head[0].length;
+    var fileName =`${this.data.title.replace(": ","_")}.xlsx`;
     Utility.saveExcel(rows, fileName, totalColumns);
+    // const head: (string | number)[][] = [[
+    //   this.translatedLangText.S_N,
+    //   this.translatedLangText.CUSTOMER_CODE,
+    //   this.translatedLangText.CUSTOMER_NAME,
+    //   this.translatedLangText.NO_TANK
+      
+    // ]];
+
     // const rows: (string | number)[][] = [
     //   ...head,
     //   ...data
     // ];
     // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
     // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
     // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    // XLSX.writeFile(workbook, "Inventory_Booking.xlsx");
+    // XLSX.writeFile(workbook, "CleaningCategory.xlsx");
     this.dialogRef.close();
   }
 

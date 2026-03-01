@@ -722,7 +722,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     const subtitlePos = 1;
     let startPosY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin,this.translate,reportTitle,'');
-    startPosY+= (PDFUtility.GapBetweenSubTitleAndTable_Landscape()*2);
+    startPosY+= (PDFUtility.GapBetweenSubTitleAndTable_Landscape());
 
     // lastTableFinalY +=8;
     var CurrentPage = 1;

@@ -49,6 +49,7 @@ import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-job-order',
@@ -85,7 +86,7 @@ import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
     BayOverviewComponent
   ],
   providers: [
-    { provide: MatPaginatorIntl, useClass: MatPaginatorIntl }
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

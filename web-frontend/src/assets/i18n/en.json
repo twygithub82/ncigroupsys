@@ -117,6 +117,7 @@
         "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form",
         "TRANSFER": "Transfer",
         "RELOCATION": "Relocation"
+        
       }
     },
     "REPAIR": {
@@ -1388,7 +1389,16 @@
     "TBA": "TBA",
     "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
     "CLEANING-ESTIMATE": "Cleaning Estimate",
-    "TOTAL-LABOUR": "Total Labour"
+    "TOTAL-LABOUR": "Total Labour",
+    "NO-REPORT-AVAILABLE": "No Report Available",
+    "UN-NUMBER":"UN Number",
+    "MASTER-IN": "Master In",
+    "MASTER-OUT": "Master Out",
+    "NO-TANK":"No of Tanks",
+    "YARD-SUMMARY-REPORT": "Yard Summary Report",
+    "CLEAN-CERT":"Clean Cert",
+    "TARE":"Tare",
+    "EXTERNAL-SURVEY": "External Survey"
     
   },
   "CLEAN-PROCEDURES": {
