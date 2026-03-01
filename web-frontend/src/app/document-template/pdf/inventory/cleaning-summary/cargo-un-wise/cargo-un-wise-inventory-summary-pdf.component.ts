@@ -239,12 +239,13 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     CLEANING_ACTIVITY: 'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CUSTOMER_WISE: 'COMMON-FORM.CUSTOMER-WISE',
     CARGO_WISE: 'COMMON-FORM.CARGO-WISE',
-    UN_WISE: 'COMMON-FORM.UN-WISE',
+    UN_WISE: 'COMMON-FORM.UN-NUMBER',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
     CARGO: 'COMMON-FORM.CARGO',
     CARGOES: 'COMMON-FORM.CARGOES',
-    UN: 'COMMON-FORM.CARGO-UN-NO',
+    UN: 'COMMON-FORM.UN-NUMBER',
     S_N: 'COMMON-FORM.S_N'
+
 
   }
 
@@ -894,7 +895,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.report_summary_item[n];
       data.push([
-        (++idx).toString(), itm.code || "", itm.count || "0"
+        (++idx).toString(), itm.code || "-", itm.count || "0"
       ]);
     }
 

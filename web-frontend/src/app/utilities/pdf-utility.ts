@@ -132,6 +132,7 @@ export class PDFUtility {
     }
 
     titleX += additionalBufferX;
+    title = title.toUpperCase();
     pdf.text(title, titleX, topPosition); // Position it at the top
 
     // pdf.setLineDashPattern([0, 0], 0);
@@ -1556,7 +1557,7 @@ export class PDFUtility {
   }
 
   static SubTitlePositionY_Portrait(): number {
-    var buffer = 10;
+    var buffer = 6;
     return (this.TitlePositionY_Portrait() + buffer)
   }
 
@@ -1679,11 +1680,13 @@ export class PDFUtility {
   }
 
   static GapBetweenSubTitleAndTable_Portrait() {
-    return ((this.SubTitleFontSize_Portrait() / 2) + 1);
+    return 6;
+    // return ((this.SubTitleFontSize_Portrait() / 2) + 1);
   }
 
   static GapBetweenSubTitleAndTable_Landscape() {
-    return ((this.SubTitleFontSize_Landscape() / 2) + 1);;
+    return 6;
+    // return ((this.SubTitleFontSize_Landscape() / 2) + 1);;
   }
 
   static drawBoxWithText(

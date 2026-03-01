@@ -974,11 +974,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
      export_excel()
         {
           this.isGeneratingReport=true;
-           const where: any = {
-              and: [
-                { status_cv: { eq: "ACCEPTED" } },
-              ]
-            };
+          const where :any = this.lastSearchCriteria;
+          //  const where: any = {
+          //     and: [
+          //       { status_cv: { eq: "ACCEPTED" } },
+          //     ]
+          //   };
           this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res=>{
                 
                 var prcList:StoringOrderTankItem[]=res.map(item => ({
@@ -988,12 +989,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
                     ...i,
                     yard_cv: this.getYardDescription(i.yard_cv),
                   })),
-                  booking:item.booking?.map(b=>({
-                   ...b,
-                   book_type_cv: this.getBookTypeDescription(b.book_type_cv),
-
-                  })
-                  )
+                  booking:item.booking
+                  ?.filter(b => b.delete_dt == null)
+                  .map(b => ({
+                    ...b,
+                    book_type_cv: this.getBookTypeDescription(b.book_type_cv)
+                  }))
                 }));;
                 this.exportExcelReport(prcList);
       

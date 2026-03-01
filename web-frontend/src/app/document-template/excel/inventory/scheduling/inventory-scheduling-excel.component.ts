@@ -151,7 +151,9 @@ export class InventorySchedulingExcelComponent extends UnsubscribeOnDestroyAdapt
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SAVE: 'COMMON-FORM.SAVE',
-    UPDATE: 'COMMON-FORM.UPDATE'
+    UPDATE: 'COMMON-FORM.UPDATE',
+    SCHEDULING: 'COMMON-FORM.SCHEDULING',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -396,6 +398,7 @@ const data: any[][] = items.flatMap((item) => {
 
       return item.scheduling_sot.map((s) => {
         return [
+          index++,
           item.tank_no || "-",
           `${this.ccDS.displayCodeDashName(item.storing_order?.customer_company)}`,
           item.in_gate?.[0]?.eir_no || "-",
@@ -413,6 +416,7 @@ const data: any[][] = items.flatMap((item) => {
 
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.EIR_NO,
@@ -425,16 +429,28 @@ const data: any[][] = items.flatMap((item) => {
       this.translatedLangText.STATUS
     ]];
 
-    const rows: (string | number)[][] = [
+     const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.SCHEDULING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="Inventory_Scheduling.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "Inventory_Scheduling.xlsx");
+    // XLSX.writeFile(workbook, "Inventory_Scheduling.xlsx");
     this.dialogRef.close();
   }
 

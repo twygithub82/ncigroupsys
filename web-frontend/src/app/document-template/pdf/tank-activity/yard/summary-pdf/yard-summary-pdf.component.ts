@@ -869,6 +869,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
+      fontSize: fontSz_hdr,
       fontStyle: "bold", // Valid fontStyle value
       halign: 'center', // Centering header text
       valign: 'middle',
@@ -888,7 +889,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
 
-    let fontSz = 5.5;
+    let fontSz = fontSz_body;
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
     pdf.setFontSize(8);

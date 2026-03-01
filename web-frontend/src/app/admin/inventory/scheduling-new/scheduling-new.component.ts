@@ -956,11 +956,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
      export_excel()
           {
             this.isGeneratingReport=true;
-             const where: any = {
-                and: [
-                  { status_cv: { eq: "ACCEPTED" } },
-                ]
-              };
+            const where :any = this.lastSearchCriteria;
+            //  const where: any = {
+            //     and: [
+            //       { status_cv: { eq: "ACCEPTED" } },
+            //     ]
+            //   };
            this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
 
                 const prcList: StoringOrderTankItem[] = res.map(item => ({
@@ -975,12 +976,14 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
                   scheduling_sot: item.scheduling_sot?.map(b => ({
                     ...b,
-                    scheduling: b.scheduling ? {
-                      ...b.scheduling,   
-                      book_type_cv: this.getBookTypeDescription(
-                        b.scheduling?.book_type_cv
-                      )
-                    } : undefined,
+                    scheduling: b.scheduling && b.scheduling.delete_dt === null
+                    ? {
+                        ...b.scheduling,
+                        book_type_cv: this.getBookTypeDescription(
+                          b.scheduling.book_type_cv
+                        )
+                      }
+                    : b.scheduling,   // keep original if deleted or undefined
 
                     status_cv: this.getBookingStatusDescription(b.status_cv)
                   }))
