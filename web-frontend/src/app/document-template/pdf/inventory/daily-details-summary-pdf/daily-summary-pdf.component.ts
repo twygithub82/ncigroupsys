@@ -1059,8 +1059,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     // await this.AddOverviewSummary_r1(pdf, lastTableFinalY, pageNumber, pageWidth, pageHeight, rightMargin, leftMargin, 
       // minHeightBodyCell, minHeightHeaderCol, bottomMargin, pagePositions,startPosY,addPage);
-      await this.AddOverviewSummary_r2(pdf, topMargin, pageNumber, pageWidth, pageHeight, rightMargin, leftMargin, 
-        minHeightBodyCell, minHeightHeaderCol, bottomMargin, pagePositions);
+      // await this.AddOverviewSummary_r2(pdf, topMargin, pageNumber, pageWidth, pageHeight, rightMargin, leftMargin, 
+      //   minHeightBodyCell, minHeightHeaderCol, bottomMargin, pagePositions);
 
      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate,pagePositions);
