@@ -188,7 +188,8 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     PROFILES_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
-
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_DEPOT_COST:'COMMON-FORM.PACKAGE-DEPOT-COST',
 
   }
 
@@ -504,9 +505,10 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
       var itm: any = item;
       const row = [
+        index+1,
         item.customer_company?.name || "-",
         item.tariff_depot?.profile_name || "-",
         this.parse2Decimal(item.gate_in_cost || 0) || "-",
@@ -521,6 +523,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.PROFILE_NAME,
       this.translatedLangText.IN_OUT_SURCHARGE_COST,
@@ -531,16 +534,37 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
       this.translatedLangText.LAST_UPDATED_DT
     ]];
 
-    const rows: (string | number)[][] = [
+     const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.PACKAGE_DEPOT_COST}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    const totalColumns = head[0].length;
+    var fileName ="DepotCostPackage.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
 
-    XLSX.writeFile(workbook, "DepotCostPackage.xlsx");
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "DepotCostPackage.xlsx");
     this.dialogRef.close();
   }
 

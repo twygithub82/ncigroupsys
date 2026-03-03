@@ -48,7 +48,7 @@
                       @for (cc of customerTypeCvList; track cc) {
                       @if ((modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) ||
                       !starterPackageNotAllowCustomerType.includes(cc.code_val || '')) {
-                      @if (cc.code_val !== "SURVEYOR") {
+                      @if ((cc.code_val !== "SURVEYOR")&&(cc.code_val !== "BRANCH")) {
                       <mat-option [value]="cc">
                         {{ cc.description }}
                       </mat-option>
@@ -209,12 +209,12 @@
                     <input matInput formControlName="remarks">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
+                <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.MAX_DISCOUNT}}</mat-label>
                     <input matInput formControlName="approval_threshold" type="number" [max]="50" [min]="0">
                   </mat-form-field>
-                </div>
+                </div> -->
                 @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
@@ -231,7 +231,7 @@
                 </div>
                 @if (canEdit() && canEditBillingBranch()) {
                 <div [ngClass]="getColumnClasses('col-xl-2 col-lg-2 col-md-12 col-sm-12',false,false,false,false,false,!isMobile,isMobile)" >
-                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
+                  <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'" [disabled]="!canAddBillingBranch()"
                     (click)="addBillingBranch($event)">
                     <mat-icon class="">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
                   </button>

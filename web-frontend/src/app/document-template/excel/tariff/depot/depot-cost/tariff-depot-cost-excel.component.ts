@@ -147,7 +147,8 @@ export class TariffDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter i
     LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    
+    S_N: 'COMMON-FORM.S_N',
+    DEPOT_COST_TARIFF: 'COMMON-FORM.DEPOT-COST-TARIFF',
 
   }
 
@@ -463,9 +464,10 @@ async exportExcel(items: TariffDepotItem[]) {
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
                 var itm:any = item;
                 const row = [
+                    index+1,
                     itm.profile_name||"-",
                     itm.description||"-",
                     itm.preinspection_cost|| "-",
@@ -482,6 +484,7 @@ async exportExcel(items: TariffDepotItem[]) {
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
    const head: (string | number)[][] = [[
+    this.translatedLangText.S_N,
     this.translatedLangText.PROFILE_NAME,
   this.translatedLangText.DESCRIPTION,
   this.translatedLangText.PREINSPECTION_COST,
@@ -494,16 +497,36 @@ async exportExcel(items: TariffDepotItem[]) {
   this.translatedLangText.LAST_UPDATED_DT
 ]];
 
-    const rows: (string | number)[][] = [
+
+   const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.DEPOT_COST_TARIFF}`],
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    const totalColumns = head[0].length;
+    var fileName ="DepotCostTariff.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+  //   const rows: (string | number)[][] = [
+  //     ...head,
+  //     ...data
+  //   ];
+  //  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+  //   worksheet['!cols'] = rows[0].map((_, colIndex) => {
+  //     const maxLength = rows.reduce((max, row) => {
+  //       const cell = row[colIndex];
+  //       return Math.max(max, cell ? cell.toString().length : 0);
+  //     }, 10);
+  //     return { wch: maxLength + 2 };
+  //   });
+  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "DepotCostTariff.xlsx");
+  //   XLSX.writeFile(workbook, "DepotCostTariff.xlsx");
     this.dialogRef.close();
 }
 

@@ -2,92 +2,12 @@
   "SOFTWARE-NAME": {
     "TEXT": "IDMS"
   },
-  "HEADER": {
-    "SEARCH": {
-      "TEXT": "Search.."
-    }
-  },
   "MENUITEMS": {
-    "USER": {
-      "POST": "Manager"
-    },
-    "MAIN": {
-      "TEXT": "Main"
-    },
     "DASHBOARD": {
-      "TEXT": "Dashboard",
-      "LIST": {
-        "DASHBOARD1": "Dashboard 1",
-        "DASHBOARD2": "Dashboard 2",
-        "DASHBOARD3": "Dashboard 3"
-      }
-    },
-    "ADVANCE-TABLE": {
-      "TEXT": "Advance Table"
-    },
-    "APPS": {
-      "TEXT": "Apps"
-    },
-    "CALENDAR": {
-      "TEXT": "Calendar"
-    },
-    "TASK": {
-      "TEXT": "Task"
-    },
-    "CONTACTS": {
-      "TEXT": "Contacts"
-    },
-    "EMAIL": {
-      "TEXT": "Email",
-      "LIST": {
-        "INBOX": "Inbox",
-        "COMPOSE": "Compose",
-        "READ": "Read Email"
-      }
-    },
-    "MORE-APPS": {
-      "TEXT": "More Apps",
-      "LIST": {
-        "CHAT": "Chat",
-        "SUPPORT": "Support",
-        "DRAG-DROP": "Drag & Drop",
-        "CONTACT-GRID": "Contact Grid"
-      }
-    },
-    "COMPONENTS": {
-      "TEXT": "Components"
-    },
-    "WIDGETS": {
-      "TEXT": "Widgets",
-      "LIST": {
-        "CHART-WIDGET": "Chart-Widget",
-        "DATA-WIDGET": "Data-Widget"
-      }
-    },
-    "FORMS": {
-      "TEXT": "Forms",
-      "LIST": {
-        "CONTROLS": "Form Controls",
-        "ADVANCE": "Advance Control",
-        "EXAMPLE": "Form Examples",
-        "VALIDATION": "Form Validation",
-        "WIZARD": "Wizard",
-        "EDITORS": "Editors"
-      }
-    },
-    "TABLES": {
-      "TEXT": "Tables",
-      "LIST": {
-        "BASIC": "Basic Tables",
-        "MATERIAL": "Material Tables",
-        "NGX-DATATABLE": "NGX-Datatable"
-      }
+      "TEXT": "Dashboard"
     },
     "HOME": {
       "TEXT": "Home"
-    },
-    "ADMIN": {
-      "TEXT": "Admin"
     },
     "TARIFF": {
       "TEXT": "Tariff",
@@ -171,9 +91,6 @@
         "ORDER-TRACK-REPORTS": "Order Track Reports"
       }
     },
-    "NEW": {
-      "TEXT": "New"
-    },
     "INVENTORY": {
       "TEXT": "Inventory",
       "LIST": {
@@ -200,6 +117,7 @@
         "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form",
         "TRANSFER": "Transfer",
         "RELOCATION": "Relocation"
+        
       }
     },
     "REPAIR": {
@@ -532,6 +450,7 @@
     "CLADDING": "Cladding",
     "CAPACITY": "Capacity",
     "TARE-WEIGHT": "Tare Weight",
+    "TARE": "Tare",
     "MAX-GROSS-WEIGHT": "Max Gross Weight",
     "TANK-HEIGHT": "Tank Height",
     "WALKWAY": "Walkway",
@@ -872,7 +791,7 @@
     "REMOVE-CLEANING-PURPOSE": "Remove Cleaning Purpose?",
     "NO-RESIDUE": "No Residue",
     "ADD-STEAM-PURPOSE": "Add Steam Purpose",
-    "NO-STEAM-PURPOSE": "No Steam Purpose",
+    "NO-STEAM-PURPOSE": "Steam Not Required",
     "REMOVE-STEAM-PURPOSE": "Remove Steam Purpose?",
     "ADD-STORAGE-PURPOSE": "Add Storage Purpose",
     "NO-STORAGE-PURPOSE": "No Storage Purpose",
@@ -923,6 +842,7 @@
     "SURVEY-DATE": "Survey Date",
     "TEST-DATE": "Test Date",
     "CLEAN-CERTIFICATE": "Clean Certificate",
+    "CLEAN-CERT": "Clean Cert",
     "EDIT-SURVEY": "Edit Survey",
     "NEW-SURVEY": "New Survey",
     "BAY-OVERVIEW": "Bay Overview",
@@ -949,11 +869,11 @@
     "TAKE-IN-STATUS": "Take-in Status",
     "YES": "Yes",
     "NO": "No",
-    "BOTTOM-DIS-COMP--ABB": "Btm. dis. type",
-    "BOTTOM-DIS-VALVE--ABB": "Btm. dis. valve",
-    "TOP-DIS-COMP--ABB": "Top. dis. type",
-    "TOP-DIS-VALVE--ABB": "Top. dis. valve",
-    "MANLID-COMP--ABB": "Manlid type",
+    "BOTTOM-DIS-COMP--ABB": "Bottom Discharge Type",
+    "BOTTOM-DIS-VALVE--ABB": "Bottom Discharge Valve",
+    "TOP-DIS-COMP--ABB": "Top. Discharge Type",
+    "TOP-DIS-VALVE--ABB": "Top Discharge Valve",
+    "MANLID-COMP--ABB": "Manlid Type",
     "CRN": "CRN",
     "EIR-COMPANY-DECLARATION": "Document reports only the present external condition and it is subject to later internal check after cleaning of the unit",
     "EIR-HAULIER-DECLARATION": "Equipment is delivered in good condition except as noted above",
@@ -1079,7 +999,7 @@
     "CLEANING-INVENTORY": "Cleaning Inventory",
     "CUSTOMER-WISE": "Customer wise",
     "CARGO-WISE": "Last Cargo",
-    "UN-WISE": "UN",
+    "UN-WISE": "UN Number",
     "CLEANING-PERIOD": "Cleaning Period",
     "GATE-SURCHARGE-COST": "Gate Surcharge $",
     "IN-OUT-SURCHARGE-COST": "In/Out Surcharge $",
@@ -1101,9 +1021,9 @@
     "NEXT-TEST-TYPE-DUE": "Next Test Type",
     "OTHERS": "Others",
     "EMPTY-FORM": "Empty Form",
-    "COMPARTMENT-TYPE-BTM-EMPTY": "Compartment Type (Bottom) is empty",
-    "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) is empty",
-    "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) is empty",
+    "COMPARTMENT-TYPE-BTM-EMPTY": "Compartment Type (Bottom) not completed",
+    "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) not completed",
+    "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) not completed",
     "ARE-YOU-SURE-TO-SUBMIT": "Submit?",
     "ARE-YOU-SURE-TO-SAVE-AND-PUBLISH": "Save & Publish?",
     "NOT-DUE": "Not Due",
@@ -1379,6 +1299,7 @@
     "FEATURES": "Features",
     "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
     "STEAMING-ESTIMATE-DETAILS": "Steaming Estimate Details",
+    "STEAMING-ESTIMATE": "Steaming Estimate",
     "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
     "APPROVAL_DATE": "Approval Date",
     "CLEAN-DURATION": "Cleaning Duration",
@@ -1447,7 +1368,38 @@
     "ADDRESS-1": "Address 1",
     "ADDRESS-2": "Address 2",
     "PLEASE-MARK-INSPECTION-AREAS": "Please mark the inspection areas",
-    "PLEASE-FILL-REQUIRED-FIELDS": "Please fill in the required fields"
+    "PLEASE-FILL-REQUIRED-FIELDS": "Please fill in the required fields",
+    "HH-MM": "(hh:mm)",
+    "TOTAL-DURATION-ONLY": "Total Duration",
+    "PACKAGE-BUFFER-CLEANING": "Package - Buffer Cleaning",
+    "PACKAGE-CLEANING": "Package - Cleaning",
+    "PACKAGE-DEPOT-COST": "Package - Depot Cost",
+    "PACKAGE-LABOUR-COST": "Package - Labour Cost",
+    "PACKAGE-REPAIR": "Package - Repair",
+    "PACKAGE-STEAMING": "Package - Steaming",
+    "PACKAGE-EXCLUSIVE-STEAMING": "Package - Exclusive Steaming",
+    "BILLING-BRANCH-LIST": "Billing Branch List",
+    "CUSTOMER-LIST": "Customer List",
+    "STEAMING-TARIFF": "Steaming Tariff",
+    "DEPOT-COST-TARIFF": "Depot Cost Tariff",
+    "CLEANING-FORMULA": "Cleaning Formula",
+    "CONDITIONS": "Conditions",
+    "QC-REJECTED": "QC Rejected",
+    "TARIFF-STEAMING":"Tariff Steaming",
+    "TBA": "TBA",
+    "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
+    "CLEANING-ESTIMATE": "Cleaning Estimate",
+    "TOTAL-LABOUR": "Total Labour",
+    "NO-REPORT-AVAILABLE": "No Report Available",
+    "UN-NUMBER":"UN Number",
+    "MASTER-IN": "Master In",
+    "MASTER-OUT": "Master Out",
+    "NO-TANK":"No of Tanks",
+    "YARD-SUMMARY-REPORT": "Yard Summary Report",
+    "CLEAN-CERT":"Clean Cert",
+    "TARE":"Tare",
+    "EXTERNAL-SURVEY": "External Survey"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -366,11 +366,21 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.patchForm();
   }
 
-  StartGeneratingPDF(): void {
-    setTimeout(() => {
-      this.generatePDF();
-    }, 50); // Let Angular render everything
+  // StartGeneratingPDF(): void {
+  //   setTimeout(() => {
+  //     this.generatePDF();
+  //   }, 50); // Let Angular render everything
+  // }
+
+   async ngAfterViewInit() {
+
+    var delay = 500;
+    setTimeout(() => { 
+      this.generatePDF(); }, 
+    delay);
+
   }
+
 
   async ngOnInit() {
     this.eirTitle = this.type === "in" ? this.translatedLangText.IN_GATE : this.translatedLangText.OUT_GATE;
@@ -385,7 +395,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
 
       // this.cdr.detectChanges();
-      this.StartGeneratingPDF();
+      // this.StartGeneratingPDF();
       //  this.updateCellValues();
 
 
@@ -525,7 +535,9 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     var inspect_dt = `${this.translatedLangText.INSPECTION_DATE}: ${this.getInspectionDateDisplay()}`;
     PDFUtility.AddTextAtRightCornerPage(pdf, inspect_dt, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     var tnkNo = `${this.translatedLangText.TANK_NO} : ${this.sot?.tank_no}`;
-    PDFUtility.addText(pdf, tnkNo, lastTableFinalY + 5, leftMargin, 8);
+    var tnkPosX=leftMargin;
+    tnkPosX+=32;
+    PDFUtility.addText(pdf, tnkNo, lastTableFinalY + 5, tnkPosX, 8);
 
     var cargo = `${this.translatedLangText.LAST_CARGO} : ${this.sot?.tariff_cleaning?.cargo}`;
     PDFUtility.AddTextAtCenterPage(pdf, cargo, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
@@ -558,7 +570,9 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let imgHeight = (chartContentWidth / aspectRatio) * bufferRatio;
     const chartContentWidth1 = chartContentWidth * bufferRatio;
     startY += 8;
-    pdf.addImage(imgData, 'JPEG', leftMargin + 5, startY, chartContentWidth1, imgHeight);
+    let imgLeftPos =leftMargin;
+    imgLeftPos -=3;
+    pdf.addImage(imgData, 'JPEG', imgLeftPos , startY, chartContentWidth1, imgHeight);
 
 
     const element1 = this.captureMalidElementRef.nativeElement as HTMLElement
@@ -586,10 +600,8 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.generatingPdfLoadingSubject.next(false);
     // Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     const pdfBlob = pdf.output('blob');
-    // if (this.toUpload) {
-    //   await lastValueFrom(this.uploadEir(this.eirDetails?.guid, pdfBlob));
-    // }
-
+   
+    // return;
     if (this.toDownload) {
       this.downloadFile(pdfBlob, this.getReportTitle());
     }

@@ -145,7 +145,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
     EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
-    SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
+    SURVEY_DETAILS: "COMMON-FORM.SURVEY-DETAILS",
     DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
     PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
     LAST_TEST: "COMMON-FORM.LAST-TEST",
@@ -929,7 +929,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           // const valveValue = btmThermoCtrl.value;
           const specValue = btmThermoSpecCvCtrl.value;
 
-          if (specValue?.length) {
+          if (specValue?.length && !BusinessLogicUtil.isThermometerMandatory(specValue)) {
             btmThermoCtrl.setValidators([Validators.required]);
             btmThermoSpecCvCtrl.setValidators([Validators.required]);
           } else {

@@ -125,7 +125,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     EIR_NO: 'COMMON-FORM.EIR-NO',
-    CLEANING_CONDITIONS: 'COMMON-FORM.CLEANING-CONDITIONS',
+    CONDITIONS: 'COMMON-FORM.CONDITIONS',
     CARGO_DETAILS: 'COMMON-FORM.CARGO-DETAILS',
     CARGO: 'COMMON-FORM.CARGO',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
@@ -227,6 +227,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   ngOnInit() {
     this.initializeFilter();
     this.loadData();
+    this.lastCargoControl.disable();
   }
 
   refresh() {
@@ -236,7 +237,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   createInGateForm() {
     this.inGateForm = this.fb.group({
       eir_dt: [{ value: new Date(), disabled: true }],
-      job_no: [''],
+      job_no: [{ value: '', disabled: true }],
       haulier: [''],
       owner: this.ownerControl,
       owner_guid: [''],

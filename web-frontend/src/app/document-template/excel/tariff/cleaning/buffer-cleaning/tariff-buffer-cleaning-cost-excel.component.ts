@@ -173,6 +173,8 @@ export class TariffBufferCleaningCostExcelComponent extends UnsubscribeOnDestroy
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_BUFFER_ASSIGNED: 'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    TARIFF_BUFFER_CLEANING: 'COMMON-FORM.TARIFF-BUFFER-CLEANING',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -500,8 +502,9 @@ async exportExcel(items: TariffBufferItem[]) {
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
                 const row = [
+                    index+1,
                     item.buffer_type||"-",
                     this.parse2Decimal(item.cost!)||"-",
                     this.displayLastUpdated(item) || "-",
@@ -511,21 +514,41 @@ async exportExcel(items: TariffBufferItem[]) {
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
    const head: (string | number)[][] = [[
+    this.translatedLangText.S_N,
   this.translatedLangText.DESCRIPTION,
   this.translatedLangText.COST,
   this.translatedLangText.LAST_UPDATED
 ]];
 
-    const rows: (string | number)[][] = [
+const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.TARIFF_BUFFER_CLEANING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="BufferCleaningTariff.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+  //   const rows: (string | number)[][] = [
+  //     ...head,
+  //     ...data
+  //   ];
+  //  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+  //   worksheet['!cols'] = rows[0].map((_, colIndex) => {
+  //     const maxLength = rows.reduce((max, row) => {
+  //       const cell = row[colIndex];
+  //       return Math.max(max, cell ? cell.toString().length : 0);
+  //     }, 10);
+  //     return { wch: maxLength + 2 };
+  //   });
+  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "BufferCleaningTariff.xlsx");
+  //   XLSX.writeFile(workbook, "BufferCleaningTariff.xlsx");
     this.dialogRef.close();
 }
 

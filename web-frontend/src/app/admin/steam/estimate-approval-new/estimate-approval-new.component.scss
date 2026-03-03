@@ -67,7 +67,7 @@
   color: white;
   position: absolute;
   top: 50%;
-  left: 20%;
+  left: 20px;
   /* move to the right side with some padding */
   transform: translateY(-50%);
   font-weight: 600;
@@ -113,7 +113,7 @@
 .switch .slider .title {
   position: absolute;
   top: 50%;
-  left: 23px;
+  left: 28px;
   /* move to the right side with some padding */
   transform: translateY(-50%);
   font-weight: 600;
@@ -158,5 +158,9 @@
 
 .font_15 {
   font-size: 15px;
+}
+
+::ng-deep .footer-padding{
+ padding-right: 30px !important;
 }
 

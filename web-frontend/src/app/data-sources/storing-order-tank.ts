@@ -686,6 +686,7 @@ const GET_STORING_ORDER_TANKS_SURVEY = gql`
         unit_type_guid
         update_by
         update_dt
+
         tariff_cleaning {
           cargo
         }
@@ -701,9 +702,93 @@ const GET_STORING_ORDER_TANKS_SURVEY = gql`
           eir_dt
           delete_dt
           yard_cv
+          remarks
           in_gate_survey {
             tare_weight
             capacity
+            create_dt
+            create_by
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_SURVEY_IN_OUT = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+
+        tariff_cleaning {
+          cargo
+        }
+        storing_order {
+          customer_company_guid
+          customer_company {
+            code
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+          yard_cv
+          remarks
+          in_gate_survey {
+            tare_weight
+            capacity
+            create_dt
+            create_by
+          }
+        }
+        out_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+          yard_cv
+          remarks
+          out_gate_survey {
+            tare_weight
+            capacity
+            create_dt
+            create_by
           }
         }
       }
@@ -5454,6 +5539,69 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
+
+   searchStoringOrderTanksForSurveyInOut(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_SURVEY_IN_OUT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+ searchAllStoringOrderTanksForSurvey(
+  where?: any,
+  order?: any
+): Observable<StoringOrderTankItem[]> {
+
+  this.loadingSubject.next(true);
+
+  let allItems: StoringOrderTankItem[] = [];
+  let after: string | undefined = undefined;
+  let batchSize: number = 100;
+  const loadBatch = (): Observable<StoringOrderTankItem[]> => {
+    return this.searchStoringOrderTanksForSurveyInOut(
+      where,
+      order,
+      batchSize,
+      after   
+    ).pipe(
+      switchMap(items => {
+
+        allItems = [...allItems, ...items];
+
+        if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
+          after = this.pageInfo.endCursor;   // update cursor
+          return loadBatch();                // load next page
+        }
+
+        return of(allItems); // stop recursion
+      })
+    );
+  };
+
+  return loadBatch().pipe(
+    finalize(() => {
+      this.loadingSubject.next(false);
+      this.totalCount = allItems.length;
+    })
+  );
+}
 
   getStoringOrderTanksForOtherSurveyByID(sot_guid: any): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);

@@ -117,7 +117,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
     CLADDING: 'COMMON-FORM.CLADDING',
     CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
+    TARE_WEIGHT: 'COMMON-FORM.TARE',
     MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
     TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
     WALKWAY: 'COMMON-FORM.WALKWAY',
@@ -212,7 +212,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    ESTIMATE_DATE: 'COMMON-FORM.DATE',
     // ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO-S',
     // ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE-S',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
@@ -265,13 +265,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING',
     //RELEASE_BOOKING: 'COMMON-FORM.RELEASE-BOOKING-S',
-    CLEAN_CERT_DATE: 'COMMON-FORM.CLEAN-CERT-DATE',
+    CLEAN_CERT_DATE: 'COMMON-FORM.CLEAN-CERT',
     YARD: 'COMMON-FORM.YARD',
     IN_YARD: 'COMMON-FORM.IN-YARD',
     RELEASED: 'COMMON-FORM.RELEASED',
     REPORT: 'COMMON-FORM.REPORT',
     S_N: 'COMMON-FORM.S_N',
-    APPROVAL_REF: 'COMMON-FORM.APPROVAL-REF',
+    APPROVAL_REF: 'COMMON-FORM.APPROVAL',
     RELEASE_REF: 'COMMON-FORM.RELEASE-REF',
     T_WEIGHT: 'COMMON-FORM.T_WEIGHT'
   }
@@ -869,7 +869,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
         lastTableFinalY += 5;
         //pdf.setFontSize(8);
-        subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
+        subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.RELEASED);
         //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
         await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 

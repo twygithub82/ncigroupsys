@@ -552,13 +552,13 @@
                   </ng-container>
                   <ng-container matColumnDef="labourSummaryHrs">
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                      class="footer-padding bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end footer-padding">
                       {{getTotalLabourHours()}}
                     </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="labourSummaryCost">
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end ">
                       <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}
                         @if (isSteamRepair) {
                         (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}})

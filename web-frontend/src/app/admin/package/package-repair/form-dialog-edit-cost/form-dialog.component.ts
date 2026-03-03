@@ -1,7 +1,7 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -80,7 +80,7 @@ interface Condition {
     MatSortModule,
     PreventNonNumericDirective,
     NumericTextDirective,
-     MatChipsModule
+    MatChipsModule
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
@@ -111,7 +111,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
 
   pckRepairDS: PackageRepairDS;
   tnkItems?: TankItem[] = [];
-customer_companyList: CustomerCompanyItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -129,7 +129,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   customerCompanyControl = new UntypedFormControl();
   isMobile: boolean = false;
   selectedTariffRepair?: TariffRepairItem;
- separatorKeysCodes: number[] = [ENTER, COMMA];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -215,9 +215,9 @@ customer_companyList: CustomerCompanyItem[] = [];
 
   selectedItems: PackageRepairItem[];
   UpdateInProgress: boolean = false;
- selectedCustomers: any[] = [];
+  selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
-  
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -229,7 +229,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   ) {
     // Set the defaults
     super();
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     this.selectedItems = data.selectedItems;
     this.trDS = new TariffRepairDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -241,10 +241,11 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.loadData();
     this.EnableValidator('material_cost_percentage');
     this.EnableValidator('labour_hour_percentage');
+
     this.initializeFilterCustomerCompany();
   }
 
-   initializeFilterCustomerCompany() {
+  initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -260,7 +261,7 @@ customer_companyList: CustomerCompanyItem[] = [];
     ).subscribe();
   }
 
-   searchCustomerCompanyList(searchCriteria: string) {
+  searchCustomerCompanyList(searchCriteria: string) {
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
       if (this.custInput?.nativeElement.value === searchCriteria) {
@@ -280,7 +281,14 @@ customer_companyList: CustomerCompanyItem[] = [];
       length: this.lengthControl,
       material_cost_percentage: [''],
       labour_hour_percentage: [''],
-    });
+    },
+      {
+        validators: this.atLeastOneRequiredValidator(
+          'material_cost_percentage',
+          'labour_hour_percentage'
+        )
+      }
+    );
   }
 
   displayPartNameFn(tr: string): string {
@@ -488,11 +496,26 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.pcForm.get(path)?.setValidators([
       Validators.min(this.minMaterialCost),
       Validators.max(this.maxMaterialCost),
-      Validators.required  // If you have a required validator
+      // Validators.required  // If you have a required validator
     ]);
     this.pcForm.get(path)?.updateValueAndValidity();  // Revalidate the control
   }
 
+  atLeastOneRequiredValidator(
+    field1: string,
+    field2: string
+  ): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const value1 = group.get(field1)?.value;
+      const value2 = group.get(field2)?.value;
+
+      if (!value1 && !value2) {
+        return { atLeastOneRequired: true };
+      }
+
+      return null;
+    };
+  }
   DisableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
@@ -553,7 +576,7 @@ customer_companyList: CustomerCompanyItem[] = [];
     if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
 
     var guids: string[] = [];
-    if(this.selectedCustomers?.length>0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
+    if (this.selectedCustomers?.length > 0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
     // if (this.customerCompanyControl.value) {
     //   if (this.customerCompanyControl.value.length > 0) {
     //     const customerCodes: CustomerCompanyItem[] = this.customerCompanyControl.value;
@@ -648,52 +671,51 @@ customer_companyList: CustomerCompanyItem[] = [];
     ]);
   }
 
-  updateLabourHourPercentage()
-  {
+  updateLabourHourPercentage() {
     // var labour_hour_percentage = this.pcForm!.value['labour_hour_percentage'];
     // if(labour_hour_percentage>this.maxMaterialC)
   }
 
-   @ViewChild('custInput', { static: true })
-    custInput?: ElementRef<HTMLInputElement>;
-    
-  
-    add(event: MatChipInputEvent): void {
-      const input = event.input;
-      const value = event.value;
-      // Add our fruit
-      if ((value || '').trim()) {
-        //this.fruits.push(value.trim());
-      }
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-      this.customerCompanyControl.setValue(null);
-    }
-  
-    remove(cust: any): void {
-      const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
-      if (index >= 0) {
-        this.selectedCustomers.splice(index, 1);
-  
-      }
-    }
-  
-  
-  
-    // displayCustomerCompanyFn(customer: any): string {
-    //   if (!customer) return '';
-    //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-    // }
-  
-    private updateFormControl(): void {
-      // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-    }
+  @ViewChild('custInput', { static: true })
+  custInput?: ElementRef<HTMLInputElement>;
 
-   removeAllSelectedCustomers(): void {
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCompanyControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+
+    }
+  }
+
+
+
+  // displayCustomerCompanyFn(customer: any): string {
+  //   if (!customer) return '';
+  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+  // }
+
+  private updateFormControl(): void {
+    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
-   
+
   }
 
   getSelectedCustomersDisplay(): string {
@@ -738,16 +760,34 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.selected(fakeEvent);
 
   }
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-     getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-     getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
-      const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+
+  isAtLeastOneInvalid(): boolean {
+    return (
+      this.pcForm.errors?.['atLeastOneRequired'] &&
+      (this.pcForm.get('material_cost_percentage')?.touched ||
+        this.pcForm.get('labour_hour_percentage')?.touched)
+    );
+  }
+
+  isFieldInvalid(field: string): boolean {
+    const control = this.pcForm.get(field);
+
+    return (
+      this.pcForm.errors?.['atLeastOneRequired'] &&
+      control?.touched &&
+      !control?.value
+    );
+  }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+  getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+  getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
+    const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 }

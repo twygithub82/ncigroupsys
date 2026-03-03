@@ -438,7 +438,7 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
   const fetchPage = (after?: string): Observable<PackageRepairItem[]> => {
     return this.apollo
       .query<any>({
-        query: GET_PACKAGE_REPAIR_QUERY,
+        query: GET_PACKAGE_REPAIR_WITH_COUNT_QUERY,
         variables: {
           where,
           order,

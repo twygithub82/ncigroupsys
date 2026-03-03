@@ -17,7 +17,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{getCostLabel()}}</mat-label>
-                <input matInput #adjustCost formControlName="adjusted_cost" appNumericText type="text" min="0" (focus)="adjustCost.select()" required>
+                <input matInput #adjustCost formControlName="adjusted_cost" appNumericText type="text" min="0"
+                  (focus)="adjustCost.select()" required>
                 <!-- @if (pcForm.get('adjusted_cost')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.CUSTOMER_COST}} {{translatedLangText.SO_REQUIRED}}
@@ -46,7 +47,7 @@
                     <ng-container matColumnDef="fName">
                       <mat-header-cell
                         [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        *matHeaderCellDef >{{translatedLangText.CUSTOMER
+                        *matHeaderCellDef>{{translatedLangText.CUSTOMER
                         }}</mat-header-cell>
                       <mat-cell
                         [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
@@ -56,31 +57,34 @@
                     </ng-container>
                     <ng-container matColumnDef="lName">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-4_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
+                        [ngClass]="'pr-0 tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef>{{translatedLangText.CUSTOMER_COMPANY_NAME
                         }}</mat-header-cell>
                       <mat-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-4_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                           }}:</span>{{row.customer_company.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="email">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CARGO_CATEGORY
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'justify-content-center'">{{translatedLangText.CARGO_CATEGORY
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span>
                         {{row.cleaning_category.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gender">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CUSTOMER_COST
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'justify-content-center'">{{translatedLangText.CUSTOMER_COST
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COST }}:</span>
                         {{row.adjusted_price.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.TARIFF_COST}} $
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST}} $</span>

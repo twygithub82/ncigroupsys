@@ -145,6 +145,8 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_cost);
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.remarks = repair.remarks;
+                    if (!string.IsNullOrEmpty(repair.job_no))
+                        appvRepair.job_no = repair.job_no;
 
                     //-----------------------------------------------
                     appvRepair.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.est_cost);
@@ -169,6 +171,9 @@ namespace IDMS.Repair.GqlTypes
                             context.repair_part.Attach(part);
 
                             part.owner = item.owner;
+                            if (item.owner == false)
+                                context.Entry(part).Property(p => p.owner).IsModified = true;
+
                             part.approve_qty = item.approve_qty;
                             part.approve_hour = item.approve_hour;
                             part.approve_part = item.approve_part;
@@ -638,7 +643,7 @@ namespace IDMS.Repair.GqlTypes
                     _logger.LogError("Repair object used for QC rollback cannot be null or empty");
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
                 }
-                    
+
 
                 foreach (var item in repJobOrder)
                 {
@@ -754,7 +759,7 @@ namespace IDMS.Repair.GqlTypes
                 if (repJobOrder == null)
                 {
                     _logger.LogError("Repair object used for rollback cannot be null or empty");
-                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));   
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
                 }
 
                 foreach (var item in repJobOrder)
@@ -808,7 +813,7 @@ namespace IDMS.Repair.GqlTypes
                         timeTables.update_by = user;
                         timeTables.update_dt = currentDateTime;
                     }
-                    _logger.LogInformation("RollbackCompletedRepair: Updated repair, jobs, timetable for GUID {Guid}", item.guid);  
+                    _logger.LogInformation("RollbackCompletedRepair: Updated repair, jobs, timetable for GUID {Guid}", item.guid);
                 }
 
                 //Tank handling

@@ -316,7 +316,8 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     LENGTH:'COMMON-FORM.LENGTH',
     MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
     REPAIR_TARIFF:'COMMON-FORM.REPAIR-TARIFF',
-
+    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
+    SUB_GROUP_NAME:'COMMON-FORM.SUB-GROUP-NAME',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -912,6 +913,8 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
                 const row = [
                     index++, // increment index for each item
                     item.alias,
+                    group.group_name_cv||"",
+                    item.subgroup_name_cv||"",
                     `${item.length || ""} ${item.length_unit_cv || ""}`,
                     item.labour_hour?.toFixed(2) ?? "0.00",
                     item.material_cost?.toFixed(2) ?? "0.00",
@@ -1008,6 +1011,8 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     const reportTitle = this.GetReportTitle();
     const headers = [[
         this.translatedLangText.S_N,
+        this.translatedLangText.GROUP_NAME,
+        this.translatedLangText.SUB_GROUP_NAME,
         this.translatedLangText.PART_NAME,
         this.translatedLangText.LENGTH,
         this.translatedLangText.LABOUR_HOUR,
@@ -1016,10 +1021,12 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
 
     const comStyles: any = {
      0: { cellWidth: 12 , valign: 'middle', halign: 'center'},    // "No."
-      1: { cellWidth: 108 },   // "Part Name"
-      2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Length"
-      3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Labour Hour"
-      4: { cellWidth: 25, valign: 'middle', halign: 'center' }   // "Material Cost"
+     1: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Length"
+      2: { cellWidth: 27, valign: 'middle', halign: 'center' }, 
+      3: { cellWidth: 67 },   // "Part Name"
+      4: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "Length"
+      5: { cellWidth: 21, valign: 'middle', halign: 'center' },  // "Labour Hour"
+      6: { cellWidth: 21, valign: 'middle', halign: 'center' }   // "Material Cost"
     };
 
     // Define headStyles with valid fontStyle
@@ -1056,7 +1063,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, '',subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    startPostY+=2;
+    startPostY+=1;
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
@@ -1080,8 +1087,11 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       for (let i = 0; i < (group.subgroups?.length || 0); i++) {
         var itm = group.subgroups?.[i];
          const data: any[][] = itm.items.map((item) => {
+                var itm:any = item;
                 const row = [
                     index++, // increment index for each item
+                    itm.group_name_desc||"",
+                    itm.subgroup_name_desc||"",
                     item.alias,
                     `${item.length || ""} ${item.length_unit_cv || ""}`,
                     item.labour_hour?.toFixed(2) ?? "0.00",

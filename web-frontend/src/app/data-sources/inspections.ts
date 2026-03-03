@@ -336,6 +336,24 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       backgroundColor: '#845EC2',
       shape: 'square',
       enabled: true
+    },
+    {
+      type: 'dent',
+      name: 'dent',
+      displayName: 'Dent',
+      color: '#FFFFFF',
+      backgroundColor: '#FF9A3C',
+      shape: 'circle',
+      enabled: true
+    },
+    {
+      type: 'crack',
+      name: 'crack',
+      displayName: 'Crack',
+      color: '#FFFFFF',
+      backgroundColor: '#E84393',
+      shape: 'triangle',
+      enabled: true
     }
   ];
 }

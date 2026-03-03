@@ -112,8 +112,8 @@ export class TariffCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapte
    STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME', 
-    SO_DATE: 'COMMON-FORM.SO-DATE', 
+    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
+    SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
@@ -151,7 +151,8 @@ export class TariffCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapte
     CARGO_SELECTED: 'COMMON-FORM.SELECTED',
     PER_TANK: 'COMMON-FORM.PER-TANK',
     PER_HOUR: 'COMMON-FORM.PER-HOUR',
-
+    CLEANING_TARIFF: 'COMMON-FORM.CLEANING-TARIFF',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -486,7 +487,7 @@ async exportExcel(items: TariffCleaningItem[]) {
             });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
    const head: (string | number)[][] = [[
-  "#",
+  this.translatedLangText.S_N,
   this.translatedLangText.NAME,
   this.translatedLangText.CARGO_CLASS,
   this.translatedLangText.CARGO_UN_NO,
@@ -496,16 +497,36 @@ async exportExcel(items: TariffCleaningItem[]) {
   this.translatedLangText.CARGO_BAN_TYPE
 ]];
 
-    const rows: (string | number)[][] = [
+
+const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.CLEANING_TARIFF}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-   const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="CleaningTariff.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+  //   const rows: (string | number)[][] = [
+  //     ...head,
+  //     ...data
+  //   ];
+  //  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+  //   worksheet['!cols'] = rows[0].map((_, colIndex) => {
+  //     const maxLength = rows.reduce((max, row) => {
+  //       const cell = row[colIndex];
+  //       return Math.max(max, cell ? cell.toString().length : 0);
+  //     }, 10);
+  //     return { wch: maxLength + 2 };
+  //   });
+  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "CleaningTariff.xlsx");
+  //   XLSX.writeFile(workbook, "CleaningTariff.xlsx");
     this.dialogRef.close();
 }
 

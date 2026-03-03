@@ -134,6 +134,8 @@ export class CleaningFormulaExcelComponent extends UnsubscribeOnDestroyAdapter i
     DURATION: "COMMON-FORM.DURATION-MIN",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     FORMULA_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
+    S_N: 'COMMON-FORM.S_N',
+    
 
   }
 
@@ -371,8 +373,9 @@ export class CleaningFormulaExcelComponent extends UnsubscribeOnDestroyAdapter i
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
       const row = [
+        index+1,
         item.description || "-",
         item.duration || "-",
         this.displayLastUpdated(item) || "-",
@@ -382,21 +385,42 @@ export class CleaningFormulaExcelComponent extends UnsubscribeOnDestroyAdapter i
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.DESCRIPTION,
       this.translatedLangText.DURATION,
       this.translatedLangText.LAST_UPDATED
     ]];
 
-    const rows: (string | number)[][] = [
+    const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.CLEANING_FORMULA}`],
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    const totalColumns = head[0].length;
+    var fileName ="CleaningFormula.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.writeFile(workbook, "CleaningFormula.xlsx");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "CleaningFormula.xlsx");
     this.dialogRef.close();
   }
 

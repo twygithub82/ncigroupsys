@@ -46,6 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {UncleanTankDetailInventoryPdfComponent}from 'app/document-template/pdf/inventory/unclean-tank-detail-pdf/unclean-tank-pdf.component'
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 @Component({
   selector: 'app-cleaning-activity',
   standalone: true,
@@ -163,6 +164,10 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     START: "COMMON-FORM.START",
     END: "COMMON-FORM.END",
     IS_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    CARGO: 'COMMON-FORM.CARGO',
+    UN_NUMBER: 'COMMON-FORM.UN-NUMBER',
   }
 
   invForm?: UntypedFormGroup;
@@ -551,13 +556,16 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     var retval: String = "customer";
     switch (report_type) {
       case "CUSTOMER_WISE":
-        retval = "customer";
+        // retval = this.translatedLangText.CUSTOMER;
+        retval="customer";
         break;
       case "CARGO_WISE":
-        retval = "cargo";
+        // retval = this.translatedLangText.CARGO;
+        retval="cargo";
         break;
       case "UN_WISE":
-        retval = "un";
+        // retval = this.translatedLangText.UN_NUMBER;
+        retval="un";
         break;
     }
 
@@ -568,6 +576,14 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     // this.selection.clear();
     this.subs.sink = this.repDS.searchCleaningInventorySummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
+        if(data.length==0)
+          {
+            this.ShowWarningMessage();
+             this.isGeneratingReport = false;
+             return;
+          }
+          
+        
         this.cleaningSumList = data;
         if (report_type == "CUSTOMER_WISE") {
           this.onExportCustomerWise(this.cleaningSumList, date!);
@@ -762,6 +778,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
 
   ProcessReportCleaningInventoryDetail(report_type:string, date: string) {
     if (this.sotList.length === 0) {
+       this.ShowWarningMessage();
       this.isGeneratingReport = false;
       return;
     }
@@ -921,4 +938,23 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     this.resetForm();
   }
 
+   ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 }

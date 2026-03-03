@@ -993,7 +993,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
           {
             
              this.isGeneratingReport=true;
-            const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+            const where =this.lastSearchCriteria;
           const order=this.lastOrderBy;
           this.packDepotDS.SearchAllPackageDepot(where,order).subscribe(res=>{
                 var prcList:PackageDepotItem[]=res;

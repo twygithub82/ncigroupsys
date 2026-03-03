@@ -1242,14 +1242,15 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     
      startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
        this.translate, this.pdfTitle, '');
-    startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+       startY +=  6;
+    // startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     //  this.AddCustomerInfoTable(pdf, pageWidth, leftMargin, rightMargin,startY);
    
     var offhireCodeHeight=49;
     
     var totalCostTableHeight=45;
-    var bufferY=67;
-    startY = lastTableFinalY + bufferY+offhireCodeHeight;
+    var bufferY=58;
+     startY = lastTableFinalY + bufferY+offhireCodeHeight;
     var bufferHeight=10;
     var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,bottomMargin,pagePositions,bufferHeight);
     
@@ -1332,15 +1333,17 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       [
         { content: `${this.translatedLangText.MANUFACTURER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}` },
-        { content: `${this.translatedLangText.UNIT_TYPE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.tank?.unit_type}` }
-      ],
-      [
         { content: `${this.translatedLangText.LAST_TEST}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.last_test_desc}` },
-        { content: `${this.translatedLangText.QUOTATION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
+        { content: `${this.last_test_desc}` }
+        // { content: `${this.translatedLangText.UNIT_TYPE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        // { content: `${item?.storing_order_tank?.tank?.unit_type}` }
       ],
+      // [
+      //   { content: `${this.translatedLangText.LAST_TEST}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+      //   { content: `${this.last_test_desc}` },
+      //   { content: `${this.translatedLangText.QUOTATION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+      //   { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
+      // ],
     ];
 
      var offhireCodeHeight=49;
@@ -1426,8 +1429,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
          // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
              var posY= PDFUtility.addReportTitle_Portrait(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin);
-            
-             posY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+            posY+=6;
+            //  posY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
              posY= await this.AddCustomerInfoTable(pdf, pageWidth,leftMargin,rightMargin,posY);
              var dmgCodeRprCodePosY=posY+2;
              this.createOffhireEstimate_r1(pdf, dmgCodeRprCodePosY, leftMargin, rightMargin, pageWidth);
@@ -1505,32 +1508,32 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         {
           content: this.translatedLangText.DAMAGE_CODE,
           colSpan: 3,
-          styles: { fontSize: (fontSz+1.5), halign: 'left', valign: vAlign,lineColor:lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
+          styles: { fontStyle: 'bold', fontSize: (fontSz+1.5), halign: 'left', valign: vAlign,lineColor:lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
         },
         {
           content: this.translatedLangText.REPAIR_CODE,
           colSpan: 3,
-          styles: { fontSize: (fontSz+1.5), halign: 'left', valign: vAlign, lineColor: lColor,fillColor: [255, 255, 255],  lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
+          styles: { fontStyle: 'bold',fontSize: (fontSz+1.5), halign: 'left', valign: vAlign, lineColor: lColor,fillColor: [255, 255, 255],  lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
         }
 
       ]
     ];
 
-       const headers1: RowInput[] = [
-      [
-        {
-          content: this.translatedLangText.DAMAGE_CODE,
-          colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: 0, cellPadding: 1}
-        },
-        {
-          content: this.translatedLangText.REPAIR_CODE,
-          colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: 0, cellPadding: 1 }
-        }
+    //    const headers1: RowInput[] = [
+    //   [
+    //     {
+    //       content: this.translatedLangText.DAMAGE_CODE,
+    //       colSpan: 3,
+    //       styles: { fontStyle: 'bold',fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: 0, cellPadding: 1}
+    //     },
+    //     {
+    //       content: this.translatedLangText.REPAIR_CODE,
+    //       colSpan: 3,
+    //       styles: { fontStyle: 'bold',fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: 0, cellPadding: 1 }
+    //     }
 
-      ]
-    ];
+    //   ]
+    // ];
 
     
     const gapTopBottom=0.3;
@@ -1618,14 +1621,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
         },
         {
-          content: this.translatedLangText.ITEM,
-          rowSpan: 2,
-          styles: {
-            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
-          }
-        },
-        {
+          
           content: this.translatedLangText.DAMAGE_CODE,
           rowSpan: 2,
           styles: {
@@ -1642,6 +1638,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
         },
         {
+          content: this.translatedLangText.DESCRIPTION,
+          rowSpan: 2,
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
+        },
+        {
           content: this.translatedLangText.DEPOT_ESTIMATE,
           colSpan: 3,
           styles: {
@@ -1651,7 +1655,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         },
         {
           content: this.translatedLangText.CUSTOMER_APPROVAL,
-          colSpan: 4,
+          colSpan: 3,
           styles: {
             fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
             lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
@@ -1701,14 +1705,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
             fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
             lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
           }
-        },
-        {
-          content: this.translatedLangText.LESSEE_OWNER__ABB,
-          styles: {
-            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
-          }
         }
+        // {
+        //   content: this.translatedLangText.LESSEE_OWNER__ABB,
+        //   styles: {
+        //     fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+        //     lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+        //   }
+        // }
       ]
     ];
 
@@ -1720,7 +1724,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       if (rep.isGroupHeader) {
         var groupName = rep.group_name_cv.replaceAll('_',' ');
         repData.push([{
-          content: `${groupName}`, colSpan: 11,
+          content: `${groupName}`, colSpan: 10,
           styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz }
         }]);
       }
@@ -1729,7 +1733,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       repData.push([
         rep.index + 1, this.displayDamageRepairCode(rep.rp_damage_repair, 0), this.displayDamageRepairCode(rep.rp_damage_repair, 1),
         rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
-        rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost), isOwner
+        rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost)
       ])
     });
 
@@ -1752,16 +1756,16 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       },
       columnStyles: {
         0: { cellWidth: 11, halign: 'center', valign: 'middle' },
-        1: { cellWidth: 16, halign: 'center', valign: 'middle' },
-        2: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        1: { cellWidth: 22, halign: 'center', valign: 'middle' },
+        2: { cellWidth: 22, halign: 'center', valign: 'middle' },
         3: { cellWidth: 37, halign: 'left', valign: 'middle' },
         4: { cellWidth: 16, halign: 'center', valign: 'middle' },
         5: { cellWidth: 16, halign: 'center', valign: 'middle' },
-        6: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        6: { cellWidth: 18, halign: 'center', valign: 'middle' },
         7: { cellWidth: 16, halign: 'center', valign: 'middle' },
         8: { cellWidth: 16, halign: 'center', valign: 'middle' },
-        9: { cellWidth: 16, halign: 'center', valign: 'middle' },
-        10: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        9: { cellWidth: 18, halign: 'center', valign: 'middle' },
+        // 10: { cellWidth: 16, halign: 'center', valign: 'middle' },
       },
       didDrawCell: function (data) {
         const doc = data.doc;
@@ -1780,6 +1784,19 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
               );
            
         }
+
+        if (data.section === "body" && data.column.index === 6) {
+            var lineColor=backgroundColor_header-30;
+            doc.setDrawColor(lineColor, lineColor, lineColor);
+            doc.setLineWidth(0.01);
+
+            doc.line(
+              data.cell.x + data.cell.width,
+              data.cell.y,
+              data.cell.x + data.cell.width,
+              data.cell.y + data.cell.height
+            );
+          }
       },
       didDrawPage: (data: any) => {
         
@@ -2581,7 +2598,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     const fontSz = 7;
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
-      { content: `${this.getTotalLabourHour_Table()||"-"} ${this.translatedLangText.HRS}`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.getTotalLabourHour_Table()||"-"}`, styles: { halign: 'center', fontStyle: fontStyle } },
        { content: this.getLabourCost_Table()||"-" , styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalLabourCost_Table()||"-", styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
@@ -2634,7 +2651,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     var bufferSum=10;
     // var SumLabelLeftPos = tabletLeftPos - bufferSum;
     var SumLabelLeftPos = leftMargin;
-    Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
+    // Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
     autoTable(pdf, {
         head: headers,
         body: rows,
@@ -2717,7 +2734,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourRate(), styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: `${this.getOwnerLabourHour_Table()} ${this.translatedLangText.HRS}`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.getOwnerLabourHour_Table()}`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
        { content: `${this.getLesseeLabourHour_Table()} ${this.translatedLangText.HRS}`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2791,7 +2808,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     var bufferSum=10;
     // var SumLabelLeftPos = tabletLeftPos - bufferSum;
     var SumLabelLeftPos =leftMargin;
-    Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
+    // Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
     autoTable(pdf, {
         head: headers,
         body: rows,

@@ -7,7 +7,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
+        <div class="card modal-card">
           <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
@@ -417,17 +417,17 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 align-right">
                   @if (repairDS.canQCComplete(repairItem)) {
-                  <button mat-flat-button color="accent"
+                  <button mat-flat-button color="warn"
                     [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5 mt-2"
                     (click)="onRollbackCompleted($event)">
-                    <mat-icon>
+                    <!-- <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
                       undo
                       } @else if ((joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
-                    </mat-icon>
-                    {{translatedLangText.ROLLBACK}}
+                    </mat-icon> -->
+                    {{translatedLangText.QC_REJECTED}}
                   </button>
                   }
                   @if (repairDS.canRollbackQC(repairItem)) {

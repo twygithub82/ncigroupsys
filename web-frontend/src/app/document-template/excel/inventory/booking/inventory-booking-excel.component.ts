@@ -149,7 +149,9 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SAVE: 'COMMON-FORM.SAVE',
     UPDATE: 'COMMON-FORM.UPDATE',
-    DATE: 'COMMON-FORM.DATE'
+    DATE: 'COMMON-FORM.DATE',
+    S_N:'COMMON-FORM.S_N',
+    BOOKING:'COMMON-FORM.BOOKING',
 
   }
 
@@ -395,6 +397,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
 
       return item.booking.map((b) => {
         return [
+          index++,
           item.tank_no || "-",
           `${this.ccDS.displayCodeDashName(item.storing_order?.customer_company)}`,
           item.in_gate?.[0]?.eir_no || "-",
@@ -412,6 +415,7 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
 
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.EIR_NO,
@@ -424,16 +428,28 @@ export class InventoryBookingExcelComponent extends UnsubscribeOnDestroyAdapter 
       this.translatedLangText.SURVEYOR
     ]];
 
-    const rows: (string | number)[][] = [
+     const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.BOOKING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="Inventory_Booking.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "Inventory_Booking.xlsx");
+    // XLSX.writeFile(workbook, "Inventory_Booking.xlsx");
     this.dialogRef.close();
   }
 

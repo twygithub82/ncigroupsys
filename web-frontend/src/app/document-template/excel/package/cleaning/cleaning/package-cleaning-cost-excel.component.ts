@@ -201,6 +201,8 @@ export class PackageCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapt
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    S_N:'COMMON-FORM.S_N',
+    PACKAGE_CLEANING: 'COMMON-FORM.PACKAGE-CLEANING',
 
   }
 
@@ -434,8 +436,9 @@ export class PackageCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapt
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
       const row = [
+        index + 1,
         item.customer_company?.name || "-",
         item.cleaning_category?.name || "-",
         this.parse2Decimal(item.adjusted_price!) || "-",
@@ -446,6 +449,7 @@ export class PackageCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapt
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.PROCEDURE_CLEAN_CATEGORY,
       this.translatedLangText.CUSTOMER_COST,
@@ -453,16 +457,31 @@ export class PackageCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapt
       this.translatedLangText.LAST_UPDATE
     ]];
 
-    const rows: (string | number)[][] = [
+    const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.PACKAGE_CLEANING}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="CleaningPackage.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "cleaningPackage.xlsx");
+    // XLSX.writeFile(workbook, "cleaningPackage.xlsx");
     this.dialogRef.close();
   }
 

@@ -636,13 +636,15 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   HiddenMenu(row: InGateCleaningItem, statusMenu: String): Boolean {
     var bRetval: Boolean = false;
 
+     if (statusMenu === "KIV" || statusMenu === "NO_ACTION")
+       bRetval = !!row.customer_billing_guid?.trim();
+
     bRetval = (row.status_cv === statusMenu);
     if (!bRetval) bRetval = (row.status_cv == 'JOB_IN_PROGRESS');
     if (statusMenu === "APPROVED") bRetval = (row.status_cv == 'ASSIGNED' || row.status_cv == 'APPROVED');
 
     //If the estimate ald biiled.. not allow to do KIV or No action
-    if (statusMenu === "KIV" || statusMenu === "NO_ACTION")
-      bRetval = !!row.customer_billing_guid?.trim();
+    
 
     return bRetval;
   }

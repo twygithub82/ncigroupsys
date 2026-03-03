@@ -155,10 +155,11 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     INITIAL_TEMPERATURE: 'COMMON-FORM.INITIAL-TEMPERATURE',
     STEAM_BEGIN_ON: 'COMMON-FORM.STEAM-BEGIN-ON',
     STEAM_COMPLETED_ON: 'COMMON-FORM.STEAM-COMPLETED-ON',
-    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION-ONLY',
     PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
     APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
     SIGNATURE: 'COMMON-FORM.SIGNATURE',
+    HH_MM: 'COMMON-FORM.HH-MM',
   }
 
   type?: string | null;
@@ -574,7 +575,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     const totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList!);
-    signatureY = PDFUtility.addText(pdf, `${this.translatedLangText.TOTAL_DURATION} ${totalDuration} h`, signatureY, leftMargin + 10, fontSz, true, fontFamily, false, undefined, false, '#000000');
+    signatureY = PDFUtility.addText(pdf, `${this.translatedLangText.TOTAL_DURATION} ${totalDuration} ${this.translatedLangText.HH_MM}`, signatureY, leftMargin + 1, fontSz, true, fontFamily, false, undefined, false, '#000000');
 
     const signatureBoxHeight = 25;
     const signatureBoxWidth = 60;
@@ -583,17 +584,18 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     pdf.setLineWidth(0.15);
 
+    signatureY+=15;
     // Left signature box
-    pdf.rect(leftSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
-    PDFUtility.addText(pdf, `${this.translatedLangText.PREPARED_BY}:`, signatureY + 5, leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
-    pdf.line(leftSignatureX + 2, signatureY + signatureBoxHeight - 10, leftSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
-    PDFUtility.addText(pdf, `${this.translatedLangText.SIGNATURE}:`, signatureY + signatureBoxHeight - 6, leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    // pdf.rect(leftSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
+     PDFUtility.addText(pdf, `${this.translatedLangText.PREPARED_BY}: `, signatureY , leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    // pdf.line(leftSignatureX + 2, signatureY + signatureBoxHeight - 10, leftSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
+     PDFUtility.addText(pdf, `${customerInfo.companyName}`, signatureY , leftSignatureX + 22, fontSz+1, false, fontFamily, true, undefined, false, '#000000');
 
     // Right signature box
-    pdf.rect(rightSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
-    PDFUtility.addText(pdf, `${this.translatedLangText.APPROVED_BY}:`, signatureY + 5, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
-    pdf.line(rightSignatureX + 2, signatureY + signatureBoxHeight - 10, rightSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
-    PDFUtility.addText(pdf, `${this.translatedLangText.SIGNATURE}:`, signatureY + signatureBoxHeight - 6, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    // pdf.rect(rightSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
+    //  PDFUtility.addText(pdf, `${this.translatedLangText.APPROVED_BY}:`, signatureY + 5, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    // pdf.line(rightSignatureX + 2, signatureY + signatureBoxHeight - 10, rightSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
+    // PDFUtility.addText(pdf, `${this.translatedLangText.SIGNATURE}:`, signatureY + signatureBoxHeight - 6, rightSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
 
     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(
       pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,

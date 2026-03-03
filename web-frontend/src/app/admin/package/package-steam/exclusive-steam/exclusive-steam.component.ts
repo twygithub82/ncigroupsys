@@ -41,7 +41,7 @@ import { maxLengthDisplaySingleSelectedItem, MOBILE_DIALOG_WIDTH, pageSizeInfo, 
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
-import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
+import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/package/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
 
 @Component({
@@ -906,7 +906,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   export_excel() {
   
       this.isGeneratingReport=true;
-               const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+              //  const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+              const where = this.lastSearchCriteria;
               const order=this.lastOrderBy;
               this.packSteamExclDS.SearchAllExclusiveSteam(where,order).subscribe(res=>{
                    var prcList: PackageSteamingItem[] = [];

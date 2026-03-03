@@ -196,7 +196,11 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
     ADDRESS_2: 'COMMON-FORM.ADDRESS-2',
     CODE: 'COMMON-FORM.CODE',
     PHONE: 'COMMON-FORM.PHONE',
-    
+    BRANCH_NAME: 'COMMON-FORM.BRANCH-NAME',
+    BILLING_BRANCH_LIST: 'COMMON-FORM.BILLING-BRANCH-LIST',
+    S_N:'COMMON-FORM.S_N',
+     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+     CURRENCY: "COMMON-FORM.CURRENCY",
 
   }
 
@@ -434,42 +438,66 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item, index) => {
       const row = [
+        index + 1,
         item.main_customer_company?.name || "-",
         item.code || "-",
         item.name || "-",
+        item.currency?.currency_code || "-",
         item.country || "-",
         item.address_line1 || "-",
         item.address_line2 || "-",
         item.email || "-",
         item.phone || "-",
-
+        this.displayLastUpdated(item)
       ];
       return row;
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.MAIN_CUSTOMER,
       this.translatedLangText.BRANCH_CODE,
-      this.translatedLangText.BRANCH_NAME,
+      this.translatedLangText.CUSTOMER_COMPANY_NAME,
+      this.translatedLangText.CURRENCY,
       this.translatedLangText.COUNTRY,
       this.translatedLangText.ADDRESS_1,
       this.translatedLangText.ADDRESS_2,
       this.translatedLangText.EMAIL,
-      this.translatedLangText.PHONE
+      this.translatedLangText.CONTACT_NO,
+      this.translatedLangText.LAST_UPDATED
     ]];
 
-    const rows: (string | number)[][] = [
+     const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.BILLING_BRANCH_LIST}`]
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+ const totalColumns = head[0].length;
+    var fileName ="BillingBranchList.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
 
-    XLSX.writeFile(workbook, "BillingBranch.xlsx");
+    // XLSX.writeFile(workbook, "BillingBranch.xlsx");
     this.dialogRef.close();
   }
 
