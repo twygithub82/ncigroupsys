@@ -38,8 +38,10 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { YardSummaryReportExcelComponent } from 'app/document-template/excel/tank-activity/yard-report/summary-report/summary-report-excel.component';
 import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -157,6 +159,9 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    MASTER_IN: 'COMMON-FORM.MASTER-IN',
+    MASTER_OUT:'COMMON-FORM.MASTER-OUT',
+    YARD_SUMMARY_REPORT: 'COMMON-FORM.YARD-SUMMARY-REPORT',
   }
 
   invForm?: UntypedFormGroup;
@@ -215,7 +220,8 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -738,5 +744,106 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     }
   }
 
+
+  export_excel(type:number)
+      {
+        this.isGeneratingReport=true;
+        const where :any = this.lastSearchCriteria;
+      //  var report_customer_tank_acts: report_customer_tank_activity[] = [];
+
+    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReportAll(this.lastSearchCriteria, this.lastOrderBy)
+      .subscribe(data => {
+        this.sotList = data;
+        this.endCursor = this.stmDS.pageInfo?.endCursor;
+        this.startCursor = this.stmDS.pageInfo?.startCursor;
+        this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        if(type==1)
+        {
+          this.exportExcelSummary(data);
+        }
+        // this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
+        //this.checkInvoicedAndGetTotalCost();
+        //this.checkInvoiced();
+        //this.distinctCustomerCodes= [... new Set(this.sotList.map(item=>item.storing_order?.customer_company?.code))];
+      });
+
+    
+          
+      }
+
+      exportExcelSummary(data:StoringOrderTankItem[]) {
+        
+         var report_customer_tank_acts: report_customer_tank_activity[] = [];
+
+    data.map(s => {
+
+      if (s) {
+        var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+        let newCust = false;
+        if (!repCust.code) {
+          repCust.code = s.storing_order?.customer_company?.code;
+          repCust.customer = s.storing_order?.customer_company?.name;
+          newCust = true;
+        }
+        repCust.number_tank ??= 0;
+        repCust.number_tank += 1;
+        if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+        repCust.storing_order_tank?.push(s);
+        if (newCust) report_customer_tank_acts.push(repCust);
+
+
+
+          }
+        });
+        var title :string =`${this.translatedLangText.YARD_SUMMARY_REPORT}: ${this.translatedLangText.MASTER_IN}`;
+
+          if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
+              title =`${this.translatedLangText.YARD_SUMMARY_REPORT}: ${this.translatedLangText.MASTER_OUT}`;
+            }
+
+
+        this.exportExcelReport(report_customer_tank_acts,title);
+
+      }
+
+
+    exportExcelReport(repData:any,title:string) {
+        
+            //this.preventDefault(event);
+            let cut_off_dt = new Date();
+        
+        
+            let tempDirection: Direction;
+            if (localStorage.getItem('isRtl') === 'true') {
+              tempDirection = 'rtl';
+            } else {
+              tempDirection = 'ltr';
+            }
+        
+            const dialogRef = this.dialog.open(YardSummaryReportExcelComponent, {
+              width: reportPreviewWindowDimension.portrait_width_rate,
+              maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+              maxHeight: reportPreviewWindowDimension.report_maxHeight,
+              
+              data: {
+                repData: repData,
+                title:title
+              },
+        
+              // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+              direction: tempDirection
+            });
+        
+              dialogRef.updatePosition({
+              top: '-90vh',  // Move far above the screen
+              left: '0px'  // Move far to the left of the screen
+            });
+        
+            this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+              this.isGeneratingReport = false;
+            });
+    
+      }
 
 }

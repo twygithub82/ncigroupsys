@@ -525,7 +525,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
      const subtitlePos=0;
     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, cutoffDate,subtitlePos);
-    startY +=  6;
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
     // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);

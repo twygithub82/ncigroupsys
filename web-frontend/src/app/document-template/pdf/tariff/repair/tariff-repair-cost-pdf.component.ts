@@ -1063,7 +1063,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, '',subtitlePos);
     startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    startPostY+=1;
+    // startPostY+=1;
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 

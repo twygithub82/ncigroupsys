@@ -45,6 +45,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { TankActivityReportExcelComponent } from 'app/document-template/excel/reports/tank-activity/activity-report-excel/activity-report-excel.component';
 @Component({
   selector: 'app-customer-report',
   standalone: true,
@@ -217,6 +218,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   isGeneratingReport = false;
+  reportFmt:number=1;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -224,7 +226,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -429,6 +431,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.selection.clear();
     this.customerCodeControl.setErrors({ 'required': false });
     this.customerCodeControl.markAsUntouched();
+
+    if(repType==3)this.reportFmt=2;
+    else this.reportFmt=1;
+   
     // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
 
     // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
@@ -594,7 +600,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       return;
     }
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    if (repType === 1) {
+    if ([1,3].includes(repType)) {
       if (!this.customerCodeControl.value) {
         this.isGeneratingReport = false;
         this.customerCodeControl.setErrors({ 'required': true });
@@ -868,8 +874,14 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       }
     });
 
-
+    if (this.reportFmt===1)
+    {
     this.onExportDetail(report_customer_tank_acts, report_type, customerNm);
+    }
+    else
+    {
+      this.exportExcelReport(report_customer_tank_acts, report_type, customerNm);
+    }
 
 
   }
@@ -1122,5 +1134,56 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       });
 
   }
+   export_excel(data:any[],repType:string,customerName:string){ 
+    this.isGeneratingReport = true;
+   
+  
+      this.exportExcelReport(data,repType,customerName);
+      this.isGeneratingReport = false;
+   
+  }
+
+  exportExcelReport(repData:any[],repType:string,customerName:string) {
+  
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(TankActivityReportExcelComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+  
+        data: {
+          report_customer_tank_activity: repData,
+          repType: repType,
+          customerName: customerName
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-90vh',  // Move far above the screen
+        left: '0px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+  
+    }
+
+  
+      
+
 
 }

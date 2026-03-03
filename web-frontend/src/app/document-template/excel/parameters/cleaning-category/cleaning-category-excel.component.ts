@@ -125,7 +125,9 @@ export class CleaningCategoryExcelComponent extends UnsubscribeOnDestroyAdapter 
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CATEGORY_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
-    CATEGORY_NAME_SELECTED: 'COMMON-FORM.SELECTED'
+    CATEGORY_NAME_SELECTED: 'COMMON-FORM.SELECTED',
+    CLEANING_CATERGORY: 'COMMON-FORM.CLEANING-CATEGORY',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -363,8 +365,9 @@ export class CleaningCategoryExcelComponent extends UnsubscribeOnDestroyAdapter 
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item) => {
+    const data: any[][] = items.map((item,index) => {
       const row = [
+        index+1,
         item.name || "-",
         item.description || "-",
         this.parse2Decimal(item.cost!) || "-",
@@ -375,29 +378,43 @@ export class CleaningCategoryExcelComponent extends UnsubscribeOnDestroyAdapter 
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.NAME,
       this.translatedLangText.DESCRIPTION,
       this.translatedLangText.CATEGORY_COST,
       this.translatedLangText.LAST_UPDATED
     ]];
 
-    const rows: (string | number)[][] = [
+     const reportTitle: (string | number)[][] = [
+      [`${this.translatedLangText.CLEANING_CATERGORY}`],
+    ];
+   const rows: (string | number)[][] = [
+      ...reportTitle,
+      [], // empty row after title
       ...head,
       ...data
     ];
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-     worksheet['!cols'] = rows[0].map((_, colIndex) => {
-      const maxLength = rows.reduce((max, row) => {
-        const cell = row[colIndex];
-        return Math.max(max, cell ? cell.toString().length : 0);
-      }, 10);
-      return { wch: maxLength + 2 };
-    });
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    const totalColumns = head[0].length;
+    var fileName ="CleaningCategory.xlsx";
+    Utility.saveExcel(rows, fileName, totalColumns);
+    // const rows: (string | number)[][] = [
+    //   ...head,
+    //   ...data
+    // ];
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
 
-    XLSX.writeFile(workbook, "CleaningCategory.xlsx");
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // XLSX.writeFile(workbook, "CleaningCategory.xlsx");
     this.dialogRef.close();
   }
 

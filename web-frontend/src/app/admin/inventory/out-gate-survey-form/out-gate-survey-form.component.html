@@ -23,7 +23,7 @@
             @if (!(ogDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -53,7 +53,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -85,7 +85,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -132,7 +132,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="header">
                   <h2>
-                    {{translatedLangText.SURVEY_INFO}}
+                    {{translatedLangText.SURVEY_DETAILS}}
                   </h2>
                 </div>
                 <div class="body">
@@ -142,7 +142,7 @@
                     </mat-progress-spinner>
                   </div>
                   }
-                  @if (!(ogDS.loading$ | async)) {
+                  <!-- @if (!(ogDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -155,7 +155,7 @@
                       </div>
                     </div>
                   </mat-card-content>
-                  }
+                  } -->
                 </div>
               </div>
             </div>
@@ -523,14 +523,6 @@
                         @if (!(ogDS.loading$ | async)) {
                         <mat-card-content>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                              <mat-form-field class="example-full-width">
-                                <mat-label>{{translatedLangText.OUT_GATE_REMARKS}}</mat-label>
-                                <textarea matInput formControlName="in_gate_remarks"></textarea>
-                              </mat-form-field>
-                            </div>
-                          </div>
-                          <div class="row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
@@ -562,6 +554,14 @@
                                   {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                 </mat-error>
                                 } -->
+                              </mat-form-field>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                              <mat-form-field class="example-full-width">
+                                <mat-label>{{translatedLangText.OUT_GATE_REMARKS}}</mat-label>
+                                <textarea matInput formControlName="in_gate_remarks"></textarea>
                               </mat-form-field>
                             </div>
                           </div>
