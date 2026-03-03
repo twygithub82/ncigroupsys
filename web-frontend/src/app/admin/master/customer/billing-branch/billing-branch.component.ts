@@ -824,6 +824,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false, isEnd: boolean = false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if (isStart) centerClass = 'justify-content-start ';
+    if (isEnd) centerClass = 'justify-content- ';
+    if (Padding) centerClass += 'left-padding-cell ';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
   export_excel() {
     this.isGeneratingReport = true;
     // const where: any = {};

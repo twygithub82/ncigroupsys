@@ -863,75 +863,80 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.pcForm?.get('customer_code')?.setValue(existingValue);
   }
 
-   export_excel()
-    {
-      this.isGeneratingReport=true;
-      // const where={ delete_dt: { eq: null } };
-        const filters=this.lastSearchCriteria.and||{ delete_dt: { eq: null } };
-        var where: any= {};
-        if (filters.length>0){
-          where.and=filters.map((item:any) => item.customer_company);
-        }
-        else
-        {
-          where={ delete_dt: { eq: null } }
-        }
-      // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
-      this.ccDS.searchAll(where).subscribe(res=>{
+  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if (isStart) centerClass = 'justify-content-start ';
+    if (Padding) centerClass += 'left-padding-cell ';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
-          var prcList: CustomerCompanyItem[] = [];
-            res.forEach((item) => {
-                var itm:any = item;
-                const c: CustomerCompanyItem = {
-                  ...itm,
-                  default_profile_name:this.getDepotProfileName(itm.def_tank_guid),
-                };
-                prcList.push(c);
-              });
-            
-
-
-            this.exportExcelReport(prcList);
-  
-        })
-  
-        
+  export_excel() {
+    this.isGeneratingReport = true;
+    // const where={ delete_dt: { eq: null } };
+    const filters = this.lastSearchCriteria.and || { delete_dt: { eq: null } };
+    var where: any = {};
+    if (filters.length > 0) {
+      where.and = filters.map((item: any) => item.customer_company);
     }
-    exportExcelReport(repData:any) {
-        
-           //this.preventDefault(event);
-            let cut_off_dt = new Date();
-        
-        
-            let tempDirection: Direction;
-            if (localStorage.getItem('isRtl') === 'true') {
-              tempDirection = 'rtl';
-            } else {
-              tempDirection = 'ltr';
-            }
-        
-            const dialogRef = this.dialog.open(CustomerExcelComponent, {
-              width: reportPreviewWindowDimension.portrait_width_rate,
-              maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-              maxHeight: reportPreviewWindowDimension.report_maxHeight,
-              
-              data: {
-                repData: repData
-              },
-        
-              // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-              direction: tempDirection
-            });
-        
-              dialogRef.updatePosition({
-              top: '-90vh',  // Move far above the screen
-              left: '0px'  // Move far to the left of the screen
-            });
-        
-            this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-              this.isGeneratingReport = false;
-            });
-    
-      }
+    else {
+      where = { delete_dt: { eq: null } }
+    }
+    // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
+    this.ccDS.searchAll(where).subscribe(res => {
+
+      var prcList: CustomerCompanyItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: CustomerCompanyItem = {
+          ...itm,
+          default_profile_name: this.getDepotProfileName(itm.def_tank_guid),
+        };
+        prcList.push(c);
+      });
+
+
+
+      this.exportExcelReport(prcList);
+
+    })
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CustomerExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
 

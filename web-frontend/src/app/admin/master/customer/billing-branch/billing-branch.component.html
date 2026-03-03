@@ -8,35 +8,32 @@
             </mat-panel-title>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
+                  [disabled]="isGeneratingReport">
                   <mat-icon>search</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
+                  [disabled]="isGeneratingReport">
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
               @if (isAllowAdd()) {
               <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                <button mat-mini-fab class="primary-light" (click)="addBillingBranch($event)" [disabled]="isGeneratingReport"
-                  (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="primary-light" (click)="addBillingBranch($event)"
+                  [disabled]="isGeneratingReport" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
               }
 
-               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                 <button mat-mini-fab
-                    class="light-green-button m-l-10"
-                    (click)="export_excel()"
-                    (click)="$event.stopPropagation()"
-                    [disabled]="isGeneratingReport"
-                    matTooltip="{{ translatedLangText.EXPORT }}">
-              <img src="assets/images/icons/xlsx1_64x64.png"
-                  alt="{{ translatedLangText.EXPORT }}"
-                  class="fab-icon">
-            </button>
+              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+              <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()"
+                (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
+                matTooltip="{{ translatedLangText.EXPORT }}">
+                <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+              </button>
               <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
@@ -123,7 +120,7 @@
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
                     <mat-select formControlName="default_profile" [compareWith]="compareObjects"
                       (selectionChange)="AutoSearch()">
-                       @for (option of depotProfileList; track option) {
+                      @for (option of depotProfileList; track option) {
                       <mat-option [value]="option">{{option.profile_name}}</mat-option>
                       }
                       <!-- @for (option of unit_typeList; track option) {
@@ -174,17 +171,20 @@
               <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+              <mat-header-cell
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile) " *matCellDef="let row"
-                (contextmenu)="onContextMenu($event, row)">
+              <mat-cell
+                [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile) "
+                *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{getDepotProfileName(row.customer_company?.def_tank_guid)}}</mat-cell>
             </ng-container>
@@ -192,7 +192,8 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header="bDate" disableClear
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
