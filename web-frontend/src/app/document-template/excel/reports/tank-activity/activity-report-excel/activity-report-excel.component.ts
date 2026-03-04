@@ -30,29 +30,19 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
-
+import * as XLSX from 'xlsx';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
   report_customer_tank_activity: report_customer_tank_activity[],
   type: string,
   customerName: string
-
-  // repair_guid: string;
-  // customer_company_guid: string;
-  // sotDS: StoringOrderTankDS;
-  // repairDS: RepairDS;
-  // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
-  // existingPdf?: any;
-  // estimate_no?: string;
-  // retrieveFile: boolean;
 }
 
 @Component({
-  selector: 'app-customer-detail-pdf',
-  templateUrl: './customer-detail-pdf.component.html',
-  styleUrls: ['./customer-detail-pdf.component.scss'],
+  selector: 'app-activity-report-excel',
+  templateUrl: './activity-report-excel.component.html',
+  styleUrls: ['./activity-report-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -65,7 +55,7 @@ export interface DialogData {
     MatTooltipModule
   ],
 })
-export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -333,7 +323,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   customerName: string = '';
 
   constructor(
-    public dialogRef: MatDialogRef<CustomerDetailPdfComponent>,
+    public dialogRef: MatDialogRef<TankActivityReportExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -349,6 +339,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
 
+     this.report_customer_tank_activity = this.data.report_customer_tank_activity;
+    this.invType = this.data.type;
+    this.customerName = this.data.customerName;
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -358,9 +351,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   async ngOnInit() {
     await this.getCodeValuesData();
-    this.report_customer_tank_activity = this.data.report_customer_tank_activity;
-    this.invType = this.data.type;
-    this.customerName = this.data.customerName;
+   
     await this.onDownloadClick();
   }
 
@@ -511,8 +502,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   async onDownloadClick() {
     //this.exportToPDF();
   //  await this.exportToPDF_r1();
-  await this.exportToPDF_r2();
+  // await this.exportToPDF_r2();
     //this.exportToPDF_r2();
+    await this.exportToExcel();
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -529,6 +521,203 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
+
+  async exportToExcel(fileName: string = 'Tank_Report.xlsx') {
+
+  this.generatingPdfLoadingSubject.next(true);
+
+  const wb = XLSX.utils.book_new();
+  const wsData: any[] = [];
+
+   const head: (string | number)[][] = [[
+      this.translatedLangText.S_N, 
+      this.translatedLangText.TANK_NO, 
+      this.translatedLangText.IN_DATE, 
+      this.translatedLangText.REFERENCE,
+      this.translatedLangText.CAPACITY, 
+      this.translatedLangText.TARE, 
+      this.translatedLangText.LAST_CARGO,
+      this.translatedLangText.CLEAN_DATE, 
+      this.translatedLangText.OWNER, 
+      this.translatedLangText.LAST_TEST, 
+      this.translatedLangText.NEXT_TEST, 
+      this.translatedLangText.ESTIMATE_NO,
+      this.translatedLangText.DATE, 
+      this.translatedLangText.APPROVAL,
+      this.translatedLangText.AV_DATE, 
+      this.translatedLangText.CLEAN_CERT, 
+      this.translatedLangText.RELEASE_BOOKING,
+      this.translatedLangText.RELEASE_DATE, 
+      this.translatedLangText.REFERENCE, 
+      this.translatedLangText.STATUS,  
+      this.translatedLangText.PURPOSE, 
+      this.translatedLangText.REMARKS, 
+      this.translatedLangText.YARD,  
+    ]];
+
+    var repTitle =PDFUtility.FormatColon(this.translatedLangText.TANK_ACTIVITY, this.customerName);
+    wsData.push([repTitle]);
+    wsData.push([]);
+  for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
+
+    const cust = this.report_customer_tank_activity[n];
+
+    // ==========================
+    // CUSTOMER TITLE
+    // ==========================
+    // wsData.push([`Customer: ${cust.customer}`]);
+    // wsData.push([]);
+
+    // ==========================
+    // IN YARD SECTION
+    // ==========================
+    if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
+
+      var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
+      wsData.push([subTitle]);
+      // wsData.push([]);
+
+      // Header row
+      wsData.push(head[0]);
+
+      for (let b = 0; b < cust.in_yard_storing_order_tank!.length; b++) {
+
+        const itm = cust.in_yard_storing_order_tank![b];
+
+        wsData.push([
+          b + 1,
+          itm.tank_no || "",this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "", this.DisplayCapacity(itm) || "", 
+          this.DisplayTareWeight(itm) || "",itm.tariff_cleaning?.cargo || "", this.DisplayCleanDate(itm) || "", this.DisplayTankOwner(itm) || "", 
+          this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
+          this.DisplayApprovalRef(itm) || "",this.DisplayAVDate(itm) || "", this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "", 
+          this.DisplayReleaseDate(itm) || "",this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "", this.displayTankPurpose_InShort(itm) || "", 
+          this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
+        ]);
+
+        if(itm.repair)
+        {
+           if (itm.repair?.length || 0 > 1) {
+              for (let r = 1; r < itm.repair!.length; r++) {
+                var rp = itm.repair?.[r]!;
+                wsData.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                   "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+
+        }
+
+          if (itm.residue) {
+            if (itm.residue?.length || 0 > 1) {
+              for (let r = 0; r < itm.residue!.length; r++) {
+                var rs = itm.residue?.[r]!;
+                wsData.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+          }
+
+        if(itm.steaming)
+        {
+           if (itm.steaming?.length || 0 > 1) {
+              for (let r = 0; r < itm.steaming!.length; r++) {
+                var st = itm.steaming?.[r]!;
+                wsData.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+        }
+
+       
+      }
+
+     
+    }
+
+    // ==========================
+    // RELEASED SECTION
+    // ==========================
+    if ((cust.released_storing_order_tank?.length || 0) > 0) {
+
+      wsData.push([]);
+      wsData.push([]);
+
+      var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.RELEASED);
+      wsData.push([subTitle]);
+      // wsData.push([]);
+
+      wsData.push(head[0]);
+
+      for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
+
+        const itm = cust.released_storing_order_tank![b];
+
+        wsData.push([
+          b + 1,
+          itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "", this.DisplayCapacity(itm) || "",
+          this.DisplayTareWeight(itm) || "",itm.tariff_cleaning?.cargo || "", this.DisplayCleanDate(itm) || "", this.DisplayTankOwner(itm) || "",
+          this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayEstimateNo(itm) || "",  this.DisplayEstimateDate(itm) || "",
+          this.DisplayApprovalRef(itm) || "", this.DisplayAVDate(itm) || "", this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
+          this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "", this.displayTankPurpose_InShort(itm) || "",
+          this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
+        ]);
+      }
+
+      wsData.push([]);
+    }
+
+    wsData.push([]);
+    wsData.push([]);
+  }
+
+  fileName="Activity Report.xlsx";
+  const totalColumns = head[0].length;
+  Utility.saveExcel_r1(wsData,4, fileName, totalColumns);
+
+  // const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(wsData);
+
+  // XLSX.utils.book_append_sheet(wb, ws, "Tank Report");
+
+  // const excelBuffer: any = XLSX.write(wb, {
+  //   bookType: 'xlsx',
+  //   type: 'array'
+  // });
+
+  // const data: Blob = new Blob(
+  //   [excelBuffer],
+  //   { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+  // );
+
+  // FileSaver.saveAs(data, fileName);
+
+  this.generatingPdfLoadingSubject.next(false);
+}
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -1170,7 +1359,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
     let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
      
-    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape()*1.5;
      lastTableFinalY = startPosY;
     var buffer = 30;
     var CurrentPage = 1;
@@ -1316,10 +1505,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
         autoTable(pdf, {
           head: headers,
           body: data,
-          // startY: startPosY, // Start table at the current startY value
-          // margin: { left: leftMargin, top: lastTableFinalY },
-          startY:lastTableFinalY,
-          margin: { left: leftMargin, top: startPosY },
+          //  startY: startY, // Start table at the current startY value
+          margin: { left: leftMargin, top: lastTableFinalY },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1360,7 +1547,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
         //if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
         if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
-          lastTableFinalY = startPosY ;
+          lastTableFinalY = 45 + topMargin;
         }
         else {
           CurrentPage = repPage;
@@ -1458,18 +1645,16 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
               }
             }
           }
-           startY = lastTableFinalY; // Start table 20mm below the customer name
+          startY = lastTableFinalY; // Start table 20mm below the customer name
 
 
         }
         autoTable(pdf, {
           head: headers,
           body: repData,
-          //  startY: startPosY, // Start table at the current startY value
+          // startY: startY, // Start table at the current startY value
           theme: 'grid',
-          // margin: { left: leftMargin, top: topMargin + 46 },
-          startY: startY + 2,
-          margin: { left: leftMargin, top: startPosY },
+          margin: { left: leftMargin, top: topMargin + 46 },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
