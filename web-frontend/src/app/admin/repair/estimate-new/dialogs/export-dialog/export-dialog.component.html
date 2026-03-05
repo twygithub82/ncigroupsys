@@ -1,0 +1,22 @@
+<div class="container">
+  <h3 mat-dialog-title>{{data.langText.EXPORT | translate}}</h3>
+ <form [formGroup]="form">
+   <div class="dialog-actions mt-1">
+    <mat-checkbox formControlName="owner">
+      Owner
+    </mat-checkbox>
+
+    <mat-checkbox formControlName="lessee">
+      Lessee
+    </mat-checkbox>
+  </div>
+  </form>
+  <div mat-dialog-actions class="dialog-actions mb-1">
+    <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmDelete()" [disabled]="!form.value.owner && !form.value.lessee">
+      {{data.langText.EXPORT | translate}}
+    </button>
+    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+      {{data.langText.CLOSE | translate}}
+    </button>
+  </div>
+</div>
