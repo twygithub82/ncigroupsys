@@ -526,102 +526,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, cutoffDate,subtitlePos);
     startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-
-    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
-
-  //   var buffer = 25;
-  //   var CurrentPage = 1;
-  //   for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
-  //     let startY=0;
-
-  //     if (n > 0) lastTableFinalY += 5; // 2nd table
-  //     else {
-  //       lastTableFinalY =startPostY ; //1st Page 1st table
-  //     }
-     
-      
-  //     let cust = this.report_inventory_cln_dtl[n];
-  //     const data: any[][] = []; // Explicitly define data as a 2D array
-
-  //     var repPage = pdf.getNumberOfPages();
-  //     //if(repPage==1)lastTableFinalY=45;
-
-  //     if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-  //       pdf.addPage();
-  //       lastTableFinalY = startPostY; /// buffer for 2nd page onward first table's Method
-  //     }
-  //     else {
-  //       CurrentPage = repPage;
-  //     }
-  //    // lastTableFinalY += 7;
-  //   //  startY = lastTableFinalY + 8;
-  //     // pdf.setFontSize(8);
-  //     // pdf.setTextColor(0, 0, 0); // Black text
-  //     //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      
-  //     var unNo;
-  //     var process;
-  //     for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
-  //       var itm = cust.storing_order_tank?.[i];
-  //       data.push([
-  //         (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
-  //         this.DipslayCleanDuration(itm!) || "" //itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
-  //       ]);
-  //       unNo = itm?.tariff_cleaning?.un_no || "";
-  //       process = this.DisplayCleanMethod(itm!);
-  //     }
-  //  //   pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
-  //     // pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
-  //     // pdf.setDrawColor(0, 0, 0); // red line color
-      
-  //     var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
-      
-  //     await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-  //     lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-  //     startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
-  //     // /pdf.setLineWidth(0.1);
-  //   //  pdf.setLineDashPattern([0.01, 0.01], 0.1);
-  //     // Add table using autoTable plugin
-  //     autoTable(pdf, {
-  //       head: headers,
-  //       body: data,
-  //       //startY: startY, // Start table at the current startY value
-  //       theme: 'grid',
-  //       margin: { top:startY, horizontal: leftMargin},
-  //       tableWidth: contentWidth,
-  //       styles: {
-  //         fontSize: fontSz_body,
-  //         minCellHeight: minHeightHeaderCol
-
-  //       },
-        
-  //       columnStyles: comStyles,
-  //       headStyles: headStyles, // Custom header styles
-  //       bodyStyles: {
-  //         fillColor: [255, 255, 255],
-  //         halign: 'left', // Left-align content for body by default
-  //         valign: 'middle', // Vertically align content
-  //       },
-  //       didDrawPage: (data: any) => {
-  //         const pageCount = pdf.getNumberOfPages();
-
-  //         lastTableFinalY = data.cursor.y;
-
-  //         var pg = pagePositions.find(p => p.page == pageCount);
-  //         if (!pg) {
-  //           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-  //           if (pageCount > 1) {
-  //             // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
-  //             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-  //             // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
-  //              PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-  //             PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-  //           }
-  //         }
-  //       },
-  //     });
-  //   }
+    
 
       autoTable(pdf, {
         head: headers,
@@ -673,7 +578,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

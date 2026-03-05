@@ -952,7 +952,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

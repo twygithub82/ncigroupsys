@@ -1039,7 +1039,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+            PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
           }
         }
 
@@ -1083,7 +1083,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 
@@ -1331,7 +1331,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
       const card = cardElements[0];
 
-      startY= await Utility.DrawCardForImageAtCenterPage(pdf, card, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+      startY= await PDFUtility.DrawCardForImageAtCenterPage(pdf, card, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
       
     }
 

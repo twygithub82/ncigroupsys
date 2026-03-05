@@ -896,7 +896,7 @@ lineChartOptions:any;
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       // Utility.addText(pdf, customer, startY, leftMargin, PDFUtility.RightSubTitleFontSize());
        const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
 
     }
@@ -1407,7 +1407,7 @@ lineChartOptions:any;
           // startY = topMargin + 50;
         }
         const card1 = cardElements[i];
-        await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        await PDFUtility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
         // const canvas1 = await html2canvas(card1, { scale: scale });
         // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
 
@@ -1445,7 +1445,7 @@ lineChartOptions:any;
       //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
       // });
       this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     // }, 100);
@@ -1590,7 +1590,7 @@ lineChartOptions:any;
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       // Utility.addText(pdf, customer, startY, leftMargin, PDFUtility.RightSubTitleFontSize());
        const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
 
     }
@@ -2082,7 +2082,7 @@ lineChartOptions:any;
           // startY = topMargin + 50;
         }
         const card1 = cardElements[i];
-        await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        await PDFUtility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
         // const canvas1 = await html2canvas(card1, { scale: scale });
         // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
 
@@ -2137,7 +2137,7 @@ lineChartOptions:any;
       //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
       // });
       this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     }, 100);

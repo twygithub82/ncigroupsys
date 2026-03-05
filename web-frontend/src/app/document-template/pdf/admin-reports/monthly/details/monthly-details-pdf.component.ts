@@ -741,7 +741,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
      
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       const customer =`${this.customer}`
-      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
        startY += PDFUtility.GapBetweenLeftTitleAndTable();
       //Utility.addText(pdf, customer, startY, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
     }
@@ -859,7 +859,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       //pdf.save(fileName);
       this.generatingPdfProgress = 0;
       this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
     }, 100);
 

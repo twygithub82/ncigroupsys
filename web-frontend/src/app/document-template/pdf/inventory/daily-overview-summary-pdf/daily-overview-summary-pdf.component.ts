@@ -44,6 +44,7 @@ import {
   NgApexchartsModule
 } from 'ng-apexcharts';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export type ChartOptions = {
   animations?: any;
@@ -830,8 +831,8 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 33);
+    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 33);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
 
@@ -855,7 +856,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+    PDFUtility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
 
     autoTable(pdf, {
       head: headers,
@@ -878,7 +879,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       didDrawPage: (data: any) => {
         const pageCount = pdf.getNumberOfPages();
 
-        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+        if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
         // Capture the final Y position of the table
         lastTableFinalY = data.cursor.y;
         var pg = pagePositions.find(p => p.page == pageCount);
@@ -908,7 +909,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     });
 
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);

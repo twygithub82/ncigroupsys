@@ -660,7 +660,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, this.team);
     startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+    await PDFUtility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
    startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
 
@@ -746,7 +746,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
              let posY= PDFUtility.addReportSubTitle_Portrait(pdf, approvalDt, pageWidth, leftMargin, rightMargin);
               posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
-              Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
+              PDFUtility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
           }
         }
 
@@ -844,7 +844,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

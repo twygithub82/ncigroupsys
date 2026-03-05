@@ -866,7 +866,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     if (this.customer) {
         const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
       startY+=PDFUtility.GapBetweenLeftTitleAndTable();
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       // Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
@@ -1265,7 +1265,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       for (var i = 0; i < cardElements.length; i++) {
       
         const card1 = cardElements[i];
-       startY= await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+       startY= await PDFUtility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
         startY += 20;
       }
 
@@ -1275,7 +1275,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
 
       this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     // }, 100);

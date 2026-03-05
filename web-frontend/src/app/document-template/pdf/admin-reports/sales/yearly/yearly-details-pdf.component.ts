@@ -832,7 +832,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     {
       //const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
       const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
       //Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
@@ -1363,7 +1363,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //pdf.save(fileName);
   //  this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
 
   },100);
@@ -1481,8 +1481,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -1491,12 +1491,12 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, 11);
+    PDFUtility.AddTextAtCenterPage_r1(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, 11);
 
     if(this.customer)
     {
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+      PDFUtility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
     var idx = 0;
 
@@ -1768,7 +1768,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
+            PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
           }
         }
 
@@ -1957,7 +1957,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
       if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+        await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
       }
     }
 
@@ -1965,7 +1965,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //pdf.save(fileName);
   //  this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
 
   },100);
@@ -2057,8 +2057,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -2067,12 +2067,12 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
+    PDFUtility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
 
     if(this.customer)
     {
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+      PDFUtility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
 
     var idx = 0;
@@ -2164,7 +2164,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
           }
         }
 
@@ -2179,7 +2179,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     for (var i = 0; i < cardElements.length; i++) {
       if (i > 0) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+        PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
       }
       const card1 = cardElements[i];
@@ -2225,7 +2225,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

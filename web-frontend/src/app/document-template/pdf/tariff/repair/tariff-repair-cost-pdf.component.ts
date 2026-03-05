@@ -903,7 +903,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         // Add Group Title (centered)
         const groupName = group.group_name_desc || group.group_name_cv;
         fontSize = 11;
-        Utility.AddTextAtCenterPage(doc, groupName, pageWidth, leftMargin, rightMargin, lastTableFinalY, fontSize, true);
+        PDFUtility.AddTextAtCenterPage(doc, groupName, pageWidth, leftMargin, rightMargin, lastTableFinalY, fontSize,'helvetica',true);
         lastTableFinalY += 7;
 
         // Loop through subgroups
@@ -1183,7 +1183,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

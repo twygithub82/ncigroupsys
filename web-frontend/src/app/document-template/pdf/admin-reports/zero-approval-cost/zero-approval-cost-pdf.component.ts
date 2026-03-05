@@ -761,7 +761,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 
@@ -827,15 +827,15 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 46;
 
     let date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
     //await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
-    await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    await PDFUtility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
     lastTableFinalY += 5;
 
     let startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -944,8 +944,8 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+            PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            PDFUtility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
           }
         }
 
@@ -978,7 +978,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
       if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+        await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
       }
     }// Add Second Page, Add For Loop
 
@@ -988,7 +988,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

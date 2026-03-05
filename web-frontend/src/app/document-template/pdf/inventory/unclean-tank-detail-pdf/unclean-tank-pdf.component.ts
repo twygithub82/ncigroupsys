@@ -677,7 +677,7 @@ export class UncleanTankDetailInventoryPdfComponent extends UnsubscribeOnDestroy
       
       var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
       
-      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await PDFUtility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
       // /pdf.setLineWidth(0.1);
@@ -731,7 +731,7 @@ export class UncleanTankDetailInventoryPdfComponent extends UnsubscribeOnDestroy
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

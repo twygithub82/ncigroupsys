@@ -742,7 +742,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
 
     if (this.customer) {
         const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
      // Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
       startY+=PDFUtility.GapBetweenLeftTitleAndTable();
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
@@ -1027,7 +1027,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       //pdf.save(fileName);
       //  this.generatingPdfProgress = 0;
       this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     }, 50);

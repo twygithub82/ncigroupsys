@@ -673,7 +673,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       // pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       // PDFUtility.addText(pdf, `${this.translatedLangText.CUSTOMER} : ${cust.customer_code ?? "-"}`, lastTableFinalY, leftMargin, 8, false);
       var customer =this.DisplayCustomerName(cust);
-      await Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await PDFUtility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       
       if ((cust.periodic_test_due?.length || 0) > 0) {
         lastTableFinalY += 3;
@@ -761,7 +761,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     // }// Add Second Page, Add For Loop
 
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);
@@ -837,8 +837,8 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
@@ -952,7 +952,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
+                PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
               }
             }
           },
@@ -978,7 +978,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     });
 
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

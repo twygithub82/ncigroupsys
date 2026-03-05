@@ -46,6 +46,7 @@ import {
 
 import { ChartConfiguration, ChartData, ChartType, LinearScaleOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -867,8 +868,8 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
     let minHeightHeaderCol = 9;
@@ -876,14 +877,14 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     let startY = lastTableFinalY + 8;
 
     const repGenDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`;
-    Utility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
+    PDFUtility.AddTextAtCenterPage(pdf, repGenDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
 
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
     pagePositions.push({ page: 1, x: 0, y: 0 });
     for (var i = 0; i < cardElements.length; i++) {
       if (i > 0) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+        PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
       }
       const card1 = cardElements[i];
@@ -930,7 +931,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     }
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
