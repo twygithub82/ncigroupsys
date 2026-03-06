@@ -779,7 +779,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

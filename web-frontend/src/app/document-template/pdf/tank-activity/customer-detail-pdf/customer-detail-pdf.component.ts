@@ -726,7 +726,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         // pdf.setFontSize(8);
         var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
         //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-        await PDFUtility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
@@ -877,7 +877,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         //pdf.setFontSize(8);
         subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.RELEASED);
         //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-        await PDFUtility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         const repData: any[][] = [];
         // lastTableFinalY += 3;
@@ -1009,7 +1009,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);
@@ -1219,7 +1219,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
         // pdf.setFontSize(8);
         var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
         //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-        await PDFUtility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
@@ -1372,7 +1372,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
         //pdf.setFontSize(8);
         subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.RELEASED);
         //Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-        await PDFUtility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
 
         const repData: any[][] = [];
         // lastTableFinalY += 3;
@@ -1506,7 +1506,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
   
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

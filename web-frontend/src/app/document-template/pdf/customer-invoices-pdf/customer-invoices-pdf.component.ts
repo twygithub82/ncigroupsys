@@ -1098,7 +1098,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
        const cust: any = this.repBillingCustomers[n];
 
        var customer=`${cust.customer}`;
-      await PDFUtility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
 
@@ -1287,8 +1287,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40, 14, false);
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40, 14, false);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
@@ -1297,7 +1297,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     lastTableFinalY += 8;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.INVOICE_PERIOD}:${invPeriod}`;
-    PDFUtility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
 
     var buffer = 30;
     var CurrentPage = 1;
@@ -1395,7 +1395,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
                 //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin, 14, false);
-                PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);  //Add Second Page
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);  //Add Second Page
               }
             }
           },
@@ -1417,7 +1417,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
       if (page > 1) {
-        await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
       }
     }// Add Second Page, Add For Loop
 
@@ -1433,7 +1433,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     // });
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

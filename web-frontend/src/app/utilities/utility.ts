@@ -4,12 +4,12 @@ import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
 import { Canvg } from 'canvg';
 import * as domtoimage from 'dom-to-image-more';
 import html2canvas from "html2canvas";
-// import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jspdf';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { systemCurrencyCode } from '../../environments/environment';
-// import { PDFUtility } from "./pdf-utility";
+import { PDFUtility } from "./pdf-utility";
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -768,78 +768,76 @@ export class Utility {
     return guid ? 'UPDATE' : 'SAVE';
   }
 
-  // static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number, bold: boolean = false) {
-  //   pdf.setFontSize(fontSize); // Title font size 
-  //   pdf.setFont("helvetica", bold ? "bold" : "normal");
-  //   pdf.text(content, leftPost, topPos); // Position it at the top
-  // }
+  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number, bold: boolean = false) {
+    pdf.setFontSize(fontSize); // Title font size 
+    pdf.setFont("helvetica", bold ? "bold" : "normal");
+    pdf.text(content, leftPost, topPos); // Position it at the top
+  }
 
-  // static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
-  //   topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0) {
+  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
+    topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0) {
 
 
-  //   PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline, additionalBufferX);
-  // }
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline, additionalBufferX);
+  }
 
-  // static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
+  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
 
-  //   PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
-  // }
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
+  }
 
-  // static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
-  //   pdf.saveGraphicsState();
-  //   pdf.setFontSize(fontSize); // Title font size 
-  //   const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-  //   const titleX = leftMargin + 1; // Centering the title
+  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+    pdf.saveGraphicsState();
+    pdf.setFontSize(fontSize); // Title font size 
+    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = leftMargin + 1; // Centering the title
 
-  //   pdf.text(text, titleX, topPosition); // Position it at the top
-  // }
+    pdf.text(text, titleX, topPosition); // Position it at the top
+  }
 
-  // static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
-  //   pdf.saveGraphicsState();
-  //   pdf.setFontSize(fontSize); // Title font size 
-  //   const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-  //   const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
+  static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+    pdf.saveGraphicsState();
+    pdf.setFontSize(fontSize); // Title font size 
+    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
-  //   pdf.text(text, titleX, topPosition); // Position it at the top
-  // }
+    pdf.text(text, titleX, topPosition); // Position it at the top
+  }
 
-  // static AddTextAtRightCornerPage2(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number): number {
-  //   pdf.saveGraphicsState();
-  //   pdf.setFontSize(fontSize);
-  //   const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-  //   const titleX = (pageWidth - titleWidth) - rightMargin;
+  static AddTextAtRightCornerPage2(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number): number {
+    pdf.saveGraphicsState();
+    pdf.setFontSize(fontSize);
+    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) - rightMargin;
 
-  //   pdf.text(text, titleX, topPosition);
+    pdf.text(text, titleX, topPosition);
 
-  //   const textHeight = fontSize * 0.352778;
-  //   return textHeight;
-  // }
+    const textHeight = fontSize * 0.352778;
+    return textHeight;
+  }
 
-   
+  static AddTextAtCenterPage( pdf: jsPDF,  text: string,  pageWidth: number,  leftMargin: number,
+  rightMargin: number,  topPosition: number,  fontSize: number,  underline: boolean = false
+) {
+  pdf.setFontSize(fontSize);
 
-//   static AddTextAtCenterPage( pdf: jsPDF,  text: string,  pageWidth: number,  leftMargin: number,
-//   rightMargin: number,  topPosition: number,  fontSize: number,  underline: boolean = false
-// ) {
-//   pdf.setFontSize(fontSize);
+  // Measure text width
+  const textWidth =
+    (pdf.getStringUnitWidth(text) * pdf.getFontSize()) /
+    pdf.internal.scaleFactor;
 
-//   // Measure text width
-//   const textWidth =
-//     (pdf.getStringUnitWidth(text) * pdf.getFontSize()) /
-//     pdf.internal.scaleFactor;
+  const textX = (pageWidth - textWidth) / 2; // Centered X
 
-//   const textX = (pageWidth - textWidth) / 2; // Centered X
+  // Draw the text
+  pdf.text(text, textX, topPosition);
 
-//   // Draw the text
-//   pdf.text(text, textX, topPosition);
-
-//   // Draw underline (slightly below baseline)
-//   if (underline) {
-//     const underlineY = topPosition + 1; // adjust offset as needed
-//     pdf.setLineWidth(0.2); // thin line
-//     pdf.line(textX, underlineY, textX + textWidth, underlineY);
-//   }
-// }
+  // Draw underline (slightly below baseline)
+  if (underline) {
+    const underlineY = topPosition + 1; // adjust offset as needed
+    pdf.setLineWidth(0.2); // thin line
+    pdf.line(textX, underlineY, textX + textWidth, underlineY);
+  }
+}
 
 
 
@@ -1010,260 +1008,260 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
     return fullBase64.split(',')[1]; // Returns just the Base64 data
   }
 
-  // static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
-  //   rightMargin: number, topPosition: number, maxChartWidth: number) : Promise<number> {
-  //   let chartContentWidth = maxChartWidth;
-  //   let bottomMargin = 10;
-  //   let startY: number = topPosition;
-  //   const imgInfo = await Utility.getImageSizeFromBase64(base64);
-  //   const aspectRatio = imgInfo.width / imgInfo.height;
-  //   let imgHeight1 = chartContentWidth / aspectRatio;
+  static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
+    rightMargin: number, topPosition: number, maxChartWidth: number) : Promise<number> {
+    let chartContentWidth = maxChartWidth;
+    let bottomMargin = 10;
+    let startY: number = topPosition;
+    const imgInfo = await Utility.getImageSizeFromBase64(base64);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+    let imgHeight1 = chartContentWidth / aspectRatio;
 
-  //   // Check if the scaled height exceeds the available page height
-  //   const maxPageHeight = pdf.internal.pageSize.height - startY - bottomMargin; // Remaining space on the page
-  //   if (imgHeight1 > maxPageHeight) {
-  //     // Adjust height to fit within the page
-  //     imgHeight1 = maxPageHeight;
-  //     // Recalculate width to maintain aspect ratio
-  //     chartContentWidth = imgHeight1 * aspectRatio;
-  //   }
+    // Check if the scaled height exceeds the available page height
+    const maxPageHeight = pdf.internal.pageSize.height - startY - bottomMargin; // Remaining space on the page
+    if (imgHeight1 > maxPageHeight) {
+      // Adjust height to fit within the page
+      imgHeight1 = maxPageHeight;
+      // Recalculate width to maintain aspect ratio
+      chartContentWidth = imgHeight1 * aspectRatio;
+    }
 
-  //   let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
 
-  //   // Add the image to the PDF
-  //   pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+    // Add the image to the PDF
+    pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
-  //   return imgHeight1+topPosition;
-  // }
+    return imgHeight1+topPosition;
+  }
 
-  // static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number,
-  //   rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number): Promise<number> {
-  //   let chartContentWidth = maxChartWidth;
+  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number,
+    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number): Promise<number> {
+    let chartContentWidth = maxChartWidth;
 
-  //   let startY: number = topPosition;
+    let startY: number = topPosition;
 
-  //   // card.style.boxShadow = 'none';
-  //   // card.style.transition = 'none';
-  //     const imgData1 = await this.convertToImage(card, "jpeg");
-  //   // const imgData1 = await Utility.convertToImage_html2canvas(card, "jpeg");
-  //  var retval= await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
-  //  return retval;
+    // card.style.boxShadow = 'none';
+    // card.style.transition = 'none';
+      const imgData1 = await this.convertToImage(card, "jpeg");
+    // const imgData1 = await Utility.convertToImage_html2canvas(card, "jpeg");
+   var retval= await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+   return retval;
 
-  // }
+  }
 
-  // static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
-  //   let chartContentWidth = maxChartWidth;
+  static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
+    let chartContentWidth = maxChartWidth;
 
-  //   let startY: number = topPosition;
+    let startY: number = topPosition;
 
-  //   const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
-  //   const aspectRatio = canvas.width / canvas.height;
+    const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
+    const aspectRatio = canvas.width / canvas.height;
 
-  //   // Calculate scaled height based on available width
-  //   let imgHeight1 = chartContentWidth / aspectRatio;
+    // Calculate scaled height based on available width
+    let imgHeight1 = chartContentWidth / aspectRatio;
 
-  //   // Check if the scaled height exceeds the available page height
-  //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-  //   if (imgHeight1 > maxPageHeight) {
-  //     // Adjust height to fit within the page
-  //     imgHeight1 = maxPageHeight;
-  //     // Recalculate width to maintain aspect ratio
-  //     chartContentWidth = imgHeight1 * aspectRatio;
-  //   }
+    // Check if the scaled height exceeds the available page height
+    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    if (imgHeight1 > maxPageHeight) {
+      // Adjust height to fit within the page
+      imgHeight1 = maxPageHeight;
+      // Recalculate width to maintain aspect ratio
+      chartContentWidth = imgHeight1 * aspectRatio;
+    }
 
-  //   let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
 
-  //   // Add the image to the PDF
-  //   pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+    // Add the image to the PDF
+    pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
 
-  // }
+  }
 
-  // static previewPDF_window(pdf: jsPDF, win: Window) {
-  //   const pdfBlob = pdf.output('blob');
-  //   const blobUrl = URL.createObjectURL(pdfBlob);
+  static previewPDF_window(pdf: jsPDF, win: Window) {
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
 
-  //   // Try opening in a new window
-  //   //const newWindow = window.open(blobUrl, '_blank','noopener,noreferrer');
+    // Try opening in a new window
+    //const newWindow = window.open(blobUrl, '_blank','noopener,noreferrer');
 
-  //   if (win) {
-  //     win.location.href = blobUrl;
-  //   }
-  // }
+    if (win) {
+      win.location.href = blobUrl;
+    }
+  }
 
-  // static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
-  //   // this.previewPDF_r1(pdf, fileName);
-  //   // return;
+  static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
+    // this.previewPDF_r1(pdf, fileName);
+    // return;
     
-  //   const pdfBlob = pdf.output('blob');
-  //   const blobUrl = URL.createObjectURL(pdfBlob);
-  //   const html = `
-  //             <html>
-  //               <head><title>${fileName.replace(/\.pdf$/i, '')}</title></head>
-  //               <body style="margin:0">
-  //                 <iframe src="${blobUrl}" width="100%" height="100%" style="border:none;"></iframe>
-  //               </body>
-  //             </html>
-  //           `;
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const html = `
+              <html>
+                <head><title>${fileName.replace(/\.pdf$/i, '')}</title></head>
+                <body style="margin:0">
+                  <iframe src="${blobUrl}" width="100%" height="100%" style="border:none;"></iframe>
+                </body>
+              </html>
+            `;
     
-  //   pdf.save(fileName);
+    pdf.save(fileName);
     
-  // }
+  }
 
-//   static async previewPDF_r1(pdf: jsPDF, fileName: string = 'document.pdf') {
-//     try {
-//         // Method 1: Direct save (preferred)
-//         pdf.save(fileName);
+  static async previewPDF_r1(pdf: jsPDF, fileName: string = 'document.pdf') {
+    try {
+        // Method 1: Direct save (preferred)
+        pdf.save(fileName);
         
-//         // Optional: Add preview window
-//         this.openPDFPreview(pdf, fileName);
+        // Optional: Add preview window
+        this.openPDFPreview(pdf, fileName);
         
-//     } catch (error) {
-//         console.warn('Direct save failed, using fallback:', error);
+    } catch (error) {
+        console.warn('Direct save failed, using fallback:', error);
         
-//         // Method 2: Blob-based download (fallback)
-//         await this.downloadPDFBlob(pdf, fileName);
-//     }
-// }
+        // Method 2: Blob-based download (fallback)
+        await this.downloadPDFBlob(pdf, fileName);
+    }
+}
 
-// private static openPDFPreview(pdf: jsPDF, fileName: string) {
-//     const pdfBlob = pdf.output('blob');
-//     const blobUrl = URL.createObjectURL(pdfBlob);
+private static openPDFPreview(pdf: jsPDF, fileName: string) {
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
     
-//     const html = `
-//         <html>
-//             <head>
-//                 <title>${fileName.replace(/\.pdf$/i, '')}</title>
-//             </head>
-//             <body style="margin:0; height:100vh; overflow:hidden;">
-//                 <embed 
-//                     src="${blobUrl}" 
-//                     type="application/pdf" 
-//                     width="100%" 
-//                     height="100%" 
-//                     style="border:none;"
-//                 />
-//             </body>
-//         </html>
-//     `;
+    const html = `
+        <html>
+            <head>
+                <title>${fileName.replace(/\.pdf$/i, '')}</title>
+            </head>
+            <body style="margin:0; height:100vh; overflow:hidden;">
+                <embed 
+                    src="${blobUrl}" 
+                    type="application/pdf" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:none;"
+                />
+            </body>
+        </html>
+    `;
     
-//     const previewWindow = window.open('', '_blank');
-//     if (previewWindow) {
-//         previewWindow.document.write(html);
-//         previewWindow.document.close();
+    const previewWindow = window.open('', '_blank');
+    if (previewWindow) {
+        previewWindow.document.write(html);
+        previewWindow.document.close();
         
-//         // Clean up URL when window closes
-//         previewWindow.onbeforeunload = () => {
-//             URL.revokeObjectURL(blobUrl);
-//         };
-//     }
-// }
+        // Clean up URL when window closes
+        previewWindow.onbeforeunload = () => {
+            URL.revokeObjectURL(blobUrl);
+        };
+    }
+}
 
-// private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void> {
-//     return new Promise((resolve) => {
-//         try {
-//             const pdfBlob = pdf.output('blob');
-//             const url = URL.createObjectURL(pdfBlob);
+private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void> {
+    return new Promise((resolve) => {
+        try {
+            const pdfBlob = pdf.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
             
-//             const a = document.createElement('a');
-//             a.href = url;
-//             a.download = fileName;
-//             a.style.display = 'none';
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.style.display = 'none';
             
-//             document.body.appendChild(a);
-//             a.click();
-//             document.body.removeChild(a);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
             
-//             // Clean up
-//             setTimeout(() => URL.revokeObjectURL(url), 1000);
-//             resolve();
+            // Clean up
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            resolve();
             
-//         } catch (error) {
-//             console.error('Blob download also failed:', error);
-//             alert('Download failed. Please check your browser settings.');
-//             resolve();
-//         }
-//     });
-// }
+        } catch (error) {
+            console.error('Blob download also failed:', error);
+            alert('Download failed. Please check your browser settings.');
+            resolve();
+        }
+    });
+}
 
-  // static async addHeaderWithCompanyLogo_Portrait(
-  //   pdf: jsPDF,
-  //   pageWidth: number,
-  //   topMargin: number,
-  //   bottomMargin: number,
-  //   leftMargin: number,
-  //   rightMargin: number,
-  //   translateService: TranslateService // Inject TranslateService
-  // ): Promise<void> {
+  static async addHeaderWithCompanyLogo_Portrait(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService // Inject TranslateService
+  ): Promise<void> {
 
-  //   //await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-  //   await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    //await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
 
-  // }
+  }
 
-  // static async addHeaderWithCompanyLogo_Landscape(
-  //   pdf: jsPDF,
-  //   pageWidth: number,
-  //   topMargin: number,
-  //   bottomMargin: number,
-  //   leftMargin: number,
-  //   rightMargin: number,
-  //   translateService: TranslateService // Inject TranslateService
-  // ): Promise<void> {
+  static async addHeaderWithCompanyLogo_Landscape(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService // Inject TranslateService
+  ): Promise<void> {
 
-  //   await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
 
-  // }
+  }
 
-  // static async loadPDFImage(
-  //   imgUrl: string,
-  //   maxWidth?: number,
-  //   maxHeight?: number
-  // ): Promise<{ img: HTMLImageElement; width: number; height: number }> {
-  //   const img = new Image();
+  static async loadPDFImage(
+    imgUrl: string,
+    maxWidth?: number,
+    maxHeight?: number
+  ): Promise<{ img: HTMLImageElement; width: number; height: number }> {
+    const img = new Image();
 
-  //   return new Promise((resolve, reject) => {
-  //     img.onload = () => {
-  //       let { naturalWidth: width, naturalHeight: height } = img;
+    return new Promise((resolve, reject) => {
+      img.onload = () => {
+        let { naturalWidth: width, naturalHeight: height } = img;
 
-  //       if (maxWidth || maxHeight) {
-  //         const aspectRatio = width / height;
+        if (maxWidth || maxHeight) {
+          const aspectRatio = width / height;
 
-  //         if (maxWidth && maxHeight) {
-  //           // Fit within both bounds
-  //           if (width > maxWidth || height > maxHeight) {
-  //             if (width / maxWidth > height / maxHeight) {
-  //               width = maxWidth;
-  //               height = width / aspectRatio;
-  //             } else {
-  //               height = maxHeight;
-  //               width = height * aspectRatio;
-  //             }
-  //           }
-  //         } else if (maxWidth) {
-  //           if (width > maxWidth) {
-  //             width = maxWidth;
-  //             height = width / aspectRatio;
-  //           }
-  //         } else if (maxHeight) {
-  //           if (height > maxHeight) {
-  //             height = maxHeight;
-  //             width = height * aspectRatio;
-  //           }
-  //         }
-  //       }
+          if (maxWidth && maxHeight) {
+            // Fit within both bounds
+            if (width > maxWidth || height > maxHeight) {
+              if (width / maxWidth > height / maxHeight) {
+                width = maxWidth;
+                height = width / aspectRatio;
+              } else {
+                height = maxHeight;
+                width = height * aspectRatio;
+              }
+            }
+          } else if (maxWidth) {
+            if (width > maxWidth) {
+              width = maxWidth;
+              height = width / aspectRatio;
+            }
+          } else if (maxHeight) {
+            if (height > maxHeight) {
+              height = maxHeight;
+              width = height * aspectRatio;
+            }
+          }
+        }
 
-  //       resolve({
-  //         img,
-  //         width,
-  //         height,
-  //       });
-  //     };
+        resolve({
+          img,
+          width,
+          height,
+        });
+      };
 
-  //     img.onerror = () => reject(new Error(`Failed to load image from ${imgUrl}`));
-  //     img.src = imgUrl;
-  //   });
-  // }
+      img.onerror = () => reject(new Error(`Failed to load image from ${imgUrl}`));
+      img.src = imgUrl;
+    });
+  }
 
   static removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
     sot.in_gate = sot?.in_gate?.filter(i => i.delete_dt == null || i.delete_dt == 0) || [];
@@ -1862,7 +1860,7 @@ static applySharpening(canvas: HTMLCanvasElement): HTMLCanvasElement {
 
     var dt = new Date();
     var dtStr = this.formatUKDateString(dt);
-    var result = this.FormatColon(translatedLangText.DATE, dtStr);
+    var result = PDFUtility.FormatColon(translatedLangText.DATE, dtStr);
 
     return `${result}`;
   }
@@ -2134,11 +2132,6 @@ static saveExcel_r1(rows:any[],startRow:number,fileName:string ,totalColumns:num
     
         XLSX.writeFile(workbook, fileName);
   }
-
-  static FormatColon(first: any, second: any): string {
-    return first + ": " + second;
-  }
-
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {
   //     var imgRetval:string ='';

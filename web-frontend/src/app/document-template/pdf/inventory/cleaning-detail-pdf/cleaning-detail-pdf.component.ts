@@ -673,7 +673,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       
       var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
       
-      await PDFUtility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
       // /pdf.setLineWidth(0.1);
@@ -754,7 +754,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

@@ -637,7 +637,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
       if ((sur.surveyor_details?.length || 0) > 0) {
 
       var surveyor=`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`;
-      await PDFUtility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait());
+      await Utility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait());
 
       // pdf.setFontSize(PDFUtility.SubTitleFontSize_Portrait());
       // pdf.setTextColor(0, 0, 0); // Black text
@@ -763,7 +763,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     // });
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

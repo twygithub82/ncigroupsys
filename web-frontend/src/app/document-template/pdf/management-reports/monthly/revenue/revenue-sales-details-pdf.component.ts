@@ -793,7 +793,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       // Utility.addText(pdf, customer, startY + 2, leftMargin, PDFUtility.RightSubTitleFontSize());
        const customer=`${this.customer}`;
-      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
     }
     // startY += 3;
@@ -1174,7 +1174,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
           // startY = topMargin + 50;
         }
         const card1 = cardElements[i];
-        await PDFUtility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+        await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
         // const canvas1 = await html2canvas(card1, { scale: scale });
         // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
 
@@ -1217,7 +1217,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       //pdf.save(fileName);
       //  this.generatingPdfProgress = 0;
       this.generatingPdfLoadingSubject.next(false);
-      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     }, 500);

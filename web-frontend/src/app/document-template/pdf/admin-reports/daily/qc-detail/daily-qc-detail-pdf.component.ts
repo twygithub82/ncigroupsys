@@ -769,7 +769,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
              let posY= PDFUtility.addReportSubTitle_Portrait(pdf, dtstr, pageWidth, leftMargin, rightMargin);
               posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
-              PDFUtility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
+              Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
           }
         }
 
@@ -865,7 +865,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

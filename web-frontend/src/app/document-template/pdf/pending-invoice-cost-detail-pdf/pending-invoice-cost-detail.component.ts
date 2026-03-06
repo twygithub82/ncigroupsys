@@ -983,7 +983,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       //   lastTableFinalY = topMargin; // Reset Y position for the new page
       // }
       const customer= `${cust.customer}`;
-        await PDFUtility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
 
       startY=StartPosY+PDFUtility.GapBetweenLeftTitleAndTable();
@@ -1123,7 +1123,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 

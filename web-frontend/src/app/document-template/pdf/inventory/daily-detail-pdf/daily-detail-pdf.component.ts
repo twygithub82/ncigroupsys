@@ -670,7 +670,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
         var subtitle=`${cust.customer}`;
       
-      await PDFUtility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
 
@@ -869,7 +869,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     // });
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

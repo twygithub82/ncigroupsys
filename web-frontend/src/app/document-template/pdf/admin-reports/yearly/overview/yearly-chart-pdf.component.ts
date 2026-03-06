@@ -42,7 +42,6 @@ import {
   NgApexchartsModule,
   
 } from 'ng-apexcharts';
-import { PDFUtility } from 'app/utilities/pdf-utility';
 
 
 
@@ -812,8 +811,8 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
     let minHeightHeaderCol = 9;
@@ -821,12 +820,12 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     let startY = lastTableFinalY + 8;
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    PDFUtility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY, 13);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY, 13);
 
     if(this.customer)
       {
         const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-        PDFUtility.addText(pdf, customer,startY - 2 , leftMargin, 9);
+        Utility.addText(pdf, customer,startY - 2 , leftMargin, 9);
       }
 
     let chartContentWidth = pageWidth - leftMargin - rightMargin;
@@ -834,7 +833,7 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     for (var i = 0; i < cardElements.length; i++) {
       if (i > 0) {
         pdf.addPage();
-        PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
       }
       const card1 = cardElements[i];
@@ -920,7 +919,7 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
     
-            if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
             // Capture the final Y position of the table
             lastTableFinalY = data.cursor.y;
             var pg = pagePositions.find(p => p.page == pageCount);
@@ -943,7 +942,7 @@ export class YearlyChartPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     }
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);

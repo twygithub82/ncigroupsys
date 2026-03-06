@@ -696,7 +696,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     if (this.customer) {
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       const customer = `${this.customer}`;
-      PDFUtility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
       startY+=PDFUtility.GapBetweenLeftTitleAndTable();
       
     }
@@ -811,7 +811,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       //pdf.save(fileName);
       this.generatingPdfProgress = 0;
       this.generatingPdfLoadingSubject.next(false);
-      PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
       this.dialogRef.close();
 
     }, 100);

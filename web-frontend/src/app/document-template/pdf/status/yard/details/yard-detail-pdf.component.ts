@@ -761,7 +761,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       // lastTableFinalY += 3;
-      PDFUtility.AddTextAtLeftCornerPage(pdf,`${cust.customer}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
+      Utility.AddTextAtLeftCornerPage(pdf,`${cust.customer}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
      let  startY=PDFUtility.GapBetweenLeftTitleAndTable();
      startY+=startPosY;
      lastTableFinalY+=PDFUtility.GapBetweenLeftTitleAndTable();
@@ -864,7 +864,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     // });
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     //     const pdfBlob = pdf.output('blob');
     //     const blobUrl = URL.createObjectURL(pdfBlob);

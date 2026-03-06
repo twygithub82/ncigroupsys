@@ -665,7 +665,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         CurrentPage = repPage;
       }
 
-      PDFUtility.AddTextAtLeftCornerPage(pdf,`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
+      Utility.AddTextAtLeftCornerPage(pdf,`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
 
@@ -752,7 +752,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     // }// Add Second Page, Add For Loop
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
@@ -807,8 +807,8 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
@@ -829,7 +829,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     lastTableFinalY += 8;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
-    PDFUtility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 3, lastTableFinalY, 9);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 3, lastTableFinalY, 9);
 
     var CurrentPage = 1;
     var buffer = 20;
@@ -904,7 +904,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
               }
             }
           },
@@ -928,7 +928,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     });
 
     this.generatingPdfProgress = 100;
-    PDFUtility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
