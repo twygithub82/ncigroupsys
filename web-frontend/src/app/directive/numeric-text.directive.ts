@@ -54,7 +54,7 @@ export class NumericTextDirective {
     const numericValue = parseFloat(predictedValue);
     const minValue = this.toNumber(this.min);
     const maxValue = this.toNumber(this.max);
-
+    
     if (
       minValue !== null && !isNaN(numericValue) && numericValue < minValue ||
       maxValue !== null && !isNaN(numericValue) && numericValue > maxValue
