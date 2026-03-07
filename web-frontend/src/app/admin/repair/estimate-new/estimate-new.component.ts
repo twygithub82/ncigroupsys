@@ -55,6 +55,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
+import { ExportDialogComponent } from './dialogs/export-dialog/export-dialog.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -207,6 +208,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -928,7 +930,40 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     // Add any additional logic if needed
   }
 
-  onExport(event: Event) {
+  ExportDialogDmgImg( event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    // const url = imgForm.get('preview')?.value;
+
+    if (!this.isOwner){
+      this.onExport(event,3);
+      return;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ExportDialogComponent, {
+      width: '250px',
+      height: '180px',
+      data: {
+        action:'EXPORT',
+        langText: this.translatedLangText
+        
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if(result.action==="confirmed"){
+        var filter = result.result;
+        this.onExport(event,filter);
+      }
+    });
+  }
+
+  onExport(event: Event,filter:number) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -945,7 +980,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         repair_guid: this.repairItem?.guid,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
         estimate_no: this.repairItem?.estimate_no,
-        repairEstimatePdf: this.repairEstimatePdf
+        repairEstimatePdf: this.repairEstimatePdf,
+        filter:filter
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -976,7 +1012,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
               rp_guid: item.rp_guid,
               code_cv: item.code_cv,
               code_type: item.code_type,
-              action: item.action
+              action: item.action,
             });
           });
 

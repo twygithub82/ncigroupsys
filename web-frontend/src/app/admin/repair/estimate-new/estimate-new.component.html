@@ -915,7 +915,8 @@
                   @if (canExport()) {
                   <button mat-flat-button
                     [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async) || (isExportingPDF)"
-                    class="m-r-5 orange-button" (click)="onExport($event)">
+                    class="m-r-5 orange-button" (click)="ExportDialogDmgImg($event)">
+                    <!-- class="m-r-5 orange-button" (click)="onExport($event)"> -->
                     @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async) && !(isExportingPDF)) {
                     <i class="fas fa-file-export"></i>
                     } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)||(isExportingPDF)) {

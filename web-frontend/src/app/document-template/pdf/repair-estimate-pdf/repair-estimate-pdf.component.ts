@@ -39,6 +39,7 @@ export interface DialogData {
   repairEstimatePdf?: any;
   estimate_no?: string;
   retrieveFile: boolean;
+  filter?: number;
 }
 
 @Component({
@@ -291,6 +292,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
+  filter?: number = 3;
 
   constructor(
     public dialogRef: MatDialogRef<RepairEstimatePdfComponent>,
@@ -311,6 +313,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repair_guid = data.repair_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.repairEstimatePdf = data.repairEstimatePdf;
+    this.filter=data.filter;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -325,8 +328,19 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]);
     if (data?.length > 0) {
       this.repairItem = data[0];
+      
       this.estimate_no = this.repairItem?.estimate_no;
-      this.pdfTitle = this.repairItem?.storing_order_tank?.purpose_repair_cv === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+      var isRepEst = this.repairItem?.storing_order_tank?.purpose_repair_cv === "REPAIR" ? true : false;
+      this.pdfTitle =isRepEst ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+      if(isRepEst)
+      {
+        if(this.filter==1 ){
+          this.pdfTitle = `${this.translatedLangText.IN_SERVICE_ESTIMATE} - ${this.translatedLangText.LESSEE}`
+        }
+        else if(this.filter==2){
+          this.pdfTitle = `${this.translatedLangText.IN_SERVICE_ESTIMATE} - ${this.translatedLangText.OWNER}`
+        }
+      } 
       await this.getCodeValuesData();
       this.updateData(this.repairItem?.repair_part);
       this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
@@ -519,7 +533,16 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
+  
     if (newData?.length) {
+        if(this.filter==1){
+          newData=newData.filter(x=>x.owner===false || x.owner===null);
+        }
+        else if(this.filter==2){
+           newData=newData.filter(x=>x.owner===true);
+        }
+
+
       newData = newData.map((row) => ({
         ...row,
         approve_qty: this.displayApproveQty(row),
@@ -1310,6 +1333,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
        lineWidth: 0.1
     };
 
+    var cust=`${item?.storing_order_tank?.storing_order?.customer_company?.name}` ;
+    if(this.filter===2) cust =`${item?.storing_order_tank?.customer_company?.name}` ;
     
     var data: any[][] = [
       [
@@ -1320,7 +1345,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       ],
       [
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
+        { content: `${cust}` },
         { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
       ],

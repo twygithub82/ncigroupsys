@@ -1,0 +1,33 @@
+.mat-mdc-dialog-content.mdc-dialog__content {
+    overflow-x: hidden;
+}
+
+@media (max-width: 575.98px) {
+    .mat-mdc-dialog-content.mdc-dialog__content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* spacing between buttons */
+}
+
+
+
+form {
+  margin-bottom: 20px;
+}
