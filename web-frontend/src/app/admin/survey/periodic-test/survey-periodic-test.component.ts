@@ -284,36 +284,30 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       this.depotCvList = addDefaultSelectOption(data, 'All');
     });
 
-    //  var actionId= this.route.snapshot.paramMap.get('id');
-    //     if(!actionId)
-    {
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
 
-      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
 
-      if (savedCriteria) {
-        this.searchForm?.patchValue(savedCriteria);
-        this.constructSearchCriteria();
-      }
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
 
-      if (savedPagination) {
-        this.pageIndex = savedPagination.pageIndex;
-        this.pageSize = savedPagination.pageSize;
-
-        this.performSearch(
-          savedPagination.pageSize,
-          savedPagination.pageIndex,
-          savedPagination.first,
-          savedPagination.after,
-          savedPagination.last,
-          savedPagination.before
-        );
-      }
-
-      if (!savedCriteria && !savedPagination) {
-        this.search();
-      }
+    if (!savedCriteria && !savedPagination) {
+      this.search();
     }
     // else if(["due"].includes(actionId))
     // {

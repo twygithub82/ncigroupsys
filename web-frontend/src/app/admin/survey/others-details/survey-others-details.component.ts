@@ -301,6 +301,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
           this.tiItem = this.sotItem?.tank_info;
           this.last_test_desc = this.getLastTest();
+          this.next_test_desc = this.getNextTest();
         }
       });
     } else {
