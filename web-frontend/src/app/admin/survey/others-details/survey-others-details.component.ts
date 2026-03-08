@@ -297,6 +297,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.sotItem = data[0];
+          console.log(this.sotItem)
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
           this.tiItem = this.sotItem?.tank_info;
           this.last_test_desc = this.getLastTest();
