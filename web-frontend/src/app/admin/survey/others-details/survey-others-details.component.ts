@@ -158,6 +158,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NEW_SURVEY: 'COMMON-FORM.NEW-SURVEY',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     BACK: 'COMMON-FORM.BACK',
+    INTERNAL_SURVEYOR: 'COMMON-FORM.INTERNAL-SURVEYOR',
   }
 
   sotDS: StoringOrderTankDS;
@@ -274,6 +275,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = this.sortByDescription(data);
+      this.testClassCvList = addDefaultSelectOption(this.testClassCvList);
       this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
@@ -295,9 +297,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.sotItem = data[0];
+          console.log(this.sotItem)
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
           this.tiItem = this.sotItem?.tank_info;
           this.last_test_desc = this.getLastTest();
+          this.next_test_desc = this.getNextTest();
         }
       });
     } else {

@@ -95,6 +95,12 @@ export class FormDialogComponent {
     } else {
       this.dialogTitle = data.translatedLangText.NEW_SURVEY;
     }
+    if (this.sot?.tank_status_cv === 'RELEASED') {
+      const found = this.sot.release_order_sot?.filter(x => x.status_cv === 'ACCEPTED')
+      if (found?.length) {
+        this.maxDate = Utility.convertDate(found[0].release_order?.release_dt) as Date;
+      }
+    }
     this.surveyForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
   }
@@ -103,7 +109,7 @@ export class FormDialogComponent {
     return this.fb.group({
       survey_type_cv: this.surveyDetail?.survey_type_cv,
       test_class_cv: this.surveyDetail?.test_class_cv,
-      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt) || new Date(),
+      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt) || this.maxDate || new Date(),
       status_cv: this.surveyDetail?.status_cv,
       remarks: this.surveyDetail?.remarks,
     });
@@ -166,13 +172,13 @@ export class FormDialogComponent {
   validateBookingType(value: string, booking_dt: any): void {
     // const control = this.surveyForm!.get('book_type_cv');
     // control?.setErrors(null);
-  
+
     // const dateOnly = Utility.convertDate(booking_dt) as number;
-  
+
     // const condition = this.action === 'edit'
     //   ? this.booking && this.booking.book_type_cv !== value
     //   : true;
-  
+
     // if (
     //   condition &&
     //   this.existingBookTypeCvs!.some(
