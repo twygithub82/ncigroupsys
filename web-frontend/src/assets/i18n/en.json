@@ -117,7 +117,6 @@
         "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form",
         "TRANSFER": "Transfer",
         "RELOCATION": "Relocation"
-        
       }
     },
     "REPAIR": {
@@ -1385,19 +1384,19 @@
     "CLEANING-FORMULA": "Cleaning Formula",
     "CONDITIONS": "Conditions",
     "QC-REJECTED": "QC Rejected",
-    "TARIFF-STEAMING":"Tariff Steaming",
+    "TARIFF-STEAMING": "Tariff Steaming",
     "TBA": "TBA",
     "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
     "CLEANING-ESTIMATE": "Cleaning Estimate",
     "TOTAL-LABOUR": "Total Labour",
     "NO-REPORT-AVAILABLE": "No Report Available",
-    "UN-NUMBER":"UN Number",
+    "UN-NUMBER": "UN Number",
     "MASTER-IN": "Master In",
     "MASTER-OUT": "Master Out",
-    "NO-TANK":"No of Tanks",
+    "NO-TANK": "No of Tanks",
     "YARD-SUMMARY-REPORT": "Yard Summary Report",
-    "EXTERNAL-SURVEY": "External Survey"
-    
+    "EXTERNAL-SURVEY": "External Survey",
+    "INTERNAL-SURVEYOR": "Internal Surveyor"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

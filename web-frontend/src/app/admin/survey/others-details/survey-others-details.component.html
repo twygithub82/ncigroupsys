@@ -204,7 +204,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span
-                            class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{getTestClassDescription(row?.test_class_cv)}}
+                            class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{!!row?.test_class_cv ? getTestClassDescription(row?.test_class_cv) : translatedLangText.INTERNAL_SURVEYOR}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="survey_dt">

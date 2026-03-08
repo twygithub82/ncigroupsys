@@ -50,7 +50,7 @@
           </mat-form-field> -->
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
-            <mat-select formControlName="test_class_cv" required>
+            <mat-select formControlName="test_class_cv">
               @for (codeValue of data.populateData.testClassCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
