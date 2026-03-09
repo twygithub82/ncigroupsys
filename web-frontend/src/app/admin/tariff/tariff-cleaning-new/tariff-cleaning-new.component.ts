@@ -449,8 +449,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   CheckUnNoValidity() {
-    const regex = /^UN\d{4}$/;
-    let isValid = regex.test(this.tcForm!.get('un_no')?.value);
+    // const regex = /^UN\d{4}$/;
+    // let isValid = regex.test(this.tcForm!.get('un_no')?.value);
+    const isValid=true;
     if (isValid) {
       this.QueryAllFilesInGroupAndClassNo();
     }
