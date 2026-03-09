@@ -107,7 +107,7 @@
                             }
                             <input #descInput [matAutocomplete]="description" formControlName="description"
                               [matChipInputFor]="desc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                              (matChipInputTokenEnd)="description_add($event)">
+                              (matChipInputTokenEnd)="description_add($event)" maxlength="255">
                             <mat-autocomplete #description="matAutocomplete"
                               (optionSelected)="description_selected($event)">
                               @for (pn of descList; track pn) {
