@@ -17,7 +17,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
-                <input matInput formControlName="name" type="text" required>
+                <input matInput formControlName="name" type="text" maxlength="45" required>
                 <!-- @if (pcForm.get('name')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.PROCESS_NAME}} {{translatedLangText.CARGO_REQUIRED}}
@@ -33,7 +33,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                <input matInput formControlName="description" type="text">
+                <input matInput formControlName="description" type="text" maxlength="150">
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">

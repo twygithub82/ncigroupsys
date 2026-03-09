@@ -14,7 +14,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                <input matInput formControlName="description" type="text" required>
+                <input matInput formControlName="description" type="text" required maxlength="150">
                 <!-- @if (pcForm.get('description')?.hasError('required')) {
                       <mat-error>
                         {{langText.DESCRIPTION | translate}} {{langText.CARGO_REQUIRED | translate}}
