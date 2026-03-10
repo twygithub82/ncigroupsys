@@ -1396,7 +1396,12 @@
     "NO-TANK": "No of Tanks",
     "YARD-SUMMARY-REPORT": "Yard Summary Report",
     "EXTERNAL-SURVEY": "External Survey",
-    "INTERNAL-SURVEYOR": "Internal Surveyor"
+    "INTERNAL-SURVEYOR": "Internal Surveyor",
+    "REQUIRED-MIN-LENGTH": "Min Length",
+    "REQURED-UPPERCASE": "Uppercase Required",
+    "REQUIRED-LOWERCASE": "Lowercase Required",
+    "REQUIRED-SPECAIL-CHAR": "Special Character Required",
+    "REQUIRED-NUMBER": "Number Required"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
