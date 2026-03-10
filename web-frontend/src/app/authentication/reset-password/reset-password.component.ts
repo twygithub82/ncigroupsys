@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,6 +51,12 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     FAILED_TO_CHANGE_PASSWORD: 'COMMON-FORM.FAILED-TO-CHANGE-PASSWORD',
     AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION',
+    REQUIRED_MIN_LENGTH: "COMMON-FORM.REQUIRED-MIN-LENGTH",
+    REQUIRED_UPPERCASE: "COMMON-FORM.REQURED-UPPERCASE",
+    REQUIRED_LOWERCASE: "COMMON-FORM.REQUIRED-LOWERCASE",
+    REQUIRED_SPECAIL_CHAR: "COMMON-FORM.REQUIRED-SPECAIL-CHAR",
+    REQUIRED_NUMBER: "COMMON-FORM.REQUIRED-NUMBER",
+    
   }
 
   authForm!: UntypedFormGroup;
@@ -61,6 +68,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   hidePsw = true;
   hideCPsw = true;
   cpasswordFirstCheck = true;
+   minLen=8;
   constructor(
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
@@ -87,7 +95,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
 
       } else {
         this.handleTokenEmailInvalid();
-        this.router.navigate(['/authentication/signin']); // or 'signin-staff' if applicable
+        this.router.navigate(['/authentication/signin']); 
       }
     });
     this.initValueChange();
@@ -95,7 +103,12 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
 
   initForm() {
     this.authForm = this.formBuilder.group({
-      npassword: [''],
+      npassword: ['',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        this.passwordValidator
+      ]],
       cpassword: ['']
     });
   }
@@ -119,6 +132,29 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     });
   }
+
+  passwordValidator(control: any) {
+  const value = control.value || '';
+
+  const hasUppercase = /[A-Z]/.test(value);
+  const hasLowercase = /[a-z]/.test(value);
+  const hasNumber = /\d/.test(value);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+  // const minLen = value.length >= 8;
+  const valid = hasUppercase && hasLowercase && hasNumber && hasSpecial ;
+
+  return !valid
+    ? {
+        passwordStrength: {
+          hasUppercase,
+          hasLowercase,
+          hasNumber,
+          hasSpecial
+          
+        }
+      }
+    : null;
+}
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -173,4 +209,28 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   get caption() {
     return environment.companyNameShort;
   }
+
+ hasMinLength(): boolean {
+  const pwd = this.authForm.get('npassword')?.value || '';
+  return pwd.length >= this.minLen;
+}
+ hasUppercase(): boolean {
+  const pwd = this.authForm.get('npassword')?.value || '';
+  return /[A-Z]/.test(pwd);
+}
+
+hasLowercase(): boolean {
+    const pwd = this.authForm.get('npassword')?.value || '';
+  return /[a-z]/.test(pwd);
+}
+
+hasNumber(): boolean {
+    const pwd = this.authForm.get('npassword')?.value || '';
+  return /[0-9]/.test(pwd);
+}
+
+hasSpecialChar(): boolean {
+    const pwd = this.authForm.get('npassword')?.value || '';
+  return /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+}
 }
