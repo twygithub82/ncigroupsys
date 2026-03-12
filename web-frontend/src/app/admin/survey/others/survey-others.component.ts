@@ -807,9 +807,21 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
 
   export_excel() {
     this.isGeneratingReport = true;
+    
     this.loadAllDataForReport().subscribe(data => {
 
-      this.exportExcelReport(data);
+      var prcList: StoringOrderItem[] = [];
+      data.forEach((item) => {
+        var itm:any = item;
+        const c: StoringOrderItem = {
+          ...itm,
+          tank_status:this.getTankStatusDescription(itm.tank_status_cv),
+          purpose: this.displayTankPurpose(itm)
+        };
+        prcList.push(c);
+      });
+
+      this.exportExcelReport(prcList);
       this.isGeneratingReport = false;
     });
 

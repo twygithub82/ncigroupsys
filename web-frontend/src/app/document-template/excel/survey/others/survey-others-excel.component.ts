@@ -447,44 +447,57 @@ export class SurveyOthersExcelComponent extends UnsubscribeOnDestroyAdapter impl
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.flatMap((item) => {
+    const data: any[][] = items.flatMap((item:any) => {
 
   const rows: any[][] = [];
 
   const in_gate = this.igDS?.getInGateItem(item.in_gate!);
-  const out_gate = (item.out_gate?.length||0 > 0) ? item.out_gate?.[0] : null;
+  // const out_gate = (item.out_gate?.length||0 > 0) ? item.out_gate?.[0] : null;
 
-  // 🔹 IN GATE ROW
-  if (in_gate) {
-    rows.push([
-      index++,
-      item.tank_no || "-",
-      item.storing_order?.customer_company?.name || "-",
-      in_gate?.eir_no || "-",
-      this.displayDate(in_gate?.eir_dt) || "-",
-      this.translatedLangText.IN_GATE,
-      this.displayDate(in_gate?.in_gate_survey?.create_dt) || "-",
-      item.status_cv || "-",
-      in_gate?.in_gate_survey?.create_by || "-",
-      in_gate?.remarks || "-"
-    ]);
-  }
-
-  // 🔹 OUT GATE ROW
-  if (out_gate) {
+   // 🔹 OUT GATE ROW
+  
     rows.push([
       index++, // keep blank to avoid duplicate numbering
       item.tank_no || "-",
       item.storing_order?.customer_company?.name || "-",
-      out_gate?.eir_no || "-",
-      this.displayDate(out_gate?.eir_dt) || "-",
-      this.translatedLangText.OUT_GATE,
-      this.displayDate(out_gate?.out_gate_survey?.create_dt) || "-",
-      item.status_cv || "-",
-      out_gate?.out_gate_survey?.create_by || "-",
-      out_gate?.remarks || "-"
+      this.displayDate(in_gate?.eir_dt) || "-",
+      item.tariff_cleaning?.cargo||"-",
+      item.purpose||"-",
+      item.tank_status || "-",
     ]);
-  }
+  
+
+  // // 🔹 IN GATE ROW
+  // if (in_gate) {
+  //   rows.push([
+  //     index++,
+  //     item.tank_no || "-",
+  //     item.storing_order?.customer_company?.name || "-",
+  //     in_gate?.eir_no || "-",
+  //     this.displayDate(in_gate?.eir_dt) || "-",
+  //     this.translatedLangText.IN_GATE,
+  //     this.displayDate(in_gate?.in_gate_survey?.create_dt) || "-",
+  //     item.status_cv || "-",
+  //     in_gate?.in_gate_survey?.create_by || "-",
+  //     in_gate?.remarks || "-"
+  //   ]);
+  // }
+
+  // // 🔹 OUT GATE ROW
+  // if (out_gate) {
+  //   rows.push([
+  //     index++, // keep blank to avoid duplicate numbering
+  //     item.tank_no || "-",
+  //     item.storing_order?.customer_company?.name || "-",
+  //     out_gate?.eir_no || "-",
+  //     this.displayDate(out_gate?.eir_dt) || "-",
+  //     this.translatedLangText.OUT_GATE,
+  //     this.displayDate(out_gate?.out_gate_survey?.create_dt) || "-",
+  //     item.status_cv || "-",
+  //     out_gate?.out_gate_survey?.create_by || "-",
+  //     out_gate?.remarks || "-"
+  //   ]);
+  // }
 
   return rows;
 });
@@ -495,13 +508,10 @@ export class SurveyOthersExcelComponent extends UnsubscribeOnDestroyAdapter impl
       this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO,
       this.translatedLangText.CUSTOMER,
-      this.translatedLangText.EIR_NO,
       this.translatedLangText.EIR_DATE,
-      this.translatedLangText.SURVEY_TYPE,
-      this.translatedLangText.SURVEY_DATE,
+      this.translatedLangText.CARGO_NAME,
+      this.translatedLangText.PURPOSE,
       this.translatedLangText.STATUS,
-      this.translatedLangText.SURVEYOR,
-      this.translatedLangText.REMARKS
     ]];
 
     const reportTitle: (string | number)[][] = [

@@ -115,6 +115,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     front: new Map(),
     rear: new Map()
   };
+  reportTitle: string = '';
   constructor(
     public dialogRef: MatDialogRef<MappingChartFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -131,10 +132,13 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     this.type_cv = data.type_cv!;
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
+    
     if (this.type_cv === '1') {
       this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}`;
+      this.reportTitle = `${data.translatedLangText.PRE_REPAIR_MAPPING_CHART}`;
     } else if (this.type_cv === '2') {
       this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_OUT}`;
+      this.reportTitle = `${data.translatedLangText.POST_REPAIR_MAPPING_CHART}`;
     }
     this.sot = data.sot;
     this.inspection = data.inspection || new InspectionsItem({ inspect_dt: Utility.convertDate(new Date()) as number });
@@ -240,7 +244,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(InGateMappingPdfComponent, {
       width: '90vw',
       data: {
-        reportTitle: this.dialogTitle,
+        reportTitle: this.reportTitle,
         sot: this.sot,
         markedCells: this.markedCells,
         circularMarkedSections: this.circularMarkedSections,
