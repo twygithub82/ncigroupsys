@@ -18,6 +18,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
@@ -77,11 +79,14 @@ export class FormDialogComponent {
   next_test_desc?: string;
   next_test_cv?: string;
   maxDate = new Date();
+  minDate = new Date();
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
+  roSotDS: ReleaseOrderSotDS;
+  igDS: InGateDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -92,6 +97,8 @@ export class FormDialogComponent {
     // Set the defaults
     this.cvDS = data.cvDS;
     this.ccDS = data.ccDS;
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.surveyDS = data.surveyDS;
     this.tiDS = data.tiDS;
     this.sot = data.sot;
@@ -101,19 +108,25 @@ export class FormDialogComponent {
     this.next_test_desc = data.next_test_desc;
     this.next_test_cv = data.next_test_cv;
 
+    this.minDate = Utility.getEarlierDate(Utility.convertDate(this.igDS.getInGateItem(this.sot?.in_gate)?.eir_dt) as Date, this.minDate);
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
-      // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
-      this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
+      this.maxDate = Utility.getLaterDate(Utility.convertDate(this.roSotDS.getReleaseOrderSotItem(this.sot?.release_order_sot)?.release_order?.release_dt) as Date, this.maxDate);
     } else {
       this.dialogTitle = data.translatedLangText.NEW_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
+    }
+    if (this.sot?.tank_status_cv === 'RELEASED') {
+      const found = this.sot.release_order_sot?.filter(x => x.status_cv === 'ACCEPTED')
+      if (found?.length) {
+        this.maxDate = Utility.convertDate(found[0].release_order?.release_dt) as Date;
+      }
     }
     this.surveyForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
-    const today = Utility.convertDate(new Date());
+    const today = Utility.convertDate(this.maxDate);
     const defaultSurveyDt = Utility.convertDateMoment(this.surveyDetail?.survey_dt) || Utility.convertDateMoment(today);
     return this.fb.group({
       survey_type_cv: 'PERIODIC_TEST',
@@ -138,7 +151,7 @@ export class FormDialogComponent {
         remarks: this.surveyForm.get('remarks')?.value,
         test_type_cv: this.surveyForm.get('test_type_cv')?.value,
       };
-      
+
       const shouldUpdate = this.shouldUpdateLastTestDt(surveyDetail, this.latestSurveyDetailItem);
 
       // Determine which testTypeCV to use for periodicTest

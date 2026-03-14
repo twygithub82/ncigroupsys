@@ -1,4 +1,3 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
@@ -6,6 +5,8 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { BaseDataSource } from './base-ds';
 import { ApolloError } from '@apollo/client/errors';
+import { inject } from '@angular/core';
+import { LanguageService } from '@core';
 
 export class CodeValuesItem {
   public guid?: string;
@@ -58,8 +59,6 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
     }
   `;
 }
-
-
 
 export function addDefaultSelectOption(list: CodeValuesItem[] | undefined, desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
   // Check if the list already contains the default value
@@ -117,77 +116,84 @@ const SEARCH_CODE_VALUES_QUERY = gql`
 
 
 export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
+  private languageService = inject(LanguageService);
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
   private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
   public totalCounts = new Map<string, number>();
+
   constructor(private apollo: Apollo) {
     super();
   }
 
   getAllClassNo(): Observable<CodeValuesItem[]> {
-   this.loadingSubject.next(true);
-  
-      return this.apollo
-        .query<any>({
-          query: GET_ALL_CLASS_NO,
-          fetchPolicy: 'no-cache' // Ensure fresh data
-        })
-        .pipe(
-          map((result) => result.data),
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of([] as CodeValuesItem[]); // Return an empty array on error
-          }),
-          finalize(() => this.loadingSubject.next(false)),
-          map((result) => {
-            const resultList = result.resultList || { nodes: [], totalCount: 0 };
-            this.dataSubject.next(resultList.nodes);
-            this.totalCount = resultList.totalCount;
-            this.pageInfo = resultList.pageInfo;
-            return resultList.nodes;
-          })
-        );
-    }
-  
-    getCodeValuesByType_observable(queries: { alias: string, codeValType: string }[]): Observable<any> {
-  this.loadingSubject.next(true);
-
-  const aliases = queries.map(query => query.alias);
-  const variables = queries.reduce((acc, query) => {
-    acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
-    return acc;
-  }, {} as any);
-
-  const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
-
-  return this.apollo
-    .query<any>({
-      query: dynamicQuery,
-      variables: variables
-    })
-    .pipe(
-      map((result) => result.data),
-      catchError(() => of(aliases.reduce((acc: any, alias) => {
-        acc[alias] = [];
-        return acc;
-      }, {}))),
-      finalize(() => this.loadingSubject.next(false)),
-      tap(result => {
-        aliases.forEach(alias => {
-          const subject = this.itemsSubjects.get(alias) || new BehaviorSubject<CodeValuesItem[]>([]);
-          subject.next(result[alias]);
-          this.itemsSubjects.set(alias, subject);
-          this.totalCounts.set(alias, result[alias].length);
-        });
-      })
-    );
-}
-  getCodeValuesByType(queries: { alias: string, codeValType: string }[]) {
     this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_ALL_CLASS_NO,
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CodeValuesItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getCodeValuesByType_observable(queries: { alias: string, codeValType: string }[]): Observable<any> {
+    this.loadingSubject.next(true);
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
 
     const aliases = queries.map(query => query.alias);
     const variables = queries.reduce((acc, query) => {
-      acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+      acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
+      return acc;
+    }, {} as any);
+
+    const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
+
+    return this.apollo
+      .query<any>({
+        query: dynamicQuery,
+        variables: variables
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of(aliases.reduce((acc: any, alias) => {
+          acc[alias] = [];
+          return acc;
+        }, {}))),
+        finalize(() => this.loadingSubject.next(false)),
+        tap(result => {
+          aliases.forEach(alias => {
+            const subject = this.itemsSubjects.get(alias) || new BehaviorSubject<CodeValuesItem[]>([]);
+            subject.next(result[alias]);
+            this.itemsSubjects.set(alias, subject);
+            this.totalCounts.set(alias, result[alias].length);
+          });
+        })
+      );
+  }
+
+  getCodeValuesByType(queries: { alias: string, codeValType: string }[]) {
+    this.loadingSubject.next(true);
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
+
+    const aliases = queries.map(query => query.alias);
+    const variables = queries.reduce((acc, query) => {
+      acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
       return acc;
     }, {} as any);
 
@@ -218,11 +224,13 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
 
   getCodeValuesByTypeAsync(queries: { alias: string, codeValType: string }[]): Promise<void> {
     this.loadingSubject.next(true);
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
 
     return new Promise((resolve, reject) => {
       const aliases = queries.map(query => query.alias);
       const variables = queries.reduce((acc, query) => {
-        acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+        acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
         return acc;
       }, {} as any);
 

@@ -28,6 +28,7 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 import * as domtoimage from 'dom-to-image-more';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 export interface DialogData {
   type: string;
   gate_survey_guid: string;
@@ -214,6 +215,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   igsDS: InGateSurveyDS;
   ogsDS: OutGateSurveyDS;
   sotDS?: StoringOrderTankDS;
+  roSotDS?: ReleaseOrderSotDS;
   // igDS: InGateDS;
   cvDS: CodeValuesDS;
   gate_survey_guid?: string | null;
@@ -314,6 +316,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
     this.sotDS = data.sotDS || new StoringOrderTankDS(this.apollo);
     this.cvDS = data.cvDS || new CodeValuesDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
     this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
     this.eirPdf = data.eirPdf;
@@ -591,7 +594,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     var data = [
       [
         { content: `${this.getNoLabel()}: ${this.getGate()?.tank?.storing_order?.so_no}` },
-        { content: `${this.getDateLabel()}: ${this.displayDate(this.getGate()?.tank?.storing_order?.create_dt)}` },
+        { content: `${this.getDateLabel()}: ${this.displayDate(this.getOrderDate())}` },
         { content: `${this.translatedLangText.LAST_CARGO}: ${(this.getGate()?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
       ],
       [`${this.translatedLangText.TANK_NO}: ${this.getGate()?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.getGate()?.eir_no}`,
@@ -646,12 +649,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
-    
+
     const chartContentWidth = contentWidth;
 
     const element = this.captureInfoElementRef.nativeElement as HTMLElement
 
-    
+
 
     const perf = window.performance;
     const startTotal = perf.now();
@@ -2104,6 +2107,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   getJobNo() {
     return this.isInGate() ? this.getGate()?.tank?.job_no : this.getGate()?.tank?.release_job_no;
+  }
+
+  getOrderDate() {
+    return this.isInGate() ? this.getGate()?.tank?.storing_order?.create_dt : this.roSotDS?.getReleaseOrderSotItem(this.getGate()?.tank?.release_order_sot)?.release_order?.create_dt;
   }
 
   copyComputedStyles(

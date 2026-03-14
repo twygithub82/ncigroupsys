@@ -973,9 +973,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
                     ...i,
                     yard_cv: this.getYardDescription(this.getLastLocation(item)),
                   })),
-
-                  scheduling_sot: item.scheduling_sot?.map(b => ({
-                    ...b,
+                  scheduling_sot:  item.scheduling_sot?.filter(b => b.delete_dt === null)
+                  .map(b => ({
                     scheduling: b.scheduling && b.scheduling.delete_dt === null
                     ? {
                         ...b.scheduling,
@@ -984,6 +983,17 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
                         )
                       }
                     : b.scheduling,   // keep original if deleted or undefined
+                 
+                  // scheduling_sot: item.scheduling_sot?.map(b => ({
+                  //   ...b,
+                  //   scheduling: b.scheduling && b.scheduling.delete_dt === null
+                  //   ? {
+                  //       ...b.scheduling,
+                  //       book_type_cv: this.getBookTypeDescription(
+                  //         b.scheduling.book_type_cv
+                  //       )
+                  //     }
+                  //   : b.scheduling,   // keep original if deleted or undefined
 
                     status_cv: this.getBookingStatusDescription(b.status_cv)
                   }))
