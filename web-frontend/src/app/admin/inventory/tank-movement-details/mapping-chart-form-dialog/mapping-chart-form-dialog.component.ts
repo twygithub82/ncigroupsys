@@ -132,7 +132,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
     this.type_cv = data.type_cv!;
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
-    
+
     if (this.type_cv === '1') {
       this.dialogTitle = `${data.translatedLangText.INTERNAL_INSPECTION_MAPPING_IN}`;
       this.reportTitle = `${data.translatedLangText.PRE_REPAIR_MAPPING_CHART}`;
@@ -902,5 +902,63 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
     // Trigger update of surface types list
     // this.updateUniqueSurfaceTypes();
+  }
+
+  deleteItem(event: Event, item: SurfaceTypesItem, index: number) {
+    event.stopPropagation();
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {},
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const existingType = this.existingSurfaceTypes.find(st => st.type_cv === item.type_cv);
+
+        if (existingType) {
+          // Already persisted — mark as cancelled instead of removing
+          existingType.action = 'cancel';
+        } else {
+          // New/unsaved — remove from existingSurfaceTypes entirely
+          const existingIndex = this.existingSurfaceTypes.findIndex(st => st.type_cv === item.type_cv);
+          if (existingIndex !== -1) {
+            this.existingSurfaceTypes.splice(existingIndex, 1);
+          }
+        }
+
+        // Clear all marks associated with this type_cv
+        this.markedCells.forEach((mark, cellIndex) => {
+          if (mark.typeId === item.type_cv) {
+            this.markedCells.delete(cellIndex);
+          }
+        });
+        this.circularMarkedSections.front.forEach((mark, section) => {
+          if (mark.typeId === item.type_cv) {
+            this.circularMarkedSections.front.delete(section);
+          }
+        });
+        this.circularMarkedSections.rear.forEach((mark, section) => {
+          if (mark.typeId === item.type_cv) {
+            this.circularMarkedSections.rear.delete(section);
+          }
+        });
+
+        // Create new Map references so child components detect the change
+        this.markedCells = new Map(this.markedCells);
+        this.circularMarkedSections = {
+          front: new Map(this.circularMarkedSections.front),
+          rear: new Map(this.circularMarkedSections.rear)
+        };
+
+        // Recalculate lists and sync form
+        this.updateSurfaceTypesLists();
+      }
+    });
   }
 }
