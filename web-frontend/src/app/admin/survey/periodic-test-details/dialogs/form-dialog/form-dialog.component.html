@@ -67,7 +67,8 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SURVEY_DATE}}</mat-label>
-            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker" [max]="maxDate" required>
+            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker" [max]="maxDate"
+              [min]="minDate" required>
             <mat-datepicker-toggle matSuffix [for]="survey_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #survey_dt_picker [startAt]="maxDate"></mat-datepicker>
             <!-- @if (surveyForm.get('survey_dt')?.hasError('required')) {

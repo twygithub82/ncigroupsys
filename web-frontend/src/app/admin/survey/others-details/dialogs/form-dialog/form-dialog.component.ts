@@ -98,7 +98,6 @@ export class FormDialogComponent {
     this.minDate = Utility.getEarlierDate(Utility.convertDate(this.igDS.getInGateItem(this.sot?.in_gate)?.eir_dt) as Date, this.minDate);
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT_SURVEY;
-      // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
       this.maxDate = Utility.getLaterDate(Utility.convertDate(this.roSotDS.getReleaseOrderSotItem(this.sot?.release_order_sot)?.release_order?.release_dt) as Date, this.maxDate);
     } else {
       this.dialogTitle = data.translatedLangText.NEW_SURVEY;
