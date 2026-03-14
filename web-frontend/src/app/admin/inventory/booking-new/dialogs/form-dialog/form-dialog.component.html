@@ -13,126 +13,132 @@
     <form class="register-form" [formGroup]="bookingForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <div class="booking-tbl responsive_table">
-            <table mat-table [dataSource]="dataSource" formArrayName="sotList" matSort
-              class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table squeeze-form-field">
-              <ng-container matColumnDef="id">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="tank_no">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl'">
-                  {{data.translatedLangText.TANK_NO}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.get('sot')?.value?.tank_no}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="customer_code">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                  {{data.translatedLangText.CUSTOMER}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" class="">
-                  <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
-                  ccDS.displayCodeDashName(row.get('sot')?.value?.storing_order?.customer_company)}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="eir_no">
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
-                  {{data.translatedLangText.EIR_NO}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.eir_no}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="eir_dt">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                  {{data.translatedLangText.EIR_DATE}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.eir_dt)}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="capacity">
-                <mat-header-cell mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
-                  {{data.translatedLangText.CAPACITY}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.in_gate_survey?.capacity}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="tare_weight">
-                <mat-header-cell mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
-                  {{data.translatedLangText.TARE_WEIGHT}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.in_gate_survey?.tare_weight}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="tank_status">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                  {{data.translatedLangText.STATUS}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.get('sot')?.value?.tank_status_cv)}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="yard">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
-                  {{data.translatedLangText.YARD}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                  <span
-                    class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(getLastLocation(row.get('sot')?.value))}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="reference">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
-                  {{data.translatedLangText.REFERENCE}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="'tbl-col-width-per-1-xl'">
-                  <div [formGroupName]="i">
-                    <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
-                    <tlx-form-field customClass="mat-table-form-txt-40px">
-                      <mat-form-field>
-                        <input tlxFormInput matInput formControlName="reference">
-                      </mat-form-field>
-                    </tlx-form-field>
-                  </div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="action">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row; let i=index;"
-                  [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
-                  <button mat-icon-button color="warn" (click)="removeSot($event, i)"
-                    [hidden]="dataSource.length <= 1 || !canEdit()" [matTooltip]="data.translatedLangText.CANCEL"
-                    class="tbl-action-btn">
-                    <mat-icon>cancel</mat-icon>
-                  </button>
-                </mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" [formGroupName]="i"
-                [style.cursor]="'pointer'" [ngClass]="{'bg-warn-row': isExistedBookType(row)}" matRipple>
-              </mat-row>
-            </table>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+              <div class="booking-tbl responsive_table">
+                <table mat-table [dataSource]="dataSource" formArrayName="sotList" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table squeeze-form-field">
+                  <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tank_no">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl'">
+                      {{data.translatedLangText.TANK_NO}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.get('sot')?.value?.tank_no}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="customer_code">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      {{data.translatedLangText.CUSTOMER}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" class="">
+                      <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
+                      ccDS.displayCodeDashName(row.get('sot')?.value?.storing_order?.customer_company)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="eir_no">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      {{data.translatedLangText.EIR_NO}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.eir_no}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="eir_dt">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.EIR_DATE}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.eir_dt)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="capacity">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                      {{data.translatedLangText.CAPACITY}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.in_gate_survey?.capacity}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tare_weight">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                      {{data.translatedLangText.TARE_WEIGHT}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.in_gate_survey?.tare_weight}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tank_status">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.STATUS}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.get('sot')?.value?.tank_status_cv)}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="yard">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      {{data.translatedLangText.YARD}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                      <span
+                        class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(getLastLocation(row.get('sot')?.value))}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="reference">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                      {{data.translatedLangText.REFERENCE}}
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="'tbl-col-width-per-1-xl'">
+                      <div [formGroupName]="i">
+                        <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
+                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                          <mat-form-field>
+                            <input tlxFormInput matInput formControlName="reference">
+                          </mat-form-field>
+                        </tlx-form-field>
+                      </div>
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="action">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'">
+                    </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row; let i=index;"
+                      [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
+                      <button mat-icon-button color="warn" (click)="removeSot($event, i)"
+                        [hidden]="dataSource.length <= 1 || !canEdit()" [matTooltip]="data.translatedLangText.CANCEL"
+                        class="tbl-action-btn">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" [formGroupName]="i"
+                    [style.cursor]="'pointer'" [ngClass]="{'bg-warn-row': isExistedBookType(row)}" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- No result -->
+              @if (!dataSource.length) {
+              <div class="no-results m-l-20 pt-3" [style.display]="dataSource.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+              </div>
+              }
+            </div>
           </div>
-          <!-- No result -->
-          @if (!dataSource.length) {
-          <div class="no-results m-l-20 pt-3" [style.display]="dataSource.length === 0 ? '' : 'none'">
-            <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
-          </div>
-          }
         </div>
       </div>
       <h5 class="mt-3">{{data.translatedLangText.BOOKING_DETAILS}}</h5>
