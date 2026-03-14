@@ -120,7 +120,7 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
   private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
   public totalCounts = new Map<string, number>();
-  
+
   constructor(private apollo: Apollo) {
     super();
   }
@@ -152,12 +152,12 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
 
   getCodeValuesByType_observable(queries: { alias: string, codeValType: string }[]): Observable<any> {
     this.loadingSubject.next(true);
-    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en'
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
 
     const aliases = queries.map(query => query.alias);
     const variables = queries.reduce((acc, query) => {
-      // acc[`${query.alias}Type`] = { code_val_type: query.codeValType, language: currentLang };
-      acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+      acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
       return acc;
     }, {} as any);
 
@@ -188,12 +188,12 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
 
   getCodeValuesByType(queries: { alias: string, codeValType: string }[]) {
     this.loadingSubject.next(true);
-    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en'
-    console.log(`CodeValue language: ${currentLang}`);
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
+
     const aliases = queries.map(query => query.alias);
     const variables = queries.reduce((acc, query) => {
-      // acc[`${query.alias}Type`] = { code_val_type: query.codeValType, language: currentLang };
-      acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+      acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
       return acc;
     }, {} as any);
 
@@ -224,13 +224,13 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
 
   getCodeValuesByTypeAsync(queries: { alias: string, codeValType: string }[]): Promise<void> {
     this.loadingSubject.next(true);
-    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en'
+    const currentLang = this.languageService.translate.currentLang || localStorage.getItem('lang') || 'en';
+    const langParam = currentLang === 'en' ? '' : currentLang;
 
     return new Promise((resolve, reject) => {
       const aliases = queries.map(query => query.alias);
       const variables = queries.reduce((acc, query) => {
-      // acc[`${query.alias}Type`] = { code_val_type: query.codeValType, language: currentLang };
-        acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+        acc[`${query.alias}Type`] = { code_val_type: langParam ? `${query.codeValType}_${langParam.toUpperCase()}` : query.codeValType };
         return acc;
       }, {} as any);
 
