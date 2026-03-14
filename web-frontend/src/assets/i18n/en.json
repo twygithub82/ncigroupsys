@@ -870,7 +870,7 @@
     "NO": "No",
     "BOTTOM-DIS-COMP--ABB": "Bottom Discharge Type",
     "BOTTOM-DIS-VALVE--ABB": "Bottom Discharge Valve",
-    "TOP-DIS-COMP--ABB": "Top. Discharge Type",
+    "TOP-DIS-COMP--ABB": "Top Discharge Type",
     "TOP-DIS-VALVE--ABB": "Top Discharge Valve",
     "MANLID-COMP--ABB": "Manlid Type",
     "CRN": "CRN",
@@ -1339,8 +1339,8 @@
     "UNCLEAN-TANK": "Unclean Tank",
     "CLEANING-QUOTATION": "Cleaning Quotation",
     "SYSTEM-CURRENCY": "System Currency",
-    "INTERNAL-INSPECTION-MAPPING-IN": "Mapping In",
-    "INTERNAL-INSPECTION-MAPPING-OUT": "Mapping Out",
+    "INTERNAL-INSPECTION-MAPPING-IN": "Map In",
+    "INTERNAL-INSPECTION-MAPPING-OUT": "Map Out",
     "INSPECTION-DATE": "Inspection Date",
     "INSPECTION-TYPES": "Inspection Types",
     "SELECT-TYPE-TO-MARK-DAMAGE": "Select a type to mark damage",
@@ -1401,7 +1401,9 @@
     "REQURED-UPPERCASE": "Uppercase Required",
     "REQUIRED-LOWERCASE": "Lowercase Required",
     "REQUIRED-SPECAIL-CHAR": "Special Character Required",
-    "REQUIRED-NUMBER": "Number Required"
+    "REQUIRED-NUMBER": "Number Required",
+    "PRE-REPAIR-MAPPING-CHART": "Pre-Repair Mapping Chart",
+    "POST-REPAIR-MAPPING-CHART": "Post-Repair Mapping Chart"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

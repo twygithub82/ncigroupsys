@@ -1055,6 +1055,12 @@ const GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID = gql`
           transfer_in_dt
           create_dt
         }
+        release_order_sot {
+          status_cv
+          release_order {
+            release_dt
+          }
+        }
       }
       pageInfo {
         endCursor

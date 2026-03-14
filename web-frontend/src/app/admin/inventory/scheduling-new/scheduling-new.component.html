@@ -24,7 +24,7 @@
                         </div>
                         <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
                           <button mat-mini-fab (click)="addSchedulingDetails($event)" (click)="$event.stopPropagation()"
-                            [disabled]="isGeneratingReport" [disabled]="!sotSelection.hasValue()"
+                            [disabled]="!sotSelection.hasValue()||isGeneratingReport"
                             [ngClass]="{ 'primary-light': sotSelection.hasValue() }">
                             <mat-icon>add</mat-icon>
                           </button>

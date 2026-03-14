@@ -409,6 +409,14 @@ export const QUERY_OUT_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
                 name
               }
             }
+            release_order_sot {
+              status_cv
+              delete_dt
+              release_order {
+                release_dt
+                create_dt
+              }
+            }
           }
         }
       }
