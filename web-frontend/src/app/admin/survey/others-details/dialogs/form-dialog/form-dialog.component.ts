@@ -18,6 +18,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
@@ -69,9 +71,12 @@ export class FormDialogComponent {
   surveyDetail?: SurveyDetailItem;
   sot: StoringOrderTankItem;
   maxDate = new Date();
+  minDate = new Date();
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
+  roSotDS: ReleaseOrderSotDS;
+  igDS: InGateDS;
   surveyDS: SurveyDetailDS;
 
   constructor(
@@ -84,14 +89,17 @@ export class FormDialogComponent {
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.surveyDS = data.surveyDS;
     this.sot = data.sot;
     this.surveyDetail = data.surveyDetail;
     this.action = data.action!;
+    this.minDate = Utility.getEarlierDate(Utility.convertDate(this.igDS.getInGateItem(this.sot?.in_gate)?.eir_dt) as Date, this.minDate);
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
-      this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
+      this.maxDate = Utility.getLaterDate(Utility.convertDate(this.roSotDS.getReleaseOrderSotItem(this.sot?.release_order_sot)?.release_order?.release_dt) as Date, this.maxDate);
     } else {
       this.dialogTitle = data.translatedLangText.NEW_SURVEY;
     }

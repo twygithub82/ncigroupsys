@@ -628,10 +628,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -645,10 +645,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
@@ -807,15 +807,15 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
 
   export_excel() {
     this.isGeneratingReport = true;
-    
+
     this.loadAllDataForReport().subscribe(data => {
 
       var prcList: StoringOrderItem[] = [];
       data.forEach((item) => {
-        var itm:any = item;
+        var itm: any = item;
         const c: StoringOrderItem = {
           ...itm,
-          tank_status:this.getTankStatusDescription(itm.tank_status_cv),
+          tank_status: this.getTankStatusDescription(itm.tank_status_cv),
           purpose: this.displayTankPurpose(itm)
         };
         prcList.push(c);
@@ -827,7 +827,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
 
-    exportPdfReport(repData: any) {
+  exportPdfReport(repData: any) {
 
     //this.preventDefault(event);
     let cut_off_dt = new Date();
