@@ -540,6 +540,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     PLEASE_FILL_REQUIRED_FIELDS: 'COMMON-FORM.PLEASE-FILL-REQUIRED-FIELDS',
     PRE_REPAIR_MAPPING_CHART: 'COMMON-FORM.PRE-REPAIR-MAPPING-CHART',
     POST_REPAIR_MAPPING_CHART: 'COMMON-FORM.POST-REPAIR-MAPPING-CHART',
+    PHOTOS: 'COMMON-FORM.PHOTOS',
   }
 
   sot_guid: string | null | undefined;
