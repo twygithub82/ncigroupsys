@@ -1403,7 +1403,9 @@
     "REQUIRED-SPECAIL-CHAR": "Special Character Required",
     "REQUIRED-NUMBER": "Number Required",
     "PRE-REPAIR-MAPPING-CHART": "Pre-Repair Mapping Chart",
-    "POST-REPAIR-MAPPING-CHART": "Post-Repair Mapping Chart"
+    "POST-REPAIR-MAPPING-CHART": "Post-Repair Mapping Chart",
+    "GATE-OUT-DATE": "Gate Out Date",
+    "VALUE-ZERO":"can't be zero or below"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

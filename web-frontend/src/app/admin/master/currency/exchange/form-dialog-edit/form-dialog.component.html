@@ -33,7 +33,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                <input matInput formControlName="description"  type="text" required  #lolo_cost maxlength="50"
+                <input matInput formControlName="description"  type="text"  maxlength="50"
                     >
                 <!-- @if (pcForm.get('lolo_cost')?.hasError('required')) {
                       <mat-error>
@@ -50,11 +50,11 @@
                 <mat-label>{{translatedLangText.RATE }}</mat-label>
                 <input matInput formControlName="rate" appNumericText type="text" required min="0" #storage_cost
                  #rate (focus)="rate.select()" [allowDecimal]="true" [decimalLimit]="5">
-                <!-- @if (pcForm.get('storage_cost')?.hasError('required')) {
+                 @if (pcForm.get('rate')?.hasError('positiveNumber')) {
                       <mat-error>
-                        {{translatedLangText.STORAGE_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                        {{translatedLangText.RATE }} {{translatedLangText.VALUE_ZERO }}
                       </mat-error>
-                      } -->
+                      } 
               </mat-form-field>
             </div>
             <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">

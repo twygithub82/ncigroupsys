@@ -27,6 +27,7 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import { ESTIMATE_APPROVED_STATUS, Utility } from 'app/utilities/utility';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
+import { text } from 'd3';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -177,10 +178,11 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
     STEAMING_ESTIMATE: 'COMMON-FORM.STEAMING-ESTIMATE',
     TBA: 'COMMON-FORM.TBA',
-    TOTAL_LABOUR:'COMMON-FORM.TOTAL-LABOUR',
+    TOTAL_LABOUR: 'COMMON-FORM.TOTAL-LABOUR',
 
   }
 
+  isNoAction: boolean = false;
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -224,6 +226,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   isAutoApproveSteam: boolean = false;
   isEstimateApproved: boolean = false;
   flashPoint: string = '';
+  
   constructor(
     public dialogRef: MatDialogRef<SteamEstimatePdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -262,7 +265,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     if (data?.length > 0) {
       data[0].steaming_part = data[0].steaming_part.filter((data: any) => !data.delete_dt);
       this.steamItem = data[0];
-      this.steamItem.flat_rate=((this.steamItem?.flat_rate || 0) === 0) ? false : true;
+      this.isNoAction = (this.steamItem.status_cv === 'NO_ACTION');
+      this.steamItem.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       this.estimate_no = this.steamItem.estimate_no;
       await this.getCodeValuesData();
       console.log(this.steamItem)
@@ -941,14 +945,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
       this.translate, this.pdfTitle, '');
 
-    startY +=  6;
-    // startY += (PDFUtility.GapBetweenSubTitleAndTable_Portrait() * 2) - PDFUtility.GapBetweenLeftTitleAndTable()-2;
-    // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
+    startY += 6;
 
-    // startY = 43;
-    // PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 12, false, 1
-    //   , '#000000', false);
-    // startY += 8;
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
@@ -1012,6 +1010,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+
           }
         }
       },
@@ -1025,7 +1024,62 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else {
       this.createSteamEstimateDetail_repair_r2(pdf, startY, leftMargin, rightMargin, pageWidth);
+      const pageCount = pdf.getNumberOfPages();
+      if (pageCount > 1) {
+        for (let i = 2; i <= pageCount; i++) {
+
+          pdf.setPage(i);
+
+          startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+            this.translate, this.pdfTitle, '');
+          startY += 6;
+          autoTable(pdf, {
+            body: data,
+            startY: startY, // Start table at the current startY value
+            theme: 'grid',
+            margin: { left: leftMargin },
+            styles: {
+              cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+              fontSize: fontSz,
+              minCellHeight: minHeightHeaderCol,
+              lineWidth: 0.15, // cell border thickness
+              lineColor: [0, 0, 0], // black
+            },
+            tableWidth: contentWidth,
+            columnStyles: {
+              0: { cellWidth: 35 },
+              1: { cellWidth: 61 },
+              2: { cellWidth: 35 },
+              3: { cellWidth: 59 }
+            },
+            // headStyles: headStyles, // Custom header styles
+            bodyStyles: {
+              fillColor: [255, 255, 255],
+              halign: 'left', // Left-align content for body by default
+              valign: 'middle', // Vertically align content
+
+            },
+            // didDrawPage: (data: any) => {
+            //   const pageCount = pdf.getNumberOfPages();
+
+            //   lastTableFinalY = data.cursor.y;
+
+            //   var pg = pagePositions.find(p => p.page == pageCount);
+            //   if (!pg) {
+            //     pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+            //     if (pageCount > 1) {
+            //       Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+
+            //     }
+            //   }
+            // },
+          });
+
+        }
+      }
     }
+
+
     startY = pageHeight - 25;
     // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
     // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
@@ -1279,7 +1333,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-   createSteamEstimateDetail_repair_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+  createSteamEstimateDetail_repair_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
     var rightPadding_cost = 4;
     const fontSz = 8;
     const vAlign = "bottom";
@@ -1296,11 +1350,11 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
           styles: { fontSize: fontSz, halign: 'left', valign: vAlign, cellPadding: 2 }
         },
-        
-        { 
+
+        {
           content: this.translatedLangText.QTY,
 
-          styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'right', valign: vAlign, cellPadding: 2 }
         },
         {
           content: this.translatedLangText.PRICE,
@@ -1331,6 +1385,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     const grpFontSz = 7;
     var estTotalLbr = 0;
     var estTotalCost = 0;
+    var isNoAct = this.isNoAction;
     items?.forEach((item, index) => {
 
       item.approve_part = item.approve_part ?? true;
@@ -1349,9 +1404,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       var app = ((item.approve_part === null) || item.approve_part) ? "O" : "X";
       repData.push([
         item.index + 1, item.description,
-        `${qty}`, 
+        `${qty}`,
         this.parse2Decimal(cost),
-         `${this.parse2Decimal(labour)}`,
+        `${this.parse2Decimal(labour)}`,
         // {
         //   content: this.parse2Decimal(totalCost),
         //   styles: { fontSize: fontSz, halign: 'right', valign: "middle", cellPadding: { right: rightPadding_cost } }
@@ -1367,17 +1422,17 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       2: { cellWidth: 15, halign: 'right', valign: 'middle' },
       // 3: { cellWidth: 15,halign: 'center', valign: 'middle'},
       3: { cellWidth: 30, halign: 'right', valign: 'middle' },
-      4: {  cellWidth: 15,halign: 'center', valign: 'middle' },
+      4: { cellWidth: 15, halign: 'center', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},
     };
 
-
+    var top = startY
     var tableWidth = pageWidth - rightMargin - leftMargin;
     autoTable(pdf, {
       head: headers,
       body: repData,
-      // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, top: 50 },
+      startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, top: top },
       tableWidth: tableWidth,
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
@@ -1406,6 +1461,26 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             data.cell.y - 2
           );
         }
+
+
+        // STRIKETHROUGH FOR PRICE COLUMN
+        if (data.section === "body" && [3].includes(data.column.index) && isNoAct) {
+
+          const textPos = data.cell.getTextPos();
+
+          // const textWidth = doc.getTextWidth(data.cell.text[0] || '');
+          const textWidth = doc.getTextWidth(data.cell.text[0])
+          const lineY = textPos.y ;
+          doc.setDrawColor(0, 0, 0);
+          doc.setLineWidth(0.2);
+
+          doc.line(
+            textPos.x-textWidth,
+            lineY,
+            textPos.x ,
+            lineY
+          );
+        }
       },
       didDrawPage: (data: any) => {
         startY = data.cursor.y;
@@ -1419,7 +1494,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       2: { cellWidth: 15, halign: 'right', valign: 'middle' },
       // 3: { cellWidth: 15,halign: 'center', valign: 'middle'},
       3: { cellWidth: 40, halign: 'right', valign: 'middle' },
-      4: {  cellWidth: 25,halign: 'center', valign: 'middle' },
+      4: { cellWidth: 25, halign: 'center', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},
     };
 
@@ -1435,6 +1510,13 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     var totalSGD = `${this.translatedLangText.TOTAL} (${sysCurrencyCode}):`;
     // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+    if(this.isNoAction) 
+      {
+        this.approvedCost=0;
+        estTotalLbr=0;
+        estTotalCost=0;
+
+      }
     var AppCostValue = (this.approvedCost === 0 ? '' : `${this.parse2Decimal(this.approvedCost)}`);
     //var amtWords = Utility.convertToWords(this.totalCost!);
     var amtWords = (ESTIMATE_APPROVED_STATUS.includes(this.steamItem.status_cv)) ? Utility.convertToWords(this.approvedCost!) : Utility.convertToWords(this.totalCost!);
@@ -1461,16 +1543,16 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     //   { content: `${this.parse2Decimal(estTotalLbrCost)}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz, cellPadding: { right: rightPadding_cost } } }
     // ]);
 
-      estData.push([
-     '', '', '',
+    estData.push([
+      '', '', '',
       { content: `${this.translatedLangText.TOTAL_COST}:`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz + 1 } },
-      { content: `${this.parse2Decimal(estTotalCost)}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz, cellPadding: { right: rightPadding_cost,top: t } } }
+      { content: `${this.parse2Decimal(estTotalCost)}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz, cellPadding: { right: rightPadding_cost, top: t } } }
     ]);
 
-     estData.push([
-     '', '', '',
-      { content: `${this.translatedLangText.TOTAL_LABOUR} ($${this.packageLabourCost}):`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz + 1 } },
-      { content: `${this.parse2Decimal(estTotalLbrCost)}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz, cellPadding: { right: rightPadding_cost,top: t } } }
+    estData.push([
+      '', '', '',
+      { content: `${this.translatedLangText.TOTAL_LABOUR} ($${Utility.formatNumberDisplay(this.packageLabourCost)}):`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz + 1 } },
+      { content: `${this.parse2Decimal(estTotalLbrCost)}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz, cellPadding: { right: rightPadding_cost, top: t } } }
     ]);
 
     var totalCostValue = estTotalLbrCost + estTotalCost;
@@ -1542,7 +1624,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     const vAlign = "bottom";
     const tableWidth = pageWidth - rightMargin - leftMargin;
     const isFlat = this.steamItem.flat_rate ?? true;
-    const isCompleted=this.IsSteamCompleted();
+    const isCompleted = this.IsSteamCompleted();
     const headers: RowInput[] = [
       [
         {
@@ -1572,12 +1654,14 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         {
           content: this.translatedLangText.TOTAL_COST,
 
-          styles: { fontSize: fontSz, halign: 'right', valign: vAlign,  cellPadding: {
+          styles: {
+            fontSize: fontSz, halign: 'right', valign: vAlign, cellPadding: {
               top: 2,
               right: 3,
               bottom: 2,
               left: 2
-            } }
+            }
+          }
         },
         //  { 
         //   content: this.translatedLangText.APPROVED,
@@ -1646,15 +1730,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       4: { halign: 'right', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},
     };
-    //   const comStyles: any = {
-    //       0: { cellWidth: 11,halign: 'center', valign: 'middle' },
-    //       1: { cellWidth: 113,halign: 'left', valign: 'middle'},
-    //       //2: { cellWidth: 15,halign: 'center', valign: 'middle'},
-    //       2: { cellWidth: 20,halign: 'center', valign: 'middle'},
-    //       3: { cellWidth: 25,halign: 'right', valign: 'middle'},
-    //       4: { halign: 'right', valign: 'middle'},
-    //      // 4: { cellWidth: 30,halign: 'center', valign: 'middle'},
-    // };
+
 
 
     autoTable(pdf, {
@@ -1727,9 +1803,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     estData.push([
       '', '', '',
       { content: `${totalSGD}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz + 1 } },
-         {
-        content: `${this.getTotalCostContent(isFlat, isCompleted, totalCostValue)}`, 
-         styles: {
+      {
+        content: `${this.getTotalCostContent(isFlat, isCompleted, totalCostValue)}`,
+        styles: {
           halign: 'right', valign: 'middle', fontStyle: 'bold',
           fontSize: fontSz, cellPadding: { right: rightPadding_cost, top: t }
         }
@@ -1758,7 +1834,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         '', '', '',
         { content: `${totalForeign}`, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz + 1 } },
         {
-          content: `${this.getTotalCostContent(isFlat, isCompleted, Number(convertedCost))}`, 
+          content: `${this.getTotalCostContent(isFlat, isCompleted, Number(convertedCost))}`,
           styles: {
             halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: fontSz,
             cellPadding: { right: rightPadding_cost, top: t }
@@ -1810,19 +1886,19 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
   }
 
-  IsSteamCompleted():boolean{
-      const COMPLETED_STATUS = ['COMPLETED', 'QC_COMPLETED'];
-      return COMPLETED_STATUS.includes(this.steamItem?.status_cv!);
-    }
-  getTotalCostContent(
-  isFlat: boolean,
-  isCompleted: boolean,
-  totalCost: number
-): string {
-  if (isFlat || isCompleted) {
-    return this.parse2Decimal(totalCost);
+  IsSteamCompleted(): boolean {
+    const COMPLETED_STATUS = ['COMPLETED', 'QC_COMPLETED'];
+    return COMPLETED_STATUS.includes(this.steamItem?.status_cv!);
   }
+  getTotalCostContent(
+    isFlat: boolean,
+    isCompleted: boolean,
+    totalCost: number
+  ): string {
+    if (isFlat || isCompleted) {
+      return this.parse2Decimal(totalCost);
+    }
 
-  return this.translatedLangText.TBA;
-}
+    return this.translatedLangText.TBA;
+  }
 }

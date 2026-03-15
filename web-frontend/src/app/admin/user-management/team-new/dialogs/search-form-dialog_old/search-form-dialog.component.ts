@@ -231,35 +231,8 @@ export class SearchFormDialogComponent {
     }
     this.trDS.SearchTariffRepair(where).subscribe(data => {
       this.templateRepairList=data;
-      // if (data.length) {
-      //   this.selectedTariffRepair = data[0];
-      //   this.repairPartForm.get('material_cost')?.setValue(this.selectedTariffRepair?.material_cost!.toFixed(2));
-      // }
+    
     });
   }
 
-  // getCustomerCost() {
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: this.group_name_cv },
-  //               subgroup_name_cv: { eq: this.subgroup_name_cv },
-  //               part_name: { eq: this.part_name }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       this.packageRepairList = data;
-  //     }
-  //   });
-  // }
 }

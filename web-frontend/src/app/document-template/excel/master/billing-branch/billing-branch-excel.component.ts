@@ -94,7 +94,7 @@ export type ChartOptions = {
 export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-   NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
@@ -198,9 +198,10 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
     PHONE: 'COMMON-FORM.PHONE',
     BRANCH_NAME: 'COMMON-FORM.BRANCH-NAME',
     BILLING_BRANCH_LIST: 'COMMON-FORM.BILLING-BRANCH-LIST',
-    S_N:'COMMON-FORM.S_N',
-     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
-     CURRENCY: "COMMON-FORM.CURRENCY",
+    S_N: 'COMMON-FORM.S_N',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    CURRENCY: "COMMON-FORM.CURRENCY",
+    POSTAL_CODE: "COMMON-FORM.POSTAL-CODE",
 
   }
 
@@ -448,6 +449,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
         item.country || "-",
         item.address_line1 || "-",
         item.address_line2 || "-",
+        item.postal || "-",
         item.email || "-",
         item.phone || "-",
         this.displayLastUpdated(item)
@@ -464,22 +466,23 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
       this.translatedLangText.COUNTRY,
       this.translatedLangText.ADDRESS_1,
       this.translatedLangText.ADDRESS_2,
+      this.translatedLangText.POSTAL_CODE ,
       this.translatedLangText.EMAIL,
       this.translatedLangText.CONTACT_NO,
       this.translatedLangText.LAST_UPDATED
     ]];
 
-     const reportTitle: (string | number)[][] = [
+    const reportTitle: (string | number)[][] = [
       [`${this.translatedLangText.BILLING_BRANCH_LIST}`]
     ];
-   const rows: (string | number)[][] = [
+    const rows: (string | number)[][] = [
       ...reportTitle,
       [], // empty row after title
       ...head,
       ...data
     ];
- const totalColumns = head[0].length;
-    var fileName ="BillingBranchList.xlsx";
+    const totalColumns = head[0].length;
+    var fileName = "BillingBranchList.xlsx";
     Utility.saveExcel(rows, fileName, totalColumns);
     // const rows: (string | number)[][] = [
     //   ...head,

@@ -40,6 +40,14 @@ export const GET_CLEANING_METHOD_QUERY = gql`
         create_dt
         delete_dt
         description
+        cleaning_category {
+        description
+          guid
+          name
+          cost
+          update_by
+          update_dt
+        }
         guid
         name
         update_by

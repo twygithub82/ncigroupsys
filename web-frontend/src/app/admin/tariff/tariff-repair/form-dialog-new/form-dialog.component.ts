@@ -290,6 +290,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
+      data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
       this.groupNameCvList = data;
       if (this.selectedItem) {
         var rec = this.selectedItem;
@@ -297,6 +298,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
+      data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
       this.subGroupNameCvList = data;
     });
     this.cvDS.connectAlias('unitType').subscribe(data => {
@@ -316,6 +318,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
+        data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
         if (this.selectedItem) {
           var rec = this.selectedItem;

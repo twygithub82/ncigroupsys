@@ -641,28 +641,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    // var items:BillingSOTItem[]=sot.billing_sot!;
-    //   if(items.length>0)
-    //   {
-    //     var itms = items.filter(v=>v.delete_dt===null||v.delete_dt===0);
-    //     if(itms.length>0)
-    //     { 
-    //       itms.forEach(c=>{
-    //         c.storing_order_tank=sot;
-    //          let newItem=false;
-    //         let rep_bill_item= rep_bill_items.find(item=>item.sot_guid===c.storing_order_tank?.guid);
-    //         if(!rep_bill_item)
-    //         {
-    //           newItem=true;
-    //           rep_bill_item= this.createNewReportBillingItem(sot);
-    //         }
-    //         if(((c.gate_in_cost||0)+(c.gate_out_cost||0))>0)rep_bill_item.gateio_est_no +=1;
-    //         rep_bill_item.gateio_cost = Number(Number( rep_bill_item?.gateio_cost||0)+ (c.gate_in_cost||0)+(c.gate_out_cost||0)).toFixed(2);
-    //         if(newItem)rep_bill_items.push(rep_bill_item);
-
-    //       });
-    //     }
-    //   }
+    
 
 
   }
