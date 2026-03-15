@@ -409,12 +409,32 @@ export const QUERY_OUT_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
                 name
               }
             }
-            release_order_sot {
-              status_cv
+            release_order_sot(where: { guid: { eq: $roSotGuid }, status_cv: { eq: "ACCEPTED" } }) {
+              create_by
+              create_dt
               delete_dt
+              guid
+              remarks
+              ro_guid
+              sot_guid
+              status_cv
+              update_by
+              update_dt
               release_order {
-                release_dt
+                create_by
                 create_dt
+                customer_company_guid
+                delete_dt
+                guid
+                haulier
+                release_dt
+                remarks
+                ro_generated
+                ro_no
+                ro_notes
+                status_cv
+                update_by
+                update_dt
               }
             }
           }

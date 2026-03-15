@@ -233,7 +233,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   createOutGateForm() {
     this.outGateForm = this.fb.group({
       eir_dt: [{ value: new Date(), disabled: true }],
-      release_job_no: [''],
+      release_job_no: [{ value: '', disabled: true }],
       haulier: [''],
       vehicle_no: [''],
       driver_name: [''],

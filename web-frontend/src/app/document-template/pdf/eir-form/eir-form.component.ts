@@ -593,12 +593,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     var data = [
       [
-        { content: `${this.getNoLabel()}: ${this.getGate()?.tank?.storing_order?.so_no}` },
+        { content: `${this.getNoLabel()}: ${this.getOrderNo()}` },
         { content: `${this.getDateLabel()}: ${this.displayDate(this.getOrderDate())}` },
         { content: `${this.translatedLangText.LAST_CARGO}: ${(this.getGate()?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
       ],
       [`${this.translatedLangText.TANK_NO}: ${this.getGate()?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.getGate()?.eir_no}`,
-      `${this.getJobReferenceLabel()}: ${this.getGate()?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
+      `${this.getJobReferenceLabel()}: ${this.getJobNo()}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
       [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
       `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
@@ -2111,6 +2111,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   getOrderDate() {
     return this.isInGate() ? this.getGate()?.tank?.storing_order?.create_dt : this.roSotDS?.getReleaseOrderSotItem(this.getGate()?.tank?.release_order_sot)?.release_order?.create_dt;
+  }
+
+  getOrderNo() {
+    return this.isInGate() ? this.getGate()?.tank?.storing_order?.so_no : this.roSotDS?.getReleaseOrderSotItem(this.getGate()?.tank?.release_order_sot)?.release_order?.ro_no;
   }
 
   copyComputedStyles(
