@@ -374,6 +374,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
             if (data.length > 0)
+              data = [...data].sort((a, b) => a.description!.localeCompare(b.description!));
               this.allSubGroupNameCvList.push(...data);
           });
         });
@@ -403,6 +404,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
+        data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
         if (this.selectedItems.length == 1) {
           var rec = this.selectedItems[0];

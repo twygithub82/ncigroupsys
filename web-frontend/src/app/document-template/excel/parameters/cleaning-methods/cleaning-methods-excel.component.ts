@@ -133,6 +133,7 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
     PROCESS_NAME_SELECTED: 'COMMON-FORM.SELECTED',
     S_N: 'COMMON-FORM.S_N',
     CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
+    CATEGORY:'COMMON-FORM.CATEGORY',
 
   }
 
@@ -332,13 +333,6 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
   }
 
 
-
-
-
-
-
-
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
@@ -375,6 +369,7 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
         index+1,
          item.name || "-",
         item.description || "-",
+        item.cleaning_category?.description || "-",
         this.displayLastUpdated(item) || "-",
 
       ];
@@ -385,6 +380,7 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
       this.translatedLangText.S_N,
       this.translatedLangText.PROCESS_NAME,
       this.translatedLangText.DESCRIPTION,
+      this.translatedLangText.CATEGORY,
       this.translatedLangText.LAST_UPDATED
     ]];
 

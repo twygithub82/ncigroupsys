@@ -441,7 +441,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         var desc_value: any = this.newDesc?.value;
         if (typeof desc_value === 'object' && this.updateSelectedItem === undefined && desc_value) {
           this.newUnitPrice.setValue(desc_value?.material_cost?.toFixed(2));
-          this.newQty.setValue(1);
+          this.newQty.setValue(null);
           this.newHour.setValue(desc_value?.labour_hour ? desc_value?.labour_hour : 0)
         }
         else if (desc_value) {
@@ -1372,7 +1372,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (this.historyState.selectedRow != null) {
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
-      this.steamItem = this.historyState.selectedSteam;
+      // this.steamItem = this.historyState.selectedSteam;
+      this.steamItem= { ...this.historyState.selectedSteam };
       this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       console.log(this.steamItem)
       this.labourHour = this.steamItem?.est_hour || 1;
@@ -1809,6 +1810,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   onExport(event: Event) {
     this.preventDefault(event);
+    var repItem =this.historyState.selectedSteam;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1820,10 +1822,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       width: '794px',
       height: '80vh',
       data: {
-        steam_guid: this.steamItem?.guid,
-        estimate_no: this.steamItem?.estimate_no,
+
+         steam_guid: this.steamItem?.guid,
+         estimate_no: this.steamItem?.estimate_no,
         // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
-        packageLabourCost: this.getRate()
+        packageLabourCost: this.getRate_r1(repItem)
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -1896,6 +1899,32 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
         else {
           return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
+        }
+      }
+    }
+  }
+
+   getRate_r1(row:SteamItem): number {
+    if (this.isSteamRepair) {
+      return this.packageLabourItem?.cost || 0;
+    }
+    else {
+      var flat_rate = ((row?.flat_rate || 0) === 0) ? false : true;
+      if (!flat_rate) {
+        if (this.IsApproved()) {
+          return Number(row?.steaming_part?.[0]?.approve_labour || 0);
+        }
+        else {
+          return this.packageLabourItem?.cost || 0;
+        }
+      }
+      else {
+        var approved = ESTIMATE_APPROVED_STATUS.includes(row?.status_cv!);
+        if (approved) {
+          return Number(row?.steaming_part?.[0]?.approve_cost || 0);
+        }
+        else {
+          return Number(row?.steaming_part?.[0]?.cost || 0);
         }
       }
     }

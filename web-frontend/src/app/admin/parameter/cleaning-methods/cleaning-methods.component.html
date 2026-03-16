@@ -88,20 +88,9 @@
                             </mat-autocomplete>
                           </mat-chip-grid>
                         </mat-form-field>
-                        <!-- <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
-                          <input nameInput [formControl]="processNameControl" [matAutocomplete]="processName"
-                            formControlName="name">
-                          <mat-autocomplete #processName="matAutocomplete" [displayWith]="displayProcessNameFn">
-                            @for (pn of processNameList; track pn) {
-                            <mat-option [value]="pn">
-                              {{pn}}
-                            </mat-option>
-                            }
-                          </mat-autocomplete>
-                        </mat-form-field> -->
+                       
                       </div>
-                      <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 mb-0">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PROCESS_DESCRIPTION}}</mat-label>
                           <mat-chip-grid #desc_chipGrid class="nowrap single-line-chip-grid">
@@ -136,29 +125,43 @@
                           </mat-chip-grid>
                         </mat-form-field>
 
-                        <!-- <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.PROCESS_DESCRIPTION}}</mat-label>
-                          <input descInput [formControl]="descriptionControl" [matAutocomplete]="description"
-                            formControlName="description">
-                          <mat-autocomplete #description="matAutocomplete" [displayWith]="displayDescriptionFn">
-                            @for (pn of descriptionList; track pn) {
-                            <mat-option [value]="pn">
-                              {{pn}}
-                            </mat-option>
-                            }
-                          </mat-autocomplete>
-                        </mat-form-field> -->
+                       
                       </div>
-                      <!-- <div
-                        class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto align-items-center justify-content-end pe-4">
-                        <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
-                          <mat-icon>search</mat-icon>
-                        </button>
-                        <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                          matTooltip={{translatedLangText.CLEAR_ALL}}>
-                          <mat-icon>clear_all</mat-icon>
-                        </button>
-                      </div> -->
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.CATEGORY}}</mat-label>
+                          <mat-chip-grid #cate_chipGrid class="nowrap single-line-chip-grid">
+
+                            @if(this.selectedCategories.length>0){
+                            <mat-chip-row color="primary" (click)="category_removeAllSelected()">
+                              <span> {{category_getSelectedDisplay()}}</span>
+                              <button matChipRemove hidden>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                            }
+                            <input #categoryInput [formControl]="categoryControl" [matAutocomplete]="category"
+                              formControlName="category" [matChipInputFor]="cate_chipGrid"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="category_add($event)">
+                            <mat-autocomplete #category="matAutocomplete"
+                              (optionSelected)="category_selected($event)">
+                              @for (pn of categoryList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="category_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="category_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="category_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
+                      </div>
                     </div>
                   </form>
                 </mat-expansion-panel>
@@ -173,7 +176,7 @@
                       <mat-header-cell *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="category_name">
+                    <ng-container matColumnDef="process_name">
                       <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header="category_name" disableClear
                         [ngClass]="''">
                         {{translatedLangText.CLEANING_METHOD}}
@@ -182,12 +185,20 @@
                         <span class="mobile-label">{{translatedLangText.CLEANING_METHOD }}:</span>{{row.name}}
                       </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="category_description">
+                    <ng-container matColumnDef="process_description">
                       <mat-header-cell *matHeaderCellDef>
                         {{translatedLangText.DESCRIPTION }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                      </mat-cell>
+                    </ng-container>
+                     <ng-container matColumnDef="category_description">
+                      <mat-header-cell *matHeaderCellDef>
+                        {{translatedLangText.CATEGORY }}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{translatedLangText.CATEGORY}}:</span>{{ row.cleaning_category?.description || '-' }}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">

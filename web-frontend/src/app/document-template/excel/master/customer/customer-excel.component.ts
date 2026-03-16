@@ -94,7 +94,7 @@ export type ChartOptions = {
 export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-     NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
@@ -196,10 +196,11 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
     ADDRESS_2: 'COMMON-FORM.ADDRESS-2',
     CODE: 'COMMON-FORM.CODE',
     PHONE: 'COMMON-FORM.PHONE',
-    S_N:'COMMON-FORM.S_N',
-    CUSTOMER_LIST:'COMMON-FORM.CUSTOMER-LIST',
-    CURRENCY:'COMMON-FORM.CURRENCY',
-     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    S_N: 'COMMON-FORM.S_N',
+    CUSTOMER_LIST: 'COMMON-FORM.CUSTOMER-LIST',
+    CURRENCY: 'COMMON-FORM.CURRENCY',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    POSTAL_CODE: "COMMON-FORM.POSTAL-CODE",
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -442,10 +443,11 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
         item.code || "-",
         item.name || "-",
         item.default_profile_name || "-",
-        item.currency?.currency_code||"-",
+        item.currency?.currency_code || "-",
         item.country || "-",
         item.address_line1 || "-",
         item.address_line2 || "-",
+        item.postal || "-",
         item.email || "-",
         item.phone || "-",
         this.displayLastUpdated(item)
@@ -462,6 +464,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
       this.translatedLangText.COUNTRY,
       this.translatedLangText.ADDRESS_1,
       this.translatedLangText.ADDRESS_2,
+      this.translatedLangText.POSTAL_CODE,
       this.translatedLangText.EMAIL,
       this.translatedLangText.CONTACT_NO,
       this.translatedLangText.LAST_UPDATED
@@ -471,14 +474,14 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
     const reportTitle: (string | number)[][] = [
       [`${this.translatedLangText.CUSTOMER_LIST}`]
     ];
-   const rows: (string | number)[][] = [
+    const rows: (string | number)[][] = [
       ...reportTitle,
       [], // empty row after title
       ...head,
       ...data
     ];
- const totalColumns = head[0].length;
-    var fileName ="CustomerList.xlsx";
+    const totalColumns = head[0].length;
+    var fileName = "CustomerList.xlsx";
     Utility.saveExcel(rows, fileName, totalColumns);
     // const rows: (string | number)[][] = [
     //   ...head,

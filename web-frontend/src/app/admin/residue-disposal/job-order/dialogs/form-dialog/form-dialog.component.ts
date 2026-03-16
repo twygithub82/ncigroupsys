@@ -448,33 +448,5 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
   }
 
-  // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
-  //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
-  //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: group_name_cv.code_val },
-  //               subgroup_name_cv: { eq: subgroup_name_cv },
-  //               part_name: { eq: partName },
-  //               dimension: { eq: dimension },
-  //               length: { eq: length }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       // this.selectedPackageRepair = data[0];
-  //       // this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
-  //     }
-  //   });
-  // }
+ 
 }
