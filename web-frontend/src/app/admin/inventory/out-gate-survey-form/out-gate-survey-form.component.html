@@ -1573,8 +1573,8 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="airline_valve_pcs" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="airline_valve_pcs" type="text" appNumericText
+                                      [allowDecimal]="false" [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}
                                     </h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
@@ -1587,8 +1587,8 @@
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.DIAMITER}}</mat-label>
-                                    <input matInput formControlName="airline_valve_dim" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="airline_valve_dim" type="text" appNumericText
+                                      [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>
                                       {{translatedLangText.INCH}}</h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
@@ -1737,11 +1737,11 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pcs" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="manlid_cover_pcs" type="text" appNumericText
+                                      [allowDecimal]="false" [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
@@ -1751,7 +1751,7 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pts" type="number"
@@ -1788,30 +1788,28 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-2-5 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0 p-r-0">
+                                <div class="col-12 col-md-auto m-b-0 p-r-0">
                                   <div class="row">
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                       <mat-label>{{translatedLangText.PV}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <div class="button-toggle-overflow">
-                                        <mat-button-toggle-group formControlName="pv_type_cv"
-                                          class="tlx-button-group m-r-10" [hideMultipleSelectionIndicator]="true"
-                                          color="primary" appearance="standard" exclusiveToggle>
-                                          @for (codeValue of pvTypeCvList; track codeValue) {
-                                          <mat-button-toggle
-                                            [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
-                                          }
-                                        </mat-button-toggle-group>
-                                      </div>
+                                      <mat-button-toggle-group formControlName="pv_type_cv"
+                                        class="tlx-button-group m-r-10" [hideMultipleSelectionIndicator]="true"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of pvTypeCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
                                 <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_type_pcs" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="pv_type_pcs" type="text" appNumericText
+                                      [allowDecimal]="false" [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
@@ -1821,7 +1819,7 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-2-5 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0 p-r-0">
+                                <div class="col-12 col-md-auto m-b-0 p-r-0">
                                   <div class="row">
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                       <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
@@ -1843,8 +1841,8 @@
                                 <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
-                                    <input matInput formControlName="pv_spec_pcs" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="pv_spec_pcs" type="text " appNumericText
+                                      [allowDecimal]="false" [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
@@ -1859,6 +1857,9 @@
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-checkbox formControlName="safety_handrail" class="m-r-5" color="primary">
                                     {{translatedLangText.SAFETY_HANDRAIL}}
+                                  </mat-checkbox>
+                                  <mat-checkbox formControlName="dipstick" class="m-l-15 m-r-5" color="primary">
+                                    {{translatedLangText.DIPSTICK}}
                                   </mat-checkbox>
                                 </div>
                               </div>
@@ -1892,13 +1893,6 @@
                                     </mat-error>
                                     } -->
                                   </mat-form-field>
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-checkbox formControlName="dipstick" class="m-r-5" color="primary">
-                                    {{translatedLangText.DIPSTICK}}
-                                  </mat-checkbox>
                                 </div>
                               </div>
                               <div class="row">

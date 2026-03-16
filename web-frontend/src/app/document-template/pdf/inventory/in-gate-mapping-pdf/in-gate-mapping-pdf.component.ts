@@ -36,6 +36,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { MatFormFieldModule } from '@angular/material/form-field';
 export interface DialogData {
   reportTitle: string;
+  takeInDateLabel:string;
   sot: StoringOrderTankItem;
   markedCells: Map<number, CellMark>;
   circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> };
@@ -217,9 +218,12 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     TYPE: 'COMMON-FORM.TYPE',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
     RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    GATE_IN_DATE: 'COMMON-FORM.GATE-IN-DATE',
+    GATE_OUT_DATE: 'COMMON-FORM.GATE-OUT-DATE',
   }
   @Output() publishedEir = new EventEmitter<any>();
   type?: string | null;
+  takeInDateLabel?: string | null;
   // igsDS: InGateSurveyDS;
   // ogsDS: OutGateSurveyDS;
   sotDS?: StoringOrderTankDS;
@@ -333,7 +337,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder) {
     super();
     this.translateLangText();
-    // this.type = data.type;
+    
     // this.igsDS = data.igsDS || new InGateSurveyDS(this.apollo);
     // this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
     // this.sotDS = data.sotDS || new StoringOrderTankDS(this.apollo);
@@ -350,6 +354,8 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.inspectionTypes = getDefaultInspectionTypes();
     this.existingSurfaceTypes = this.inspection?.surface_types || [];
     this.reportTitle = data.reportTitle || '';
+    this.takeInDateLabel = data.takeInDateLabel;
+
     this.sot = data.sot || null;
     this.markedCells = data.markedCells || new Map();
     this.circularMarkedSections = data.circularMarkedSections || { front: new Map(), rear: new Map() };
@@ -530,6 +536,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
+    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     var inspect_dt = `${this.translatedLangText.INSPECTION_DATE}: ${this.getInspectionDateDisplay()}`;
@@ -1231,4 +1238,5 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
   }
 
+ 
 }

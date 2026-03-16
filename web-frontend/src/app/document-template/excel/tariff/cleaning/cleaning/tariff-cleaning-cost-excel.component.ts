@@ -26,6 +26,8 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
 import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { autoTable } from 'jspdf-autotable';
+
+
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -153,6 +155,7 @@ export class TariffCleaningCostExcelComponent extends UnsubscribeOnDestroyAdapte
     PER_HOUR: 'COMMON-FORM.PER-HOUR',
     CLEANING_TARIFF: 'COMMON-FORM.CLEANING-TARIFF',
     S_N: 'COMMON-FORM.S_N',
+    COST: 'COMMON-FORM.COST',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -482,6 +485,7 @@ async exportExcel(items: TariffCleaningItem[]) {
                     item.cleaning_category?.name||"-",
                     item.flash_point||"-",
                     item.ban_type_cv||"-",
+                    Utility.formatNumberDisplay(item.cleaning_category?.cost)||"-",
                 ];
                 return row;
             });
@@ -494,7 +498,8 @@ async exportExcel(items: TariffCleaningItem[]) {
   this.translatedLangText.CARGO_METHOD,
   this.translatedLangText.CARGO_CATEGORY,
   this.translatedLangText.CARGO_FLASH_POINT,
-  this.translatedLangText.CARGO_BAN_TYPE
+  this.translatedLangText.CARGO_BAN_TYPE,
+  this.translatedLangText.COST
 ]];
 
 
@@ -924,3 +929,5 @@ const reportTitle: (string | number)[][] = [
   }
 
 }
+
+

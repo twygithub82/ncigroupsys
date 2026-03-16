@@ -30,7 +30,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -79,7 +79,8 @@ import { CleaningMethodsExcelComponent } from 'app/document-template/excel/param
 })
 export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'category_name',
+    'process_name',
+    'process_description',
     'category_description',
     //'category_cost',
     'update_date',
@@ -134,19 +135,23 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     PROCESS_DESCRIPTION: "COMMON-FORM.DESCRIPTION",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     PROCESS_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
-    PROCESS_NAME_SELECTED: 'COMMON-FORM.SELECTED'
+    PROCESS_NAME_SELECTED: 'COMMON-FORM.SELECTED',
+    CATEGORY: 'COMMON-FORM.CATEGORY',
   }
 
   searchForm?: UntypedFormGroup;
   processNameControl = new UntypedFormControl();
   descriptionControl = new UntypedFormControl();
+  categoryControl = new UntypedFormControl();
   processNameList: string[] = [];
   descriptionList: string[] = [];
+  categoryList: string[] = [];
 
   clnMethodItem: CleaningMethodItem[] = [];
   catList: CleaningCategoryItem[] = [];
   mthDS: CleaningMethodDS;
   mthAutoCompleteDS: CleaningMethodDS;
+  catAutoCompleteDS: CleaningCategoryDS;
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -160,7 +165,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
   isMobile : boolean = false;
   constructor(
@@ -179,6 +184,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.initSearchForm();
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.mthAutoCompleteDS = new CleaningMethodDS(this.apollo);
+    this.catAutoCompleteDS= new CleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -214,12 +220,23 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
         });
       })
     ).subscribe();
+
+     this.categoryControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.catAutoCompleteDS.search({ description: { contains: value || '' } }, { description: "ASC" }, 100).subscribe(data => {
+          this.categoryList = data.map(i => i.description || '');
+        });
+      })
+    ).subscribe();
   }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
       name: [''],
       description: [''],
+      category:[''],
       processName: this.processNameControl
     });
   }
@@ -295,6 +312,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       where.description = { in: this.selectedDescs };
     }
 
+    if(this.selectedCategories.length > 0) {
+      
+      where.cleaning_category = {description:{ in: this.selectedCategories }};
+    }
     // if (this.processNameControl?.value) {
     //   where.name = { contains: this.processNameControl?.value };
     // }
@@ -486,7 +507,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   resetForm() {
     this.searchForm?.patchValue({
       description: '',
-      name: ''
+      name: '',
+      category:'',
     });
     this.name_removeAllSelected();
     this.description_removeAllSelected();
@@ -602,16 +624,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     this.AutoSearch();
 
-    // if (Utility.IsAllowAutoSearch())
-    //  {
-    //   var interval=2*1000;
-    //    setTimeout(() => {
-    //      this.search();
-    //    },interval)
-    //  }
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
   }
 
   name_onCheckboxClicked(row: any) {
@@ -688,9 +700,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
 
     this.AutoSearch();
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
   }
 
   description_onCheckboxClicked(row: any) {
@@ -713,6 +722,83 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     cnt?.setValue(null);
   }
+
+@ViewChild('descInput', { static: true })
+  categoryInput?: ElementRef<HTMLInputElement>;
+  selectedCategories: any[] = [];
+  category_itemSelected(row: any): boolean {
+    var itm = this.selectedCategories;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c === row);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  category_getSelectedDisplay(): string {
+    var itm = this.selectedCategories;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.PROCESS_DESCRIPTION_SELECTED}`;
+    }
+    else if (itm?.length == 1) {
+      const value = `${itm[0]}`;
+      retval = `${value}`;
+    }
+    return retval;
+  }
+
+  category_removeAllSelected(): void {
+    this.selectedCategories = [];
+    this.AutoSearch();
+  }
+
+  category_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedCategories;
+    var cnt = this.categoryControl;
+    var elmInput = this.categoryInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+
+    }
+    else {
+      itm.splice(index, 1);
+
+    }
+
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+
+    }
+
+
+    this.AutoSearch();
+  }
+
+  category_onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.category_selected(fakeEvent);
+
+  }
+
+  category_add(event: MatChipInputEvent): void {
+    var cnt = this.categoryControl;
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
+  }
+  
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_EDIT']);
@@ -775,57 +861,51 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.descriptionControl?.setValue(existingValue);
   }
 
-   export_excel()
-          {
-            this.isGeneratingReport=true;
-            const where={ delete_dt: { eq: null } };
-            this.mthDS.loadAllItems(where).subscribe(res=>{
-                  var prcList:CleaningMethodItem[]=res;
-                  this.exportExcelReport(prcList);
-        
-              })
-        
-              
-          }
-          exportExcelReport(repData:any) {
-              
-                 //this.preventDefault(event);
-                  let cut_off_dt = new Date();
-              
-              
-                  let tempDirection: Direction;
-                  if (localStorage.getItem('isRtl') === 'true') {
-                    tempDirection = 'rtl';
-                  } else {
-                    tempDirection = 'ltr';
-                  }
-              
-                  const dialogRef = this.dialog.open(CleaningMethodsExcelComponent, {
-                    width: reportPreviewWindowDimension.portrait_width_rate,
-                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                    
-                    data: {
-                      repData: repData
-                    },
-              
-                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                    direction: tempDirection
-                  });
-              
-                    dialogRef.updatePosition({
-                    top: '-90vh',  // Move far above the screen
-                    left: '0px'  // Move far to the left of the screen
-                  });
-              
-                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                    this.isGeneratingReport = false;
-                  });
-          
-            }
+  export_excel() {
+    this.isGeneratingReport = true;
+    const where = { delete_dt: { eq: null } };
+    this.mthDS.loadAllItems(where).subscribe(res => {
+      var prcList: CleaningMethodItem[] = res;
+      this.exportExcelReport(prcList);
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+    })
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(CleaningMethodsExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
