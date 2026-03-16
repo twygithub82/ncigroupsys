@@ -1845,7 +1845,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     var remarks = `${this.translatedLangText.REMARKS}:`;
     var remarksValue = `${this.repairItem?.remarks}`;
     LastLabelPosY += 6 + bufferY;
-    PDFUtility.addText(pdf, remarks, LastLabelPosY, leftMargin, fontSz, false, undefined, undefined, 0, true);
+    PDFUtility.addText(pdf, remarks, LastLabelPosY, leftMargin, fontSz, false, undefined, undefined, 0, false);
     LastLabelPosY += 5;
     PDFUtility.addText(pdf, remarksValue, LastLabelPosY, leftMargin, fontSz);
    
