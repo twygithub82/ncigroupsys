@@ -94,8 +94,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
-  minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
+  minMaterialCost: number = -100;
+  maxMaterialCost: number = 100;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
