@@ -609,7 +609,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   ShowStatusView() {
-    var validActions: string[] = ["view"];
+    var validActions: string[] = ["all"];
     return validActions.includes(this.action);
   }
 
