@@ -89,7 +89,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.HOURLY_RATE }}</mat-label>
                 <input matInput #labourInput formControlName="labour" type="text" min="0" appNumericText
-                  (focus)="labourInput.select()">
+                  (focus)="labourInput.select()" [readonly]="isEdit()">
                 <!-- @if (pcForm.get('labour')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}

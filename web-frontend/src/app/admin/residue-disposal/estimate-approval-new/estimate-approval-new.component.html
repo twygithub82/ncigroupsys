@@ -560,7 +560,7 @@
               @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
               @if(isAllowToSaveSubmit())
               {
-              <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
+              <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)||!isDirty"
                 class="m-r-5" (click)="onFormSubmit()">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {

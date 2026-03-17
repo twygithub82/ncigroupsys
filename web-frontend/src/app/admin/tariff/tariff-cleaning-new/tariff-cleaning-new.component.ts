@@ -381,7 +381,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
-      this.hazardLevelCvList = data;
+
+      this.hazardLevelCvList =  [...data].sort((a: any, b: any) =>
+        (a.description || '').localeCompare(b.description || '')
+      );
+
       // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
@@ -394,7 +398,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.openGateCvList = data;
     });
     this.cvDS.connectAlias('natureCv').subscribe(data => {
-      this.natureCvList = data;
+
+      this.natureCvList = [...data].sort((a: any, b: any) =>
+        (a.description ?? '').localeCompare(b.description ?? '')
+      );
     });
 
     this.historyState = history.state;
@@ -451,7 +458,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   CheckUnNoValidity() {
     // const regex = /^UN\d{4}$/;
     // let isValid = regex.test(this.tcForm!.get('un_no')?.value);
-    const isValid=true;
+    const isValid = true;
     if (isValid) {
       this.QueryAllFilesInGroupAndClassNo();
     }

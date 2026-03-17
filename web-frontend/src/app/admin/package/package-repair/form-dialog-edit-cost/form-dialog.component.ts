@@ -94,8 +94,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
-  minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
+  minMaterialCost: number = -100;
+  maxMaterialCost: number = 100;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
@@ -777,17 +777,5 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       control?.touched &&
       !control?.value
     );
-  }
-  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-    const centerClass = Padding ? 'px-3' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
-  getColumnClasses_center(baseClasses: string, isCenter: boolean = true): string {
-    const centerClass = isCenter ? 'justify-content-center' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
-  getColumnClasses_row(baseClasses: string, wholeRow: boolean = true): string {
-    const centerClass = wholeRow ? 'col-xl-12 col-lg-12 ' : 'col-xl-5-75 col-lg-5-75 ';
-    return `${baseClasses} ${centerClass}`.trim();
   }
 }

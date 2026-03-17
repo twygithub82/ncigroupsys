@@ -386,7 +386,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
     where.and = [
       { customer_company: { type_cv: { in: ["BRANCH"] } } },
-      { customer_company: { delete_dt: { eq: null } } }
+      { customer_company: { delete_dt: { eq: null } } },
+      { customer_company: {main_customer_guid: { neq: null } }},
+      { customer_company: {main_customer_guid: { neq: "" } }}
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
