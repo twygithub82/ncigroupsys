@@ -247,6 +247,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     APPROVED: 'COMMON-FORM.APPROVED',
     ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -318,6 +319,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   autosteamTotalCost: string = '';
 
   isMobile = false;
+  isDirty = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -724,6 +726,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (index === -1) {
       var newData = [...this.deList, steamPartItem];
       this.updateData(newData);
+      this.isDirty=true;
     }
     this.resetSelectedItemForUpdating();
   }
@@ -803,6 +806,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
+          this.isDirty=true;
         } else {
           const data = [...this.deList];
           data.splice(index, 1);
@@ -1055,6 +1059,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.stopEventTrigger(event);
     this.preventDefault(event);
     this.deleteItem(event, row, index);
+    
   }
 
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
@@ -1677,6 +1682,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   updateAction(steamPart: any) {
     if (steamPart?.action === '' || steamPart?.action === null || steamPart?.action === undefined) {
       steamPart.action = 'EDIT';
+      this.isDirty=true;
     }
   }
 
