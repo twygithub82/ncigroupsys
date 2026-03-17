@@ -226,6 +226,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     DETAILS: 'COMMON-FORM.DETAILS',
     TYPE: 'COMMON-FORM.TYPE',
     APPROVED: 'COMMON-FORM.APPROVED',
+    FLATE_RATE: 'COMMON-FORM.FLATE-RATE',
   }
 
   newDesc = new FormControl(null, [Validators.required]);
@@ -292,7 +293,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   updateSelectedItem: any = undefined;
   isExportingPDF: boolean = false;
   isMobile = false;
-
+  isDirty = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -782,6 +783,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     if (index === -1) {
       var newData = [...this.deList, residuePartItem];
       this.updateData(newData);
+      this.isDirty=true;
     }
     this.resetSelectedItemForUpdating();
   }
@@ -899,6 +901,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
+          this.isDirty=true;
         } else {
           const data = [...this.deList];
           data.splice(index, 1);
@@ -1227,6 +1230,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     this.stopEventTrigger(event);
     this.preventDefault(event);
     this.deleteItem(event, row, index);
+    
   }
 
   handleSaveSuccess(count: any) {
@@ -1763,7 +1767,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   updateAction(residuePart: any) {
     if (residuePart?.action === '' || residuePart?.action === null) {
       residuePart.action = 'EDIT';
-
+      this.isDirty = true;
     }
   }
 
@@ -1883,4 +1887,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   isEstimateApproved() {
     return this.residueItem?.status_cv == "APPROVED";
   }
+
+ 
 }

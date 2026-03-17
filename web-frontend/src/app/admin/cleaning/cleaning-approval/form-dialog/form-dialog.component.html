@@ -30,7 +30,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DATE}}</mat-label>
-                    <input matInput [matDatepicker]="noaction_dt_picker" [max]="this.getMaxDate()"
+                    <input matInput [matDatepicker]="noaction_dt_picker" [max]="this.getMaxDate()" [min]="this.getMinDate()"
                       placeholder="Select date" formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
                     <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
                     <mat-datepicker #noaction_dt_picker></mat-datepicker>

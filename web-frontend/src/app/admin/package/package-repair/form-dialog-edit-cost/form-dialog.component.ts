@@ -80,7 +80,7 @@ interface Condition {
     MatSortModule,
     PreventNonNumericDirective,
     NumericTextDirective,
-     MatChipsModule
+    MatChipsModule
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
@@ -94,8 +94,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
-  minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
+  minMaterialCost: number = -100;
+  maxMaterialCost: number = 100;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
@@ -111,7 +111,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
 
   pckRepairDS: PackageRepairDS;
   tnkItems?: TankItem[] = [];
-customer_companyList: CustomerCompanyItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -129,7 +129,7 @@ customer_companyList: CustomerCompanyItem[] = [];
   customerCompanyControl = new UntypedFormControl();
   isMobile: boolean = false;
   selectedTariffRepair?: TariffRepairItem;
- separatorKeysCodes: number[] = [ENTER, COMMA];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -215,7 +215,7 @@ customer_companyList: CustomerCompanyItem[] = [];
 
   selectedItems: PackageRepairItem[];
   UpdateInProgress: boolean = false;
- selectedCustomers: any[] = [];
+  selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
   
   constructor(
@@ -241,11 +241,11 @@ customer_companyList: CustomerCompanyItem[] = [];
     this.loadData();
     this.EnableValidator('material_cost_percentage');
     this.EnableValidator('labour_hour_percentage');
-   
+
     this.initializeFilterCustomerCompany();
   }
 
-   initializeFilterCustomerCompany() {
+  initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -261,7 +261,7 @@ customer_companyList: CustomerCompanyItem[] = [];
     ).subscribe();
   }
 
-   searchCustomerCompanyList(searchCriteria: string) {
+  searchCustomerCompanyList(searchCriteria: string) {
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
       if (this.custInput?.nativeElement.value === searchCriteria) {
@@ -288,7 +288,7 @@ customer_companyList: CustomerCompanyItem[] = [];
           'labour_hour_percentage'
         )
       }
-  );
+    );
   }
 
   displayPartNameFn(tr: string): string {
@@ -502,20 +502,20 @@ customer_companyList: CustomerCompanyItem[] = [];
   }
 
   atLeastOneRequiredValidator(
-  field1: string,
-  field2: string
-): ValidatorFn {
-  return (group: AbstractControl): ValidationErrors | null => {
-    const value1 = group.get(field1)?.value;
-    const value2 = group.get(field2)?.value;
+    field1: string,
+    field2: string
+  ): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const value1 = group.get(field1)?.value;
+      const value2 = group.get(field2)?.value;
 
-    if (!value1 && !value2) {
-      return { atLeastOneRequired: true };
-    }
+      if (!value1 && !value2) {
+        return { atLeastOneRequired: true };
+      }
 
-    return null;
-  };
-}
+      return null;
+    };
+  }
   DisableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
@@ -576,7 +576,7 @@ customer_companyList: CustomerCompanyItem[] = [];
     if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
 
     var guids: string[] = [];
-    if(this.selectedCustomers?.length>0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
+    if (this.selectedCustomers?.length > 0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
     // if (this.customerCompanyControl.value) {
     //   if (this.customerCompanyControl.value.length > 0) {
     //     const customerCodes: CustomerCompanyItem[] = this.customerCompanyControl.value;
@@ -671,52 +671,51 @@ customer_companyList: CustomerCompanyItem[] = [];
     ]);
   }
 
-  updateLabourHourPercentage()
-  {
+  updateLabourHourPercentage() {
     // var labour_hour_percentage = this.pcForm!.value['labour_hour_percentage'];
     // if(labour_hour_percentage>this.maxMaterialC)
   }
 
-   @ViewChild('custInput', { static: true })
-    custInput?: ElementRef<HTMLInputElement>;
-    
-  
-    add(event: MatChipInputEvent): void {
-      const input = event.input;
-      const value = event.value;
-      // Add our fruit
-      if ((value || '').trim()) {
-        //this.fruits.push(value.trim());
-      }
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-      this.customerCompanyControl.setValue(null);
-    }
-  
-    remove(cust: any): void {
-      const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
-      if (index >= 0) {
-        this.selectedCustomers.splice(index, 1);
-  
-      }
-    }
-  
-  
-  
-    // displayCustomerCompanyFn(customer: any): string {
-    //   if (!customer) return '';
-    //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-    // }
-  
-    private updateFormControl(): void {
-      // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-    }
+  @ViewChild('custInput', { static: true })
+  custInput?: ElementRef<HTMLInputElement>;
 
-   removeAllSelectedCustomers(): void {
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCompanyControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+    if (index >= 0) {
+      this.selectedCustomers.splice(index, 1);
+
+    }
+  }
+
+
+
+  // displayCustomerCompanyFn(customer: any): string {
+  //   if (!customer) return '';
+  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+  // }
+
+  private updateFormControl(): void {
+    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+  }
+
+  removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
-   
+
   }
 
   getSelectedCustomersDisplay(): string {
@@ -776,20 +775,20 @@ customer_companyList: CustomerCompanyItem[] = [];
   
 
   isAtLeastOneInvalid(): boolean {
-  return (
-    this.pcForm.errors?.['atLeastOneRequired'] &&
-    (this.pcForm.get('material_cost_percentage')?.touched ||
-     this.pcForm.get('labour_hour_percentage')?.touched)
-  );
-}
+    return (
+      this.pcForm.errors?.['atLeastOneRequired'] &&
+      (this.pcForm.get('material_cost_percentage')?.touched ||
+        this.pcForm.get('labour_hour_percentage')?.touched)
+    );
+  }
 
-isFieldInvalid(field: string): boolean {
-  const control = this.pcForm.get(field);
+  isFieldInvalid(field: string): boolean {
+    const control = this.pcForm.get(field);
 
-  return (
-    this.pcForm.errors?.['atLeastOneRequired'] &&
-    control?.touched &&
-    !control?.value
-  );
-}
+    return (
+      this.pcForm.errors?.['atLeastOneRequired'] &&
+      control?.touched &&
+      !control?.value
+    );
+  }
 }

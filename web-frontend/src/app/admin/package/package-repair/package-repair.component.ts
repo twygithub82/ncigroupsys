@@ -274,8 +274,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
-    
-   
+
+
   }
 
   @ViewChild('custInput', { static: true })
@@ -959,7 +959,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
-    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row?.length_unit_cv)}`;
+    const alias = `${this.trfRepairDS.displayRepairAlias(row, this.getUnitTypeDescription(row.length_unit_cv))}`;
     return alias;
   }
 
@@ -1221,25 +1221,25 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   export_excel() {
 
-     this.isGeneratingReport=true;
-      // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
-      const where =this.lastSearchCriteria;
-      const order=this.lastOrderBy;
+    this.isGeneratingReport = true;
+    // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
     // const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
-    this.packRepairDS.SearchAllPackageRepair(where,order).subscribe(res=>{
-          var prcList: PackageRepairItem[] = [];
-          res.forEach((item) => {
-            var itm:any = item;
-            const c: PackageRepairItem = {
-              ...itm,
-              part_name:this.getTariffRepairAlias(itm.package_repair.tariff_repair),
-              group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair.tariff_repair.group_name_cv),
-              subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.package_repair.tariff_repair.subgroup_name_cv),
-              handled:this.getHandledItemDescription(itm.count > 0 ? 'HANDLED' : 'NON_HANDLED')
-            };
-            prcList.push(c);
-          });
-          this.exportExcelReport(prcList);
+    this.packRepairDS.SearchAllPackageRepair(where, order).subscribe(res => {
+      var prcList: PackageRepairItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: PackageRepairItem = {
+          ...itm,
+          part_name: this.getTariffRepairAlias(itm.package_repair.tariff_repair),
+          group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair.tariff_repair.group_name_cv),
+          subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.package_repair.tariff_repair.subgroup_name_cv),
+          handled: this.getHandledItemDescription(itm.count > 0 ? 'HANDLED' : 'NON_HANDLED')
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
     })
 
     // if (this.packRepairItems) {

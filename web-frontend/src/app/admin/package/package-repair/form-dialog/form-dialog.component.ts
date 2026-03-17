@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -81,8 +81,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
-  minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
+  minMaterialCost: number = -100;
+  maxMaterialCost: number = 100;
   packRepairDS?: PackageRepairDS;
   packRepairItem?: PackageRepairItem[] = [];
 
@@ -196,6 +196,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
 
   selectedItems: PackageRepairItemWithCount[];
+  atLeastOneRequired = (field1: string, field2: string): ValidatorFn => {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const val1 = control.get(field1)?.value;
+      const val2 = control.get(field2)?.value;
+
+      // If both are empty, return error
+      if ((val1 === null || val1 === '') && (val2 === null || val2 === '')) {
+        return { atLeastOneRequired: true };
+      }
+
+      return null; // valid
+    };
+  };
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -317,13 +330,38 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
+    if (this.pcForm.get('labour_hour')?.hasError('min') || this.pcForm.get('labour_hour')?.hasError('max') ||
+      this.pcForm.get('material_cost')?.hasError('min') || this.pcForm.get('material_cost')?.hasError('max')) {
+      return;
+    }
     if (this.isMultiSelect() &&
       !this.pcForm?.get('labour_hour')?.value && !this.pcForm?.get('material_cost')?.value) {
-      this.pcForm?.get('labour_hour')?.setErrors({ required: true });
-      this.pcForm?.get('material_cost')?.setErrors({ required: true });
+      this.pcForm = this.fb.group({
+        labour_hour: [''],
+        material_cost: ['']
+      }, {
+        validators: this.atLeastOneRequired('labour_hour', 'material_cost')
+      });
+      // this.pcForm?.get('labour_hour')?.setErrors({ required: true });
+      // this.pcForm?.get('material_cost')?.setErrors({ required: true });
     } else if (this.isMultiSelect()) {
       this.pcForm?.get('labour_hour')?.setErrors(null);
       this.pcForm?.get('material_cost')?.setErrors(null);
+    }
+
+    if (this.pcForm?.get('labour_hour')?.value && this.isMultiSelect()) {
+      if (this.pcForm?.get('labour_hour')?.value <= this.minMaterialCost || this.pcForm?.get('labour_hour')?.value > this.maxMaterialCost) {
+        this.pcForm?.get('labour_hour')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+      }
+    }
+
+    if (this.pcForm?.get('material_cost')?.value && this.isMultiSelect()) {
+      if (this.pcForm?.get('material_cost')?.value <= this.minMaterialCost || this.pcForm?.get('material_cost')?.value > this.maxMaterialCost) {
+        this.pcForm?.get('material_cost')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+
+      }
     }
     if (!this.pcForm?.valid) return;
 
@@ -428,13 +466,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return Utility.formatNumberDisplay(value)
   }
 
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+  getColumnClasses_center(baseClasses: string, isCenter: boolean = true, ExtraPadding: boolean = true): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    centerClass += ExtraPadding ? 'extra-left-padding' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  getMinValue() {
+    var retval = 0;
+    if (this.isMultiSelect()) {
+      retval = this.minMaterialCost;
     }
-    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      centerClass += ExtraPadding ? 'extra-left-padding' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    return retval;
+  }
 }

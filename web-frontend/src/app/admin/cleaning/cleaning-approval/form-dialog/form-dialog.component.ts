@@ -609,7 +609,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   ShowStatusView() {
-    var validActions: string[] = ["view"];
+    var validActions: string[] = ["all"];
     return validActions.includes(this.action);
   }
 
@@ -757,5 +757,22 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   getMaxDate() {
     return new Date();
+  }
+
+   getMinDate() {
+    var retval = new  Date(2000,1,1);
+    if(this.action=="no_action" ){
+      if(this.selectedItem)
+      {
+        var minDate = Utility.convertDate(this.selectedItem.storing_order_tank?.in_gate[0]?.eir_dt)||retval;
+       return minDate;
+      }
+      else
+      {
+        return retval;
+      }
+
+    }
+    return retval;
   }
 }
