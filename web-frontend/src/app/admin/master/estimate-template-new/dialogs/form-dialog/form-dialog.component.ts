@@ -534,7 +534,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   canAddAnother(): boolean {
-    return this.buttonContent !== this.data.translatedLangText.EDIT;
+    return this.action.toUpperCase()!== this.data.translatedLangText.EDIT.toUpperCase();
+    // return this.buttonContent !== this.data.translatedLangText.EDIT;
   }
 
   canEdit(): boolean {
@@ -588,6 +589,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (result) {
         console.log(result);
         this.repairPart = result.selected_repair_est_part;
+        this.repairPartForm.get('hour')?.setValue(this.repairPart?.tariff_repair.labour_hour);
         this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
       }
 
