@@ -2492,6 +2492,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.showBackButtonWarning();
     });
   }
+
+  blockDecimal(event: KeyboardEvent) {
+  if (event.key === '.' || event.key === ',' || event.key === 'e') {
+    event.preventDefault();
+  }
+}
+
   private showBackButtonWarning() {
     // Custom implementation - show modal, toast, etc.
     console.warn('Back navigation is disabled');

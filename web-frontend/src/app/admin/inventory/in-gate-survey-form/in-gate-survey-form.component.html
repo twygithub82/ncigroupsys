@@ -1582,7 +1582,7 @@
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                       <input matInput formControlName="airline_valve_pcs" type="number"
-                                        (wheel)="preventDefault($event)" min="0">
+                                        (wheel)="preventDefault($event)" (keydown)="blockDecimal($event)" min="0" step="1">
                                       <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>
                                         {{translatedLangText.PCS}}
                                       </h6>
@@ -1748,7 +1748,7 @@
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                       <input matInput formControlName="manlid_cover_pcs" type="number"
-                                        (wheel)="preventDefault($event)" min="0">
+                                        (wheel)="preventDefault($event)" (keydown)="blockDecimal($event)" min="0" step="1" >
                                       <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>
                                         {{translatedLangText.PCS}}
                                       </h6>
@@ -1818,7 +1818,7 @@
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                       <input matInput formControlName="pv_type_pcs" type="number"
-                                        (wheel)="preventDefault($event)" min="0">
+                                        (wheel)="preventDefault($event)" (keydown)="blockDecimal($event)" min="0" step="1" >
                                       <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>
                                         {{translatedLangText.PCS}}
                                       </h6>

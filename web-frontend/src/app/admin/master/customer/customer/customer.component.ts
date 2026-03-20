@@ -436,7 +436,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       and: [
         {
           customer_company: {
-            type_cv: { neq: "SURVEYOR" },
+            type_cv: { nin: ["SURVEYOR","BRANCH"] },
             delete_dt: { eq: null }
           }
         },
