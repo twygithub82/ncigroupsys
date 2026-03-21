@@ -330,8 +330,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
-    if(this.pcForm.get('labour_hour')?.hasError('min')||this.pcForm.get('labour_hour')?.hasError('max')||
-    this.pcForm.get('material_cost')?.hasError('min')||this.pcForm.get('material_cost')?.hasError('max')){
+    if (this.pcForm.get('labour_hour')?.hasError('min') || this.pcForm.get('labour_hour')?.hasError('max') ||
+      this.pcForm.get('material_cost')?.hasError('min') || this.pcForm.get('material_cost')?.hasError('max')) {
       return;
     }
     if (this.isMultiSelect() &&
@@ -466,6 +466,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return Utility.formatNumberDisplay(value)
   }
 
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+  getColumnClasses_center(baseClasses: string, isCenter: boolean = true, ExtraPadding: boolean = true): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    centerClass += ExtraPadding ? 'extra-left-padding' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
+
   getMinValue() {
     var retval = 0;
     if (this.isMultiSelect()) {
@@ -473,14 +483,4 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     return retval;
   }
-
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-    getColumnClasses_center(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      centerClass += ExtraPadding ? 'extra-left-padding' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
 }
