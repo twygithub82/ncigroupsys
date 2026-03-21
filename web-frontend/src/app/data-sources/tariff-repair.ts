@@ -94,9 +94,9 @@ export class TariffRepairSubGroup {
   subgroup_name_desc?: string;
   items: TariffRepairItem[];
 
-  constructor(subgroupName: string, subgroup_name_desc:string, items: TariffRepairItem[]) {
+  constructor(subgroupName: string, subgroup_name_desc: string, items: TariffRepairItem[]) {
     this.subgroup_name_cv = subgroupName;
-    this.subgroup_name_desc=subgroup_name_desc;
+    this.subgroup_name_desc = subgroup_name_desc;
     this.items = items;
   }
 }
@@ -106,9 +106,9 @@ export class TariffRepairGroup {
   group_name_desc?: string;
   subgroups: TariffRepairSubGroup[];
 
-  constructor(groupName: string,group_name_desc:string, subgroups: TariffRepairSubGroup[]) {
+  constructor(groupName: string, group_name_desc: string, subgroups: TariffRepairSubGroup[]) {
     this.group_name_cv = groupName;
-    this.group_name_desc=group_name_desc;
+    this.group_name_desc = group_name_desc;
     this.subgroups = subgroups;
   }
 }
@@ -366,15 +366,15 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDistinctPartNameOnly( part_name?: string): Observable<string[]> {
+  searchDistinctPartNameOnly(part_name?: string): Observable<string[]> {
     this.loadingSubject.next(true);
-    var groupName=null; 
-    var subgroupName= null;
+    var groupName = null;
+    var subgroupName = null;
     var isPartNameOnly = true;
     return this.apollo
       .query<any>({
         query: GET_DISTINCT_PART_NAME_ONLY,
-        variables: { groupName, subgroupName, part_name,isPartNameOnly },
+        variables: { groupName, subgroupName, part_name, isPartNameOnly },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -595,50 +595,50 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
   }
 
   SearchAllTariffRepairs(where?: any, order?: any): Observable<TariffRepairItem[]> {
-  const pageSize = 100; // adjust based on your backend’s max allowed page size
-  let allResults: TariffRepairItem[] = [];
-  let hasNextPage = true;
-  let afterCursor: string | null = null;
+    const pageSize = 100; // adjust based on your backend’s max allowed page size
+    let allResults: TariffRepairItem[] = [];
+    let hasNextPage = true;
+    let afterCursor: string | null = null;
 
-  return new Observable<TariffRepairItem[]>((observer) => {
-    const fetchPage = () => {
-      this.apollo
-        .query<any>({
-          query: GET_TARIFF_REPAIR_QUERY_WITH_COUNT,
-          variables: {
-            where,
-            order,
-            first: pageSize,
-            after: afterCursor,
-          },
-          fetchPolicy: 'no-cache',
-        })
-        .pipe(
-          map((result) => result.data?.tariffRepairResult || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            observer.error(error);
-            return of({ nodes: [], pageInfo: { hasNextPage: false } });
+    return new Observable<TariffRepairItem[]>((observer) => {
+      const fetchPage = () => {
+        this.apollo
+          .query<any>({
+            query: GET_TARIFF_REPAIR_QUERY_WITH_COUNT,
+            variables: {
+              where,
+              order,
+              first: pageSize,
+              after: afterCursor,
+            },
+            fetchPolicy: 'no-cache',
           })
-        )
-        .subscribe((tariffRepairResult) => {
-          allResults = [...allResults, ...tariffRepairResult.nodes];
-          this.totalCount = tariffRepairResult.totalCount;
-          this.pageInfo = tariffRepairResult.pageInfo;
+          .pipe(
+            map((result) => result.data?.tariffRepairResult || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
+            catchError((error: ApolloError) => {
+              console.error('GraphQL Error:', error);
+              observer.error(error);
+              return of({ nodes: [], pageInfo: { hasNextPage: false } });
+            })
+          )
+          .subscribe((tariffRepairResult) => {
+            allResults = [...allResults, ...tariffRepairResult.nodes];
+            this.totalCount = tariffRepairResult.totalCount;
+            this.pageInfo = tariffRepairResult.pageInfo;
 
-          hasNextPage = tariffRepairResult.pageInfo?.hasNextPage;
-          afterCursor = tariffRepairResult.pageInfo?.endCursor;
+            hasNextPage = tariffRepairResult.pageInfo?.hasNextPage;
+            afterCursor = tariffRepairResult.pageInfo?.endCursor;
 
-          if (hasNextPage && afterCursor) {
-            fetchPage(); // fetch next page
-          } else {
-            observer.next(allResults);
-            observer.complete();
-          }
-        });
-    };
+            if (hasNextPage && afterCursor) {
+              fetchPage(); // fetch next page
+            } else {
+              observer.next(allResults);
+              observer.complete();
+            }
+          });
+      };
 
-    fetchPage();
-  });
- }
+      fetchPage();
+    });
+  }
 }

@@ -63,6 +63,7 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { EmailApiService } from '@core/service/email-api.service';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -99,7 +100,8 @@ import { EmailApiService } from '@core/service/email-api.service';
     PreventNonNumericDirective,
     MatButtonToggleModule,
     ExclusiveToggleDirective,
-    GlobalMaxCharDirective
+    GlobalMaxCharDirective,
+    NumericTextDirective
   ],
   providers: [
     {
@@ -152,7 +154,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     NEXT_TEST: "COMMON-FORM.NEXT-TEST",
     TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS",
+    CLASS: "COMMON-FORM.CLASS-BODIES",
     OUT_GATE_DETAILS: "COMMON-FORM.OUT-GATE-DETAILS",
     OUT_GATE_REMARKS: "COMMON-FORM.OUT-GATE-REMARKS",
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -670,7 +672,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       this.detectChanges();
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-      this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.testTypeCvList = data;
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();

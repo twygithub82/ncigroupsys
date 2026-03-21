@@ -86,7 +86,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   index?: number;
   dialogTitle?: string;
 
-  minMaterialCost: number = -20;
+  minMaterialCost: number = -100;
   warningMaterialCost: number = 20;
   maxMaterialCost: number = 100;
 
@@ -237,7 +237,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     EXCEED: "COMMON-FORM.EXCEEDED",
     ONE_CONDITION: "COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
     NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE",
-    MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER'
+    MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER',
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
   };
   unit_type_control = new UntypedFormControl();
   selectedItems: TariffRepairItem[];
@@ -284,7 +285,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   GetTitle() {
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
+    return this.translatedLangText.GROUP_ADJUSTMENT;
+    // return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
   }
 
   translateLangText() {

@@ -219,7 +219,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
-    if (this.action === "edit") this.patchTariffSteam(data.selectedItem);
+    if (this.isEdit()) this.patchTariffSteam(data.selectedItem);
 
     if (!this.canEdit()) {
       this.pcForm.get('min_temp')?.disable();
@@ -299,6 +299,30 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
+     this.pcForm?.get('cost')?.setErrors(null);
+      this.pcForm?.get('labour')?.setErrors(null);
+
+     if(this.pcForm?.get('cost')?.value ) {
+      
+    
+      if (this.pcForm?.get('cost')?.value <= 0) {
+        this.pcForm?.get('cost')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+        return;
+      }
+    }
+
+     if(this.pcForm?.get('labour')?.value ) {
+      
+    
+      if (this.pcForm?.get('labour')?.value <=0) {
+        this.pcForm?.get('labour')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+        return;
+      }
+    }
+
+
     if (!this.pcForm?.valid) return;
 
     let where: any = { or: [] };
@@ -332,6 +356,28 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   update() {
+     this.pcForm?.get('cost')?.setErrors(null);
+      this.pcForm?.get('labour')?.setErrors(null);
+
+     if(this.pcForm?.get('cost')?.value ) {
+      
+    
+      if (this.pcForm?.get('cost')?.value <= 0) {
+        this.pcForm?.get('cost')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+        return;
+      }
+    }
+
+     if(this.pcForm?.get('labour')?.value ) {
+      
+    
+      if (this.pcForm?.get('labour')?.value <=0) {
+        this.pcForm?.get('labour')?.setErrors({ invalid: true });
+        this.markFormGroupTouched(this.pcForm);
+        return;
+      }
+    }
     if (!this.pcForm?.valid) return;
 
     let where: any = { or: [] };
@@ -427,5 +473,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
       const centerClass = Padding ? 'px-3' : '';
       return `${baseClasses} ${centerClass}`.trim();
+    }
+
+    isEdit()
+    {
+      return this.action === 'edit';
     }
 }

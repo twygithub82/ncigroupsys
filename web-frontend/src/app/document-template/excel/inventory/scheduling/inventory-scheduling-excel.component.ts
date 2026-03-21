@@ -408,7 +408,7 @@ const data: any[][] = items.flatMap((item) => {
           this.displayDate(s?.scheduling_dt) || "-",
           s?.scheduling?.book_type_cv || "-",
           s?.reference || "-",
-          s?.status_cv || "-"
+          // s?.status_cv || "-"
         ];
       });
     });
@@ -426,7 +426,7 @@ const data: any[][] = items.flatMap((item) => {
       this.translatedLangText.BOOKING_DATE,
       this.translatedLangText.BOOKING_TYPE,
       this.translatedLangText.REFERENCE,
-      this.translatedLangText.STATUS
+      // this.translatedLangText.STATUS
     ]];
 
      const reportTitle: (string | number)[][] = [

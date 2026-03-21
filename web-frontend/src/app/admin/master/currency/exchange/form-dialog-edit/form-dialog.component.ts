@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -182,6 +182,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     RATE:'COMMON-FORM.RATE',
     SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
     SAVE:'COMMON-FORM.SAVE',
+    VALUE_ZERO:'COMMON-FORM.VALUE-ZERO',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -240,7 +241,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
       action: this.action,
       code: this.selectedItem?.currency_code??[''],
       description: this.selectedItem?.currency_name??[''],
-      rate: this.selectedItem?.rate??[''],
+      rate: [this.selectedItem?.rate??[''], [Validators.required, positiveNumberValidator()]],
      last_updated: ['']
     });
   }
@@ -415,4 +416,26 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   this.pcForm.get('code')?.setValue(input.value, { emitEvent: false });
 }
     
+
+}
+
+export function positiveNumberValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    
+    // Check if value is empty (let required validator handle that)
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    
+    // Parse the value as a number
+    const numValue = parseFloat(value);
+    
+    // Check if it's a valid number and greater than 0
+    if (isNaN(numValue) || numValue <= 0) {
+      return { 'positiveNumber': true };
+    }
+    
+    return null;
+  };
 }

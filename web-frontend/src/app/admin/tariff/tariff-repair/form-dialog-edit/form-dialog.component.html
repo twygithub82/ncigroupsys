@@ -202,14 +202,14 @@
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetLabourCostLabel()}}</mat-label>
-            <input matInput formControlName="labour_hour" type="text" [min]="isMultiSelect() ? -20 : 0" [allowNegative]="isMultiSelect()"
+            <input matInput formControlName="labour_hour" type="text" [min]=" getMinValue() " [allowNegative]="isMultiSelect()"
               appNumericText (focus)="selectAll($event)">
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetMaterialCostLabel()}}</mat-label>
-            <input matInput formControlName="material_cost" type="text" [min]="isMultiSelect() ? -20 : 0" [allowNegative]="isMultiSelect()"
+            <input matInput formControlName="material_cost" type="text" [min]="getMinValue()" [allowNegative]="isMultiSelect()"
               appNumericText (focus)="selectAll($event)">
           </mat-form-field>
         </div>

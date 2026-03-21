@@ -7,29 +7,32 @@
           </mat-panel-title>
           <mat-panel-description>
             <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
+              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
+                [disabled]="isGeneratingReport">
                 <mat-icon>search</mat-icon>
               </button>
             </div>
             <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
+                [disabled]="isGeneratingReport">
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
             @if (isAllowAdd()) {
             <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-              <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']" [disabled]="isGeneratingReport">
+              <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']"
+                [disabled]="isGeneratingReport">
                 <mat-icon>add</mat-icon>
               </button>
             </div>
 
             }
-             <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" >
-                      <button mat-mini-fab [class.orange-button]=true (click)="export_report()" [disabled]="isGeneratingReport"
-                        (click)="$event.stopPropagation()" >
-                        <mat-icon>insert_drive_file</mat-icon>
-                      </button>
-                    </div>
+            <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+              <button mat-mini-fab [class.orange-button]=true (click)="export_report()" [disabled]="isGeneratingReport"
+                (click)="$event.stopPropagation()">
+                <mat-icon>insert_drive_file</mat-icon>
+              </button>
+            </div>
             <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                   (click)="$event.stopPropagation()">
@@ -38,17 +41,12 @@
               </div> -->
             @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
 
-              <button mat-mini-fab
-                    class="light-green-button m-l-10"
-                    (click)="export_excel()"
-                    (click)="$event.stopPropagation()"
-                    [disabled]="isGeneratingReport"
-                    matTooltip="{{ translatedLangText.EXPORT }}">
-              <img src="assets/images/icons/xlsx1_64x64.png"
-                  alt="{{ translatedLangText.EXPORT }}"
-                  class="fab-icon">
+            <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()"
+              (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
+              matTooltip="{{ translatedLangText.EXPORT }}">
+              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
             </button>
-             <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+            <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                   <img src="assets/images/icons/xlsx1_64x64.png" alt="" (click)="export_report(2)"
                     (click)="$event.stopPropagation()" />
                 </div>  -->
@@ -111,7 +109,7 @@
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_UN_NO }}</mat-label>
-              <input matInput formControlName="un_no" (input)="onNumericOnly($event, 'un_no')">
+              <input matInput formControlName="un_no" (input)="onNumericOnly($event, 'un_no')" maxlength="4">
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
@@ -202,13 +200,25 @@
         <ng-container matColumnDef="cargo">
           <mat-header-cell *matHeaderCellDef mat-sort-header="cargo" disableClear
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.NAME}}
+          </mat-header-cell>
+          <mat-cell mat-cell
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm text-ellipsis'"
+            *matCellDef="let row"  [matTooltip]="row.tariff_cleaning?.cargo ?? '-'"   matTooltipPosition="above">
+            <span class="mobile-label">{{translatedLangText.NAME}}:</span>
+            <span class="cell-content">{{row.tariff_cleaning?.cargo ?? '-'}}</span>
+          </mat-cell>
+        </ng-container>
+        <!-- <ng-container matColumnDef="cargo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header="cargo" disableClear
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.NAME}}</mat-header-cell>
           <mat-cell mat-cell
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
             *matCellDef="let row">
             <span class="mobile-label">{{translatedLangText.NAME}}:</span>{{row.tariff_cleaning?.cargo}}
           </mat-cell>
-        </ng-container>
+        </ng-container> -->
         <ng-container matColumnDef="desc">
           <mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -274,7 +284,8 @@
         <ng-container matColumnDef="flash_point">
           <!-- <mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"> -->
-             <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  justify-content-center'">
+          <mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  justify-content-center'">
             {{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
             [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm', !isMobile)"

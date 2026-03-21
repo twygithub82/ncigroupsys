@@ -28,6 +28,7 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 import * as domtoimage from 'dom-to-image-more';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 export interface DialogData {
   type: string;
   gate_survey_guid: string;
@@ -208,12 +209,15 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     TYPE: 'COMMON-FORM.TYPE',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
     RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    GATE_OUT_DATE:'COMMON-FORM.GATE-OUT-DATE',
+    GATE_IN_DATE:'COMMON-FORM.GATE-IN-DATE',
   }
   @Output() publishedEir = new EventEmitter<any>();
   type?: string | null;
   igsDS: InGateSurveyDS;
   ogsDS: OutGateSurveyDS;
   sotDS?: StoringOrderTankDS;
+  roSotDS?: ReleaseOrderSotDS;
   // igDS: InGateDS;
   cvDS: CodeValuesDS;
   gate_survey_guid?: string | null;
@@ -296,7 +300,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   toDownload = true;
   toUpload = false;
-
+  tankTakeInDateLabel?: string;
   constructor(
     public dialogRef: MatDialogRef<EirFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -314,6 +318,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
     this.sotDS = data.sotDS || new StoringOrderTankDS(this.apollo);
     this.cvDS = data.cvDS || new CodeValuesDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
     this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
     this.eirPdf = data.eirPdf;
@@ -338,7 +343,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   async ngOnInit() {
     this.eirTitle = this.type === "in" ? this.translatedLangText.IN_GATE : this.translatedLangText.OUT_GATE;
-
+    this.tankTakeInDateLabel=this.isInGate() ? this.translatedLangText.GATE_IN_DATE : this.translatedLangText.GATE_OUT_DATE;
     // Await the data fetching
     const data = this.isInGate() ? await this.getInGateSurveyData() : await this.getOutGateSurveyData();
     if (data?.length > 0) {
@@ -356,17 +361,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
       this.cdr.detectChanges();
       this.StartGeneratingPDF();
-      //  this.updateCellValues();
-
-
-      // if (!this.eirPdf?.length) {
-      //   await this.generatePDF();
-      // }
-      //  else {
-      //   const eirBlob = await Utility.urlToBlob(this.eirPdf?.[0]?.url);
-      //   const pdfUrl = URL.createObjectURL(eirBlob);
-      //   this.eirPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-      // }
+     
     }
   }
 
@@ -428,84 +423,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     var body = await domtoimage.toJpeg(element, options);
     console.log(body);
-    // const element = document.getElementById("capture");
-
-    // html2canvas(element,{ allowTaint: true,
-    //               useCORS: true})
-    // .then((canvas: HTMLCanvasElement) => {
-    //   console.log("Canvas created!");
-    //   document.body.appendChild(canvas); // Optional: display it
-    // })
-    // .catch((err: any) => {
-    //   console.error("Canvas conversion failed:", err);
-    // });
-    //    const canvas = await html2canvas(element, {
-    //   foreignObjectRendering: true
-    // });
-
-    // const clippedImgData = canvas.toDataURL('image/png');
-
-    // html2canvas(this.captureElement.nativeElement).then((canvas) => {
-    //   const clippedImgData = canvas.toDataURL('image/png');
-    // });
-
-    // const element = document.getElementById('eir-form-template');
-    // if (!element) {
-    //   console.error('Template element not found');
-    //   return;
-    // }
-
-    // html2canvas(element).then((canvas) => {
-    //   const pdf = new jsPDF('p', 'mm', 'a4');
-    //   const pageWidth = 190; // A4 page width minus margins
-    //   const pageHeight = pdf.internal.pageSize.height; // A4 page height
-    //   const margin = 10; // Top and bottom margins
-    //   const usableHeight = pageHeight - margin * 2; // Content area height
-    //   const imgHeight = (canvas.height * pageWidth) / canvas.width;
-
-    //   let yOffset = 0; // Track vertical offset for each page
-
-    //   while (yOffset < imgHeight) {
-    //     if (yOffset > 0) pdf.addPage(); // Add a new page if not the first
-
-    //     // Add Header
-    //     this.addHeader(pdf, pageWidth, margin);
-
-    //     // Calculate the portion of the canvas to clip
-    //     const clipStartY = yOffset * canvas.height / imgHeight; // Map PDF offset to canvas pixels
-    //     const clipHeight = Math.min(usableHeight * canvas.height / imgHeight, canvas.height - clipStartY);
-
-    //     // Create a temporary canvas to extract the clipped portion
-    //     const tempCanvas = document.createElement('canvas');
-    //     tempCanvas.width = canvas.width;
-    //     tempCanvas.height = clipHeight;
-    //     const tempContext = tempCanvas.getContext('2d');
-    //     if (tempContext) {
-    //       tempContext.drawImage(canvas, 0, -clipStartY, canvas.width, canvas.height);
-    //     }
-
-    //     const clippedImgData = tempCanvas.toDataURL('image/png');
-
-    //     // Add the clipped image to the PDF without stretching
-    //     const renderedHeight = clipHeight * pageWidth / canvas.width;
-    //     pdf.addImage(clippedImgData, 'PNG', 10, margin, pageWidth, renderedHeight);
-
-    //     // Add Footer
-    //     this.addFooter(pdf, pageWidth, pageHeight, margin);
-
-    //     yOffset += usableHeight; // Move to the next page chunk
-    //   }
-
-    //   const pdfBlob = pdf.output('blob');
-    //   const pdfURL = URL.createObjectURL(pdfBlob);
-
-    //   // Open PDF in a MatDialog
-    //   this.dialog.open(PdfDialogComponent, {
-    //     width: '80%',
-    //     height: '90%',
-    //     data: { pdfUrl: pdfURL },
-    //   });
-    // });
+   
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
@@ -583,19 +501,20 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
+    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.tankTakeInDateLabel}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
 
     var data = [
       [
-        { content: `${this.getNoLabel()}: ${this.getGate()?.tank?.storing_order?.so_no}` },
-        { content: `${this.getDateLabel()}: ${this.displayDate(this.getGate()?.tank?.storing_order?.create_dt)}` },
+        { content: `${this.getNoLabel()}: ${this.getOrderNo()}` },
+        { content: `${this.getDateLabel()}: ${this.displayDate(this.getOrderDate())}` },
         { content: `${this.translatedLangText.LAST_CARGO}: ${(this.getGate()?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
       ],
       [`${this.translatedLangText.TANK_NO}: ${this.getGate()?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.getGate()?.eir_no}`,
-      `${this.getJobReferenceLabel()}: ${this.getGate()?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
+      `${this.getJobReferenceLabel()}: ${this.getJobNo()}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
       [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
       `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
@@ -646,12 +565,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
-    
+
     const chartContentWidth = contentWidth;
 
     const element = this.captureInfoElementRef.nativeElement as HTMLElement
 
-    
+
 
     const perf = window.performance;
     const startTotal = perf.now();
@@ -2104,6 +2023,14 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   getJobNo() {
     return this.isInGate() ? this.getGate()?.tank?.job_no : this.getGate()?.tank?.release_job_no;
+  }
+
+  getOrderDate() {
+    return this.isInGate() ? this.getGate()?.tank?.storing_order?.create_dt : this.roSotDS?.getReleaseOrderSotItem(this.getGate()?.tank?.release_order_sot)?.release_order?.create_dt;
+  }
+
+  getOrderNo() {
+    return this.isInGate() ? this.getGate()?.tank?.storing_order?.so_no : this.roSotDS?.getReleaseOrderSotItem(this.getGate()?.tank?.release_order_sot)?.release_order?.ro_no;
   }
 
   copyComputedStyles(
