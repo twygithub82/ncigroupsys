@@ -241,6 +241,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
   defDiscThd: number = defaultDiscountThreshold;
+  isBillingBranchEmpty: boolean = true;
 
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -427,7 +428,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           remarks: this.selectedCustomerCmp?.remarks,
           approval_threshold: this.selectedCustomerCmp?.approval_threshold
         });
-
+       
         var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
           ...row,
           action: ''
@@ -1298,6 +1299,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
             billing_branches: this.getBillingBranches(selGuid),
           });
           this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
+           this.isBillingBranchEmpty=(this.currentBillingBranch ?false:true);
         }
       }
     });
@@ -1336,7 +1338,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   canEditBillingBranch() {
     this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
-    const result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
+    var result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
+    if(!result)
+    {
+      result = this.isBillingBranchEmpty; // allow reselect if the billing branch is empty by default
+    }
+
     return result;
   }
 
