@@ -11,6 +11,13 @@ namespace IDMS.UserAuthentication.Models.Authentication.Login
         public string? Password { get; set; }
     }
 
+    public class StaffModel
+    {
+        [Required(ErrorMessage = "User Name is required")]
+        public string Username { get; set; }
+        public bool Enabled { get; set; }
+    }
+
     public class UserClaimModel
     {
         [Required(ErrorMessage = "UserId is required")]
