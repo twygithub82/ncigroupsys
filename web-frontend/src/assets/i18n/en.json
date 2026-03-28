@@ -1002,6 +1002,8 @@
     "CLEANING-PERIOD": "Cleaning Period",
     "GATE-SURCHARGE-COST": "Gate Surcharge $",
     "IN-OUT-SURCHARGE-COST": "In/Out Surcharge $",
+    "IN-SURCHARGE-COST": "In Surcharge $",
+    "OUT-SURCHARGE-COST": "Out Surcharge $",
     "FREE-DAYS": "Free Days",
     "MIN-DAYS": "Min. Days",
     "MAX-DAYS": "Max. Days",
