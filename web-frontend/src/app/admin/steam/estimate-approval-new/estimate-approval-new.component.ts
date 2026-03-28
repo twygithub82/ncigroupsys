@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -95,7 +95,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     NumericTextDirective
   ]
 })
-export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit , AfterViewInit  {
   displayedColumns = [
     'seq',
     'desc',
@@ -349,6 +349,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.steamDS = new SteamDS(this.apollo);
     this.packRepDS = new PackageRepairDS(this.apollo);
   }
+  ngAfterViewInit(): void {
+    this.isDirty = false;
+  }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -364,6 +367,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.initializeValueChanges();
     this.loadData();
   }
+
+ 
+
 
   private updateView(width: number): void {
     this.isMobile = width < 1024;
@@ -451,6 +457,22 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       })
     ).subscribe();
+
+     // Detect job_no change
+  this.steamEstForm?.get('job_no')?.valueChanges.subscribe(value => {
+    this.isDirty = true;
+    
+  });
+
+  this.steamEstForm?.get('bill_to')?.valueChanges.subscribe(value => {
+    this.isDirty = true;
+    
+  });
+
+  // Detect remarks change
+  this.steamEstForm?.get('remarks')?.valueChanges.subscribe(value => {
+    this.isDirty = true;
+  });
   }
 
   public loadData() {
@@ -1356,6 +1378,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         if (this.steamItem && !this.steamDS.canApprove(this.steamItem)) {
           bill_to?.disable();
         }
+        this.isDirty = false;
       }
     });
     this.patchSteamEstForm(this.steamItem!);
@@ -1937,6 +1960,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   onFlatRateChanged(newValue: boolean) {
+     this.isDirty = (newValue)?true:this.isDirty;
     var cost = this.getRate();
     var totalCost = this.parse2Decimal(cost);
     if (!this.flat_rate) {
