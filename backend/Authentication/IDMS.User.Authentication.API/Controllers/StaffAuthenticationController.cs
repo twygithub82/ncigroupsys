@@ -8,18 +8,24 @@ using IDMS.UserAuthentication.Models;
 using IDMS.UserAuthentication.Models.Authentication.Login;
 using IDMS.UserAuthentication.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using System.Text;
 using static IDMS.User.Authentication.API.Models.StaticConstant;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using static QRCoder.PayloadGenerator;
 
 namespace IDMS.User.Authentication.API.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "RequireFullSession")]
     [Route("api/[controller]")]
     //[ApiVersion("1.0")]
     //[Route("api/v{version:apiVersion}/[controller]")]
@@ -133,6 +139,192 @@ namespace IDMS.User.Authentication.API.Controllers
                 _logger.LogError($"GetUserClaims Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
+        }
+
+
+        [HttpPost("ResetStaffKey")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetStaffAuthenticatorKey([FromBody] LoginStaffModel model)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to reset staff key" } });
+                }
+
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user == null) return BadRequest("User not found");
+
+                // Disable 2FA
+                // await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+                // Remove key
+                await _userManager.RemoveAuthenticationTokenAsync(
+                    user,
+                    "[AspNetUserStore]",
+                    "AuthenticatorKey"
+                );
+
+                return Ok("Authenticator key removed successfully.");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"ResetStaffAuthenticatorKey Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }   
+        }
+
+        [HttpPost("UpdateStaff2FA")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateStaff2FA([FromBody] StaffModel model)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to update staff status" } });
+                }
+
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user == null) return BadRequest("User not found");
+
+                // Disable 2FA
+                await _userManager.SetTwoFactorEnabledAsync(user, model.Enabled);
+
+                return Ok("Staff status updated");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"UpdateStaff2FA Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+        }
+
+        [HttpPost("GetStaffRecoveryCode")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetStaffRecoveryCode([FromBody] LoginStaffModel model)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to get staff recovery code" } });
+                }
+
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user == null) return BadRequest("User not found");
+                var codes = await GenerateRecoveryCodes(user);
+
+                return Ok(new { codes = codes });
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"GetRecoveryCode Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+        }
+
+
+        //[HttpGet("setup-mfa")]
+        //public async Task<IActionResult> GetMfaSetup()
+        //{
+        //    var staff = await _userManager.GetUserAsync(User);
+        //    if (staff == null) return Unauthorized();
+
+        //    // 1. Ensure an Authenticator Key exists for this user
+        //    var userSecrect = await _userManager.GetAuthenticatorKeyAsync(staff);
+        //    if (string.IsNullOrEmpty(userSecrect))
+        //    {
+        //        await _userManager.ResetAuthenticatorKeyAsync(staff);
+        //        userSecrect = await _userManager.GetAuthenticatorKeyAsync(staff);
+        //    }
+
+        //    // 2. Format the Authenticator URI (Standard OTPAuth format)
+        //    string qrCodeImage = GenerateMfaRegistration(userSecrect, staff.Id);
+        //    var mfaTokenReg = GenerateMfaChallengeToken(staff, userSecrect);
+
+        //    return Ok(new
+        //    {
+        //        nextAction = "1",
+        //        userKey = userSecrect, // Optional: User can type this manually
+        //        qrImage = qrCodeImage,
+        //        mfaToken = mfaTokenReg
+        //    });
+        //}
+
+        [Authorize(Policy = "RequireMfaToken")]
+        [HttpPost("VerifyStaff2FA")]
+        public async Task<IActionResult> VerifyStaff2FA([FromBody] MfaDTO model)
+        {
+            // 1. Extract the "MfaToken" from the Authorization header
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var type = User.FindFirstValue("type");
+
+            if (type != "mfa_challenge")
+                return Unauthorized("Invalid token type.");
+
+            // 2. Fetch the user from the DB
+            var staff = await _userManager.FindByIdAsync(userId);
+            if (staff == null) return Unauthorized();
+
+
+            if (model.IsRecoveryCode)
+            {
+                var signInResult = await _userManager.RedeemTwoFactorRecoveryCodeAsync(staff, model.Code);
+
+                if (signInResult.Succeeded)
+                {
+                    // 4. Verification successful! Issue the REAL JWT
+                    var authResult = await GenerateFullAccessTokenAsync(staff);
+                    return Ok(new
+                    {
+                        token = authResult.Token,
+                        expiration = authResult.Expiration,
+                        refreshToken = authResult.RefreshToken
+                    });
+                }
+                else
+                {
+                    _logger.Log(LogLevel.Information, "Invalid code");
+                    return BadRequest("Invalid code");
+                }
+            }
+            else
+            {
+                // 3. Verify the 6-digit code against the TOTP provider
+                var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                    staff,
+                    TokenOptions.DefaultAuthenticatorProvider,
+                    model.Code);
+
+                if (!isValid)
+                {
+                    return BadRequest("Invalid or expired otp.");
+                }
+
+                // 4. Verification successful! Issue the REAL JWT
+                var authResult = await GenerateFullAccessTokenAsync(staff);
+                return Ok(new
+                {
+                    token = authResult.Token,
+                    expiration = authResult.Expiration,
+                    refreshToken = authResult.RefreshToken
+                });
+            }
 
         }
 
@@ -154,30 +346,80 @@ namespace IDMS.User.Authentication.API.Controllers
                 if (string.IsNullOrEmpty(staff.Id))
                     staff = await _userManager.FindByNameAsync(staffModel.Username);
 
-                //Continue to get actual user claims
-                var staffRoles = await _userManager.GetRolesAsync(staff);
-                staff.CurrentSessionId = Guid.NewGuid();
-                //generate the token with the claims
-                //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
+                if (await _userManager.GetTwoFactorEnabledAsync(staff))
+                {
+                    // Create a short-lived "MFA Challenge" token 
+                    // (Standard JWT with a custom claim like "amr": "mfa_required")
 
-                bool tokenNeverExpired = false;
-                if (staff.CorporateID == 5)
-                    tokenNeverExpired = true;
+                    //await _userManager.SetAuthenticationTokenAsync(staff, "Authenticator", "AuthenticatorKey", "SE5XXIBWH7VXR2J4QUJ2UZPXNOZJCZBN");
 
-                UserType curUserType = UserType.Staff;
-                if (!staff.isStaff)
-                    curUserType = UserType.User;
+                    // 1. Ensure an Authenticator Key exists for this user
+                    var userSecrect = await _userManager.GetAuthenticatorKeyAsync(staff);
+
+                    //string userSecrect = await _userManager.GetAuthenticationTokenAsync(staff, "Authenticator", "AuthenticatorKey") ?? "";
+
+                    if (string.IsNullOrEmpty(userSecrect))
+                    {
+                        // Remove old invalid token row if exists
+                        //await _userManager.RemoveAuthenticationTokenAsync(staff, "[AspNetUserStore]", "AuthenticatorKey");
+
+                        await _userManager.ResetAuthenticatorKeyAsync(staff);
+                        userSecrect = await _userManager.GetAuthenticatorKeyAsync(staff);
+                        //userSecrect = _userManager.GenerateNewAuthenticatorKey();
+
+                        //var userSecrect231 = await _userManager.GetAuthenticatorKeyAsync(staff);
+
+                        // 3. Generate the QR Code as a Base64 string
+                        string qrCodeImage = GenerateMfaRegistration(userSecrect, staff.Id);
+                        var mfaTokenReg = GenerateMfaChallengeToken(staff, userSecrect);
+
+                        return Ok(new
+                        {
+                            nextAction = "1",
+                            userKey = userSecrect, // Optional: User can type this manually
+                            qrImage = qrCodeImage,
+                            mfaToken = mfaTokenReg
+                        });
+                    }
+
+                    var mfaToken = GenerateMfaChallengeToken(staff, userSecrect);
+                    return Ok(new { nextAction = "2", mfaToken = mfaToken });
+                }
 
 
-                var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}", tokenNeverExpired); //Utilities.utils.GetToken(_configuration,authClaims);
-                var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+                var authResult = await GenerateFullAccessTokenAsync(staff);
+                return Ok(new
+                {
+                    nextAction = "0",
+                    token = authResult.Token,
+                    expiration = authResult.Expiration,
+                    refreshToken = authResult.RefreshToken
+                });
 
-                _refreshTokenStore.AddToken(refreshToken);
-                await _userManager.UpdateAsync(staff);
+                ////Continue to get actual user claims
+                //var staffRoles = await _userManager.GetRolesAsync(staff);
+                //staff.CurrentSessionId = Guid.NewGuid();
+                ////generate the token with the claims
+                ////var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
 
-                //await _dbContext.SaveChangesAsync();
-                //returning the token
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
+                //bool tokenNeverExpired = false;
+                //if (staff.CorporateID == 5)
+                //    tokenNeverExpired = true;
+
+                //UserType curUserType = UserType.Staff;
+                //if (!staff.isStaff)
+                //    curUserType = UserType.User;
+
+
+                //var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}", tokenNeverExpired); //Utilities.utils.GetToken(_configuration,authClaims);
+                //var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+
+                //_refreshTokenStore.AddToken(refreshToken);
+                //await _userManager.UpdateAsync(staff);
+
+                ////await _dbContext.SaveChangesAsync();
+                ////returning the token
+                //return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
 
             }
             catch (SecurityTokenException se)
@@ -192,6 +434,9 @@ namespace IDMS.User.Authentication.API.Controllers
             }
         }
 
+        //This is for actual production , which will check user license during login and only allow user with valid license to login.
+        //The above login method is for testing without license check,
+        //which will be used in early stage of development before license server is ready and also for future use if we want to separate license check from login process.
         //[HttpPost("StaffLogin")]
         //[AllowAnonymous]
         //public async Task<IActionResult> StaffSignIn1([FromBody] LoginStaffModel staffModel)
@@ -320,7 +565,7 @@ namespace IDMS.User.Authentication.API.Controllers
         //    }
         //}
 
-
+        [AllowAnonymous]
         [HttpPost("CreateStaffCredential")]
         public async Task<IActionResult> CreateStaffCredential([FromBody] RegisterStaff registerStaff)
         {
@@ -336,7 +581,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 var staffExist = await _userManager.FindByIdAsync(registerStaff.Username!);
                 if (staffExist != null)
-                    return StatusCode(StatusCodes.Status302Found, new Response() { Status = "Error", Message = new string[] { "The email had been registered previously" } });
+                    return StatusCode(StatusCodes.Status302Found, new Response() { Status = "Error", Message = new string[] { "The user had been registered previously" } });
 
                 ApplicationUser staff = new()
                 {
@@ -682,6 +927,141 @@ namespace IDMS.User.Authentication.API.Controllers
             }
         }
 
+        //[AllowAnonymous]
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (model.NewPassword != model.ConfirmPassword)
+            {
+                return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
+            }
+
+            var username = User.FindFirstValue("name");
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound(new { Errors = new[] { "User not found." } });
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok(new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
+            }
+
+            return BadRequest(new Response() { Status = "Error", Message = result.Errors.Select(e => e.Description) });
+        }
+
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
+        {
+
+            try
+            {
+                var kioskRoles = _configuration.GetSection("Kiosk:Role").Get<List<string>>();
+                // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
+                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
+                var sessionId = User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
+                var role = User.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
+                var refreshTokenKey = _refreshTokenStore.GetToken(userName);
+                var user = await _userManager.FindByNameAsync(userName);
+                if (!kioskRoles.Contains(role))
+                {
+                    // if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    if (userName == null || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    {
+                        return Unauthorized();
+                    }
+                }
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
+                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+                _refreshTokenStore.AddToken(refreshToken);
+                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                    expiration = newJwtToken.ValidTo,
+                    refreshToken = newRefreshToken
+                });
+
+            }
+            catch (Exception ex)
+            {
+                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
+                var user = await _userManager.FindByNameAsync(userName);
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
+                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+                _refreshTokenStore.AddToken(refreshToken);
+                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                    expiration = newJwtToken.ValidTo,
+                    refreshToken = newRefreshToken
+                });
+
+            }
+
+
+        }
+
+
+        private async Task<AuthResult> GenerateFullAccessTokenAsync(ApplicationUser staff)
+        {
+            var staffRoles = await _userManager.GetRolesAsync(staff);
+
+            staff.CurrentSessionId = Guid.NewGuid();
+
+            bool tokenNeverExpired = staff.CorporateID == 5;
+
+            UserType curUserType = staff.isStaff ? UserType.Staff : UserType.User;
+
+            var jwtToken = _jwtTokenService.GetToken(
+                curUserType,
+                staff.UserName,
+                staff.Email,
+                staffRoles,
+                staff.Id,
+                $"{staff.CurrentSessionId}",
+                tokenNeverExpired
+            );
+
+            var refreshToken = new RefreshToken
+            {
+                ExpiryDate = jwtToken.ValidTo,
+                UserId = staff.UserName,
+                Token = _jwtTokenService.GenerateRefreshToken()
+            };
+
+            _refreshTokenStore.AddToken(refreshToken);
+            await _userManager.UpdateAsync(staff);
+
+            return new AuthResult
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                Expiration = jwtToken.ValidTo,
+                RefreshToken = refreshToken.Token
+            };
+        }
+
         private async Task<IActionResult> AssignRolesTeams(string userGuid, List<string> roles, List<Team> teams)
         {
             try
@@ -877,101 +1257,79 @@ namespace IDMS.User.Authentication.API.Controllers
             //return retval;
         }
 
-        //[AllowAnonymous]
-        [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        private string GenerateMfaChallengeToken(ApplicationUser user, string userKey)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (model.NewPassword != model.ConfirmPassword)
-            {
-                return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
-            }
-
-            var username = User.FindFirstValue("name");
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
-            {
-                return NotFound(new { Errors = new[] { "User not found." } });
-            }
-
-            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
-            if (result.Succeeded)
-            {
-                return Ok(new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
-            }
-
-            return BadRequest(new Response() { Status = "Error", Message = result.Errors.Select(e => e.Description) });
-        }
-
-        [HttpPost("RefreshToken")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
-        {
-
             try
             {
-                var kioskRoles = _configuration.GetSection("Kiosk:Role").Get<List<string>>();
-                // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
-                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
-                var sessionId = User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
-                var role = User.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
-                var refreshTokenKey = _refreshTokenStore.GetToken(userName);
-                var user = await _userManager.FindByNameAsync(userName);
-                if (!kioskRoles.Contains(role))
+                var claims = new[]
                 {
-                    // if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
-                    if (userName == null || $"{sessionId}" != $"{user?.CurrentSessionId}")
-                    {
-                        return Unauthorized();
-                    }
-                }
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim("type", "mfa_challenge"), // Essential for the policy check
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("user", userKey)
+                    //new Claim("provider", "[AspNetUserStore]") //cannot change this value as it's used in the policy to identify the MFA provider
+                };
 
-                var userRoles = await _userManager.GetRolesAsync(user);
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["MFA:Secret"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
-                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+                var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(5), // Short expiration
+                    signingCredentials: creds
+                );
 
-                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
-
-                _refreshTokenStore.AddToken(refreshToken);
-                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
-                    expiration = newJwtToken.ValidTo,
-                    refreshToken = newRefreshToken
-                });
-
+                return new JwtSecurityTokenHandler().WriteToken(token);
             }
             catch (Exception ex)
             {
-                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
-                var user = await _userManager.FindByNameAsync(userName);
-
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
-                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
-
-                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
-
-                _refreshTokenStore.AddToken(refreshToken);
-                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
-                    expiration = newJwtToken.ValidTo,
-                    refreshToken = newRefreshToken
-                });
-
+                _logger.LogError($"GenerateMfaChallengeToken Error: {ex.Message}");
+                throw;
             }
-
-
         }
 
+
+        private string GenerateMfaRegistration(string unformattedKey, string userCode)
+        {
+            try
+            {
+                string issuer = _configuration["MFA:Issuer"] ?? "IDMS"; // e.g., "MyCompanyName"   
+                string stepSeconds = _configuration["MFA:StepSeconds"] ?? "30";
+                string algorithm = _configuration["MFA:Algorithm"] ?? "SHA256";
+                string digits = _configuration["MFA:CodeDigits"] ?? "6";
+
+                string authenticatorUri = $"otpauth://totp/{WebUtility.UrlEncode(issuer)}:{WebUtility.UrlEncode(userCode)}?" +
+                       $"secret={unformattedKey}&issuer={WebUtility.UrlEncode(issuer)}&algorithm={algorithm}" +
+                       $"&digits={digits}&period={stepSeconds}";
+
+                // 3. Generate the QR Code as a Base64 string
+                string qrCodeImage = utils.GenerateQrCodeBase64(authenticatorUri);
+
+                return qrCodeImage;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"GenerateMfaRegistration Error: {ex.Message}");
+                throw;
+            }   
+        }
+
+
+        private async Task<IEnumerable<string>> GenerateRecoveryCodes(ApplicationUser user)
+        {
+            try
+            {
+                // Show them once
+                var count = _configuration.GetValue<int>("MFA:RecoveryCodeCount", 5);
+                var newCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, count);
+
+                return newCodes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GenerateRecoveryCodes Error: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

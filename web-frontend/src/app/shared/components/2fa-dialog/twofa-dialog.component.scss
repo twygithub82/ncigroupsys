@@ -1,0 +1,40 @@
+.mdc-button {
+    min-width: 86px;
+}
+
+.confirmation-dialog {
+    min-width: 250px;
+    min-height: 150px;
+}
+
+::ng-deep .confirmation-dialog-panel .mdc-dialog__surface {
+    overflow-y: unset !important;
+}
+
+.otp-input-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.otp-box {
+    width: 44px;
+    height: 52px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+    caret-color: transparent;
+
+    &:focus {
+        border-color: var(--mat-primary, #1976d2);
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+    }
+
+    &--error {
+        border-color: #f44336;
+    }
+}

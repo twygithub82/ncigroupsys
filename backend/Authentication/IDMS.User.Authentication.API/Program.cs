@@ -36,13 +36,43 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 );
 
 //For Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
 
-builder.Services.Configure<IdentityOptions>(
-    opts => opts.SignIn.RequireConfirmedEmail = true
-);
+//builder.Services.Configure<IdentityOptions>(opts =>
+//{
+//    // Require confirmed email for sign-in
+//    opts.SignIn.RequireConfirmedEmail = true;
+
+//    // Set default authenticator token provider
+//    opts.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+//});
+
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    //// Password settings (optional)
+    //options.Password.RequireDigit = true;
+    //options.Password.RequiredLength = 6;
+    //options.Password.RequireNonAlphanumeric = false;
+    //options.Password.RequireUppercase = true;
+    //options.Password.RequireLowercase = false;
+
+    // Sign-in settings
+    options.SignIn.RequireConfirmedEmail = true;
+
+    // Lockout settings (optional)
+    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+
+    // 2FA settings
+    options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+
 
 //Generate the link for reseting password
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
@@ -54,7 +84,7 @@ builder.Services.AddAuthentication(options => {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
 })
-      .AddJwtBearer(options =>
+      .AddJwtBearer("FullSession", options =>
       {
           options.SaveToken = true;
           options.RequireHttpsMetadata = false;
@@ -68,7 +98,36 @@ builder.Services.AddAuthentication(options => {
               ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
           };
+      })
+      .AddJwtBearer("MfaChallenge", options =>
+      {
+          options.SaveToken = true;
+          options.RequireHttpsMetadata = false;
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+              ValidateIssuer = false,
+              ValidateAudience = false,
+              ClockSkew = TimeSpan.Zero,
+              ValidateIssuerSigningKey = true,
+              //ValidAudience = builder.Configuration["JWT:ValidAudience"],
+              //ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["MFA:Secret"]))
+          };
       });
+
+builder.Services.AddAuthorization(options =>
+{
+    // Only users with a full session token can access these
+    options.AddPolicy("RequireFullSession", policy =>
+        policy.AddAuthenticationSchemes("FullSession")
+              .RequireAuthenticatedUser());
+
+    // Only users with the temporary MFA token can access the verify route
+    options.AddPolicy("RequireMfaToken", policy =>
+        policy.AddAuthenticationSchemes("MfaChallenge")
+              .RequireAuthenticatedUser()
+              .RequireClaim("type", "mfa_challenge"));
+});
 
 //Add Email Configs
 var emailConfig = builder.Configuration
@@ -143,7 +202,7 @@ logger.LogInformation("License_Url_Activation: " + builder.Configuration["Licens
 
 //app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
