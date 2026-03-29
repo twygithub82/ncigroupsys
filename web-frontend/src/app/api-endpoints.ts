@@ -9,6 +9,7 @@ export const api_endpoints = {
   staff_query: '/api/StaffAuthentication/QueryStaff',
   staff_change_password: '/api/StaffAuthentication/ChangePassword',
   staff_refresh_token: '/api/StaffAuthentication/RefreshToken',
+  staff_verify2FA: '/api/StaffAuthentication/VerifyStaff2FA',
   user_change_password: '/api/UserAuthentication/ChangePassword',
   user_auth: '/api/UserAuthentication/UserLogin',
   user_refresh_token: '/api/UserAuthentication/RefreshToken',
@@ -18,7 +19,7 @@ export const api_endpoints = {
   user_post_reset_password: '/api/UserAuthentication/reset-password',
   user_get_reset_password: '/api/UserAuthentication/reset-password',
   staff_post_reset_password: '/api/StaffAuthentication/ResetStaffPassword',
-  email: '/api/Emails',
+  email: '/api/Emails'
 }
 
 export const uploadEndpoints = {

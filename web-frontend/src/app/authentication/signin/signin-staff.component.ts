@@ -13,6 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TwoFADialogComponent } from '@shared/components/2fa-dialog/twofa-dialog.component';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -56,7 +57,8 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     LOGIN: 'LANDING-SIGNIN.LOGIN',
     AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION',
     PROCEDURE_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    FAILED_TO_LOGIN: 'LANDING-SIGNIN.FAILED-TO-LOGIN'
+    FAILED_TO_LOGIN: 'LANDING-SIGNIN.FAILED-TO-LOGIN',
+    TOTP_INVALID: 'COMMON-FORM.TOTP-INVALID',
   }
 
   rememberMe = false;
@@ -117,14 +119,19 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
         .login(this.f['username'].value, this.f['password'].value, true, this.rememberMe)
         .subscribe({
           next: (res) => {
-            const token = this.authService.currentUserValue?.token;
-            if (token) {
-              const landingPage = this.authService.getLandingPage();
-              this.router.navigate([landingPage]);
+            console.log(`login: `, res)
+            if (res?.nextAction === "0") {
+              const token = this.authService.currentUserValue?.token;
+              if (token) {
+                const landingPage = this.authService.getLandingPage();
+                this.router.navigate([landingPage]);
+              } else {
+                // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
+                // this.error = 'Invalid Login';
+                this.errorDialog();
+              }
             } else {
-              // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
-              // this.error = 'Invalid Login';
-              this.errorDialog();
+              this.twoFADialog(res, res?.nextAction);
             }
           },
           error: (error) => {
@@ -144,7 +151,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     return environment.companyNameShort;
   }
 
-  errorDialog() {
+  errorDialog(errMessage?: string) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -153,12 +160,70 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ErrorDialogComponent, {
       data: {
-        messageText: this.translatedLangText.FAILED_TO_LOGIN,
+        messageText: errMessage || this.translatedLangText.FAILED_TO_LOGIN,
         action: 'error',
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
+  }
+
+  twoFADialog(tokenPayload: any, action: string) {
+    let tempDirection: Direction = this.getViewDirection();
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(TwoFADialogComponent, {
+      disableClose: true,
+      data: {
+        action: action,
+        tokenPayload: tokenPayload
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        this.subs.sink = this.authService
+          .verify2FA(result?.totp, tokenPayload?.mfaToken)
+          .subscribe({
+            next: (res) => {
+              console.log(`login: `, res)
+              const token = this.authService.currentUserValue?.token;
+              if (token) {
+                const landingPage = this.authService.getLandingPage();
+                this.router.navigate([landingPage]);
+              } else {
+                // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
+                // this.error = 'Invalid Login';
+                this.errorDialog();
+              }
+            },
+            error: (error) => {
+              // this.error = 'Error login';
+              const username = error?.error?.username;
+              console.log(username)
+              this.errorDialog(this.translatedLangText.TOTP_INVALID);
+              // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
+              this.submitted = false;
+              this.loading = false;
+            },
+          });
+      } else if (result === 'cancel') {
+        this.loading = false;
+      }
+    });
+  }
+
+  getViewDirection() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    return tempDirection;
   }
 }

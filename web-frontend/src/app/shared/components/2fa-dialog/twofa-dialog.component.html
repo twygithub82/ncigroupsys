@@ -1,0 +1,65 @@
+<div [ngClass]="{'container confirmation-dialog p-2': true}">
+    <h4 mat-dialog-title [ngClass]="{'pb-3 align-center': true}">
+        {{getHeaderContent()}}
+    </h4>
+    @if (act === '1') {
+    <div mat-dialog-content>
+        <div class="row">
+            <div class="col-12 d-flex flex-column align-items-center gap-3">
+                <p class="text-muted text-center mb-0">
+                    {{ translatedLangText.SCAN_QR_INSTRUCTION }}
+                </p>
+                @if (!tokenPayload?.qrImage) {
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+                } @else {
+                <img [src]="tokenPayload?.qrImage" alt="QR Code" width="200" height="200" />
+                }
+                <p class="text-muted text-center small mb-0">
+                    {{ translatedLangText.SCAN_QR_THEN_PROCEED }}
+                </p>
+            </div>
+        </div>
+    </div>
+    }
+    @if (act === '2') {
+    <div mat-dialog-content>
+        <form class="ms-0" [formGroup]="twoFAForm!" #formDirective="ngForm">
+            <div class="row">
+                <div class="col-12 d-flex flex-column align-items-center gap-3">
+                    <p class="text-muted text-center mb-0">
+                        {{ translatedLangText.ENTER_TOTP_INSTRUCTION }}
+                    </p>
+                    <div class="otp-input-row">
+                        @for (i of otpIndices; track i) {
+                        <input #otpInput type="text" inputmode="numeric" maxlength="1" class="otp-box"
+                            [class.otp-box--error]="totpControl.touched && totpControl.invalid" [value]="getOtpDigit(i)"
+                            (keydown)="onOtpKeyDown($event, i)" (input)="onOtpInput($event, i)"
+                            (paste)="onOtpPaste($event)" autocomplete="one-time-code" />
+                        }
+                    </div>
+                    @if (totpControl.hasError('required')) {
+                    <mat-error>{{ translatedLangText.TOTP_REQUIRED }}</mat-error>
+                    }
+                    @if (totpControl.hasError('invalidCode')) {
+                    <mat-error>{{ translatedLangText.TOTP_INVALID }}</mat-error>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+    }
+    <div mat-dialog-actions [ngClass]="{'pt-2 mb-1 d-flex justify-content-center': true}">
+        @if (initialAction === '1' && act === '2') {
+        <button mat-stroked-button color="primary" (click)="back()" tabindex="-1">
+            {{ translatedLangText.BACK }}
+        </button>
+        }
+        <button mat-flat-button color="primary" (click)="next()" [disabled]="act === '2' && totpControl.invalid">
+            {{ getSubmitButtonContent() }}
+        </button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
+            {{ getCloseButtonContent() }}
+        </button>
+    </div>
+</div>
