@@ -16,6 +16,9 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var emailProvider = builder.Configuration["EmailProvider"] ?? "Domain";
+var currentEnv = builder.Configuration["Env"] ?? "Staging";
+
 // Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -36,20 +39,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 );
 
 //For Identity
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>()
-//    .AddDefaultTokenProviders();
-
-//builder.Services.Configure<IdentityOptions>(opts =>
-//{
-//    // Require confirmed email for sign-in
-//    opts.SignIn.RequireConfirmedEmail = true;
-
-//    // Set default authenticator token provider
-//    opts.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
-//});
-
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     //// Password settings (optional)
@@ -129,14 +118,27 @@ builder.Services.AddAuthorization(options =>
               .RequireClaim("type", "mfa_challenge"));
 });
 
-//Add Email Configs
-var emailConfig = builder.Configuration
+
+if (emailProvider.Equals("Domain", StringComparison.OrdinalIgnoreCase))
+{
+    //Add Email Configs
+    var emailConfig = builder.Configuration
         .GetSection("EmailConfigurationDomain")
         .Get<EmailConfigurationDomain>();
+    builder.Services.AddSingleton(emailConfig);
+    builder.Services.AddScoped<IEmailService, EmailServiceDomain>();
+}
+else
+{
+    //Add Email Configs
+    var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+    builder.Services.AddSingleton(emailConfig);
+    builder.Services.AddScoped<IEmailService, EmailService>();
+}
 
-builder.Services.AddSingleton(emailConfig);
 builder.Services.AddSingleton<IRefreshTokenStore, RefreshTokenStore>();
-builder.Services.AddScoped<IEmailService, EmailServiceDomain>();
 builder.Services.AddHostedService<KeepAliveService>();
 
 
@@ -189,7 +191,7 @@ logger.LogInformation("License_Url_Activation: " + builder.Configuration["Licens
 
 //app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || "Staging".Equals(currentEnv, StringComparison.CurrentCultureIgnoreCase))
 {
     app.UseSwagger();
     app.UseSwaggerUI();

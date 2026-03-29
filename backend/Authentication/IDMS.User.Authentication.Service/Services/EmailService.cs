@@ -27,6 +27,14 @@ namespace IDMS.User.Authentication.Service.Services
             Send(emailMessage);
         }
 
+        public Task<bool> SendMailAsyn(Message message)
+        {
+            var emailMessage = CreateEmailMessage(message);
+            Send(emailMessage);
+
+            return Task.FromResult(true);
+        }
+
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
@@ -138,11 +146,6 @@ namespace IDMS.User.Authentication.Service.Services
             {
                 throw;
             }
-        }
-
-        public Task<bool> SendMailAsyn(Message message)
-        {
-            throw new NotImplementedException();
         }
     }
 }
