@@ -809,7 +809,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     const reportTitle = this.GetReportTitle();
     const headers = [[
         this.translatedLangText.S_N,
-        this.translatedLangText.GROUP_NAME,
+        // this.translatedLangText.GROUP_NAME,
         this.translatedLangText.SUB_GROUP_NAME,
         this.translatedLangText.PART_NAME,
         this.translatedLangText.LENGTH,
@@ -819,12 +819,12 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
 
     const comStyles: any = {
      0: { cellWidth: 12 , valign: 'middle', halign: 'center'},    // "No."
-     1: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Length"
-      2: { cellWidth: 27, valign: 'middle', halign: 'center' }, 
-      3: { cellWidth: 67 },   // "Part Name"
-      4: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "Length"
-      5: { cellWidth: 21, valign: 'middle', halign: 'center' },  // "Labour Hour"
-      6: { cellWidth: 21, valign: 'middle', halign: 'center' }   // "Material Cost"
+    //  1: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Length"
+      1: { cellWidth: 32, valign: 'middle', halign: 'center' }, 
+      2: { cellWidth: 87 },   // "Part Name"
+      3: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "Length"
+      4: { cellWidth: 21, valign: 'middle', halign: 'center' },  // "Labour Hour"
+      5: { cellWidth: 21, valign: 'middle', halign: 'center' }   // "Material Cost"
     };
 
     // Define headStyles with valid fontStyle
@@ -848,7 +848,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let firstSubTitleY=39;
+    let firstSubTitleY=36;
     let lastTableFinalY = firstSubTitleY;
 
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
@@ -888,7 +888,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
                 var itm:any = item;
                 const row = [
                     index++, // increment index for each item
-                    itm.group_name_desc||"",
+                    // itm.group_name_desc||"",
                     itm.subgroup_name_desc||"",
                     item.alias,
                     `${item.length || ""} ${item.length_unit_cv || ""}`,
@@ -909,7 +909,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       //  }
       //  else
       //  {
-        lastTableFinalY += 5; // 2nd table
+        lastTableFinalY += 6; // 2nd table
       //  }
       // if ((n+i) > 0) lastTableFinalY += 5; // 2nd table
       // else {
@@ -926,19 +926,19 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       // }
       
       let subtitle= group.group_name_desc || group.group_name_cv;
-      subtitle+= ' - ' + itm.subgroup_name_desc;
-      //  await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-      //  lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-      //  startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
-      // startY = lastTableFinalY+PDFUtility.GapBetweenLeftTitleAndTable();
+      // subtitle+= ' - ' + itm.subgroup_name_desc;
+       await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+        lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+        // startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
+       startY = lastTableFinalY;
       
 
       autoTable(pdf, {
         head: headers,
         body: data,
-       // startY: startY, // Start table at the current startY value
+        startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: {  top:startPostY, horizontal: leftMargin},
+        margin: {  horizontal: leftMargin},
         tableWidth: contentWidth,
         styles: {
           fontSize: fontSz_body,

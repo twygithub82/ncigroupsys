@@ -12,10 +12,6 @@ export class AuthApiService {
     return this.api.post<any>(endpoint, { username, password });
   }
 
-  // logout(): Observable<any> {
-  //   return this.api.post('auth/logout', {});
-  // }
-
   refreshToken(refreshToken: string, isStaff: boolean): Observable<any> {
     const endpoint = isStaff ? api_endpoints.staff_refresh_token : api_endpoints.user_refresh_token;
     return this.api.post<any>(endpoint, { refreshToken });
@@ -42,5 +38,10 @@ export class AuthApiService {
   getUserClaims(userId: string): Observable<any> {
     const endpoint = `${api_endpoints.staff_user_claims}`;
     return this.api.post<any>(endpoint, { userId });
+  }
+
+  verify2FA(totp: string): Observable<any> {
+    const endpoint = api_endpoints.staff_verify2FA;
+    return this.api.post<any>(endpoint, { code: totp, provider: 'Authenticator', isRecoveryCode: false });
   }
 }

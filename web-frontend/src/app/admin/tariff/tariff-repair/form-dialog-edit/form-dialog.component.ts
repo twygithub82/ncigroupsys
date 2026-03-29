@@ -115,6 +115,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
   isMobile = false;
+  isSubGroupEmpty=false;
+
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -415,8 +417,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       var aliasName = value?.child_code;
       if (aliasName === undefined) return;
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
+      
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
+        this.isSubGroupEmpty= data.length == 0;
         data = [...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
         if (this.selectedItems.length == 1) {
@@ -486,7 +490,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   update() {
     let update = true;
-      if (!this.pcForm?.valid) return;
+    
     if (this.isMultiSelect() && !this.pcForm?.get('labour_hour')?.value && !this.pcForm?.get('material_cost')?.value) {
       // this.pcForm?.get('labour_hour')?.setErrors({ required: true });
       // this.pcForm?.get('material_cost')?.setErrors({ required: true });

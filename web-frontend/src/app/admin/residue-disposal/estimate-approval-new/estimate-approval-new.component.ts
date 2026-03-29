@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -92,7 +92,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     PreventNonNumericDirective
   ]
 })
-export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   displayedColumns = [
     'seq',
     'desc',
@@ -328,6 +328,11 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+
+    ngAfterViewInit(): void {
+    this.isDirty = false;
+  }
+
   ngOnInit() {
     this.updateView(window.innerWidth);
 
@@ -407,6 +412,22 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         }
       })
     ).subscribe();
+
+         // Detect job_no change
+    this.residueEstForm?.get('job_no')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+      
+    });
+
+    this.residueEstForm?.get('bill_to')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+      
+    });
+
+    // Detect remarks change
+    this.residueEstForm?.get('remarks')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+    });
   }
 
   public loadData() {
@@ -1498,6 +1519,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         if (this.residueItem && !this.residueDS.canApprove(this.residueItem)) {
           bill_to?.disable();
         }
+        this.isDirty = false;
       }
     });
     this.patchResidueEstForm(this.residueItem!);

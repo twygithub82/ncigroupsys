@@ -221,7 +221,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   };
   unit_type_control = new UntypedFormControl();
   unitTypeChangedEventUnsub: boolean = false;
-
+  isSubGroupEmpty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -320,6 +320,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.cvDS.connectAlias(aliasName).subscribe(data => {
         data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
+        this.isSubGroupEmpty = this.subGroupNameCvList.length == 0;
         if (this.selectedItem) {
           var rec = this.selectedItem;
           this.subGroupNameControl.setValue(this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList));

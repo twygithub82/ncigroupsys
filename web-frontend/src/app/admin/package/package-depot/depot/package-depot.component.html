@@ -182,7 +182,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="getColumnClasses('tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 <span class="mobile-label">{{this.translatedLangText.IN_OUT_SURCHARGE_COST }}:</span>
-                {{displayCurrency(row.gate_in_cost)}}</mat-cell>
+                {{displayCurrency(row.gate_in_cost) + ' - ' + displayCurrency(row.gate_out_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="storage_cost">
               <mat-header-cell *matHeaderCellDef

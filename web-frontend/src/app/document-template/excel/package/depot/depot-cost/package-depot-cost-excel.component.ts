@@ -190,6 +190,8 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     S_N: 'COMMON-FORM.S_N',
     PACKAGE_DEPOT_COST:'COMMON-FORM.PACKAGE-DEPOT-COST',
+    IN_SURCHARGE_COST: 'COMMON-FORM.IN-SURCHARGE-COST',
+    OUT_SURCHARGE_COST: 'COMMON-FORM.OUT-SURCHARGE-COST',
 
   }
 
@@ -512,6 +514,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
         item.customer_company?.name || "-",
         item.tariff_depot?.profile_name || "-",
         this.parse2Decimal(item.gate_in_cost || 0) || "-",
+        this.parse2Decimal(item.gate_out_cost || 0) || "-",
         this.parse2Decimal(item.preinspection_cost || 0) || "-",
         this.parse2Decimal(item.lolo_cost || 0) || "-",
         this.parse2Decimal(item.storage_cost || 0) || "-",
@@ -526,7 +529,8 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
       this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.PROFILE_NAME,
-      this.translatedLangText.IN_OUT_SURCHARGE_COST,
+      this.translatedLangText.IN_SURCHARGE_COST,
+      this.translatedLangText.OUT_SURCHARGE_COST,
       this.translatedLangText.PREINSPECTION_COST,
       this.translatedLangText.LOLO_COST,
       this.translatedLangText.STORAGE_COST,
