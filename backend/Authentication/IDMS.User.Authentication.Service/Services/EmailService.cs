@@ -75,13 +75,7 @@ namespace IDMS.User.Authentication.Service.Services
 
                 email.Body = builder.ToMessageBody();
 
-                //using var smtp = new SmtpClient();
-                //await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                //await smtp.AuthenticateAsync(_fromEmail, _appPassword);
-                //await smtp.SendAsync(email);
-                //await smtp.DisconnectAsync(true);
-
-
+     
                 using var smtp = new SmtpClient();
                 await smtp.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
                 await smtp.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
@@ -92,7 +86,7 @@ namespace IDMS.User.Authentication.Service.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -146,5 +140,9 @@ namespace IDMS.User.Authentication.Service.Services
             }
         }
 
+        public Task<bool> SendMailAsyn(Message message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

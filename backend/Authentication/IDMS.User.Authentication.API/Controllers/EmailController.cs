@@ -77,22 +77,22 @@ namespace IDMS.User.Authentication.API.Controllers
                 string zipFileUrl = _configuration["ZipFileUrl"] ?? "";
 
                 // Run email task in background (non-blocking)
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
-                        await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, $"{tankNumber}.zip");
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log exception or handle as needed
-                        Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
-                    }
-                });
+                //Task.Run(async () =>
+                //{
+                //    try
+                //    {
+                //        var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
+                //        await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, $"{tankNumber}.zip");
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        // Log exception or handle as needed
+                //        Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
+                //    }
+                //});
 
-                //var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
-                //await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, "Document.zip");
+                var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
+                await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, "Document.zip");
 
                 // Return immediate success response
                 return StatusCode(StatusCodes.Status202Accepted, new Response

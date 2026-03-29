@@ -131,28 +131,15 @@ builder.Services.AddAuthorization(options =>
 
 //Add Email Configs
 var emailConfig = builder.Configuration
-        .GetSection("EmailConfiguration")
-        .Get<EmailConfiguration>();
+        .GetSection("EmailConfigurationDomain")
+        .Get<EmailConfigurationDomain>();
 
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddSingleton<IRefreshTokenStore, RefreshTokenStore>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailService, EmailServiceDomain>();
 builder.Services.AddHostedService<KeepAliveService>();
 
-// Add services to the container.
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowSpecificOrigin",
-//           builder => builder.WithOrigins("https://example.com")
-//                             .AllowAnyHeader()
-//                             .AllowAnyMethod());
-//    options.AddPolicy("AllowAllOrigins",
-//       builder => builder
-//           .AllowAnyOrigin()
-//           .AllowAnyMethod()
-//           .AllowAnyHeader()
-//           .WithExposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Methods"));
-//});
+
 
 builder.Services.AddControllers().AddJsonOptions(opts =>
 {
