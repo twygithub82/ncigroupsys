@@ -63,6 +63,9 @@ export class AuthService {
 
     return this.authApiService.login(username, password, isStaff).pipe(
       switchMap(user => {
+        if (user?.nextAction === "1" || user?.nextAction === "2") {
+          return of(user); // caller checks nextAction and opens the appropriate popup
+        }
         if (!user?.token) throw new Error('No token in login response');
         const decodedToken = decodeToken(user.token);
         const userId = decodedToken[jwt_mapping.sid.key] ?? decodedToken[jwt_mapping.sid.value];
@@ -77,36 +80,6 @@ export class AuthService {
         if (!userId) {
           console.log(`unexpected login token occurred: `, decodedToken)
         }
-        // return this.authApiService.getUserClaims(userId).pipe(
-        //   map(claims => {
-        //     const usr = new User();
-        //     usr.id = userId;
-        //     usr.name = decodedToken[jwt_mapping.name.key] ?? decodedToken[jwt_mapping.name.value];
-        //     usr.email = decodedToken[jwt_mapping.email.key] ?? decodedToken[jwt_mapping.email.value];
-        //     usr.groupsid = decodedToken[jwt_mapping.groupsid.key] ?? decodedToken[jwt_mapping.groupsid.value];
-        //     usr.role = decodedToken[jwt_mapping.role.key] ?? decodedToken[jwt_mapping.role.value];
-        //     usr.roles = claims.roles ?? [usr.role];
-        //     usr.functions = claims.functions ?? [];
-        //     usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key] ?? decodedToken[jwt_mapping.primarygroupsid.value];
-        //     usr.token = decodedToken;
-        //     usr.plainToken = user.token;
-        //     usr.expiration = user.expiration;
-        //     usr.refreshToken = user.refreshToken;
-        //     usr.isStaff = isStaff;
-        //     usr.userdata = JSON.parse(decodedToken.userdata);
-
-        //     localStorage.setItem(this.userKey, JSON.stringify(usr));
-        //     this.currentUserSubject.next(usr);
-        //     this.tokenRefreshed.next();
-        //     this.userLoggedIn.next();
-
-        //     return user; // or return usr
-        //   }),
-        //   catchError(error => {
-        //     this.logout();
-        //     return throwError(() => error);
-        //   })
-        // );
         return forkJoin({
           claims: this.authApiService.getUserClaims(userId),
           userCustomer: this.userCustomerDS!.getUserCustomerByUserId(userId)
@@ -151,47 +124,75 @@ export class AuthService {
     );
   }
 
-  // refreshToken(): Observable<UserToken | null> {
-  //   const currentRefreshToken = this.getRefreshToken();
-  //   if (!currentRefreshToken) {
-  //     this.logout();
-  //     return of(null);;
-  //   }
+  verify2FA(totp: any, mfaToken: string): Observable<any> {
+    if (!this.userCustomerDS) {
+      this.userCustomerDS = this.injector.get(UserCustomerDS);
+    }
 
-  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-  //   const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
-  //   const url = `${endpoint}`
-  //   const body = { refreshToken: currentRefreshToken };
-  //   console.log('refreshToken body: ', body)
-  //   return this.http.post<any>(url, body, { headers })
-  //     .pipe(
-  //       map(response => {
-  //         const expTime = new Date(response.expiration).getTime();
-  //         const now = Date.now();
+    const tempUserToken = new UserToken();
+    tempUserToken.token = mfaToken;
+    localStorage.setItem(this.tokenKey, JSON.stringify(tempUserToken));
 
-  //         console.log('refreshToken body: ', body)
-  //         // Reject if new token is about to expire in < 5 min
-  //         // if (expTime - now < 5 * 60 * 1000) {
-  //         //   throw new Error('Received a near-expired token, aborting');
-  //         // }
+    return this.authApiService.verify2FA(totp).pipe(
+      switchMap(user => {
+        if (!user?.token) throw new Error('No token in 2FA response');
 
-  //         const userToken = new UserToken();
-  //         userToken.token = response.token;
-  //         userToken.expiration = response.expiration;
-  //         userToken.refreshToken = response.refreshToken;
+        const decodedToken = decodeToken(user.token);
+        const userId = decodedToken[jwt_mapping.sid.key] ?? decodedToken[jwt_mapping.sid.value];
 
-  //         localStorage.setItem('userToken', JSON.stringify(userToken));
-  //         this.tokenRefreshed.next();
-  //         console.log('token is refreshed: ', userToken);
+        const tempUserToken = new UserToken();
+        tempUserToken.token = user.token;
+        tempUserToken.expiration = user.expiration;
+        tempUserToken.refreshToken = user.refreshToken;
+        localStorage.setItem(this.tokenKey, JSON.stringify(tempUserToken));
 
-  //         return userToken;
-  //       }),
-  //       catchError(error => {
-  //         this.logout();
-  //         return throwError(() => error);
-  //       })
-  //     );
-  // }
+        if (!userId) {
+          console.log(`unexpected 2FA token occurred: `, decodedToken);
+        }
+
+        return forkJoin({
+          claims: this.authApiService.getUserClaims(userId),
+          userCustomer: this.userCustomerDS!.getUserCustomerByUserId(userId)
+        }).pipe(
+          map(({ claims, userCustomer }) => {
+            const guids = userCustomer.map(uc => uc.customer_company_guid);
+            localStorage.setItem(this.clientCompanyKey, JSON.stringify(guids));
+
+            const usr = new User();
+            usr.id = userId;
+            usr.name = decodedToken[jwt_mapping.name.key] ?? decodedToken[jwt_mapping.name.value];
+            usr.email = decodedToken[jwt_mapping.email.key] ?? decodedToken[jwt_mapping.email.value];
+            usr.groupsid = decodedToken[jwt_mapping.groupsid.key] ?? decodedToken[jwt_mapping.groupsid.value];
+            usr.role = decodedToken[jwt_mapping.role.key] ?? decodedToken[jwt_mapping.role.value];
+            usr.roles = claims.roles ?? [usr.role];
+            usr.functions = claims.functions ?? [];
+            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key] ?? decodedToken[jwt_mapping.primarygroupsid.value];
+            usr.token = decodedToken;
+            usr.plainToken = user.token;
+            usr.expiration = user.expiration;
+            usr.refreshToken = user.refreshToken;
+            usr.isStaff = true;
+            usr.userdata = JSON.parse(decodedToken.userdata);
+
+            localStorage.setItem(this.userKey, JSON.stringify(usr));
+            this.currentUserSubject.next(usr);
+            this.tokenRefreshed.next();
+            this.userLoggedIn.next();
+
+            return user;
+          }),
+          catchError(error => {
+            this.logout();
+            return throwError(() => error);
+          })
+        );
+      }),
+      catchError(error => {
+        this.logout();
+        return throwError(() => error);
+      })
+    );
+  }
 
   refreshToken(): Observable<UserToken | null> {
     const currentRefreshToken = this.getRefreshToken();
@@ -274,20 +275,6 @@ export class AuthService {
     );
   }
 
-  ok(body?: {
-    id: number;
-    img: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    token: JwtPayload;
-  }) {
-    return of(new HttpResponse({ status: 200, body }));
-  }
-  error(message: string) {
-    return throwError(message);
-  }
-
   logout() {
     // remove local storage when log user out
     localStorage.removeItem(this.userKey);
@@ -299,11 +286,6 @@ export class AuthService {
 
   getRememberedUsername(): string | null {
     return localStorage.getItem(this.rememberMyKey) === 'true' ? localStorage.getItem(this.usernameKey) : null;
-  }
-
-  getDecodedToken(): any {
-    // const token = this.currentUserValue?.token;
-    // return token ? decodeToken(token) : null;
   }
 
   getAccessToken(): string | null {

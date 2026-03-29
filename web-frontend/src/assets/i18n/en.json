@@ -1407,7 +1407,16 @@
     "PRE-REPAIR-MAPPING-CHART": "Pre-Repair Mapping Chart",
     "POST-REPAIR-MAPPING-CHART": "Post-Repair Mapping Chart",
     "GATE-OUT-DATE": "Gate Out Date",
-    "VALUE-ZERO":"can't be zero or below"
+    "VALUE-ZERO":"can't be zero or below",
+    "TOTP-REQUIRED": "TOTP is required",
+    "TOTP-INVALID": "Invalid TOTP",
+    "TOTP-CODE": "TOTP Code",
+    "SCAN-QR-INSTRUCTION": "Please scan the QR code with your authenticator app to get the TOTP code",
+    "ENTER-TOTP-INSTRUCTION": "Please enter the TOTP code from your authenticator app",
+    "SCAN-QR-THEN-PROCEED": "Scan the QR code and then proceed",
+    "PROCEED-TO-VERIFY": "Proceed to Verify",
+    "REGISTER-TOTP": "Register TOTP",
+    "VERIFY-TOTP": "Verify TOTP"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
