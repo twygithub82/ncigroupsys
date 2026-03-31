@@ -10,6 +10,7 @@ namespace IDMS.User.Authentication.Service.Services
     public interface IEmailService
     {
         void SendMail(Message message);
+        Task<bool> SendMailAsyn(Message message);
         Task<bool> SendResetLinkAsync(string toEmail, string subject, string htmlBody);
 
         Task<bool> SendEmailWithZipAttachmentAsync(List<string> toEmail, string subject, string htmlBody, byte[] zipBytes, string zipFileName);

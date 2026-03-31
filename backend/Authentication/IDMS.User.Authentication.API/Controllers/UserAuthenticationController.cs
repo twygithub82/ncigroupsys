@@ -190,7 +190,8 @@ namespace IDMS.UserAuthentication.Controllers
                     var token1 = await _userManager.GenerateEmailConfirmationTokenAsync(userExist);
                     var confirmationLink1 = Url.Action(nameof(ConfirmEmail), "UserAuthentication", new { token1, email = userExist.Email }, Request.Scheme);
                     var message1 = new Message(new string[] { userExist.Email! }, "Confirmation email link", confirmationLink1);
-                    _emailService.SendMail(message1);
+                    //_emailService.SendMail(message1);
+                    await _emailService.SendMailAsyn(message1);
 
                     return StatusCode(StatusCodes.Status200OK,
                       new Response { Status = "Success", Message = new string[] { $"The activation email has been sent again successfully to {userExist.Email} for confirmation !" } });
@@ -226,7 +227,8 @@ namespace IDMS.UserAuthentication.Controllers
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var confirmationLink = Url.Action(nameof(ConfirmEmail), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
                 var message = new Message(new string[] { user.Email! }, "Confirmation email link", confirmationLink);
-                _emailService.SendMail(message);
+                //_emailService.SendMail(message);
+                await _emailService.SendMailAsyn(message);
 
                 return StatusCode(StatusCodes.Status200OK,
                        new Response { Status = "Success", Message = new string[] { $"User created & Email Sent successfully to {user.Email} for confirmation !" } });

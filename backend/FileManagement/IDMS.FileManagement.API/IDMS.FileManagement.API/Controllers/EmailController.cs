@@ -1,15 +1,9 @@
 ﻿using Asp.Versioning;
-using Azure;
 using IDMS.FileManagement.Interface;
 using IDMS.FileManagement.Interface.DB;
 using IDMS.FileManagement.Interface.Model;
-using IDMS.FileManagement.Service;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using static Google.Protobuf.WireFormat;
 using Response = IDMS.FileManagement.Interface.Model.Response;
 
 namespace IDMS.FileManagement.API.Controllers
@@ -253,7 +247,7 @@ namespace IDMS.FileManagement.API.Controllers
 
         [HttpPost("StartTankActivityJob")]
         [MapToApiVersion("2.0")]
-        //This is for Schdeuler to call, check any outgate Eir job to send email
+        //This is for Schdeuler to call, send out daily tank activity email
         public async Task<IActionResult> StartTankActivityJob(string customer)
         {
             try

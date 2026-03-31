@@ -23,6 +23,8 @@ namespace IDMS.FileManagement.API
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
+            var emailProvider = builder.Configuration["EmailProvider"] ?? "Domain";
+            var currentEnv = builder.Configuration["Env"] ?? "Staging";
 
             // Configure logging
             builder.Logging.ClearProviders();
@@ -119,19 +121,33 @@ namespace IDMS.FileManagement.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //Add Email Configs
-            var emailConfig = builder.Configuration
-                    .GetSection("EmailConfiguration")
-                    .Get<EmailConfiguration>();
 
             var reportConfig = builder.Configuration
-                                .GetSection("ReportSettings")
-                                .Get<ReportSettings>();
+                    .GetSection("ReportSettings")
+                    .Get<ReportSettings>();
 
-            builder.Services.AddSingleton(emailConfig);
+            if(emailProvider.Equals("Domain", StringComparison.OrdinalIgnoreCase))
+            {
+                //Add Email Configs Doamin
+                var emailConfig = builder.Configuration
+                        .GetSection("EmailConfigurationDomain")
+                        .Get<EmailConfigurationDomain>();
+                builder.Services.AddSingleton(emailConfig);
+                builder.Services.AddScoped<IEmail, EmailServiceDomain>();
+            }
+            else
+            {
+                //Add Email Configs
+                var emailConfig = builder.Configuration
+                        .GetSection("EmailConfiguration")
+                        .Get<EmailConfiguration>();
+                builder.Services.AddSingleton(emailConfig);
+                builder.Services.AddScoped<IEmail, EmailService>();
+            }
+
+            
             builder.Services.AddSingleton(reportConfig);
             builder.Services.AddScoped<IFileManagement, FileManagementService>();
-            builder.Services.AddScoped<IEmail, EmailService>();
             //builder.Services.AddScoped<IReport, ReportService>();
 
             builder.Services.AddScoped<IReport>(provider =>
@@ -164,8 +180,7 @@ namespace IDMS.FileManagement.API
 
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            //if (true)
+            if (app.Environment.IsDevelopment() || "Staging".Equals(currentEnv, StringComparison.CurrentCultureIgnoreCase))
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(options =>

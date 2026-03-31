@@ -20,8 +20,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using static IDMS.User.Authentication.API.Models.StaticConstant;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using static QRCoder.PayloadGenerator;
+
 
 namespace IDMS.User.Authentication.API.Controllers
 {
@@ -370,7 +369,7 @@ namespace IDMS.User.Authentication.API.Controllers
                         //var userSecrect231 = await _userManager.GetAuthenticatorKeyAsync(staff);
 
                         // 3. Generate the QR Code as a Base64 string
-                        string qrCodeImage = GenerateMfaRegistration(userSecrect, staff.Id);
+                        string qrCodeImage = GenerateMfaRegistration(userSecrect, staff.UserName);
                         var mfaTokenReg = GenerateMfaChallengeToken(staff, userSecrect);
 
                         return Ok(new

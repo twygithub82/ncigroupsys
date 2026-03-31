@@ -44,71 +44,71 @@ namespace IDMS.User.Authentication.API.Controllers
             _refreshTokenStore = refreshTokenStore;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> SendMail([FromBody] EmailDto emailDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> SendMail([FromBody] EmailDto emailDto)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //            return BadRequest(ModelState);
 
-                var invalidEmails = emailDto.receipient
-                    .Where(e => string.IsNullOrWhiteSpace(e) || !new EmailAddressAttribute().IsValid(e))
-                    .ToList();
+        //        var invalidEmails = emailDto.receipient
+        //            .Where(e => string.IsNullOrWhiteSpace(e) || !new EmailAddressAttribute().IsValid(e))
+        //            .ToList();
 
-                if (invalidEmails.Any())
-                {
-                    return BadRequest(new Response
-                    {
-                        Status = "ValidationError",
-                        Message = invalidEmails.Select(e => $"Invalid email address: {e}").ToArray()
-                    });
-                }
+        //        if (invalidEmails.Any())
+        //        {
+        //            return BadRequest(new Response
+        //            {
+        //                Status = "ValidationError",
+        //                Message = invalidEmails.Select(e => $"Invalid email address: {e}").ToArray()
+        //            });
+        //        }
 
-                // Capture variables from the request
-                string tankNumber = emailDto.tankNo ?? "_";
-                List<string> recipient = emailDto.receipient;
-                string eirGuid = emailDto.eirGroupGuid;
+        //        // Capture variables from the request
+        //        string tankNumber = emailDto.tankNo ?? "_";
+        //        List<string> recipient = emailDto.receipient;
+        //        string eirGuid = emailDto.eirGroupGuid;
 
-                string subject = EirMessage.GetEirSubject_InGate(tankNumber);
-                string htmlBody = EirMessage.GetEirBody_InGate();
+        //        string subject = EirMessage.GetEirSubject_InGate(tankNumber);
+        //        string htmlBody = EirMessage.GetEirBody_InGate();
 
-                string zipFileUrl = _configuration["ZipFileUrl"] ?? "";
+        //        string zipFileUrl = _configuration["ZipFileUrl"] ?? "";
 
-                // Run email task in background (non-blocking)
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
-                        await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, $"{tankNumber}.zip");
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log exception or handle as needed
-                        Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
-                    }
-                });
+        //        // Run email task in background (non-blocking)
+        //        Task.Run(async () =>
+        //        {
+        //            try
+        //            {
+        //                var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
+        //                await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, $"{tankNumber}.zip");
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                // Log exception or handle as needed
+        //                Console.WriteLine($"[BackgroundTaskError] {ex.Message}");
+        //            }
+        //        });
 
-                //var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
-                //await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, "Document.zip");
+        //        //var zipBytes = await utils.GetZipFile(eirGuid, zipFileUrl);
+        //        //await _emailService.SendEmailWithZipAttachmentAsync(recipient, subject, htmlBody, zipBytes, "Document.zip");
 
-                // Return immediate success response
-                return StatusCode(StatusCodes.Status202Accepted, new Response
-                {
-                    Status = "Started",
-                    Message = new[] { "Email is being processed in background." }
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response
-                {
-                    Status = "Error",
-                    Message = new[] { ex.Message }
-                });
-            }
-        }
+        //        // Return immediate success response
+        //        return StatusCode(StatusCodes.Status202Accepted, new Response
+        //        {
+        //            Status = "Started",
+        //            Message = new[] { "Email is being processed in background." }
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response
+        //        {
+        //            Status = "Error",
+        //            Message = new[] { ex.Message }
+        //        });
+        //    }
+        //}
     }
 }

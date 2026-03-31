@@ -28,6 +28,20 @@ namespace IDMS.FileManagement.Interface.Model
         public string CompanyName { get; set; } = "IDMS Support Team";
     }
 
+    public class EmailConfigurationDomain
+    {
+        //public string from { get; set; } = null!;
+        public string TenantID { get; set; } = null!;
+
+        public string ClientID { get; set; }
+
+        public string UserName { get; set; } = null!;
+
+        public string ClientSecret { get; set; } = null!;
+
+        public string CompanyName { get; set; } = "IDMS Support Team";
+    }
+
     public class EmailDto
     {
         public string tankNo {  get; set; }
