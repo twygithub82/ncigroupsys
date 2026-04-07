@@ -5,12 +5,14 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
+           @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(isGeneratingReport)">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
+        }
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
               <mat-icon>clear_all</mat-icon>

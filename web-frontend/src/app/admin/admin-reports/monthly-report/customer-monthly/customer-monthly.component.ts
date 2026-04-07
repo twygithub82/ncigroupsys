@@ -221,7 +221,8 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
