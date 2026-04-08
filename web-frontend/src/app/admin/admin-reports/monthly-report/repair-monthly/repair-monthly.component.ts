@@ -36,6 +36,7 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { MonthlyDetailExcelComponent } from 'app/document-template/excel/admin-reports/monthly/details/monthly-details-excel.component';
 
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
@@ -495,6 +496,9 @@ export class RepairMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
+      else if (report_type == 5) {
+        this.onExportSummaryExcel(repData, date, customerName);
+      }
 
     }
     else {
@@ -505,7 +509,47 @@ export class RepairMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
+  export_excel() {
+    this.search(5);
+  }
 
+  onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(MonthlyDetailExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
@@ -535,7 +579,7 @@ export class RepairMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       direction: tempDirection
     });
 
-     dialogRef.updatePosition({
+    dialogRef.updatePosition({
       top: '-90vh',  // Move far above the screen
       left: '0px'  // Move far to the left of the screen
     });
