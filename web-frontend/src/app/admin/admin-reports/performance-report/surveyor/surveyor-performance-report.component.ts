@@ -39,6 +39,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS } from 'app/data-sources/user';
 import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/detail/surveyor-detail-pdf.component';
 import { SurveyorPerformanceSummaryPdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/summary/surveyor-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -233,7 +234,8 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+     public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

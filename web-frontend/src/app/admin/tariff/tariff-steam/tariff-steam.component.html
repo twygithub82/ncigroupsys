@@ -24,7 +24,7 @@
                       </button>
                     </div>
                     }
-                     @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+                      @if(modulePackageService.AllowExcelReport()){
                     <button mat-mini-fab
                             class="light-green-button m-l-10"
                             (click)="export_excel()"

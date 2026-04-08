@@ -43,6 +43,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-steam-yearly',
@@ -221,7 +222,8 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+     public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

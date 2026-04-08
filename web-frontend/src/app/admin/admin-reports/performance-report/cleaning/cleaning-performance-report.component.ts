@@ -43,6 +43,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -238,7 +239,8 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+     public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

@@ -24,7 +24,7 @@
                 </button>
               </div>
               }
-              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                @if(modulePackageService.AllowExcelReport()){
                  <button mat-mini-fab
                     class="light-green-button m-l-10"
                     (click)="export_excel()"
@@ -124,19 +124,6 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
-            <!-- <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef 
-                [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.CONTACT_NO}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_5-xl'">
-                <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phone}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="email">
-              <mat-header-cell [ngClass]="''" *matHeaderCellDef
-                >{{this.translatedLangText.EMAIL }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
-            </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-start'" *matHeaderCellDef
                 mat-sort-header="last_update_dt" disableClear>{{this.translatedLangText.LAST_UPDATE

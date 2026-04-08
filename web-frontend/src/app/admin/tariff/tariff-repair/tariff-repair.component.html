@@ -50,13 +50,15 @@
                         </button>
                       </div>
                       }
+                        @if(modulePackageService.AllowPdfReport()){
                       <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT" >
                       <button mat-mini-fab [class.blue-button]=true (click)="export_report()" [disabled]="isGeneratingReport"
                         (click)="$event.stopPropagation()" >
                         <mat-icon>insert_drive_file</mat-icon>
                       </button>
                     </div>
-                     @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+                  }
+                     @if(modulePackageService.AllowExcelReport()){
                     <button mat-mini-fab
                             class="light-green-button m-l-10"
                             (click)="export_excel()"

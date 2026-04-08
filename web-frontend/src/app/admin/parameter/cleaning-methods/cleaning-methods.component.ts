@@ -40,6 +40,7 @@ import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { CleaningMethodsExcelComponent } from 'app/document-template/excel/parameters/cleaning-methods/cleaning-methods-excel.component';
+import { CleaningMethodPdfComponent } from 'app/document-template/pdf/parameters/cleaning-method-report-pdf/cleaning-method-report-pdf.component';
 
 
 @Component({
@@ -855,6 +856,54 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   refreshDescriptionList() {
     const existingValue = this.descriptionControl?.value;
     this.descriptionControl?.setValue(existingValue);
+  }
+
+
+  export_report(){
+   this.isGeneratingReport = true;
+    const where = { delete_dt: { eq: null } };
+    this.mthDS.loadAllItems(where).subscribe(res => {
+      var prcList: CleaningMethodItem[] = res;
+      this.exportPdfReport(prcList);
+
+    })
+  }
+
+    exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CleaningMethodPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
   }
 
   export_excel() {

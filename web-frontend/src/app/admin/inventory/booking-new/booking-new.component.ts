@@ -50,6 +50,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { InventoryBookingExcelComponent } from 'app/document-template/excel/inventory/booking/inventory-booking-excel.component';
+import { BookingPdfComponent } from 'app/document-template/pdf/inventory/booking-pdf/booking-report-pdf.component';
 
 @Component({
   selector: 'app-booking-new',
@@ -208,8 +209,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   hasPreviousPage = false;
 
   todayDt: Date = new Date();
-  pageStateType="Booking";
-  isGeneratingReport: boolean=false;
+  pageStateType = "Booking";
+  isGeneratingReport: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -682,7 +683,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
 
@@ -690,7 +691,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
 
@@ -698,7 +699,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
   }
@@ -967,75 +968,141 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_DELETE']);
   }
 
-  AutoSearch(){
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
   }
-     export_excel()
-        {
-          this.isGeneratingReport=true;
-          const where :any = this.lastSearchCriteria;
-          //  const where: any = {
-          //     and: [
-          //       { status_cv: { eq: "ACCEPTED" } },
-          //     ]
-          //   };
-          this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res=>{
-                
-                var prcList:StoringOrderTankItem[]=res.map(item => ({
-                  ...item,
-                  tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),  // your custom logic
-                  in_gate: item.in_gate?.map(i => ({
-                    ...i,
-                    yard_cv: this.getYardDescription(i.yard_cv),
-                  })),
-                  booking:item.booking
-                  ?.filter(b => b.delete_dt == null)
-                  .map(b => ({
-                    ...b,
-                    book_type_cv: this.getBookTypeDescription(b.book_type_cv)
-                  }))
-                }));;
-                this.exportExcelReport(prcList);
-      
-            })
-      
-            
-        }
-        exportExcelReport(repData:any) {
-            
-               //this.preventDefault(event);
-                let cut_off_dt = new Date();
-            
-            
-                let tempDirection: Direction;
-                if (localStorage.getItem('isRtl') === 'true') {
-                  tempDirection = 'rtl';
-                } else {
-                  tempDirection = 'ltr';
-                }
-            
-                const dialogRef = this.dialog.open(InventoryBookingExcelComponent, {
-                  width: reportPreviewWindowDimension.portrait_width_rate,
-                  maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                  maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                  
-                  data: {
-                    repData: repData
-                  },
-            
-                  // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                  direction: tempDirection
-                });
-            
-                  dialogRef.updatePosition({
-                  top: '-90vh',  // Move far above the screen
-                  left: '0px'  // Move far to the left of the screen
-                });
-            
-                this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                  this.isGeneratingReport = false;
-                });
-        
-          }
+  export_excel() {
+    this.isGeneratingReport = true;
+    const where: any = this.lastSearchCriteria;
+    //  const where: any = {
+    //     and: [
+    //       { status_cv: { eq: "ACCEPTED" } },
+    //     ]
+    //   };
+    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+
+      var prcList: StoringOrderTankItem[] = res.map(item => ({
+        ...item,
+        tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),  // your custom logic
+        in_gate: item.in_gate?.map(i => ({
+          ...i,
+          yard_cv: this.getYardDescription(i.yard_cv),
+        })),
+        booking: item.booking
+          ?.filter(b => b.delete_dt == null)
+          .map(b => ({
+            ...b,
+            book_type_cv: this.getBookTypeDescription(b.book_type_cv)
+          }))
+      }));;
+      this.exportExcelReport(prcList);
+
+    })
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(InventoryBookingExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+  export_report() {
+    this.isGeneratingReport = true;
+    const where: any = this.lastSearchCriteria;
+    //  const where: any = {
+    //     and: [
+    //       { status_cv: { eq: "ACCEPTED" } },
+    //     ]
+    //   };
+    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+
+      var prcList: StoringOrderTankItem[] = res.map(item => ({
+        ...item,
+        tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),  // your custom logic
+        in_gate: item.in_gate?.map(i => ({
+          ...i,
+          yard_cv: this.getYardDescription(i.yard_cv),
+        })),
+        booking: item.booking
+          ?.filter(b => b.delete_dt == null)
+          .map(b => ({
+            ...b,
+            book_type_cv: this.getBookTypeDescription(b.book_type_cv)
+          }))
+      }));;
+      this.exportPdfReport(prcList);
+
+    })
+
+
+  }
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(BookingPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }

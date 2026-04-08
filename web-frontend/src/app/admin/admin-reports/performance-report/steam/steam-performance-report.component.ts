@@ -40,6 +40,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { SteamPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/steam/steam-detail.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -232,7 +233,8 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+     public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
