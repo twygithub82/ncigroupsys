@@ -36,7 +36,7 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { MonthlyDetailExcelComponent } from 'app/document-template/excel/admin-reports/monthly/details/monthly-details-excel.component';
+import { MonthlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/monthly/summary/monthly-summary-excel.component';
 
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
@@ -523,7 +523,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
         tempDirection = 'ltr';
       }
   
-      const dialogRef = this.dialog.open(MonthlyDetailExcelComponent, {
+      const dialogRef = this.dialog.open(MonthlySummaryExcelComponent, {
         width: reportPreviewWindowDimension.portrait_width_rate,
         maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
         maxHeight: reportPreviewWindowDimension.report_maxHeight,

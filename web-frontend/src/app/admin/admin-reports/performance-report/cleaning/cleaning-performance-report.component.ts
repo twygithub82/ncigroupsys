@@ -42,6 +42,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { CleanerPerformanceDetailExcelComponent } from 'app/document-template/excel/admin-reports/performance/cleaner/cleaner-detail-excel.component';
 import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
@@ -559,7 +560,14 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         //   this.isGeneratingReport = false
         // }
         this.repData = data;
-        this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
+        if(report_type==5)
+        {
+          this.onExportAdminReportCleanerPerformanceDetailExcelReport(this.repData, date!, team!);
+        }
+        else
+        {
+          this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
+        }
       });
   }
 
@@ -756,5 +764,43 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
   get pageSizeInfo() {
     return pageSizeInfo
+  }
+
+  export_excel()
+  {
+    this.search(5);
+  }
+
+  onExportAdminReportCleanerPerformanceDetailExcelReport(repData: CleanerPerformance[], date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CleanerPerformanceDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 }

@@ -36,7 +36,7 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-
+import { YearlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/yearly/summary/yearly-summary-excel.component';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { YearlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/overview/yearly-chart-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -223,7 +223,7 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-     public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -368,11 +368,11 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
-    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
+    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value) {
       date = `${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
-  }
-  
-    
+    }
+
+
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
     if (this.searchForm?.get('month_start')?.value) {
       var month = this.searchForm?.get('month_start')?.value;
@@ -511,6 +511,9 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
+      else if (report_type == 5) {
+        this.onExportSummaryExcel(repData, date, customerName);
+      }
 
     }
     else {
@@ -521,6 +524,47 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
+  export_excel() {
+    this.search(5);
+  }
+
+  onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YearlySummaryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {

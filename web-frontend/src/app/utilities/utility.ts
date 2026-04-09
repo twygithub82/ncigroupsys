@@ -10,6 +10,7 @@ import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { systemCurrencyCode } from '../../environments/environment';
 import { PDFUtility } from "./pdf-utility";
+
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -2080,7 +2081,9 @@ static saveExcel_r1(rows:any[],startRow:number,fileName:string ,totalColumns:num
         XLSX.writeFile(workbook, fileName);
   }
 
-  static saveExcel(rows:any[],fileName:string ,totalColumns:number):void
+  
+
+  static saveExcel(rows:any[],fileName:string ,totalColumns:number ,hdRowIndex:number =2):void
   {
      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
         //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
@@ -2091,7 +2094,7 @@ static saveExcel_r1(rows:any[],startRow:number,fileName:string ,totalColumns:num
         //   return { wch: maxLength + 2 };
         // });
     
-        const headerRowIndex = 2;
+        const headerRowIndex = hdRowIndex;
 
           // Use header row to determine number of columns
           const columnCount = rows[headerRowIndex].length;
@@ -2132,6 +2135,28 @@ static saveExcel_r1(rows:any[],startRow:number,fileName:string ,totalColumns:num
     
         XLSX.writeFile(workbook, fileName);
   }
+
+ static autoFitColumns(data: any[][]) {
+  const colWidths: number[] = [];
+
+  data.forEach(row => {
+    row.forEach((cell, colIndex) => {
+      if(colIndex>=3) return;
+      const cellValue = cell ? cell.toString() : "";
+      const length = cellValue.length;
+
+      colWidths[colIndex] = Math.max(colWidths[colIndex] || 10, length);
+    });
+  });
+
+  return colWidths.map((w, i) => {
+    // if (i === 3) return { wch: Math.min(w + 2, 60) }; // Cargo column
+    return { wch: Math.min(w + 2, 60) };
+  });
+}
+
+  
+  
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {
   //     var imgRetval:string ='';

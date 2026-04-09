@@ -36,6 +36,7 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CustomerMonthlySalesReportDetailsExcelComponent } from 'app/document-template/excel/admin-reports/monthly/customer-sales/customer-sales-details-excel.component';
 import { CustomerMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/customer-sales/customer-sales-details-pdf.component';
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
@@ -394,7 +395,9 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = this.reportDS.searchAdminReportCustomerMonthlySalesReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
+       
         this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!);
+        
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -493,6 +496,10 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
       if(report_type==3)
       {
           this.onExportDetail(repData, date, customerName);
+      }
+      else
+      {
+         this.onExportDetailExcel(repData, date, customerName);
       }
     }
     else {
@@ -643,5 +650,47 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   get pageSizeInfo() {
     return pageSizeInfo
+  }
+
+  export_excel()
+  {
+    this.search(5);
+  }
+   onExportDetailExcel(repData: CustomerMonthlySales, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CustomerMonthlySalesReportDetailsExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 }

@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { YearlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/yearly/summary/yearly-summary-excel.component';
 
 @Component({
   selector: 'app-clean-yearly',
@@ -220,7 +221,7 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-     public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -368,10 +369,10 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
 
     var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
-    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
-        date = `${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
+    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value) {
+      date = `${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
     }
-    
+
     if (this.searchForm?.get('month_start')?.value) {
       var month = this.searchForm?.get('month_start')?.value;
       const monthIndex = this.monthList.findIndex(m => month === m);
@@ -509,7 +510,9 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
-
+      else if (report_type == 5) {
+        this.onExportSummaryExcel(repData, date, customerName);
+      }
     }
     else {
       this.sotList = [];
@@ -519,6 +522,47 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  export_excel() {
+    this.search(5);
+  }
+
+  onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YearlySummaryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {

@@ -6,12 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -20,66 +20,29 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { BarChartModule } from '@swimlane/ngx-charts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { AdminReportMonthlyReport, report_status_yard, ResultPerDay } from 'app/data-sources/reports';
-import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
-import { PDFUtility } from 'app/utilities/pdf-utility';
+import { report_status_yard, report_status, DailyTeamApproval, DailyTeamRevenue, ZeroApprovalCostItem } from 'app/data-sources/reports';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartDS } from 'app/data-sources/steam-part';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
-import {
-  ApexAxisChartSeries, ApexChart,
-  ApexDataLabels,
-  ApexFill,
-  ApexGrid,
-  ApexLegend,
-  ApexMarkers, ApexNonAxisChartSeries,
-  ApexPlotOptions,
-  ApexResponsive,
-  ApexStroke,
-  ApexTitleSubtitle,
-  ApexTooltip,
-  ApexXAxis,
-  ApexYAxis,
-  NgApexchartsModule,
-} from 'ng-apexcharts';
-import * as XLSX from 'xlsx';
-
-// import { fileSave } from 'browser-fs-access';
+import { PDFUtility } from 'app/utilities/pdf-utility';
+ import * as XLSX from 'xlsx-js-style';
+import { saveAs } from 'file-saver';
 
 export interface DialogData {
-  repData: TariffBufferItem[],
-   date: string,
+  repData: ZeroApprovalCostItem[],
+  date: string,
   repType: string,
-  customer: string
+  customer: string,
+  code: string
 }
-
-export type ChartOptions = {
-  animations?: any;
-  series?: ApexAxisChartSeries;
-  series2?: ApexNonAxisChartSeries;
-  chart?: ApexChart;
-  dataLabels?: ApexDataLabels;
-  plotOptions?: ApexPlotOptions;
-  yaxis?: ApexYAxis;
-  xaxis?: ApexXAxis;
-  fill?: ApexFill;
-  tooltip?: ApexTooltip;
-  stroke?: ApexStroke;
-  legend?: ApexLegend;
-  title?: ApexTitleSubtitle;
-  colors?: string[];
-  grid?: ApexGrid;
-  markers?: ApexMarkers;
-  labels: string[];
-  responsive: ApexResponsive[];
-};
-
 @Component({
-  selector: 'app-monthly-details-report-excel',
-  templateUrl: './monthly-details-excel.component.html',
-  styleUrls: ['./monthly-details-excel.component.scss'],
+  selector: 'app-zero-approval-cost-excel',
+  templateUrl: './zero-approval-cost-excel.component.html',
+  styleUrls: ['./zero-approval-cost-excel.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -88,22 +51,19 @@ export type ChartOptions = {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule,
-    NgApexchartsModule,
-    BarChartModule,
+    MatProgressBarModule
   ],
 })
-export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ZeroApprovalCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-      SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
+    SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
-    NO_OF_ESTIMATE: 'COMMON-FORM.NO-OF-ESTIMATE',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -285,26 +245,35 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
-    RESIDUE_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
-    REPAIR_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
-    CLEAN_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
-    S_N: 'COMMON-FORM.S_N',
+    DAILY_TEAM_APPROVAL_REPORT: 'COMMON-FORM.DAILY-TEAM-APPROVAL-REPORT',
     DAY: 'COMMON-FORM.DAY',
     MONTH: 'COMMON-FORM.MONTH',
     AVERAGE: 'COMMON-FORM.AVERAGE',
-    TOTAL_TANK: 'COMMON-FORM.TOTAL-TANK',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    APPROVED_DATE: 'COMMON-FORM.APPROVED-DATE',
+    CUSTOMER_TOTAL: 'COMMON-FORM.CUSTOMER-TOTAL',
+    GRAND_TOTAL: "COMMON-FORM.GRAND-TOTAL",
+    ZERO_APPROVAL_COST: 'COMMON-FORM.ZERO-APPROVAL-COST',
+    ESTIMATED: "COMMON-FORM.ESTIMATED",
+    COMPLETED_DATE: "COMMON-FORM.COMPLETED-DATE",
+    S_N: 'COMMON-FORM.S_N',
 
   }
-
-  public lineChart2Options!: Partial<ChartOptions>;
 
   type?: string | null;
   // steamDS: SteamDS;
   // steamPartDS: SteamPartDS;
   // sotDS: StoringOrderTankDS;
   // ccDS: CustomerCompanyDS;
-  // cvDS: CodeValuesDS;
+  cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
@@ -331,6 +300,8 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   repairCodeCvList: CodeValuesItem[] = [];
   chunkedRepairCodeCvList: any[][] = [];
   unitTypeCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
   scale = 2.5;
   imageQuality = 0.7;
@@ -344,9 +315,10 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: any[];
+  repData?: ZeroApprovalCostItem[];
   date?: string;
   repType?: string;
+  code?: string;
   customer?: string;
   index: number = 0;
   // date:string='';
@@ -355,7 +327,7 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
 
 
   constructor(
-    public dialogRef: MatDialogRef<MonthlyDetailExcelComponent>,
+    public dialogRef: MatDialogRef<ZeroApprovalCostExcelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -365,14 +337,16 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-    this.InitialDefaultData();
-    this.date = this.data.date;
-    // this.processTankStatus(data.repData);
     // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
+    //this.steamPartDS = new SteamPartDS(this.apollo);
+    ///this.sotDS = new StoringOrderTankDS(this.apollo);
+    //this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.repData = this.data.repData;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.code = this.data.code;
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
@@ -387,23 +361,12 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async ngOnInit() {
-    // await this.getCodeValuesData();
-    //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   this.repData = this.data.repData;
-   this.repType = this.data.repType;
-    this.customer = this.data.customer;
-    // this.repType = this.data.repType;
-    // this.customer = this.data.customer;
+    await this.getCodeValuesData();
     this.onDownloadClick();
-
   }
 
   ngAfterViewInit() {
-
-
   }
-
-
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -423,14 +386,14 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     }
   }
 
-  // getRepairData(): Promise<any[]> {
-  //   return new Promise((resolve, reject) => {
-  //     this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
-  //       next: (data) => resolve(data),
-  //       error: (err) => reject(err),
-  //     });
-  //   });
-  // }
+  getRepairData(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      // this.subs.sink = this.steamDS.getSteamByIDForPdf(this.repair_guid!).subscribe({
+      //   next: (data) => resolve(data),
+      //   error: (err) => reject(err),
+      // });
+    });
+  }
 
   getRepairPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
@@ -441,7 +404,28 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
-  
+  async getCodeValuesData(): Promise<void> {
+    const queries = [
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
+      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+    ];
+
+    await this.cvDS.getCodeValuesByTypeAsync(queries);
+
+    // Wrap all alias connections in promises
+    const promises = [
+      firstValueFrom(this.cvDS.connectAlias('processStatusCv')).then(async data => {
+        this.processStatusCvList = data || [];
+      }),
+      firstValueFrom(this.cvDS.connectAlias('repairOptionCv')).then(data => {
+        this.repairOptionCvList = data || [];
+      })
+    ];
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+  }
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -455,7 +439,59 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
 
   }
 
-  
+  // getGroupSeq(codeVal: string | undefined): number | undefined {
+  //   const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
+  //   if (gncv.length) {
+  //     return gncv[0].sequence;
+  //   }
+  //   return -1;
+  // }
+
+  getLastTest(igs: any): string | undefined {
+    return this.getLastTestIGS(igs);
+  }
+
+  getLastTestIGS(igs: any): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
+
+    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
+    }
+    return "";
+  }
+
+  // getLastTestTI(): string | undefined {
+  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
+
+  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
+  //     const test_type = this.tiItem.last_test_cv;
+  //     const test_class = this.tiItem.test_class_cv;
+  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
+  //   }
+  //   return "";
+  // }
+
+  getRepairOption(codeVal: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.repairOptionCvList);
+  }
+
+  getTestTypeDescription(codeVal: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
+
+  getTestClassDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
+  }
+
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -463,7 +499,22 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     }).join('/');
   }
 
-  
+  displayTankPurpose(sot: any) {
+    let purposes: any[] = [];
+    if (sot?.purpose_storage) {
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push(this.getPurposeOptionDescription('CLEANING'));
+    }
+    if (sot?.purpose_steam) {
+      purposes.push(this.getPurposeOptionDescription('STEAM'));
+    }
+    if (sot?.purpose_repair_cv) {
+      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+    }
+    return purposes.join('; ');
+  }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -479,199 +530,271 @@ export class MonthlyDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     return Utility.convertEpochToDateStr(input);
   }
 
-  // parse2Decimal(input: number | string | undefined) {
-  //   return Utility.formatNumberDisplay(input);
-  // }
-
-  calculateCost() {
-    // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
-    // console.log(this.repairCost)
-  }
-
   async onDownloadClick() {
-    this.exportToExcel_r1();
-
+   await this.exportToExcel_r1();
   }
-
-
-
-
-
-
-
-
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
-  async exportToExcel_r1(fileName: string = 'document.xslx') {
-    this.exportExcel(this.repData!);
+  async exportToExcel_r1(fileName: string = 'document.xlsx') {
+  this.generatingPdfLoadingSubject.next(true);
+  this.generatingPdfProgress = 0;
+
+  // Create a new workbook
+  const wb = XLSX.utils.book_new();
+
+  // Report title and subtitle
+  const reportTitle = this.GetReportTitle();
+  const date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
+
+  // Prepare headers
+  const headers = [
+    this.translatedLangText.S_N,
+    this.translatedLangText.TANK_NO,
+    this.translatedLangText.CODE,
+    this.translatedLangText.EIR_NO,
+    this.translatedLangText.EIR_DATE,
+    this.translatedLangText.COMPLETED_DATE,
+    this.translatedLangText.APPROVED_DATE,
+    this.translatedLangText.ESTIMATE_NO,
+    this.translatedLangText.ESTIMATED
+  ];
+
+  // Prepare data rows
+  const data: any[][] = [];
+
+  // Add report title row (merged)
+  data.push([reportTitle]);
+  // Add subtitle row (merged)
+  data.push([date]);
+
+  // Add blank row
+  data.push([]);
+
+  // Add header row
+  data.push(headers);
+
+  // Add body rows
+  this.repData!.forEach((itm, idx) => {
+    data.push([
+      idx + 1,
+      itm?.tank_no || "",
+      itm?.customer_code || "",
+      itm?.eir_no || "",
+      Utility.convertEpochToDateStr(itm?.eir_dt) || "",
+      Utility.convertEpochToDateStr(itm?.complete_dt) || "",
+      Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+      itm?.estimate_no || "",
+      Utility.formatNumberDisplay(itm?.est_cost) || ""
+    ]);
+  });
+
+  // Convert to worksheet
+  const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
+
+  // Merge report title and subtitle across all columns
+  const lastCol = headers.length - 1;
+  ws['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: lastCol } }, // Title
+    { s: { r: 1, c: 0 }, e: { r: 1, c: lastCol } }, // Subtitle
+  ];
+
+  // Apply styles
+  const range = XLSX.utils.decode_range(ws['!ref']!);
+  for (let R = 0; R <= range.e.r; ++R) {
+    for (let C = 0; C <= range.e.c; ++C) {
+      const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+      const cell = ws[cellRef];
+      if (!cell) continue;
+
+      // Title row
+      if (R === 0) {
+        cell.s = {
+          font: { bold: true, sz: 16 },
+          alignment: { horizontal: 'center', vertical: 'center' }
+        };
+      }
+      // Subtitle row
+      else if (R === 1) {
+        cell.s = {
+          font: { sz: 12 },
+          alignment: { horizontal: 'right', vertical: 'center' }
+        };
+      }
+      // Header row
+      else if (R === 3) {
+        cell.s = {
+          font: { bold: true },
+          // fill: { fgColor: { rgb: "D3D3D3" } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: {
+            // top: { style: "thin" },
+            // bottom: { style: "thin" },
+            // left: { style: "thin" },
+            // right: { style: "thin" }
+          }
+        };
+      }
+      // Body rows
+      else if (R > 3) {
+        // Left-align CODE column (index 2) and surveyor rows if needed
+        let halign = (C === 2) ? 'left' : 'center';
+        cell.s = {
+          alignment: { horizontal: halign, vertical: 'center' },
+          border: {
+            // top: { style: "thin" },
+            // bottom: { style: "thin" },
+            // left: { style: "thin" },
+            // right: { style: "thin" }
+          }
+        };
+      }
+    }
   }
 
+  // Add worksheet to workbook
+  XLSX.utils.book_append_sheet(wb, ws, 'Report');
+  fileName=this.GetReportTitle()+'.xlsx';
+  // Write Excel file
+  XLSX.writeFile(wb, fileName);
 
+  this.generatingPdfProgress = 100;
+  this.generatingPdfLoadingSubject.next(false);
+  this.dialogRef.close();
+}
 
-
-
-async exportExcel(items: any) {
-    const doc = new jsPDF();
-
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10;
     const rightMargin = 10;
     const topMargin = 5;
     const bottomMargin = 5;
-
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-    let lastTableFinalY = 25;
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightBodyCell = 5;
+    let minHeightHeaderCol = 3;
+   let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    //  var idx = 0;
-    // for (let n = 0; n < (this.repData?.result_per_day?.length || 0); n++) {
+    // const progressValue = 100 / cardElements.length;
 
-    //   //let startY = lastTableFinalY + 15; // Start Y position for the current table
-    //   let itm = this.repData?.result_per_day?.[n];
-    //   data.push([
-    //     (++idx).toString(), itm?.date || "", itm?.day || "", itm?.count || "0"
-    //   ]);
-    // }
-
-    let index = 1;
-    let resultsperDay:any[] = items.result_per_day;
-    const data: any[][] = resultsperDay.map((item,index) => {
-                const row = [
-                   (++index).toString(), item?.date || "", item?.day || "", item?.count || "0"
-                ];
-                return row;
-            });
-    let customColHeaderText = this.repType === "REPAIR" ? this.translatedLangText.NO_OF_ESTIMATE : this.translatedLangText.NO_OF_TANKS;
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-   const head: (string | number)[][] = [[
-   this.translatedLangText.S_N, this.translatedLangText.DATE,
-  this.translatedLangText.DAY, customColHeaderText
-]];
-
-const reportTitle: (string | number)[][] = [
-      [`${this.GetReportTitle()}`]
-    ];
-   const rows: (string | number)[][] = [
-      ...reportTitle,
-      [], // empty row after title
-      ...head,
-      ...data
-    ];
- const totalColumns = head[0].length;
-    var fileName =`${this.GetReportTitle()}.xlsx`;
-    Utility.saveExcel(rows, fileName, totalColumns);
-  //   const rows: (string | number)[][] = [
-  //     ...head,
-  //     ...data
-  //   ];
-  //  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-  //   worksheet['!cols'] = rows[0].map((_, colIndex) => {
-  //     const maxLength = rows.reduce((max, row) => {
-  //       const cell = row[colIndex];
-  //       return Math.max(max, cell ? cell.toString().length : 0);
-  //     }, 10);
-  //     return { wch: maxLength + 2 };
-  //   });
-  //   const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-  //   XLSX.writeFile(workbook, "BufferCleaningTariff.xlsx");
-    this.dialogRef.close();
-}
-
-
-  async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
-    leftMargin: number, rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
-
-    pdf.addPage();
-    const tablewidth = 55;
-    var pageNumber = pdf.getNumberOfPages();
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    const card = cardElements[0];
-    const contentWidth = pageWidth - leftMargin - rightMargin - tablewidth - 5;
-
-    const imgData = await PDFUtility.captureFullCardImage(card);
-    // Convert card to image (JPEG format)
-    const canvas = await html2canvas(card);
-    // const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
-
-    const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-
-    // Add the report title at the top of every page, centered
-    const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-
-    var pos = 10;
-    PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pos);
-    // pdf.text(reportTitle, titleX, pos); // Position it at the top
-
-    // // Draw underline for the title
-    // pdf.setLineWidth(0.5); // Set line width for underline
-    // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-
-    pos += 8;
-    pdf.addImage(imgData, 'JPEG', leftMargin, pos, contentWidth, imgHeight); // Adjust y position to leave space for the title
-
-
-    let minHeightBodyCell = 9;
-    let fontSz = 6.5;
+    const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.DESCRIPTION,
-      this.translatedLangText.NO_OF_TANKS
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO, this.translatedLangText.CODE,
+      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,
+      this.translatedLangText.COMPLETED_DATE, this.translatedLangText.APPROVED_DATE,
+      this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATED
     ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
       lineWidth: 0.1
     };
 
-    const comStyles: any = {
-      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-    };
-
-    let lastTableFinalY = 10;
-    let startY = lastTableFinalY;
-    let minHeightHeaderCol = 8;
-    const data: any[][] = [];
-    // data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
-    // data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
 
-    let startX = (pageWidth - rightMargin - tablewidth);
-    //Add table using autoTable plugin
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
-    // pdf.setFontSize(8);
-    // pdf.setTextColor(0, 0, 0); // Black text
-    // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 46;
+
+    let date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
+    //await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+    // await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    const subTitlePos = 0;
+    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,date,subTitlePos);
+
+    startY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
+    lastTableFinalY += 5;
+
+    // let startY = lastTableFinalY; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+
+
+    var idx = 0;
+    let totalRepairCost = 0; // Initialize total repair cost
+    let GrandTotal = 0;
+
+    this.repData!.forEach(itm => {
+     
+      data.push([
+          (++idx).toString(),                          // S_N
+          itm?.tank_no || "",                          // TANK_NO
+          itm?.customer_code || "",                    // CODE
+          itm?.eir_no || "",                           // EIR_NO
+          Utility.convertEpochToDateStr(itm?.eir_dt) || "", 
+          Utility.convertEpochToDateStr(itm?.complete_dt) || "",
+          Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+          itm?.estimate_no || "",                      // ESTIMATE_NO
+          Utility.formatNumberDisplay(itm?.est_cost)   // ESTIMATED
+        ]);
+    // data.push([
+        //   (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "",itm?.customer_code, Utility.convertEpochToDateStr(itm?.eir_dt) || "",
+        //   Utility.convertEpochToDateStr(itm?.complete_dt) || "", Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+        //   itm?.estimate_no, Utility.formatNumberDisplay(itm?.est_cost)
+        // ]);
+
+
+      });
+
+    
+
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    let AllowedRowColSpan = -1;
 
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY + 8, // Start table at the current startY value
-      margin: { left: startX },
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
+      margin: { top:startY, left: leftMargin },
+      tableWidth: contentWidth,
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -679,13 +802,49 @@ const reportTitle: (string | number)[][] = [
       headStyles: headStyles, // Custom header styles
       bodyStyles: {
         fillColor: [255, 255, 255],
-        halign: 'center', // Left-align content for body by default
-        valign: 'middle', // Vertically align content
-      }
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+      
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
 
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Portrait(pdf, date, pageWidth, leftMargin, rightMargin,subTitlePos);
+          }
+        }
+
+      },
     });
 
+   
+    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+
+
+
+    
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
   }
+
+ 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -789,29 +948,18 @@ const reportTitle: (string | number)[][] = [
   GeneratedDate(): string {
     return Utility.convertDateToStr(new Date());
   }
-
   GetReportTitle(): string {
     var title: string = '';
-    switch (this.repType) {
-      case "CLEANING":
-        title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "STEAMING":
-        title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "REPAIR":
-        title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "RESIDUE":
-        title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
-        break;
-    }
+    title = `${this.translatedLangText.ZERO_APPROVAL_COST} : ${this.repType}`
     return `${title}`
   }
 
-  // displayLocation(yard: report_status_yard): string {
-  //   return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
-  // }
+  displayProcessStatus(status: string): string {
+    return this.cvDS.getCodeDescription(status, this.processStatusCvList) || '';;
+  }
+  displayLocation(yard: report_status_yard): string {
+    return this.cvDS.getCodeDescription(yard.code, this.yardCvList) || '';;
+  }
   displayInYardTotal(yard: report_status_yard): number {
     var total = 0;
 
@@ -843,156 +991,4 @@ const reportTitle: (string | number)[][] = [
 
   }
 
-  processTankStatus(repStatus: AdminReportMonthlyReport) {
-
-
-    var maxYAxisValue = 12;
-    var days = repStatus.result_per_day?.map((i, index) => (index + 1));
-    const counts: number[] = repStatus.result_per_day
-      ?.map(i => i.count) // Extract the count property
-      .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
-    maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
-
-    maxYAxisValue = Math.round(maxYAxisValue * 1.5);
-    const computedTickAmount = maxYAxisValue; // since range starts at 0
-    const tickAmount = computedTickAmount <= 3 ? computedTickAmount : undefined;
-    this.lineChart2Options.yaxis = {
-      max: maxYAxisValue,
-      min: 0,
-      title: {
-        text: `${this.translatedLangText.NO_OF_TANKS}`,
-      },
-      labels: {
-        align: 'right', // Align labels to the right
-        minWidth: 50,   // Set a minimum width for the labels
-        maxWidth: 100,  // Set a maximum width for the labels
-        offsetX: 10,    // Add horizontal offset to the labels
-
-        formatter: (value: number) => {
-          return Math.round(value).toString(); // ensures no decimal values on Y-axis
-        }
-      },
-      //   ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
-      //  tickAmount: 3, // Controls number of ticks (adjust as needed)
-      // forceNiceScale: true, // Optional: ensures clean scaling
-      //decimalsInFloat: 0
-    }
-    if (tickAmount) {
-      this.lineChart2Options.yaxis.tickAmount = tickAmount;
-    }
-    this.lineChart2Options.series = [
-      {
-        name: 'days',
-        data: counts,
-      },
-    ]
-    this.lineChart2Options.xaxis = {
-      type: 'category',
-      categories: days,
-      title: {
-        text: `${this.date}`,
-      },
-    }
-
-    // this.lineChart2Options.chart!.events = {
-    //     animationEnd: () => {
-    //       this.onChartRendered();
-    //     }
-    //  }
-
-  }
-
-  InitialDefaultData() {
-    this.lineChart2Options = {
-      series: [
-        {
-          name: 'Bill Amount',
-          data: [113, 120, 130, 120, 125, 119, 126],
-        },
-      ],
-      chart: {
-        height: 380,
-        type: 'line',
-        animations: {
-          enabled: false, // disables animations
-        },
-        dropShadow: {
-          enabled: false,
-          color: '#000',
-          top: 18,
-          left: 7,
-          blur: 10,
-          opacity: 0.2,
-        },
-        foreColor: '#9aa0ac',
-        toolbar: {
-          show: false,
-
-        },
-      },
-      colors: ['#6777EF'],
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      markers: {
-        size: 3, // ✅ shows a visible dot
-        strokeWidth: 0,
-        colors: ['#6777EF'],
-      },
-      xaxis: {
-        categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        title: {
-          text: 'Weekday',
-        },
-      },
-      yaxis: {
-        title: {
-          text: 'Bill Amount($)',
-        },
-      },
-      grid: {
-        show: true,
-        borderColor: '#9aa0ac',
-        strokeDashArray: 1,
-      },
-      tooltip: {
-        theme: 'dark',
-        marker: {
-          show: true,
-        },
-        x: {
-          show: true,
-        },
-      },
-
-    };
-  }
-
-  onChartRendered() {
-    // if (this.chartAnimatedCounter == 3) 
-    {
-      //this.onDownloadClick();
-      // var timeout = 3000;
-      // setTimeout(() => {
-      //   this.onDownloadClick();
-      // }, timeout);
-    }
-  }
-
-   displayLastUpdated(r: any) {
-    var updatedt = r.update_dt;
-    if (updatedt === null) {
-      updatedt = r.create_dt;
-    }
-    return this.displayDate(updatedt);
-
-  }
-
-  parse2Decimal(figure: number | string) {
-    return Utility.formatNumberDisplay(figure)
-  }
 }

@@ -1,0 +1,43 @@
+<div mat-dialog-title class="ms-3 mt-3" hidden>
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content>
+  
+
+  <div id="pdf-form-body" class="pdf-container pdf-body" >
+
+     <div class="card" style="border: none; border-radius: 0;">
+        <div class="body">
+          <div style="width: 40vw">
+            <!-- <apx-chart [series]="lineChart2Options.series!" [chart]="lineChart2Options.chart!"
+                [xaxis]="lineChart2Options.xaxis!" [stroke]="lineChart2Options.stroke!"
+                [colors]="lineChart2Options.colors!" 
+                [legend]="lineChart2Options.legend!" [markers]="lineChart2Options.markers!"
+                [grid]="lineChart2Options.grid!" [yaxis]="lineChart2Options.yaxis!" 
+                [tooltip]="lineChart2Options.tooltip!" [title]="lineChart2Options.title!">
+              </apx-chart> -->
+          </div>
+        </div>
+      </div>
+    <!-- @for (bCust of report_customer_tank_activity; track bCust) { -->
+ 
+  </div>
+
+ 
+</div>
+<!-- <div mat-dialog-actions class="m-2 align-right" hidden>
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+        file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div> -->

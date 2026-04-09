@@ -33,12 +33,15 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { DailyQCDetail, ReportDS } from 'app/data-sources/reports';
+import { DailyQCDetail, DailyTeamRevenue, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { DailyApprovalExcelComponent } from 'app/document-template/excel/admin-reports/daily/ApprovalReport/daily-approval-excel.component';
+import { DailyQCDetailExcelComponent } from 'app/document-template/excel/admin-reports/daily/QCReport/daily-qc-detail-excel.component';
+import { DailyRevenueExcelComponent } from 'app/document-template/excel/admin-reports/daily/RevenueReport/daily-revenue-excel.component';
 import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
 import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
 import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
@@ -514,13 +517,13 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       cond_counter++;
     }
 
-    if([1,3].includes(report_type)){
+    if([1,3,4,6].includes(report_type)){
     if ((this.searchForm!.get('qc_dt')?.value)) {
       var start_dt = new Date(this.searchForm!.value['qc_dt']);
       var end_dt = new Date(this.searchForm!.value['qc_dt']);
       where.qc_start_date = Utility.convertDate(start_dt);
       where.qc_end_date = Utility.convertDate(end_dt, true);
-      if ([1, 3].includes(report_type)) date = Utility.convertDateToStr(start_dt);
+      if ([1, 3,4,6].includes(report_type)) date = Utility.convertDateToStr(start_dt);
       cond_counter++;
     }
   }
@@ -561,10 +564,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     this.lastSearchCriteria = where;
-    if (report_type == 2) {
+    if (report_type == 2 || report_type==5) {
       this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
-    else if (report_type == 1) {
+    else if (report_type == 1 || report_type==4) {
       this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
     else {
@@ -580,7 +583,14 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
          this.repData = data;
+         if(report_type==3)
+          {
           this.onExportDailyQCDetailReport(this.repData, date!, team!);
+          }
+          else
+          {
+            this.onExportDailyQCDetailExcelReport(this.repData, date!, team!);
+          }
         if (data.length > 0) {
           this.repData = data;
          // this.onExportDailyQCDetailReport(this.repData, date!, team!);
@@ -602,7 +612,13 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-          this.onExportDailyRevenueReport(this.repData, date!, team!);``
+          if(report_type==1)
+          {
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
+          }
+          else{
+            this.onExportDailyRevenueExcelReport(this.repData, date!, team!);
+          }
         if (data.length > 0) {
           this.repData = data;
          // this.onExportDailyRevenueReport(this.repData, date!, team!);
@@ -623,7 +639,14 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
+        if(report_type==2)
+        {
          this.onExportDailyApprovalReport(this.repData, date!, team!);
+        }
+        else
+        {
+          this.onExportDailyApprovalExcelReport(this.repData, date!, team!);
+        }
         if (data.length > 0) {
           this.repData = data;
         //  this.onExportDailyApprovalReport(this.repData, date!, team!);
@@ -785,6 +808,109 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
   }
 
+  
+ onExportDailyApprovalExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+
+    // }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyApprovalExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+    onExportDailyRevenueExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+
+    // }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyRevenueExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportDailyQCDetailExcelReport(repData: DailyQCDetail[], date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+
+    // }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyQCDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
 
   onExportDailyRevenueReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
@@ -927,5 +1053,12 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   getMaxDate() {
     return new Date();
+  }
+
+  export_excel()
+  {
+     var repType: number = Number(this.searchForm?.get("report_type")?.value);
+     repType+=3;
+    this.search(repType);
   }
 }
