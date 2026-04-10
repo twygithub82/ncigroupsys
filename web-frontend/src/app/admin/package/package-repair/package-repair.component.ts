@@ -50,6 +50,7 @@ import { pack } from 'd3';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { PackageBufferCleaningCostExcelComponent } from 'app/document-template/excel/package/cleaning/buffer-cleaning/package-buffer-cleaning-cost-excel.component';
 import { PackageRepairCostExcelComponent } from 'app/document-template/excel/package/repair/package-repair-cost-excel.component';
+import { PackageRepairCostPdfComponent } from 'app/document-template/pdf/package/repair/package-repair-cost-pdf.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -1235,21 +1236,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       this.exportExcelReport(prcList);
     })
 
-    // if (this.packRepairItems) {
-    //   this.isGeneratingReport = true;
-    //   var prcList: PackageRepairItem[] = [];
-    //   this.packRepairItems.forEach((item) => {
-    //      var itm:any = item;
-    //     const c: PackageRepairItem = {
-    //       ...itm.package_repair,
-    //       part_name:this.getTariffRepairAlias(itm.package_repair?.tariff_repair),
-    //       group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair?.tariff_repair),
-    //       subgroup_name_cv:this.displaySubGroupNameCodeValue_Description(itm.package_repair?.tariff_repair.subgroup_name_cv)
-    //     };
-    //     prcList.push(c);
-    //   });
-    //   this.exportExcelReport(prcList);
-    // }
+   
 
   }
 
@@ -1272,6 +1259,69 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(PackageRepairCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+   export_report() {
+
+    this.isGeneratingReport = true;
+    // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
+    // const order=[ { tariff_repair: { alias: "ASC" } } , { customer_company: { code: "ASC" }  }];
+    this.packRepairDS.SearchAllPackageRepair(where, order).subscribe(res => {
+      var prcList: PackageRepairItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: PackageRepairItem = {
+          ...itm,
+          part_name: this.getTariffRepairAlias(itm.package_repair.tariff_repair),
+          group_name_cv: this.displayGroupNameCodeValue_Description(itm.package_repair.tariff_repair.group_name_cv),
+          subgroup_name_cv: this.displaySubGroupNameCodeValue_Description(itm.package_repair.tariff_repair.subgroup_name_cv),
+          handled: this.getHandledItemDescription(itm.count > 0 ? 'HANDLED' : 'NON_HANDLED')
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
+    })
+
+   
+
+  }
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PackageRepairCostPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,

@@ -6,12 +6,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+// import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -19,15 +20,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-import { BarChartModule } from '@swimlane/ngx-charts';
-import { CleaningPriceList } from 'app/data-sources/cleaning-method';
-import { PackageDepotItem } from 'app/data-sources/package-depot';
+import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { AdminReportMonthlyReport, report_status_yard } from 'app/data-sources/reports';
-import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import { report_status_yard, report_status, AdminReportMonthlyReport } from 'app/data-sources/reports';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartDS } from 'app/data-sources/steam-part';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { autoTable, RowInput, Styles } from 'jspdf-autotable';
+import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { PDFUtility } from 'app/utilities/pdf-utility';
-import { autoTable, Styles } from 'jspdf-autotable';
+import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -44,13 +47,17 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import * as XLSX from 'xlsx';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageBufferItem } from 'app/data-sources/package-buffer';
+import { PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageSteamingItem } from 'app/data-sources/package-steam';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: PackageBufferItem[],
+  repData: PackageSteamingItem[],
   date: string
 }
 
@@ -73,12 +80,13 @@ export type ChartOptions = {
   markers?: ApexMarkers;
   labels: string[];
   responsive: ApexResponsive[];
+  
 };
 
 @Component({
-  selector: 'app-package-depot-cost-report-excel',
-  templateUrl: './package-depot-cost-excel.component.html',
-  styleUrls: ['./package-depot-cost-excel.component.scss'],
+  selector: 'app-package-steaming-cost-report-pdf',
+  templateUrl: './package-steaming-cost-pdf.component.html',
+  styleUrls: ['./package-steaming-cost-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -92,16 +100,16 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageSteamingCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    NEW: 'COMMON-FORM.NEW',
+  NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -154,46 +162,47 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_MIN_LABOUR: 'COMMON-FORM.PACKAGE-MIN-LABOUR',
+    PACKAGE_MAX_LABOUR: 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    EMAIL: 'COMMON-FORM.EMAIL',
-    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
-    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
-    VIEW: 'COMMON-FORM.VIEW',
-    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST: "COMMON-FORM.LOLO-COST",
-    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
-    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
-    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
-    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
-    COUNTRY: "COMMON-FORM.COUNTRY",
-    FAX_NO: "COMMON-FORM.FAX-NO",
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    FREE_DAYS: 'COMMON-FORM.FREE-DAYS',
-    GATE_SURCHARGE_COST: 'COMMON-FORM.GATE-SURCHARGE-COST',
-    IN_OUT_SURCHARGE_COST: 'COMMON-FORM.IN-OUT-SURCHARGE-COST',
+    MAX_TEMP: 'COMMON-FORM.MAX-TEMP',
+    MIN_TEMP: 'COMMON-FORM.MIN-TEMP',
+    QTY: 'COMMON-FORM.QTY',
+    LABOUR: 'COMMON-FORM.LABOUR',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
-    PROFILES_SELECTED: 'COMMON-FORM.SELECTED',
-    MULTIPLE: 'COMMON-FORM.MULTIPLE',
     S_N: 'COMMON-FORM.S_N',
-    PACKAGE_DEPOT_COST:'COMMON-FORM.PACKAGE-DEPOT-COST',
-    IN_SURCHARGE_COST: 'COMMON-FORM.IN-SURCHARGE-COST',
-    OUT_SURCHARGE_COST: 'COMMON-FORM.OUT-SURCHARGE-COST',
-
+    PACKAGE_STEAMING:'COMMON-FORM.PACKAGE-STEAMING',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -254,7 +263,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 
 
   constructor(
-    public dialogRef: MatDialogRef<PackageDepotCostExcelComponent>,
+    public dialogRef: MatDialogRef<PackageSteamingCostPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -266,6 +275,8 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     this.translateLangText();
     this.InitialDefaultData();
     this.date = this.data.date;
+  
+
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -327,7 +338,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-
+ 
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -342,14 +353,13 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
-
+  
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -375,7 +385,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   async onDownloadClick() {
-    this.exportToExcel_r1();
+    this.exportToPDF_r1();
 
   }
 
@@ -389,13 +399,167 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
+   async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-  async exportToExcel_r1(fileName: string = 'document.xslx') {
-    this.exportExcel(this.repData!);
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let bufferTableWidth=8;
+    let tableWidth=pageWidth-leftMargin-rightMargin-bufferTableWidth;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+
+    var items = this.repData!;
+    var index = 1;
+    const data: any[][] = items.map((itm,index) => {
+      const row = [
+         index+1,
+        itm.customer_company?.name || "-",
+        itm.tariff_steaming?.temp_min || "-",
+        itm.tariff_steaming?.temp_max  || "-",
+        this.parse2Decimal(itm.cost!) || "-",
+        this.parse2Decimal(itm.labour!) || "-",
+        this.displayLastUpdated(itm) || "-",
+      ];
+      return row;
+    });
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+       this.translatedLangText.S_N,
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.MIN_TEMP,
+      this.translatedLangText.MAX_TEMP,
+      this.translatedLangText.FLAT_RATE,
+      this.translatedLangText.HOURLY_RATE,
+      this.translatedLangText.LAST_UPDATED
+      
+    ]];
+
+    const comStyles: any = {
+      0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+      1: { valign: 'middle', halign: 'left'},   // "NAME"
+      2: { cellWidth:25,valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
+      3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      4: { cellWidth: 25,valign: 'middle', halign: 'center'},   // "NAME"
+      5: { cellWidth:28,valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
+      6: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+     
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [220, 220, 220],
+      textColor: [0, 0, 0],
+      fontStyle: 'bold',
+      halign: 'center',   // ✅ centers header text
+      valign: 'middle'
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 40;
+
+    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    // const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
+    const cutoffDate ='';
+     const subtitlePos=0;
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, cutoffDate,subtitlePos);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    
+      autoTable(pdf, {
+        head: headers,
+        body: data,
+        //startY: startY, // Start table at the current startY value
+        theme: 'grid',
+        margin: { top:startY, horizontal: leftMargin},
+        tableWidth: contentWidth,
+        styles: {
+          fontSize: fontSz_body,
+          minCellHeight: minHeightHeaderCol
+
+        },
+        
+        columnStyles: comStyles,
+        headStyles: headStyles, // Custom header styles
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          halign: 'left', // Left-align content for body by default
+          valign: 'middle', // Vertically align content
+        },
+        didDrawPage: (data: any) => {
+          const pageCount = pdf.getNumberOfPages();
+
+          lastTableFinalY = data.cursor.y;
+
+          var pg = pagePositions.find(p => p.page == pageCount);
+          if (!pg) {
+            pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+            if (pageCount > 1) {
+              // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
+              // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+              // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              // PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            }
+          }
+        },
+      });
+
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
+
+    
+   
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
+    this.export(this.repData!);
+   
+
   }
 
 
-  async export(items: CleaningPriceList[]) {
+ async export(items: TariffCleaningItem[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -419,159 +583,75 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     let index = 1;
 
     const data: any[][] = items.map((item) => {
-      const row = [
-        index++, // increment index for each item
-        item.Descripton,
-        `${item.Unit || "-"}`,
-        item.ManHour || "-",
-        item.Material || "-",
-      ];
-      return row;
-    });
+                const row = [
+                  index++, // increment index for each item
+                  item.cargo || "-",
+                  item.class_cv || "-",
+                  item.un_no || "-",
+                  item.cleaning_method?.name || "-",
+                  item.cleaning_category?.name || "-",
+                  item.flash_point || "-",
+                  item.ban_type_cv || "-",
+                  item.cleaning_category?.cost || "-",
+                ];
+                return row;
+            });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-    autoTable(doc, {
-      startY: lastTableFinalY,
-      head: [[
-        this.translatedLangText.S_N,
-        this.translatedLangText.DESCRIPTION,
-        this.translatedLangText.UNIT,
-        this.translatedLangText.MANHOUR,
-        `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
-      ]],
-      body: data,
-      theme: "grid",
-      margin: { left: leftMargin, right: rightMargin },
-      styles: { fontSize: table_body_fontsize, cellPadding: 2 },
-      headStyles: {
-        fillColor: [220, 220, 220],
-        textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        halign: 'center',   // ✅ centers header text
-        valign: 'middle'
-      },
-      columnStyles: {
-        0: { cellWidth: 12, valign: 'middle', halign: 'center' },    // "No."
-        1: { cellWidth: 93, valign: 'middle', halign: 'center' },   // "Description"
-        2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
-        3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
-        4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
-      },
-      didDrawPage: (d: any) => {
-        lastTableFinalY = d.cursor.y + 8;
-        const pageCount = doc.getNumberOfPages();
-        if (!pagePositions.find(p => p.page === pageCount)) {
-          pagePositions.push({
-            page: pageCount,
-            x: doc.internal.pageSize.width - 20,
-            y: doc.internal.pageSize.height - 10
-          });
-        }
-      }
-    });
+     autoTable(doc, {
+                startY: lastTableFinalY,
+                head: [[
+                    this.translatedLangText.S_N,
+                    this.translatedLangText.DESCRIPTION,
+                    this.translatedLangText.UNIT,
+                    this.translatedLangText.MANHOUR,
+                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
+                ]],
+                body: data,
+                theme: "grid",
+                margin: { left: leftMargin, right: rightMargin },
+                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
+                headStyles: {
+                  fillColor: [220, 220, 220],
+                  textColor: [0, 0, 0],
+                  fontStyle: 'bold',
+                  halign: 'center',   // ✅ centers header text
+                  valign: 'middle'
+                },
+                columnStyles: {
+                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
+                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
+                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
+                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
+                },
+                didDrawPage: (d: any) => {
+                    lastTableFinalY = d.cursor.y + 8;
+                    const pageCount = doc.getNumberOfPages();
+                    if (!pagePositions.find(p => p.page === pageCount)) {
+                        pagePositions.push({
+                            page: pageCount,
+                            x: doc.internal.pageSize.width - 20,
+                            y: doc.internal.pageSize.height - 10
+                        });
+                    }
+                }
+            });
 
-
+    
 
     const totalPages = doc.getNumberOfPages();
 
     // Add page numbers
     for (const { page } of pagePositions) {
-      doc.setFontSize(8);
-      doc.setPage(page);
-      doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
+        doc.setFontSize(8);
+        doc.setPage(page);
+        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
     }
 
     doc.save("CleaningTariff.pdf");
     this.dialogRef.close();
-  }
+}
 
-
-  async exportExcel(items: PackageDepotItem[]) {
-    const doc = new jsPDF();
-
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
-
-    let lastTableFinalY = 25;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
-
-    const data: any[][] = items.map((item,index) => {
-      var itm: any = item;
-      const row = [
-        index+1,
-        item.customer_company?.name || "-",
-        item.tariff_depot?.profile_name || "-",
-        this.parse2Decimal(item.gate_in_cost || 0) || "-",
-        this.parse2Decimal(item.gate_out_cost || 0) || "-",
-        this.parse2Decimal(item.preinspection_cost || 0) || "-",
-        this.parse2Decimal(item.lolo_cost || 0) || "-",
-        this.parse2Decimal(item.storage_cost || 0) || "-",
-        (item.free_storage || 0) || "-",
-        this.displayLastUpdated(item) || "-",
-
-      ];
-      return row;
-    });
-    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-    const head: (string | number)[][] = [[
-      this.translatedLangText.S_N,
-      this.translatedLangText.CUSTOMER,
-      this.translatedLangText.PROFILE_NAME,
-      this.translatedLangText.IN_SURCHARGE_COST,
-      this.translatedLangText.OUT_SURCHARGE_COST,
-      this.translatedLangText.PREINSPECTION_COST,
-      this.translatedLangText.LOLO_COST,
-      this.translatedLangText.STORAGE_COST,
-      this.translatedLangText.FREE_DAYS,
-      this.translatedLangText.LAST_UPDATED_DT
-    ]];
-
-     const reportTitle: (string | number)[][] = [
-      [`${this.translatedLangText.PACKAGE_DEPOT_COST}`]
-    ];
-   const rows: (string | number)[][] = [
-      ...reportTitle,
-      [], // empty row after title
-      ...head,
-      ...data
-    ];
-
-    const totalColumns = head[0].length;
-    var fileName ="DepotCostPackage.xlsx";
-    Utility.saveExcel(rows, fileName, totalColumns);
-
-    // const rows: (string | number)[][] = [
-    //   ...head,
-    //   ...data
-    // ];
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
-    //   const maxLength = rows.reduce((max, row) => {
-    //     const cell = row[colIndex];
-    //     return Math.max(max, cell ? cell.toString().length : 0);
-    //   }, 10);
-    //   return { wch: maxLength + 2 };
-    // });
-    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-    // XLSX.writeFile(workbook, "DepotCostPackage.xlsx");
-    this.dialogRef.close();
-  }
 
 
   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
@@ -775,20 +855,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
 
   GetReportTitle(): string {
     var title: string = '';
-    switch (this.repType) {
-      case "CLEANING":
-        title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "STEAMING":
-        title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "REPAIR":
-        title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
-        break;
-      case "RESIDUE":
-        title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
-        break;
-    }
+     title = `${this.translatedLangText.PACKAGE_STEAMING}`;
     return `${title}`
   }
 
@@ -966,7 +1033,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-  displayLastUpdated(r: any) {
+    displayLastUpdated(r: any) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
@@ -978,4 +1045,5 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
   parse2Decimal(figure: number | string) {
     return Utility.formatNumberDisplay(figure)
   }
+
 }

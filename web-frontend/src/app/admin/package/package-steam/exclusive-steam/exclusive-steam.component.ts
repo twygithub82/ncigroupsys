@@ -43,6 +43,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 import { ModulePackageService } from 'app/services/module-package.service';
 import { PackageExclusiveSteamingCostExcelComponent } from 'app/document-template/excel/package/steaming/exclusive/package-exclusive-steaming-cost-excel.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { PackageExclusiveSteamingCostPdfComponent } from 'app/document-template/pdf/package/steaming/exclusive/package-exclusive-steaming-cost-pdf.component';
 
 @Component({
   selector: 'app-exclusive-steam',
@@ -237,7 +238,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -491,12 +492,12 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       where.and.push({ package_steaming: { customer_company: { code: { in: custCodes } } } });
     }
 
-     if (this.pcForm!.value["hourly_rate"]) {
+    if (this.pcForm!.value["hourly_rate"]) {
       const flat_rate: number = Number(this.pcForm!.value["hourly_rate"]);
       where.and.push({ package_steaming: { labour: { eq: flat_rate } } })
     }
 
-     if (this.pcForm!.value["flat_rate"]) {
+    if (this.pcForm!.value["flat_rate"]) {
 
       const hourly_rate: number = Number(this.pcForm!.value["flat_rate"]);
       where.and.push({ package_steaming: { cost: { eq: hourly_rate } } })
@@ -892,79 +893,125 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   export_excel() {
-  
-      this.isGeneratingReport=true;
-              //  const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
-              const where = this.lastSearchCriteria;
-              const order=this.lastOrderBy;
-              this.packSteamExclDS.SearchAllExclusiveSteam(where,order).subscribe(res=>{
-                   var prcList: PackageSteamingItem[] = [];
-                   res.forEach((item) => {
-                    var itm:any = item;
-                    const c: PackageSteamingItem = {
-                      ...itm,
-                      temp_max:this.displayTempMax(itm.temp_max),
-                      temp_min:itm.temp_min,
-                      tariff_cleaning:itm.tariff_cleaning,
-                    };
-                    prcList.push(c);
-                  });
-                  this.exportExcelReport(prcList);
-              })
-      // if (this.packageSteamItems) {
-      //   this.isGeneratingReport = true;
-      //   var prcList: PackageSteamingItem[] = [];
-      //   this.packageSteamItems.forEach((item) => {
-      //      var itm:any = item;
-      //     const c: PackageSteamingItem = {
-      //        ...itm.package_steaming,
-      //     temp_max:this.displayTempMax(itm.temp_max),
-      //     temp_min:itm.temp_min,
-      //     tariff_cleaning:itm.tariff_cleaning,
-  
-      //     };
-      //     prcList.push(c);
-      //   });
-      //   this.exportExcelReport(prcList);
-      // }
-  
+
+    this.isGeneratingReport = true;
+    //  const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
+    this.packSteamExclDS.SearchAllExclusiveSteam(where, order).subscribe(res => {
+      var prcList: PackageSteamingItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: PackageSteamingItem = {
+          ...itm,
+          temp_max: this.displayTempMax(itm.temp_max),
+          temp_min: itm.temp_min,
+          tariff_cleaning: itm.tariff_cleaning,
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
+    })
+
+
+  }
+
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    exportExcelReport(repData: any) {
-  
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(PackageExclusiveSteamingCostExcelComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-        maxHeight: reportPreviewWindowDimension.report_maxHeight,
-  
-        data: {
-          repData: repData
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
+
+    const dialogRef = this.dialog.open(PackageExclusiveSteamingCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+  export_report() {
+
+    this.isGeneratingReport = true;
+    //  const where={and:[{package_steaming:{customer_company:{ delete_dt: { eq: null } }}}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
+    this.packSteamExclDS.SearchAllExclusiveSteam(where, order).subscribe(res => {
+      var prcList: PackageSteamingItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: PackageSteamingItem = {
+          ...itm,
+          temp_max: this.displayTempMax(itm.temp_max),
+          temp_min: itm.temp_min,
+          tariff_cleaning: itm.tariff_cleaning,
+        };
+        prcList.push(c);
       });
-  
-      dialogRef.updatePosition({
-        top: '-90vh',  // Move far above the screen
-        left: '0px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport = false;
-      });
-  
+      this.exportPdfReport(prcList);
+    })
+
+
+  }
+
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(PackageExclusiveSteamingCostPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
 

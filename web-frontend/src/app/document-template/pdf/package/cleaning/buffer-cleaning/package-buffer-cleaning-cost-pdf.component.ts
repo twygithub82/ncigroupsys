@@ -47,11 +47,15 @@ import {
   ApexYAxis,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { CleaningPriceList } from 'app/data-sources/cleaning-method';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { PackageBufferItem } from 'app/data-sources/package-buffer';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffRepairGroup[],
+  repData: PackageBufferItem[],
   date: string
 }
 
@@ -74,29 +78,13 @@ export type ChartOptions = {
   markers?: ApexMarkers;
   labels: string[];
   responsive: ApexResponsive[];
-  // series?: ApexAxisChartSeries;
-  // series2?: ApexNonAxisChartSeries;
-  // chart?: ApexChart;
-  // dataLabels?: ApexDataLabels;
-  // plotOptions?: ApexPlotOptions;
-  // yaxis?: ApexYAxis;
-  // xaxis?: ApexXAxis;
-  // fill?: ApexFill;
-  // tooltip?: ApexTooltip;
-  // stroke?: ApexStroke;
-  // legend?: ApexLegend;
-  // title?: ApexTitleSubtitle;
-  // colors?: string[];
-  // grid?: ApexGrid;
-  // markers?: ApexMarkers;
-  // labels: string[];
-  // responsive: ApexResponsive[];
+  
 };
 
 @Component({
-  selector: 'app-tariff-repair-costreport-pdf',
-  templateUrl: './tariff-repair-cost-pdf.component.html',
-  styleUrls: ['./tariff-repair-cost-pdf.component.scss'],
+  selector: 'app-package-buffer-cleaning-cost-report-pdf',
+  templateUrl: './package-buffer-cleaning-cost-pdf.component.html',
+  styleUrls: ['./package-buffer-cleaning-cost-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -110,214 +98,107 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageBufferCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
-    STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
+     NEW: 'COMMON-FORM.NEW',
+    EDIT: 'COMMON-FORM.EDIT',
+    HEADER: 'COMMON-FORM.CARGO-DETAILS',
+    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
-    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
-    NO_OF_ESTIMATE: 'COMMON-FORM.NO-OF-ESTIMATE',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
-    NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
-    CANCEL: 'COMMON-FORM.CANCEL',
-    CLOSE: 'COMMON-FORM.CLOSE',
-    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE",
-    ORDER_DETAILS: "COMMON-FORM.ORDER-DETAILS",
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
-    OWNER: "COMMON-FORM.OWNER",
-    CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
-    SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
-    DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
-    PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
-    LAST_TEST: "COMMON-FORM.LAST-TEST",
-    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
-    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
-    DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS",
-    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
-    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
-    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
-    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
-    LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
-    LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
-    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
-    CLADDING: 'COMMON-FORM.CLADDING',
-    CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
-    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
-    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
-    WALKWAY: 'COMMON-FORM.WALKWAY',
-    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
-    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    ST: 'COMMON-FORM.ST',
+    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    STATUS: 'COMMON-FORM.STATUS',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
-    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
-    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
-    THERMOMETER: 'COMMON-FORM.THERMOMETER',
-    LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
-    TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
-    TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
-    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
-    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
-    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
-    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
-    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
-    PV: 'COMMON-FORM.PV',
-    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
-    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
-    RESIDUE: 'COMMON-FORM.RESIDUE',
-    DIPSTICK: 'COMMON-FORM.DIPSTICK',
-    SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
-    DIAMITER: 'COMMON-FORM.DIAMITER',
-    PIECES: 'COMMON-FORM.PIECES',
-    VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND',
-    BOTTOM: 'COMMON-FORM.BOTTOM',
-    TOP: 'COMMON-FORM.TOP',
-    MANLID: 'COMMON-FORM.MANLID',
-    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
-    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
-    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
-    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
-    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
-    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
-    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
-    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
-    FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
-    LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
-    REAR_REMARKS: 'COMMON-FORM.REAR-REMARKS',
-    RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
-    TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
-    FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
-    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS',
-    SIDES: 'COMMON-FORM.SIDES',
-    SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
-    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
-    PREVIEW: 'COMMON-FORM.PREVIEW',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS',
-    PUBLISH: 'COMMON-FORM.PUBLISH',
-    PHONE: 'COMMON-FORM.PHONE',
-    FAX: 'COMMON-FORM.FAX',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED',
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    BULK: 'COMMON-FORM.BULK',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    UNDO: 'COMMON-FORM.UNDO',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL: 'COMMON-FORM.EMAIL',
-    WEB: 'COMMON-FORM.WEB',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
-    EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
-    TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
-    LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
-    TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
-    OPERATOR: 'COMMON-FORM.OPERATOR',
-    TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
-    YES: 'COMMON-FORM.YES',
-    NO: 'COMMON-FORM.NO',
-    BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
-    BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
-    TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
-    TOP_DIS_VALVE__ABB: 'COMMON-FORM.TOP-DIS-VALVE--ABB',
-    MANLID_COMP__ABB: 'COMMON-FORM.MANLID-COMP--ABB',
-    CRN: 'COMMON-FORM.CRN',
-    EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
-    EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
-    SURVEY_BY: 'COMMON-FORM.SURVEY-BY',
-    REVIEW_BY: 'COMMON-FORM.REVIEW-BY',
-    DISCLAIMER: 'COMMON-FORM.DISCLAIMER',
-    COMPUTER_GENERATED_NOTE: 'COMMON-FORM.COMPUTER-GENERATED-NOTE',
-    DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
-    EXPORT_NEW: 'COMMON-FORM.EXPORT-NEW',
-    PREVIEW_PDF: 'COMMON-FORM.PREVIEW-PDF',
-    EXPORT_SUCCESS: 'COMMON-FORM.EXPORT-SUCCESS',
-    IN_SERVICE_ESTIMATE: 'COMMON-FORM.IN-SERVICE-ESTIMATE',
-    OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
-    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
-    REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
-    NO_DOT: 'COMMON-FORM.NO-DOT',
-    ITEM: 'COMMON-FORM.ITEM',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
-    CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
-    QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
-    LESSEE_OWNER__ABB: 'COMMON-FORM.LESSEE-OWNER--ABB',
-    REMARKS: 'COMMON-FORM.REMARKS',
-    APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
-    RATE_PERC: 'COMMON-FORM.RATE-PERC',
-    ESTIMATE_COST: 'COMMON-FORM.ESTIMATE-COST',
-    FOR: 'COMMON-FORM.FOR',
-    NET_COST: 'COMMON-FORM.NET-COST',
-    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
-    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
-    PAGE: 'COMMON-FORM.PAGE',
-    OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE: 'COMMON-FORM.IN-DATE',
-    OUT_DATE: 'COMMON-FORM.OUT-DATE',
-    TOTAL: 'COMMON-FORM.TOTAL',
-    DAYS: 'COMMON-FORM.DAYS',
-    GATEIO: 'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
-    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
-    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
-    YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
-    STEAM: 'COMMON-FORM.STEAM',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    PENDING: 'COMMON-FORM.PENDING',
-    WITH_RO: 'COMMON-FORM.WITH-RO',
-    LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
-    RESIDUE_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
-    REPAIR_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
-    CLEAN_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    COST: "COMMON-FORM.COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
+    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
+    COUNTRY: "COMMON-FORM.COUNTRY",
+    FAX_NO: "COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    BUFFER_TYPE: 'COMMON-FORM.BUFFER-TYPE',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
+    ALL: 'COMMON-FORM.ALL',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
     S_N: 'COMMON-FORM.S_N',
-    DAY: 'COMMON-FORM.DAY',
-    MONTH: 'COMMON-FORM.MONTH',
-    AVERAGE: 'COMMON-FORM.AVERAGE',
-    TOTAL_TANK: 'COMMON-FORM.TOTAL-TANK',
-    PART_NAME:'COMMON-FORM.PART-NAME',
-    LABOUR_HOUR:'COMMON-FORM.LABOUR-HOUR',
-    LENGTH:'COMMON-FORM.LENGTH',
-    MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    REPAIR_TARIFF:'COMMON-FORM.REPAIR-TARIFF',
-    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
-    SUB_GROUP_NAME:'COMMON-FORM.SUB-GROUP-NAME',
+    PACKAGE_BUFFER_CLEANING: "COMMON-FORM.PACKAGE-BUFFER-CLEANING",
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -367,7 +248,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: TariffRepairGroup[];
+  repData?: PackageBufferItem[];
   date?: string;
   repType?: string;
   customer?: string;
@@ -378,7 +259,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffRepairCostPdfComponent>,
+    public dialogRef: MatDialogRef<PackageBufferCleaningCostPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -390,17 +271,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.translateLangText();
     this.InitialDefaultData();
     this.date = this.data.date;
-    // this.processTankStatus(data.repData);
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-
+  
 
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
@@ -463,84 +334,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  // async getCodeValuesData(): Promise<void> {
-  //   const queries = [
-  //     { alias: 'yardCv', codeValType: 'YARD' },
-  //     { alias: 'yesnoCv', codeValType: 'YES_NO' },
-  //     { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-  //     { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-  //     { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-  //     { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-  //     { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-  //     { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-  //     { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-  //     { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-  //   ];
-
-  //   await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-  //   // Wrap all alias connections in promises
-  //   const promises = [
-  //     firstValueFrom(this.cvDS.connectAlias('yardCv')).then(async data => {
-  //       this.yardCvList = data || [];
-  //       // const subqueries: any[] = [];
-  //       // data.map(d => {
-  //       //   if (d.child_code) {
-  //       //     let q = { alias: d.child_code, codeValType: d.child_code };
-  //       //     const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-  //       //     if (!hasMatch) {
-  //       //       subqueries.push(q);
-  //       //     }
-  //       //   }
-  //       // });
-
-  //       // // Process subqueries if any
-  //       // if (subqueries.length > 0) {
-  //       //   await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-  //       //   for (const s of subqueries) {
-  //       //     const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-  //       //     if (subData) {
-  //       //       this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-  //       //     }
-  //       //   }
-  //       // }
-
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-  //       this.yesnoCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-  //       this.soTankStatusCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-  //       this.purposeOptionCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
-  //       this.testTypeCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-  //       this.testClassCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-  //       this.partLocationCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-  //       this.damageCodeCvList = data || [];
-  //       this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-  //       this.repairCodeCvList = data || [];
-  //       this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-  //       this.unitTypeCvList = data || [];
-  //     })
-  //   ];
-
-  //   // Wait for all promises to resolve
-  //   await Promise.all(promises);
-  // }
+ 
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -554,55 +348,6 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
-  // getGroupSeq(codeVal: string | undefined): number | undefined {
-  //   const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-  //   if (gncv.length) {
-  //     return gncv[0].sequence;
-  //   }
-  //   return -1;
-  // }
-
-  // getLastTest(igs: any): string | undefined {
-  //   return this.getLastTestIGS(igs);
-  // }
-
-  // getLastTestIGS(igs: any): string | undefined {
-  //   if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-  //   if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-  //     const test_type = igs.last_test_cv;
-  //     const test_class = igs.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getTestTypeDescription(codeVal: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  // }
-
-  // getTestClassDescription(codeValType: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  // }
-
-  // getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  // }
-
-  // getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  // }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -610,22 +355,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     }).join('/');
   }
 
-  // displayTankPurpose(sot: any) {
-  //   let purposes: any[] = [];
-  //   if (sot?.purpose_storage) {
-  //     purposes.push(this.getPurposeOptionDescription('STORAGE'));
-  //   }
-  //   if (sot?.purpose_cleaning) {
-  //     purposes.push(this.getPurposeOptionDescription('CLEANING'));
-  //   }
-  //   if (sot?.purpose_steam) {
-  //     purposes.push(this.getPurposeOptionDescription('STEAM'));
-  //   }
-  //   if (sot?.purpose_repair_cv) {
-  //     purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-  //   }
-  //   return purposes.join('; ');
-  // }
+  
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -651,7 +381,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   async onDownloadClick() {
-    this.exportToPDF_r2(this.repData!);
+    this.exportToPDF_r1();
 
   }
 
@@ -665,118 +395,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
-    this.exportToPDF_r2(this.repData!);
-    
-  }
-
-
- async export(groups: TariffRepairGroup[]) {
-    const doc = new jsPDF();
-
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    let fontSize = 12;
-    doc.setFontSize(fontSize);
-    doc.text("Repair Tariff", 105, 15, { align: "center" });
-
-    let lastTableFinalY = 40;
-
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const table_body_fontsize = 8;
-    const startX = leftMargin;
-    let index = 1;
-
-    for (const group of groups) {
-        // Add Group Title (centered)
-        const groupName = group.group_name_desc || group.group_name_cv;
-        fontSize = 11;
-        Utility.AddTextAtCenterPage(doc, groupName, pageWidth, leftMargin, rightMargin, lastTableFinalY, fontSize, true);
-        lastTableFinalY += 7;
-
-        // Loop through subgroups
-        for (const sub of group.subgroups) {
-            // Map items for the subgroup
-            const data: any[][] = sub.items.map((item) => {
-                const row = [
-                    index++, // increment index for each item
-                    item.alias,
-                    group.group_name_cv||"",
-                    item.subgroup_name_cv||"",
-                    `${item.length || ""} ${item.length_unit_cv || ""}`,
-                    item.labour_hour?.toFixed(2) ?? "0.00",
-                    Utility.formatNumberDisplay(item.material_cost) ?? "0.00",
-                ];
-                return row;
-            });
-
-            lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-
-            autoTable(doc, {
-                //  startY: lastTableFinalY,
-                head: [[
-                    this.translatedLangText.S_N,
-                    this.translatedLangText.PART_NAME,
-                    this.translatedLangText.LENGTH,
-                    this.translatedLangText.LABOUR_HOUR,
-                    this.translatedLangText.MATERIAL_COST
-                ]],
-                body: data,
-                theme: "grid",
-                margin: { top:startY, left: leftMargin, right: rightMargin },
-                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
-                headStyles: {
-                    fillColor: [220, 220, 220],
-                    textColor: [0, 0, 0],
-                    fontStyle: 'bold'
-                },
-                columnStyles: {
-                    0: { cellWidth: 12 },    // "No."
-                    1: { cellWidth: 108 },   // "Part Name"
-                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Length"
-                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Labour Hour"
-                    4: { cellWidth: 25, valign: 'middle', halign: 'center' }   // "Material Cost"
-                },
-                didDrawPage: (d: any) => {
-                    lastTableFinalY = d.cursor.y + 8;
-                    const pageCount = doc.getNumberOfPages();
-                    if (!pagePositions.find(p => p.page === pageCount)) {
-                        pagePositions.push({
-                            page: pageCount,
-                            x: doc.internal.pageSize.width - 20,
-                            y: doc.internal.pageSize.height - 10
-                        });
-                    }
-                }
-            });
-        }
-    }
-
-    const totalPages = doc.getNumberOfPages();
-
-    // Add page numbers
-    for (const { page } of pagePositions) {
-        doc.setFontSize(8);
-        doc.setPage(page);
-        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
-    }
-
-    doc.save("RepairTariff.pdf");
-    this.dialogRef.close();
-}
-
-
-async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pdf') {
+   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10;
@@ -803,40 +422,50 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
     let fontSz_body= PDFUtility.ContentFontSize_Portrait()
 
+    var items = this.repData!;
+    var index = 1;
+    const data: any[][] = items.map((item,index) => {
+      const row = [
+         index + 1, // S/N
+        item.customer_company?.name || "-",
+        item.tariff_buffer?.buffer_type || "-",
+        this.parse2Decimal(item.cost!) || "-",
+        this.parse2Decimal(item.tariff_buffer?.cost!) || "-",
+        this.displayLastUpdated(item) || "-"
+      ];
+      return row;
+    });
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
-
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const reportTitle = this.GetReportTitle();
     const headers = [[
-        this.translatedLangText.S_N,
-        // this.translatedLangText.GROUP_NAME,
-        this.translatedLangText.SUB_GROUP_NAME,
-        this.translatedLangText.PART_NAME,
-        this.translatedLangText.LENGTH,
-        this.translatedLangText.LABOUR_HOUR,
-        this.translatedLangText.MATERIAL_COST
+     this.translatedLangText.S_N,
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.BUFFER_TYPE,
+      this.translatedLangText.CUSTOMER_COST,
+      this.translatedLangText.TARIFF_COST,
+      this.translatedLangText.LAST_UPDATE
+      
     ]];
 
     const comStyles: any = {
-     0: { cellWidth: 12 , valign: 'middle', halign: 'center'},    // "No."
-    //  1: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Length"
-      1: { cellWidth: 32, valign: 'middle', halign: 'center' }, 
-      2: { cellWidth: 87 },   // "Part Name"
-      3: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "Length"
-      4: { cellWidth: 21, valign: 'middle', halign: 'center' },  // "Labour Hour"
-      5: { cellWidth: 21, valign: 'middle', halign: 'center' }   // "Material Cost"
+      0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+      1: { cellWidth: 55 ,valign: 'middle', halign: 'left'},   // "NAME"
+      2: { valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
+      3: { cellWidth: 26, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      4: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
+      5: { cellWidth: 25, valign: 'middle', halign: 'center' },   // "CARGO_CATEGORY"
     };
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz_hdr,
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
+      fillColor: [220, 220, 220],
+      textColor: [0, 0, 0],
+      fontStyle: 'bold',
+      halign: 'center',   // ✅ centers header text
+      valign: 'middle'
     };
 
     let currentY = topMargin;
@@ -848,92 +477,121 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let firstSubTitleY=36;
+    let lastTableFinalY = 40;
 
-    let lastTableFinalY = firstSubTitleY;
-// firstSubTitleY +=15;
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    let startY = lastTableFinalY ; // Start table 20mm below the customer name
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
-    
+    // const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
+    const cutoffDate ='';
      const subtitlePos=0;
-    let startPostY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
-    this.translate, reportTitle, '',subtitlePos);
-    startPostY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    // startPostY+=1;
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+    this.translate, reportTitle, cutoffDate,subtitlePos);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    // startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
-    var buffer = 25;
-    var CurrentPage = 0;
-    let index = 1;
-    for (let n = 0; n < groups.length; n++) {
-     
-     
-      
-      let group = groups[n];
-     
-     // lastTableFinalY += 7;
-    //  startY = lastTableFinalY + 8;
-      // pdf.setFontSize(8);
-      // pdf.setTextColor(0, 0, 0); // Black text
-      //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      
-      var unNo;
-      var process;
-      for (let i = 0; i < (group.subgroups?.length || 0); i++) {
-        var itm = group.subgroups?.[i];
-         const data: any[][] = itm.items.map((item) => {
-                var itm:any = item;
-                const row = [
-                    index++, // increment index for each item
-                    // itm.group_name_desc||"",
-                    itm.subgroup_name_desc||"",
-                    item.alias,
-                    `${item.length || ""} ${item.length_unit_cv || ""}`,
-                    item.labour_hour?.toFixed(2) ?? "0.00",
-                    Utility.formatNumberDisplay(item.material_cost) ?? "0.00",
-                ];
-                return row;
-            });
-       
-      //  const data: any[][] = []; // Explicitly define data as a 2D array
+  //   var buffer = 25;
+  //   var CurrentPage = 1;
+  //   for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
+  //     let startY=0;
 
-      var repPage = pdf.getNumberOfPages();
-       let startY=0;
-
-    
-        lastTableFinalY += 6; // 2nd table
-    
-
-      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-        pdf.addPage();
-        lastTableFinalY = firstSubTitleY+5; /// buffer for 2nd page onward first table's Method
-      }
-      // else if(CurrentPage!==repPage){
-      //    lastTableFinalY = firstSubTitleY+5;
-      // }
-      // else {
-        CurrentPage = repPage;
-      // }
+  //     if (n > 0) lastTableFinalY += 5; // 2nd table
+  //     else {
+  //       lastTableFinalY =startPostY ; //1st Page 1st table
+  //     }
+     
       
-      let subtitle= group.group_name_desc || group.group_name_cv;
-      lastTableFinalY+= PDFUtility.GapBetweenLeftTitleAndTable();
-      // subtitle+= ' - ' + itm.subgroup_name_desc;
-       await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
-        lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-        // startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
-       startY = lastTableFinalY;
+  //     let cust = this.report_inventory_cln_dtl[n];
+  //     const data: any[][] = []; // Explicitly define data as a 2D array
+
+  //     var repPage = pdf.getNumberOfPages();
+  //     //if(repPage==1)lastTableFinalY=45;
+
+  //     if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+  //       pdf.addPage();
+  //       lastTableFinalY = startPostY; /// buffer for 2nd page onward first table's Method
+  //     }
+  //     else {
+  //       CurrentPage = repPage;
+  //     }
+  //    // lastTableFinalY += 7;
+  //   //  startY = lastTableFinalY + 8;
+  //     // pdf.setFontSize(8);
+  //     // pdf.setTextColor(0, 0, 0); // Black text
+  //     //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       
+  //     var unNo;
+  //     var process;
+  //     for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
+  //       var itm = cust.storing_order_tank?.[i];
+  //       data.push([
+  //         (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
+  //         this.DipslayCleanDuration(itm!) || "" //itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
+  //       ]);
+  //       unNo = itm?.tariff_cleaning?.un_no || "";
+  //       process = this.DisplayCleanMethod(itm!);
+  //     }
+  //  //   pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
+  //     // pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
+  //     // pdf.setDrawColor(0, 0, 0); // red line color
+      
+  //     var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
+      
+  //     await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+  //     lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+  //     startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
+  //     // /pdf.setLineWidth(0.1);
+  //   //  pdf.setLineDashPattern([0.01, 0.01], 0.1);
+  //     // Add table using autoTable plugin
+  //     autoTable(pdf, {
+  //       head: headers,
+  //       body: data,
+  //       //startY: startY, // Start table at the current startY value
+  //       theme: 'grid',
+  //       margin: { top:startY, horizontal: leftMargin},
+  //       tableWidth: contentWidth,
+  //       styles: {
+  //         fontSize: fontSz_body,
+  //         minCellHeight: minHeightHeaderCol
+
+  //       },
+        
+  //       columnStyles: comStyles,
+  //       headStyles: headStyles, // Custom header styles
+  //       bodyStyles: {
+  //         fillColor: [255, 255, 255],
+  //         halign: 'left', // Left-align content for body by default
+  //         valign: 'middle', // Vertically align content
+  //       },
+  //       didDrawPage: (data: any) => {
+  //         const pageCount = pdf.getNumberOfPages();
+
+  //         lastTableFinalY = data.cursor.y;
+
+  //         var pg = pagePositions.find(p => p.page == pageCount);
+  //         if (!pg) {
+  //           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+  //           if (pageCount > 1) {
+  //             // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
+  //             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+  //             // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
+  //              PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+  //             PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+  //           }
+  //         }
+  //       },
+  //     });
+  //   }
 
       autoTable(pdf, {
         head: headers,
         body: data,
-        startY: startY, // Start table at the current startY value
+        //startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: { top:43,  horizontal: leftMargin},
+        margin: { top:startY, horizontal: leftMargin},
         tableWidth: contentWidth,
         styles: {
           fontSize: fontSz_body,
@@ -966,10 +624,12 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
           }
         },
       });
-     }
-    }
+
       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate,pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
+
+    
    
 
     this.generatingPdfProgress = 100;
@@ -979,6 +639,307 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
+
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
+    this.export(this.repData!);
+    // const pageWidth = 210; // A4 width in mm (portrait)
+    // const pageHeight = 297; // A4 height in mm (portrait)
+    // const leftMargin = 10;
+    // const rightMargin = 10;
+    // const topMargin = 5;
+    // const bottomMargin = 5;
+    // const contentWidth = pageWidth - leftMargin - rightMargin;
+    // const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    // this.generatingPdfLoadingSubject.next(true);
+    // this.generatingPdfProgress = 0;
+
+    // const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    // //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    // let pageNumber = 1;
+
+    // let reportTitleCompanyLogo = 32;
+    // let tableHeaderHeight = 12;
+    // let tableRowHeight = 8.5;
+    // let minHeightBodyCell = 5;
+    // let minHeightHeaderCol = 3;
+    // let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    // let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    // const pagePositions: { page: number; x: number; y: number }[] = [];
+    // // const progressValue = 100 / cardElements.length;
+
+    // const reportTitle = this.GetReportTitle();
+
+    // let customColHeaderText = this.repType === "REPAIR" ? this.translatedLangText.NO_OF_ESTIMATE : this.translatedLangText.NO_OF_TANKS;
+
+    // const headers = [[
+    //   this.translatedLangText.S_N, this.translatedLangText.DATE,
+    //   this.translatedLangText.DAY, customColHeaderText
+    // ]];
+
+    // const comStyles: any = {
+    //   // Set columns 0 to 16 to be center aligned
+    //   0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    //   1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    //   2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    //   3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    // };
+
+    // // Define headStyles with valid fontStyle
+    // const headStyles: Partial<Styles> = {
+    //   fillColor: [211, 211, 211], // Background color
+    //   textColor: 0, // Text color (white)
+    //   fontStyle: "bold", // Valid fontStyle value
+    //   fontSize: fontSz_hdr,
+    //   halign: 'center', // Centering header text
+    //   valign: 'middle',
+    //   lineColor: 201,
+    //   lineWidth: 0.1
+    // };
+
+    // let currentY = topMargin;
+    // let scale = this.scale;
+    // pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    // // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // // Variable to store the final Y position of the last table
+    // let lastTableFinalY = 40;
+
+    // let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    // const data: any[][] = []; // Explicitly define data as a 2D array
+
+    // const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    // const subtitlePos = 1;
+    // startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate 
+    // ,reportTitle,repGeneratedDate,subtitlePos);
+
+    // // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
+    //    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    // if (this.customer) {
+     
+    //   // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+    //   const customer =`${this.customer}`
+    //   Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+    //    startY += PDFUtility.GapBetweenLeftTitleAndTable();
+    //   //Utility.addText(pdf, customer, startY, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
+    // }
+    // var idx = 0;
+    // for (let n = 0; n < (this.repData?.length || 0); n++) {
+
+    //   // //let startY = lastTableFinalY + 15; // Start Y position for the current table
+    //   // let itm = this.repData?.result_per_day?.[n];
+    //   // data.push([
+    //   //   (++idx).toString(), itm?.date || "", itm?.day || "", itm?.count || "0"
+    //   // ]);
+    // }
+
+    // //data.push([this.translatedLangText.TOTAL,"","",this.repData?.total||0]);
+    // //data.push([this.translatedLangText.AVERAGE,"","",this.repData?.average||0]);
+
+    // // data.push(["", "", this.translatedLangText.TOTAL, this.repData?.total || 0]);
+    // // data.push(["", "", this.translatedLangText.AVERAGE, this.repData?.average || 0]);
+
+    // // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
+    // // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
+    // // this.displayTotalWithRO()]);
+
+    // pdf.setDrawColor(0, 0, 0); // red line color
+
+    // pdf.setLineWidth(0.1);
+    // pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    // // startY += PDFUtility.TableStartTopBuffer();
+    // // Add table using autoTable plugin
+    // autoTable(pdf, {
+    //   head: headers,
+    //   body: data,
+    //   //startY: startY, // Start table at the current startY value
+    //   margin: { top: startY, left: leftMargin, right: rightMargin },
+    //   theme: 'grid',
+    //   styles: {
+    //     fontSize: fontSz_body,
+    //     minCellHeight: minHeightHeaderCol
+
+    //   },
+    //   tableWidth: 'auto',
+    //   columnStyles: comStyles,
+    //   headStyles: headStyles, // Custom header styles
+    //   bodyStyles: {
+    //     fillColor: [255, 255, 255],
+    //     //halign: 'left', // Left-align content for body by default
+    //     //valign: 'middle', // Vertically align content
+    //   },
+    //   didParseCell: (data: any) => {
+    //     let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+    //     let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+    //     if (data.row.raw[2] == "Sunday") data.cell.styles.fillColor = [231, 231, 231];
+
+    //     if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
+    //       data.cell.styles.fontStyle = 'bold';
+    //       data.cell.styles.fillColor = [231, 231, 231];
+    //       data.cell.styles.valign = 'middle'; // Center text vertically
+    //       if (data.column.index === 0) {
+    //         data.cell.colSpan = 2;  // Merge 4 columns into one
+    //         data.cell.styles.halign = 'right'; // Center text horizontally
+    //       }
+    //     }
+    //     if ((data.row.index == totalRowIndex || data.row.index == averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
+    //       data.cell.text = ''; // Remove text from hidden columns
+    //       data.cell.colSpan = 0; // Hide these columns
+    //     }
+    //   },
+    //   didDrawPage: (d: any) => {
+    //     const pageCount = pdf.getNumberOfPages();
+
+    //     lastTableFinalY = d.cursor.y;
+
+    //     var pg = pagePositions.find(p => p.page == pageCount);
+    //     if (!pg) {
+    //       pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    //       if (pageCount > 1) {
+    //         //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
+    //         PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+    //         PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+    //       }
+    //     }
+
+    //   },
+    // });
+
+    // const pageCount = pdf.getNumberOfPages();
+    // lastTableFinalY = 15;
+    // // await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
+
+    // setTimeout(async () => {
+
+    //   // Add footer
+    // await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+    //    rightMargin,  this.translate, pagePositions);
+    //   // const totalPages = pdf.getNumberOfPages();
+
+    //   // for (const { page, x, y } of pagePositions) {
+    //   //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   //   pdf.setLineWidth(0.1);
+    //   //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   //   pdf.setFontSize(8);
+    //   //   pdf.setPage(page);
+
+    //   //   const lineBuffer = 13;
+    //   //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+    //   //   if (page > 1) {
+    //   //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   //   }
+    //   // }// Add Second Page, Add For Loop
+    
+
+    //   this.generatingPdfProgress = 100;
+    //   //pdf.save(fileName);
+    //   this.generatingPdfProgress = 0;
+    //   this.generatingPdfLoadingSubject.next(false);
+    //   Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    //   this.dialogRef.close();
+    // }, 100);
+
+  }
+
+
+ async export(items: TariffCleaningItem[]) {
+    const doc = new jsPDF();
+
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    let fontSize = 12;
+    doc.setFontSize(fontSize);
+    doc.text("Cleaning Tariff", 105, 15, { align: "center" });
+
+    let lastTableFinalY = 25;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    const table_body_fontsize = 8;
+    const startX = leftMargin;
+    let index = 1;
+
+    const data: any[][] = items.map((item) => {
+                const row = [
+                  index++, // increment index for each item
+                  item.cargo || "-",
+                  item.class_cv || "-",
+                  item.un_no || "-",
+                  item.cleaning_method?.name || "-",
+                  item.cleaning_category?.name || "-",
+                  item.flash_point || "-",
+                  item.ban_type_cv || "-",
+                  item.cleaning_category?.cost || "-",
+                ];
+                return row;
+            });
+    var sysCurrencyCode = Utility.GetSystemCurrencyCode();
+     autoTable(doc, {
+                startY: lastTableFinalY,
+                head: [[
+                    this.translatedLangText.S_N,
+                    this.translatedLangText.DESCRIPTION,
+                    this.translatedLangText.UNIT,
+                    this.translatedLangText.MANHOUR,
+                    `${this.translatedLangText.MATERIAL_COST}(${sysCurrencyCode})`
+                ]],
+                body: data,
+                theme: "grid",
+                margin: { left: leftMargin, right: rightMargin },
+                styles: { fontSize: table_body_fontsize, cellPadding: 2 },
+                headStyles: {
+                  fillColor: [220, 220, 220],
+                  textColor: [0, 0, 0],
+                  fontStyle: 'bold',
+                  halign: 'center',   // ✅ centers header text
+                  valign: 'middle'
+                },
+                columnStyles: {
+                    0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
+                    1: { cellWidth: 93 ,valign: 'middle', halign: 'center'},   // "Description"
+                    2: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "Unit"
+                    3: { cellWidth: 25, valign: 'middle', halign: 'center' },  // "Manhour"
+                    4: { cellWidth: 40, valign: 'middle', halign: 'center' }   // "Material Cost"
+                },
+                didDrawPage: (d: any) => {
+                    lastTableFinalY = d.cursor.y + 8;
+                    const pageCount = doc.getNumberOfPages();
+                    if (!pagePositions.find(p => p.page === pageCount)) {
+                        pagePositions.push({
+                            page: pageCount,
+                            x: doc.internal.pageSize.width - 20,
+                            y: doc.internal.pageSize.height - 10
+                        });
+                    }
+                }
+            });
+
+    
+
+    const totalPages = doc.getNumberOfPages();
+
+    // Add page numbers
+    for (const { page } of pagePositions) {
+        doc.setFontSize(8);
+        doc.setPage(page);
+        doc.text(`Page ${page} of ${totalPages}`, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 8, { align: 'right' });
+    }
+
+    doc.save("CleaningTariff.pdf");
+    this.dialogRef.close();
+}
+
 
 
   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
@@ -1181,21 +1142,8 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
   }
 
   GetReportTitle(): string {
-    var title: string = `${this.translatedLangText.REPAIR_TARIFF}`;
-    // switch (this.repType) {
-    //   case "CLEANING":
-    //     title =REPAIR_TARIFF
-    //     break;
-    //   case "STEAMING":
-    //     title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    //   case "REPAIR":
-    //     title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    //   case "RESIDUE":
-    //     title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    // }
+    var title: string = '';
+     title = `${this.translatedLangText.PACKAGE_BUFFER_CLEANING}`;
     return `${title}`
   }
 
@@ -1371,6 +1319,19 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       //   this.onDownloadClick();
       // }, timeout);
     }
+  }
+
+    displayLastUpdated(r: any) {
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
+    }
+    return this.displayDate(updatedt);
+
+  }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
   }
 
 }
