@@ -11,31 +11,30 @@
               <mat-icon>assessment</mat-icon>
             </button>
           </div>
+          @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}} - PDF">
             <button mat-mini-fab class="primary-light" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
+          }
+          @if (modulePackageService.AllowExcelReport()) {
+          <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel(1)"
+            (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
+            matTooltip="{{ translatedLangText.SUMMARY_REPORT }} - Excel">
+            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }} - Excel"
+              class="fab-icon">
+          </button>
+
+          }
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL ">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async) || isGeneratingReport)">
               <mat-icon>clear_all</mat-icon>
             </button>
           </div>
-           @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                <button mat-mini-fab
-                    class="light-green-button m-l-10"
-                    (click)="export_excel(1)"
-                    (click)="$event.stopPropagation()"
-                    [disabled]="isGeneratingReport"
-                    matTooltip="{{ translatedLangText.SUMMARY_REPORT }} - Excel">
-                    <img src="assets/images/icons/xlsx1_64x64.png"
-                        alt="{{ translatedLangText.SUMMARY_REPORT }} - Excel"
-                        class="fab-icon">
-                </button>
-          
-              }
+
         </mat-panel-description>
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">

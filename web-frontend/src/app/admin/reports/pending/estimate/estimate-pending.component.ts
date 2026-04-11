@@ -39,8 +39,10 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { PendingEstimateReportExcelComponent } from 'app/document-template/excel/reports/pending-estimate-report/pending-estimate-report-excel.component';
 import { PendingEstimateReportPdfComponent } from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -216,7 +218,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -559,7 +562,14 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.onExportDetail(this.sotList);
+        if(report_type===5)
+        {
+           this.onExportDetailExcel(this.sotList);
+        }
+        else
+        {
+           this.onExportDetail(this.sotList);
+        }
         //this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
         //this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
@@ -704,6 +714,36 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     return retval;
+  }
+  onExportDetailExcel(sot: StoringOrderTankItem[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (sot?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PendingEstimateReportExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        sot: sot
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportDetail(sot: StoringOrderTankItem[]) {

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { PendingInvoiceCostDetailPdfComponent } from "./pending-invoice-cost-detail.component";
+import { PendingInvoiceCostDetailExcelComponent } from "./pending-invoice-cost-detail-excel.component";
 describe("PendingInvoiceCostDetailPdfComponent", () => {
-  let component: PendingInvoiceCostDetailPdfComponent;
-  let fixture: ComponentFixture<PendingInvoiceCostDetailPdfComponent>;
+  let component: PendingInvoiceCostDetailExcelComponent;
+  let fixture: ComponentFixture<PendingInvoiceCostDetailExcelComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [PendingInvoiceCostDetailPdfComponent],
+    imports: [PendingInvoiceCostDetailExcelComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(PendingInvoiceCostDetailPdfComponent);
+    fixture = TestBed.createComponent(PendingInvoiceCostDetailExcelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
