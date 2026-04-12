@@ -49,7 +49,7 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: PackageBufferItem[],
+  repData: CleaningMethodItem[],
   date: string
 }
 

@@ -46,6 +46,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ManagementReportDS, ManagementReportYearlyRevenueItem } from 'app/data-sources/reports-management';
+import { YearlySalesReportDetailsExcelComponent } from 'app/document-template/excel/admin-reports/sales/yearly/yearly-details-excel.component';
 @Component({
   selector: 'app-sales-yearly',
   standalone: true,
@@ -224,7 +225,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -503,7 +504,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = reportDS.searchAdminReportYearlySales(this.lastSearchCriteria)
       .subscribe((data :any) => {
         this.repData = data;
-        this.ProcessYearlySalesReport(this.repData, date!, customerName!, report_type!, invTypes!,reportName);
+        this.ProcessYearlySalesReport(this.repData, date!, customerName!, report_type!, invTypes!,reportName,reportType);
       });
 
 
@@ -639,6 +640,50 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
 
   }
+
+    export_excel() {
+        this.search(5);
+      }
+    onExportDetailExcel(repData: AdminReportYearlySalesReport, date: string, customerName: string,report_type: string, invTypes: string[],reportName?:string) {
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(YearlySalesReportDetailsExcelComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+        data: {
+          repData: repData,
+          date: date,
+          repType: this.processType,
+          customer: customerName,
+          inventory_type: invTypes,
+          report_name:reportName
+  
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-9999px',  // Move far above the screen
+        left: '-9999px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+    }
+  
 
   onExportDetail(repData: AdminReportYearlySalesReport, date: string, customerName: string,report_type: string, invTypes: string[],reportName?:string) {
     //this.preventDefault(event);
@@ -820,13 +865,19 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
   ProcessYearlySalesReport(repData: AdminReportYearlySalesReport, date: string, customerName: string,
-     report_type: string, invTypes: string[],reportName?:string) {
+     report_type: string, invTypes: string[],reportName?:string,reportType:number=0) {
 
 
 
     if (!this.ZeroTransaction(repData)) {
 
-      this.onExportDetail(repData, date, customerName, report_type, invTypes, reportName);
+      if(reportType==5){
+        this.onExportDetailExcel(repData, date, customerName, report_type, invTypes);
+      }
+      else
+      {
+         this.onExportDetail(repData, date, customerName, report_type, invTypes, reportName);
+      }
 
 
     }

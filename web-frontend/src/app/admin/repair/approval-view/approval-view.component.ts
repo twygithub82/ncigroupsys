@@ -271,6 +271,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
     private fileManagerService: FileManagerService,
+     
   ) {
     super();
     this.translateLangText();

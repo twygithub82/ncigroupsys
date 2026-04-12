@@ -47,6 +47,7 @@ export class BusinessLogicUtil {
         return modulePackage === "growth"
     }
 
+   
     static isCustomizedPackage() {
         return modulePackage === "customized"
     }

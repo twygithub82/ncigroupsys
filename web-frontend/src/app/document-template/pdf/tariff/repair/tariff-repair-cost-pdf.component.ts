@@ -849,8 +849,9 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
 
     // Variable to store the final Y position of the last table
     let firstSubTitleY=36;
-    let lastTableFinalY = firstSubTitleY;
 
+    let lastTableFinalY = firstSubTitleY;
+// firstSubTitleY +=15;
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
 
     pdf.setFontSize(8);
@@ -903,29 +904,23 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       var repPage = pdf.getNumberOfPages();
        let startY=0;
 
-      //  if(CurrentPage!=repPage)
-      //  {
-      //   lastTableFinalY =startPostY ;
-      //  }
-      //  else
-      //  {
+    
         lastTableFinalY += 6; // 2nd table
-      //  }
-      // if ((n+i) > 0) lastTableFinalY += 5; // 2nd table
-      // else {
-      //   lastTableFinalY =startPostY ; //1st Page 1st table
-      // }
-      //if(repPage==1)lastTableFinalY=45;
+    
 
       if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
         lastTableFinalY = firstSubTitleY+5; /// buffer for 2nd page onward first table's Method
       }
+      // else if(CurrentPage!==repPage){
+      //    lastTableFinalY = firstSubTitleY+5;
+      // }
       // else {
         CurrentPage = repPage;
       // }
       
       let subtitle= group.group_name_desc || group.group_name_cv;
+      lastTableFinalY+= PDFUtility.GapBetweenLeftTitleAndTable();
       // subtitle+= ' - ' + itm.subgroup_name_desc;
        await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
@@ -938,7 +933,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
         body: data,
         startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: {  horizontal: leftMargin},
+        margin: { top:43,  horizontal: leftMargin},
         tableWidth: contentWidth,
         styles: {
           fontSize: fontSz_body,

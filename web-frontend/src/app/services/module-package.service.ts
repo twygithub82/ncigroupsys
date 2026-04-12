@@ -22,6 +22,18 @@ export class ModulePackageService {
     return modulePackage === "customized"
   }
 
+ 
+
+  AllowExcelReport()
+  {
+    return  this.isCustomizedPackage();
+  }
+
+  AllowPdfReport()
+{
+  return  this.isCustomizedPackage()|| this.isGrowthPackage();
+}
+
   getModulePackage() {
     return modulePackage;
   }

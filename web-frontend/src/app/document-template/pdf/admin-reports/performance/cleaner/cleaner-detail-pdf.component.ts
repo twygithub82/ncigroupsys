@@ -673,7 +673,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
-
+    let sPosY=0;
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
@@ -687,7 +687,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
        rightMargin, this.translate, reportTitle, repGeneratedDate);
 
     startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-
+    sPosY=startY;
     startY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,startY,
       minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
       startY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
@@ -736,7 +736,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       body: data,
       //startY: startY, // Start table at the current startY value
 
-      margin: { top: startY, left: leftMargin, right: rightMargin },
+      margin: { top: sPosY, left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,

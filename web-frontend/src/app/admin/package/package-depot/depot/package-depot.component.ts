@@ -44,6 +44,8 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { PackageDepotCostExcelComponent } from 'app/document-template/excel/package/depot/depot-cost/package-depot-cost-excel.component';
+import { Package } from 'angular-feather/icons';
+import { PackageDepotCostPdfComponent } from 'app/document-template/pdf/package/depot/depot-cost/package-depot-cost-pdf.component';
 
 //import { TankDS, TankItem } from 'app/data-sources/tank';
 
@@ -247,7 +249,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('profileInput', { static: true })
   profileInput?: ElementRef<HTMLInputElement>;
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -407,8 +409,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-         this.selectedPackEst = undefined;
-         this.allowSelectedAll = false;
+        this.selectedPackEst = undefined;
+        this.allowSelectedAll = false;
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
@@ -989,74 +991,104 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     return retval
   }
 
-   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
+  export_excel() {
+
+    this.isGeneratingReport = true;
+    // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
+    this.packDepotDS.SearchAllPackageDepot(where, order).subscribe(res => {
+      var prcList: PackageDepotItem[] = res;
+      this.exportExcelReport(prcList);
+    })
+    
+  }
+
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
 
-  export_excel()
-          {
-            
-             this.isGeneratingReport=true;
-            // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
-            const where =this.lastSearchCriteria;
-          const order=this.lastOrderBy;
-          this.packDepotDS.SearchAllPackageDepot(where,order).subscribe(res=>{
-                var prcList:PackageDepotItem[]=res;
-                this.exportExcelReport(prcList);
-          })
-          //  if(this.packDepotItems)
-          //  {
-          //   this.isGeneratingReport=true;
-          //   var prcList:PackageDepotItem[]=[];
-          //       this.packDepotItems.forEach((item)=>{
-          //         var itm:any = item;
-          //        const c: PackageDepotItem = {
-          //           ...itm,
-                   
-          //         };
-          //         prcList.push(c);
-          //       });
-          //   this.exportExcelReport(prcList);
-          //  }
-        
-          }
-      
-        exportExcelReport(repData:any) {
-                
-                   //this.preventDefault(event);
-                    let cut_off_dt = new Date();
-                
-                
-                    let tempDirection: Direction;
-                    if (localStorage.getItem('isRtl') === 'true') {
-                      tempDirection = 'rtl';
-                    } else {
-                      tempDirection = 'ltr';
-                    }
-                
-                    const dialogRef = this.dialog.open(PackageDepotCostExcelComponent, {
-                      width: reportPreviewWindowDimension.portrait_width_rate,
-                      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                      
-                      data: {
-                        repData: repData
-                      },
-                
-                      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                      direction: tempDirection
-                    });
-                
-                      dialogRef.updatePosition({
-                      top: '-90vh',  // Move far above the screen
-                      left: '0px'  // Move far to the left of the screen
-                    });
-                
-                    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                      this.isGeneratingReport = false;
-                    });
-            
-              }
+    const dialogRef = this.dialog.open(PackageDepotCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+  export_report() {
+
+    this.isGeneratingReport = true;
+    // const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+    const where = this.lastSearchCriteria;
+    const order = this.lastOrderBy;
+    this.packDepotDS.SearchAllPackageDepot(where, order).subscribe(res => {
+      var prcList: PackageDepotItem[] = res;
+      this.exportPdfReport(prcList);
+    })
+    
+  }
+
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PackageDepotCostPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }
 

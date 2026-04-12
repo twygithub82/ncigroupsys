@@ -1,0 +1,86 @@
+<div mat-dialog-title class="ms-3 mt-3" hidden>
+  <h4>{{translatedLangText.PREVIEW_PDF}} : {{this.GetReportTitle()}} </h4>
+</div>
+<div #pdfTable id="pdfTable" mat-dialog-content hidden>
+  <div id="pdf-form-body" class="pdf-container pdf-body">
+    @for (bCust of report_yard_detail; track bCust) {
+    <div class="card">
+      <div class="pdf-body">
+        <table id="table_customer_info" class="table_customer_info">
+          <tr>
+            <td>{{translatedLangText.CUSTOMER}} : {{this.DisplayCustomerName(bCust)}}</td>
+            <!-- <td class="sp60">{{translatedLangText.INVENTORY_DATE}} : {{date}}</td> -->
+          </tr>
+        </table>
+      </div>
+     
+      <!-- <div>{{translatedLangText.RELEASED_TANK}}</div> -->
+      <table id="repair-part-table" class="repair-part-table">
+        <tr class="group-header">
+          <th class="th-w3">{{translatedLangText.NO}}</th>
+          <th class="th-w6">{{translatedLangText.TANK_NO}}</th>
+          <th class="th-w5">{{translatedLangText.LOCATION}}</th>
+          <th class="th-w6">{{translatedLangText.EIR_NO}}</th>
+          <th class="th-w5">{{translatedLangText.OWNER}}</th>
+          <th class="th-w5">{{translatedLangText.IN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.TAKE_IN_REFERENCE}}</th>
+          <th class="th-w10">{{translatedLangText.LAST_CARGO}}</th>
+          <th class="th-w6">{{translatedLangText.CLEAN_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.ESTIMATE_NO}}</th>
+          <th class="th-w6">{{translatedLangText.ESTIMATE_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.APPROVAL_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.AV_DATE}}</th>
+          <th class="th-w6">{{translatedLangText.LAST_TEST}}</th>
+          <th class="th-w6">{{translatedLangText.NEXT_TEST}}</th>
+          <th class="th-w6">{{translatedLangText.CURRENT_STATUS}}</th>
+          <th class="th-w6">{{translatedLangText.REMARKS}}</th>
+          <th class="th-w6">{{translatedLangText.PURPOSE}}</th>
+        </tr>
+        {{refreshCounter()}}
+        @for(y of bCust.yards; track y)
+        {
+        @for (itm of y.storing_order_tank; track itm) {
+          <tr class="fixed_height_40px">
+            <td>{{ getCounter() }}</td> <!-- Row number -->
+            <td><span class="overflow-text">{{ itm.tank_no }}</span></td>
+            <td class="text-center">{{ DisplayLocation(y.code!) }}</td>
+            <td class="text-center">{{ DisplayEIRNo(itm) }}</td>
+            <td class="text-center"><span class="overflow-text">{{ DisplayOwner(itm) }}</span></td>
+            <td class="text-center">{{DisplayInDate(itm)}}</td>
+            <td class="text-center"><span class="overflow-text">{{ DisplayTakeInRef(itm) }}</span></td>
+            <td class="text-center"><span class="overflow-text" matTooltip={{itm.tariff_cleaning?.cargo}}>{{ itm.tariff_cleaning?.cargo }}</span></td>
+            <td class="text-center">{{ DisplayCleanDate(itm) }}</td>
+            <td class="text-center"><span class="overflow-text">{{ DisplayEstimateNo(itm) }}</span></td>
+            <td class="text-center">{{ DisplayEstimateDate(itm) }}</td>
+            <td class="text-center">{{ DisplayApprovalDate(itm) }}</td>
+            <td class="text-center">{{ DisplayAVDate(itm) }}</td>
+            <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayLastTest(itm)}}>{{ DisplayLastTest(itm) }}</span></td>
+            <td class="text-center"><span class="overflow-text"  matTooltip={{DisplayNextTest(itm)}}>{{ DisplayNextTest(itm) }}</span></td>
+            <td class="text-center">{{ DisplayCurrentStatus(itm) }}</td>
+            <td class="text-center"><span class="overflow-text">{{ DisplayRemarks(itm) }}</span></td>
+            <td class="text-center"><span class="overflow-text">{{ displayTankPurpose(itm) }}</span></td>
+          </tr>
+          
+        }
+      }
+      </table>
+    </div>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="m-2 align-right" hidden>
+  <button mat-flat-button color="accent" (click)="onDownloadClick()" tabindex="-1"
+    [disabled]="(steamDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
+    <mat-icon>
+      @if (!(steamDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
+      file_download
+      } @else {
+      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+      }
+    </mat-icon>
+    {{translatedLangText.DOWNLOAD}}
+  </button>
+  @if ((generatingPdfLoading$| async)) {
+  <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
+  }
+</div>

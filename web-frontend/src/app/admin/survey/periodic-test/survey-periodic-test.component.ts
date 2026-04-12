@@ -38,10 +38,15 @@ import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SurveyPeriodExcelComponent } from 'app/document-template/excel/survey/period/survey-period-excel.component';
+import { SurveyPeriodPdfComponent } from 'app/document-template/pdf/survey/period/survey-period-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
+import { Observable } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -187,7 +192,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   hasNextPage = false;
   hasPreviousPage = false;
   availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
-
+isGeneratingReport: boolean = false;
   constructor(
     private route: ActivatedRoute,
     public httpClient: HttpClient,
@@ -197,7 +202,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     private apollo: Apollo,
     private router: Router,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -851,4 +857,116 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       this.search();
     }
   }
+
+    export_pdf() {
+      this.isGeneratingReport = true;
+      this.loadAllDataForReport().subscribe(data => {
+        this.exportPdfReport(data);
+        this.isGeneratingReport = false;
+      });
+  
+    }
+  
+    export_excel() {
+      this.isGeneratingReport = true;
+  
+      this.loadAllDataForReport().subscribe(data => {
+  
+        var prcList: StoringOrderItem[] = [];
+        data.forEach((item) => {
+          var itm: any = item;
+          const c: StoringOrderItem = {
+            ...itm,
+            tank_status: this.getTankStatusDescription(itm.tank_status_cv),
+            purpose: this.displayTankPurpose(itm)
+          };
+          prcList.push(c);
+        });
+  
+        this.exportExcelReport(prcList);
+        this.isGeneratingReport = false;
+      });
+  
+    }
+  
+    exportPdfReport(repData: any) {
+  
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(SurveyPeriodPdfComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+  
+        data: {
+          repData: repData
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-90vh',  // Move far above the screen
+        left: '0px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+  
+    }
+  
+    exportExcelReport(repData: any) {
+  
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(SurveyPeriodExcelComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+  
+        data: {
+          repData: repData
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-90vh',  // Move far above the screen
+        left: '0px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+
+  
+    }
+
+    private loadAllDataForReport(): Observable<StoringOrderTankItem[]> {
+    
+        return this.sotDS.searchAllStoringOrderTanksForSurvey(this.lastSearchCriteria, this.lastOrderBy);
+      }
+     
 }

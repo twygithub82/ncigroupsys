@@ -38,8 +38,10 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TransferLocationExcelComponent } from 'app/document-template/excel/reports/transfer-location/transfer-location-excel.component';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -213,7 +215,8 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -453,14 +456,14 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       return;
     }
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(date);
+    this.performSearch(date,report_type);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
-  performSearch(date: string) {
+  performSearch(date: string,repType:number=1) {
     //this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
     this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport_r1(this.lastSearchCriteria)
       .subscribe(data => {
@@ -469,7 +472,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportTransferYard(date);
+        this.ProcessReportTransferYard(date,repType);
       });
   }
 
@@ -543,7 +546,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  ProcessReportTransferYard(date: string) {
+  ProcessReportTransferYard(date: string,repType:number=1) {
     // if (this.sotList.length === 0) {
     //   this.isGeneratingReport = false;
     //   return;
@@ -569,7 +572,42 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
         if (newCust) report_customer_tank_acts.push(repCust);
       }
     });
-    this.onExportDetail(report_customer_tank_acts, date);
+    if(repType==5)
+    {
+
+      this.onExportDetailExcel(report_customer_tank_acts, date);
+    }
+    else
+    {
+      this.onExportDetail(report_customer_tank_acts, date);
+    }
+  }
+
+   onExportDetailExcel(repStatus: report_customer_tank_activity[], date: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(TransferLocationExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_transfer_location: repStatus,
+        date: date
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportDetail(repStatus: report_customer_tank_activity[], date: string) {

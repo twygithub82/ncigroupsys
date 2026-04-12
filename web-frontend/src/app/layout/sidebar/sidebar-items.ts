@@ -734,7 +734,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['growth', 'customized'],
+        modulePackage: [ 'customized'],
         expectedFunctions: ['MANAGEMENT_MAN_HOUR_VIEW'],
         submenu: [],
       },
@@ -1151,7 +1151,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         visible: true,
-        modulePackage: ['growth', 'customized'],
+        modulePackage: ['customized'],
         expectedFunctions: ['ADMIN_REPORTS_ZERO_APPROVAL_COST_REPORT_VIEW'],
         submenu: [],
       }

@@ -45,11 +45,12 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import * as XLSX from 'xlsx';
+import { PackageBufferItem } from 'app/data-sources/package-buffer';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffBufferItem[],
+  repData: PackageBufferItem[],
   date: string
 }
 

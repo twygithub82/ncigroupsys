@@ -49,7 +49,7 @@ import * as XLSX from 'xlsx';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffLabourItem[],
+  repData: PackageLabourItem[],
   date: string
 }
 

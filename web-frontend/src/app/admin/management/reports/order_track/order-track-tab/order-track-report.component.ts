@@ -38,7 +38,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { OrderTrackingDetailExcelComponent } from 'app/document-template/excel/management/order-track/order-track-detail-excel.component';
 import { OrderTrackingDetailPdfComponent } from 'app/document-template/pdf/management-reports/order-track/order-track-detail-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -235,7 +237,8 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -412,7 +415,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  search() {
+  search(repType:number=1) {
     if (this.searchForm?.invalid) {
       this.searchForm.markAllAsTouched();
       return;
@@ -489,11 +492,11 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       return;
     }
     this.lastSearchCriteria = where;
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,repType);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,repType:number=1) {
 
     this.subs.sink = this.repDS.searchManagementReportOrderTrackingReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
@@ -503,7 +506,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        this.ProcessReport(this.repData, report_type!);
+        this.ProcessReport(this.repData, report_type!,repType);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -653,13 +656,45 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  ProcessReport(repData: OrderTrackingItem[], report_type: string) {
-    // if (repData.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-    // }
+  ProcessReport(repData: OrderTrackingItem[], report_type: string,repType:number=1) {
 
-    this.onExportDetail(repData, report_type);
+    if(repType==5)
+    {
+      this.onExportDetailExcel(repData, report_type);
+    }
+    else
+    {
+        this.onExportDetail(repData, report_type);
+    }
+  }
+
+  onExportDetailExcel(repData: OrderTrackingItem[], report_type: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(OrderTrackingDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        repType: report_type,
+        start_dt: this.lastSearchCriteria.start_date,
+        end_dt: this.lastSearchCriteria.end_date
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
 

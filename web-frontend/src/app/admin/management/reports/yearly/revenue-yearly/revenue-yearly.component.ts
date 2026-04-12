@@ -46,6 +46,8 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { CDK_DESCRIBEDBY_HOST_ATTRIBUTE } from '@angular/cdk/a11y';
+import { RevenueYearlySalesReportDetailsExcelComponent } from 'app/document-template/excel/management/yearly/revenue/revenue-sales-details-excel.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-revenue-yearly',
@@ -229,7 +231,8 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -441,7 +444,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.subs.sink = this.reportDS.searchManagementReportRevenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!);
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!,reportType!);
       });
   }
 
@@ -562,8 +565,17 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     if (this.dailySumList.length === 0) return;
   }
 
-  ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
-    this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+  ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string,
+     report_type: string, invTypes: string[],reportType:number) {
+
+    if(reportType==5)
+    {
+      this.onExportChartExcel_r1(repData, date, customerName, report_type, invTypes);
+    }
+    else
+    {
+      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+    }
     // if (!this.ZeroTransaction(repData)) {
     //   this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
     // }
@@ -609,7 +621,49 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
+  onExportChartExcel_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(RevenueYearlySalesReportDetailsExcelComponent, {
+      position: {
+        top: '-1999px',  // Move far above the screen
+        left: '-1999px'  // Move far to the left of the screen
+      },
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: report_type,
+        customer: customerName,
+        inventory_type: invTypes
+
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    // dialogRef.updatePosition({
+    //   top: '-9999px',  // Move far above the screen
+    //   left: '-9999px'  // Move far to the left of the screen
+    // });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
   onExportChart_r1(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();

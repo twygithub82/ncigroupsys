@@ -43,6 +43,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { InventoryYearlySalesReportDetailsExcelComponent } from 'app/document-template/excel/management/yearly/inventory/inventory-sales-details-excel.component';
 
 @Component({
   selector: 'app-inventory-yearly',
@@ -224,7 +226,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -310,7 +313,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
       this.reportTypeCvList = data;
       this.initSearchForm();
       this.initializeValueChanges();
-      this.yearList=[];
+      this.yearList = [];
       var thisYear = new Date().getFullYear();
       var startYear = thisYear - 5;
       for (var i = startYear; i <= thisYear; i++) {
@@ -453,7 +456,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
         this.repData = data;
 
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!);
+      this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!, reportType!);
 
       });
 
@@ -548,11 +551,16 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   }
 
-  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
+  ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[], reportType: number) {
 
     //if (!this.ZeroTransaction(this.repData)) {
     if (true) {
-      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+      if (reportType == 5) { 
+        this.onExportChartExcel_r1(repData, date, customerName, report_type, invTypes);
+      }
+      else {
+        this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+      }
     }
     else {
       this.repData = [];
@@ -560,6 +568,44 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     }
   }
 
+   onExportChartExcel_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(InventoryYearlySalesReportDetailsExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: report_type,
+        customer: customerName,
+        inventory_type: invTypes
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
   onExportChart_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
     //this.preventDefault(event);

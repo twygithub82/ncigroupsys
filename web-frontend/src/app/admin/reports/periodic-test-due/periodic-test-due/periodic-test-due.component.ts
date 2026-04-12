@@ -35,8 +35,10 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PeriodicTestDueExcelComponent } from 'app/document-template/excel/reports/periodic-test/periodic-test-excel.component';
 import { PeriodicTestDuePdfComponent } from 'app/document-template/pdf/periodic-test-pdf/periodic-test-pdf.component';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -221,7 +223,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -409,7 +412,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
          return;
       }
     this.lastSearchCriteria = periodicTestDueReq;
-    this.performSearch(periodicTestDueReq);
+    this.performSearch(periodicTestDueReq,report_type);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -417,11 +420,11 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-  performSearch(date: string) {
+  performSearch(date: string, repType:number=1) {
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.periodicTestRes = data;
-        this.ProcessPeriodicTestDueReport();
+        this.ProcessPeriodicTestDueReport(repType);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -497,7 +500,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-  ProcessPeriodicTestDueReport() {
+  ProcessPeriodicTestDueReport(repType: number = 1) {
     // if (this.periodicTestRes.length === 0) return;
 
     var report_records: report_periodic_test_due_group_customer[] = [];
@@ -521,10 +524,43 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       }
     });
 
+    if(repType==5)
+    {
+       this.onExportDetailExcel(report_records);
+    }
+    else
+    {
+       this.onExportDetail(report_records);
+    }
 
-    this.onExportDetail(report_records);
+
+  }
+
+   onExportDetailExcel(repStatus: report_periodic_test_due_group_customer[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
 
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PeriodicTestDueExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_inventory: repStatus,
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportDetail(repStatus: report_periodic_test_due_group_customer[]) {

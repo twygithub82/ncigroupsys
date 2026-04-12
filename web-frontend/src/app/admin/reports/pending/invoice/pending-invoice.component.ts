@@ -41,8 +41,10 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { PendingInvoiceCostDetailExcelComponent } from 'app/document-template/excel/reports/pending-invoice-cost-detail/pending-invoice-cost-detail-excel.component';
 import { PendingInvoiceCostDetailPdfComponent } from 'app/document-template/pdf/pending-invoice-cost-detail-pdf/pending-invoice-cost-detail.component';
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { BILLING_ESTIMATE_STATUS, BILLING_TANK_STATUS, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -175,7 +177,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -1013,37 +1016,7 @@ async  export_report(reportType: number) {
             this.checkRepairBillingForTankOwner(b, repCustomers);
       }
 
-      // this.sotList.forEach((b) => {
-      //   var repCusts = repCustomers.filter(c => c.guid === b.storing_order?.customer_company?.guid);
-      //   //var repCusts = repCustomers.filter(c => c.guid === b.customer_company?.guid);
-      //   var repCust: report_billing_customer = new report_billing_customer();
-      //   var newCust: boolean = true;
-      //   if (repCusts.length > 0) {
-      //     repCust = repCusts[0];
-      //     newCust = false;
-      //   }
-
-      //   else {
-      //     repCust.guid = b.storing_order?.customer_company?.guid;
-      //     //repCust.guid = b.customer_company?.guid;
-      //     repCust.items = [];
-      //   }
-      //   //repCust.customer = b.customer_company?.name;
-      //   repCust.customer = b.storing_order?.customer_company?.name;
-      //   //this.ccDS.displayName(b.storing_order?.customer_company);
-      //   //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      //   //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
-      //   //  }
-      //  await this.createReportBillingItem_R1(b, repCust);
-      //   //const rpBillingItm = await this.createReportBillingItem_R1(b, repCust);
-      //   //repCust.items = rpBillingItm;
-
-      //   if (newCust) repCustomers.push(repCust);
-
-        
-      //   this.checkRepairBillingForTankOwner(b, repCustomers);
-
-      // });
+     
       repCustomers.map(c => {
 
         c.items?.map(i => {
@@ -1067,6 +1040,9 @@ async  export_report(reportType: number) {
       else if (reportType == 2) {
         this.onExportDetail_Cost(repCustomers);
 
+      }
+      else if(reportType == 5){
+           this.onExportDetail_CostExcel(repCustomers);
       }
     // });
 
@@ -1141,6 +1117,35 @@ async  export_report(reportType: number) {
 
   }
 
+  onExportDetail_CostExcel(repCustomers: report_billing_customer[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    if (this.searchForm!.get('cutoff_dt')?.value) {
+      cut_off_dt = this.searchForm!.get('cutoff_dt')?.value;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PendingInvoiceCostDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        billing_customers: repCustomers,
+        cut_off_dt: Utility.convertDateToStr(new Date(cut_off_dt))
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
   onExportDetail_Cost(repCustomers: report_billing_customer[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();

@@ -44,6 +44,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { PackageSteamingCostExcelComponent } from 'app/document-template/excel/package/steaming/steaming/package-steaming-cost-excel.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { PackageSteamingCostPdfComponent } from 'app/document-template/pdf/package/steaming/steaming/package-steaming-cost-pdf.component';
 @Component({
   selector: 'app-package-steam',
   standalone: true,
@@ -949,20 +950,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
                   });
                   this.exportExcelReport(prcList);
               })
-    // if (this.packageSteamItems) {
-    //   this.isGeneratingReport = true;
-    //   var prcList: PackageSteamingItem[] = [];
-    //   this.packageSteamItems.forEach((item) => {
-    //      var itm:any = item;
-    //     const c: PackageSteamingItem = {
-    //       ...itm,
-    //       temp_max:this.displayTempMax(itm.tariff_steaming?.temp_max),
-    //       qty: itm.qty
-    //     };
-    //     prcList.push(c);
-    //   });
-    //   this.exportExcelReport(prcList);
-    // }
+    
 
   }
 
@@ -980,6 +968,66 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(PackageSteamingCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+   export_report() {
+
+     this.isGeneratingReport=true;
+              //  const where={and:[{ delete_dt: { eq: null } },{customer_company:{ delete_dt: { eq: null } }}]};
+              const where = this.lastSearchCriteria;
+              const order=this.lastOrderBy;
+              this.packSteamDS.SearchAllPackageSteam(where,order).subscribe(res=>{
+                   var prcList: PackageSteamingItem[] = [];
+                   res.forEach((item) => {
+                    var itm:any = item;
+                    const c: PackageSteamingItem = {
+                      ...itm,
+                      temp_max:this.displayTempMax(itm.tariff_steaming?.temp_max),
+                      qty: itm.qty
+                    };
+                    prcList.push(c);
+                  });
+                  this.exportPdfReport(prcList);
+              })
+    
+
+  }
+
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(PackageSteamingCostPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,

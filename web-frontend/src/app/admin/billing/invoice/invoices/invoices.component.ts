@@ -49,6 +49,8 @@ import { BILLING_TANK_STATUS, Utility, pageSizeInfo } from 'app/utilities/utilit
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { CustomerInvoicesExcelComponent } from 'app/document-template/excel/billing/customer-invoices-/customer-invoices-excel.component';
 
 @Component({
   selector: 'app-invoices',
@@ -191,7 +193,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.isMobile = Utility.isMobile();
@@ -1259,7 +1262,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
 
-  export_report() {
+  export_report(repType:number=1) {
 
     // if (!this.billList.length) this.search();
 
@@ -1302,7 +1305,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       });
 
     });
-    this.onExport(repCustomers);
+    if(repType==5){ this.onExportExcel(repCustomers);}
+    else  { this.onExport(repCustomers);}
 
   }
 
@@ -1632,6 +1636,29 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   preventDefault(event: Event) {
     event.preventDefault();
+  }
+
+   onExportExcel(repCustomers: report_billing_customer[]) {
+    //this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CustomerInvoicesExcelComponent, {
+      width: '85wv',
+      height: '80vh',
+      data: {
+        billing_customers: repCustomers
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
   }
   onExport(repCustomers: report_billing_customer[]) {
     //this.preventDefault(event);
