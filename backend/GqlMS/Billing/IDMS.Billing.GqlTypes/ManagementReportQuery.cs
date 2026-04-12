@@ -649,35 +649,35 @@ namespace IDMS.Billing.GqlTypes
             //return groupedNodes;
 
 
-            return GetGroupInventoryMonthlyWithCount(resultList, type);
+            // return GetGroupInventoryMonthlyWithCount(resultList, type);
 
-            //if (type.EqualsIgnore("repair"))
-            //{
-            //    return resultList
-            //        .GroupBy(n => n.code)
-            //        .Select(g => new InventoryPerMonth
-            //        {
-            //            key = g.Key,
-            //            name = g.Select(n => n.cc_name).FirstOrDefault(),
-            //            count = g.Count(),
-            //        })
-            //        .OrderBy(g => g.key) // Sort by date
-            //        .ToList();
-            //}
-            //else
-            //{
-            //    // Group nodes by FormattedDate and count the number of SotGuids for each group
-            //    return resultList
-            //        .GroupBy(n => new { n.code, n.cc_name })  // Group by formatted date
-            //        .Select(g => new InventoryPerMonth
-            //        {
-            //            key = g.Key.code,
-            //            name = g.Select(n => n.cc_name).FirstOrDefault(),
-            //            count = g.Select(n => n.sot_guid).Distinct().Count()
-            //        })
-            //        .OrderBy(g => g.key) // Sort by date
-            //        .ToList();
-            //}
+            if (type.EqualsIgnore("repair") || type.EqualsIgnore("in_out") || type.EqualsIgnore("gate") || type.EqualsIgnore("lolo"))
+            {
+                return resultList
+                    .GroupBy(n => n.code)
+                    .Select(g => new InventoryPerMonth
+                    {
+                        key = g.Key,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Count(),
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
+            else
+            {
+                // Group nodes by FormattedDate and count the number of SotGuids for each group
+                return resultList
+                    .GroupBy(n => new { n.code, n.cc_name })  // Group by formatted date
+                    .Select(g => new InventoryPerMonth
+                    {
+                        key = g.Key.code,
+                        name = g.Select(n => n.cc_name).FirstOrDefault(),
+                        count = g.Select(n => n.sot_guid).Distinct().Count()
+                    })
+                    .OrderBy(g => g.key) // Sort by date
+                    .ToList();
+            }
 
         }
 
@@ -723,7 +723,7 @@ namespace IDMS.Billing.GqlTypes
 
         private async Task<YearlyInventory> GenerateYearlyInventoryResult(List<TempInventoryResult> approvedResult, string reportFormat, string type, DateTime startOfMonth, DateTime endOfMonth, string specificTimeZone)
         {
-            IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
+                IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
             if (reportFormat.EqualsIgnore("customer_wise"))
             {
                 approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth, type);
@@ -1724,7 +1724,7 @@ namespace IDMS.Billing.GqlTypes
             {
                 // Group nodes by FormattedDate and count the number of SotGuids for each group
                 return resultList
-                    .GroupBy(n => n.date)  // Group by formatted date
+                    .GroupBy(n => n.code)  // Group by formatted date
                     .Select(g => new RevenuePerMonth
                     {
                         key = g.Key,
@@ -1739,10 +1739,10 @@ namespace IDMS.Billing.GqlTypes
             {
                 // Group nodes by FormattedDate and count the number of SotGuids for each group
                 return resultList
-                    .GroupBy(n => new { n.date, n.sot_guid })  // Group by formatted date
+                    .GroupBy(n => new { n.code, n.cc_name })  // Group by formatted date
                     .Select(g => new RevenuePerMonth
                     {
-                        key = g.Key.date,
+                        key = g.Key.code,
                         name = g.Select(n => n.cc_name).FirstOrDefault(),
                         count = g.Select(n => n.sot_guid).Distinct().Count(),
                         cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
