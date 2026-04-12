@@ -47,6 +47,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ManagementReportDS,ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
 import { A } from '@angular/cdk/keycodes';
+import { MonthlySalesReportDetailsExcelComponent } from 'app/document-template/excel/admin-reports/sales/monthly/monthly-details-excel.component';
 
 @Component({
   selector: 'app-sales-monthly',
@@ -227,7 +228,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -589,7 +590,14 @@ this.isGeneratingReport = true;
 
   ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[],reportName?:string) {
 
- this.onExportDetail(repData, date, customerName,invTypes,reportName);
+    if (report_type == 5)
+    {
+        this.onExportDetailExcel(repData, date, customerName,invTypes,reportName);
+    }
+    else
+    {
+        this.onExportDetail(repData, date, customerName,invTypes,reportName);
+    }
  return;
     
     if (!this.ZeroTransaction(repData)) {
@@ -604,24 +612,51 @@ this.isGeneratingReport = true;
     }
     
 
-    // if (repData) {
-    //   if (report_type == 1) {
-    //     this.onExportChart_r1(repData, date, customerName);
-    //   }
-    //   else if (report_type == 2) {
-    //     this.onExportSummary(repData, date, customerName);
-    //   }
-    //   else if (report_type == 3) {
-    //     this.onExportDetail(repData, date, customerName,invTypes);
-    //   }
+   
 
-    // }
-    // else {
-    //   this.sotList = [];
-    //   this.isGeneratingReport = false;
-    // }
+  }
+
+   export_excel() {
+      this.search(5);
+    }
+  onExportDetailExcel(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[],reportName?:string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
 
 
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(MonthlySalesReportDetailsExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+        inventory_type: invTypes,
+        report_name:reportName
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[],reportName?:string) {

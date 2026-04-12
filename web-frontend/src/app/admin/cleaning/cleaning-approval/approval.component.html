@@ -226,7 +226,7 @@
                             <mat-icon>remove_circle_outline</mat-icon>
                             <span>{{translatedLangText.NO_ACTION}}</span>
                           </button>
-                          @if (canExport(row)) {
+                          @if (canExport(row) && modulePackageService.AllowPdfReport()) {
                           <button mat-menu-item (click)="onExport($event, row)">
                             <i class="fas fa-file-export"></i>
                             {{translatedLangText.EXPORT}}

@@ -44,6 +44,8 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { InventoryMonthlySalesReportDetailsExcelComponent } from 'app/document-template/excel/management/monthly/inventory/inventory-sales-details-excel.component';
 
 @Component({
   selector: 'app-inventory-monthly',
@@ -224,7 +226,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -515,7 +518,13 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     if (repData) {
       //if (!this.ZeroTransaction(repData)) {
       if (true) {
+        if (report_type == 5) {
+          this.onExportChartExcel_r1(repData, date, customerName, invTypes);
+        }
+        else
+        {
         this.onExportChart_r1(repData, date, customerName, invTypes);
+        }
       }
       else {
         this.sotList = [];
@@ -568,6 +577,43 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
+  onExportChartExcel_r1(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes: string[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(InventoryMonthlySalesReportDetailsExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+        inventory_type: invTypes
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
   onExportChart_r1(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();

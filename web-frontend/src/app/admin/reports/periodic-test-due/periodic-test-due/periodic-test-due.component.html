@@ -5,12 +5,24 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
+          @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
-             [disabled]=" isGeneratingReport">
+              [disabled]=" isGeneratingReport">
               <mat-icon>assessment</mat-icon>
             </button>
           </div>
+          }
+          @if(modulePackageService.AllowExcelReport()) {
+          <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}} - Excel">
+            <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
+              [disabled]="isGeneratingReport">
+              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+            </button>
+          </div>
+
+          }
+
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
               <mat-icon>clear_all</mat-icon>
@@ -73,7 +85,7 @@
               </div> -->
         </div>
       </form>
-       @if (!(sotDS.loading$ | async) && this.noCond) {
+      @if (!(sotDS.loading$ | async) && this.noCond) {
       <div class="pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
         <h5 class="m-b-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
       </div>

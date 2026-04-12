@@ -37,8 +37,11 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
+import { MonthlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/monthly/summary/monthly-summary-excel.component';
+
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -220,7 +223,8 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -493,7 +497,9 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
-
+        else if (report_type == 5) {
+        this.onExportSummaryExcel(repData, date, customerName);
+      }
     }
     else {
       this.sotList = [];
@@ -504,6 +510,48 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   }
 
 
+  export_excel() {
+      this.search(5);
+    }
+  
+    onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+      //this.preventDefault(event);
+      let cut_off_dt = new Date();
+  
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(MonthlySummaryExcelComponent, {
+        width: reportPreviewWindowDimension.portrait_width_rate,
+        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+        maxHeight: reportPreviewWindowDimension.report_maxHeight,
+        data: {
+          repData: repData,
+          date: date,
+          repType: this.processType,
+          customer: customerName,
+  
+        },
+  
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+  
+      dialogRef.updatePosition({
+        top: '-90vh',  // Move far above the screen
+        left: '0px'  // Move far to the left of the screen
+      });
+  
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isGeneratingReport = false;
+      });
+    }
+  
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
     //this.preventDefault(event);

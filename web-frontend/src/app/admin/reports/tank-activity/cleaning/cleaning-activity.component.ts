@@ -45,8 +45,13 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {UncleanTankDetailInventoryPdfComponent}from 'app/document-template/pdf/inventory/unclean-tank-detail-pdf/unclean-tank-pdf.component'
+import { UncleanTankDetailInventoryPdfComponent } from 'app/document-template/pdf/inventory/unclean-tank-detail-pdf/unclean-tank-pdf.component'
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { CargoUNWiseInventorySummaryExcelComponent } from 'app/document-template/excel/reports/cleaning-activity/cargo-un-wise/cargo-un-wise-inventory-summary-excel.component';
+import { E } from '@angular/cdk/keycodes';
+import { UncleanTankDetailInventoryExcelComponent } from 'app/document-template/excel/reports/cleaning-activity/unclean-tank-detail/unclean-tank-excel.component';
+import { CleaningDetailInventoryExcelComponent } from 'app/document-template/excel/reports/cleaning-activity/cleaning-detail/cleaning-detail-excel.component';
 @Component({
   selector: 'app-cleaning-activity',
   standalone: true,
@@ -231,7 +236,8 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -352,14 +358,14 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       // this.classCvList = data;
     });
     this.cvDS.connectAlias('reportTypesCv').subscribe(data => {
-     if (data.length > 0) {
+      if (data.length > 0) {
         this.reportTypesCvList = [...data].sort((a, b) => {
-      const indexA = this.availableReportTypes.indexOf(a.code_val ?? '');
-      const indexB = this.availableReportTypes.indexOf(b.code_val ?? '');
-      return indexA - indexB;
-    });
+          const indexA = this.availableReportTypes.indexOf(a.code_val ?? '');
+          const indexB = this.availableReportTypes.indexOf(b.code_val ?? '');
+          return indexA - indexB;
+        });
       }
-      
+
     });
     this.cvDS.getAllClassNo().subscribe(data => {
       this.classCvList = data;
@@ -410,16 +416,16 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     }
   }
 
-  search() {
+  search(repType: number = 1) {
     var cond_counter = 1;
     var report_type: string = this.searchForm!.get('report_type')?.value;
     const where: any = {};
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
 
-    if (["DETAIL","UNCLEAN_TANK"].includes(report_type) ) {
+    if (["DETAIL", "UNCLEAN_TANK"].includes(report_type)) {
       where.cleaning = { any: true };
-      if(report_type=="UNCLEAN_TANK") where.tank_status_cv={eq:"CLEANING"}; //{neq:'RELEASED'};
+      if (report_type == "UNCLEAN_TANK") where.tank_status_cv = { eq: "CLEANING" }; //{neq:'RELEASED'};
       if (this.searchForm!.get('tank_no')?.value) {
         where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
         cond_counter++;
@@ -489,7 +495,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         return;
       }
       this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-      this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, date);
+      this.performSearchSOT(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, date, repType);
     }
     else {
       where.cleaning = { any: true };
@@ -548,7 +554,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         return;
       }
       this.lastSearchCriteria.report_type = this.GetReportType(report_type);
-      this.performSearchCleaningInventorySummary(report_type, date);
+      this.performSearchCleaningInventorySummary(report_type, date, repType);
     }
   }
 
@@ -557,55 +563,56 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     switch (report_type) {
       case "CUSTOMER_WISE":
         // retval = this.translatedLangText.CUSTOMER;
-        retval="customer";
+        retval = "customer";
         break;
       case "CARGO_WISE":
         // retval = this.translatedLangText.CARGO;
-        retval="cargo";
+        retval = "cargo";
         break;
       case "UN_WISE":
         // retval = this.translatedLangText.UN_NUMBER;
-        retval="un";
+        retval = "un";
         break;
     }
 
     return retval;
   }
 
-  performSearchCleaningInventorySummary(report_type?: string, date?: string) {
+  performSearchCleaningInventorySummary(report_type?: string, date?: string, repType: number = 1) {
     // this.selection.clear();
     this.subs.sink = this.repDS.searchCleaningInventorySummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
-        if(data.length==0)
-          {
-            this.ShowWarningMessage();
-             this.isGeneratingReport = false;
-             return;
-          }
-          
-        
+        if (data.length == 0) {
+          this.ShowWarningMessage();
+          this.isGeneratingReport = false;
+          return;
+        }
+
+
         this.cleaningSumList = data;
-        if (report_type == "CUSTOMER_WISE") {
-          this.onExportCustomerWise(this.cleaningSumList, date!);
+        if (repType == 5) {
+          if (report_type == "CUSTOMER_WISE") {
+            this.onExportCustomerWiseExcel(this.cleaningSumList, date!);
+          }
+          else {
+            this.onExportCargoUNWiseExcel(this.cleaningSumList, date!, report_type!);
+          }
         }
         else {
-          this.onExportCargoUNWise(this.cleaningSumList, date!, report_type!);
+          if (report_type == "CUSTOMER_WISE") {
+            this.onExportCustomerWise(this.cleaningSumList, date!);
+          }
+          else {
+            this.onExportCargoUNWise(this.cleaningSumList, date!, report_type!);
+          }
         }
-        // this.endCursor = this.stmDS.pageInfo?.endCursor;
-        // this.startCursor = this.stmDS.pageInfo?.startCursor;
-        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        //this.ProcessReportCleaningInventory(this.searchForm!.get('report_type')?.value,date!)
-        // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        // this.ProcessReportCustomerTankActivity(report_type!);
-        // this.checkInvoicedAndGetTotalCost();
-        //this.checkInvoiced();
-        //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
+
       });
 
   }
 
-  performSearchSOT(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, date?: string) {
+  performSearchSOT(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+    before?: string, report_type?: string, date?: string, repType: number = 1) {
     // this.selection.clear();
     this.subs.sink = this.sotDS.searchStoringOrderTanksInventoryReportAll(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
@@ -614,7 +621,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.ProcessReportCleaningInventory(this.searchForm!.get('report_type')?.value, date!)
+        this.ProcessReportCleaningInventory(this.searchForm!.get('report_type')?.value, date!, repType)
         // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
         // this.ProcessReportCustomerTankActivity(report_type!);
         // this.checkInvoicedAndGetTotalCost();
@@ -767,18 +774,20 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
-  ProcessReportCleaningInventory(report_type: string, date: string) {
+  ProcessReportCleaningInventory(report_type: string, date: string, repType: number = 1) {
 
     // if (report_type == 'DETAIL') {
-    if(["DETAIL","UNCLEAN_TANK"].includes(report_type) ){
-      this.ProcessReportCleaningInventoryDetail(report_type,date);
+    if (["DETAIL", "UNCLEAN_TANK"].includes(report_type)) {
+
+      this.ProcessReportCleaningInventoryDetail(report_type, date, repType);
+
     }
   }
 
 
-  ProcessReportCleaningInventoryDetail(report_type:string, date: string) {
+  ProcessReportCleaningInventoryDetail(report_type: string, date: string, repType: number = 1) {
     if (this.sotList.length === 0) {
-       this.ShowWarningMessage();
+      this.ShowWarningMessage();
       this.isGeneratingReport = false;
       return;
     }
@@ -804,18 +813,58 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       }
     });
 
-    if(report_type == 'UNCLEAN_TANK'){
-      this.onExportUncleanTankDetail(report_inv_cln_dtl, date,report_type);
+    if (repType == 5) { 
+
+      if (report_type == 'UNCLEAN_TANK') {
+        this.onExportUncleanTankDetailExcel(report_inv_cln_dtl, date, report_type);
+      }
+      else {
+        this.onExportDetailExcel(report_inv_cln_dtl, date, report_type);
+      }
     }
-    else
-    {
-       this.onExportDetail(report_inv_cln_dtl, date,report_type);
+    else {
+      if (report_type == 'UNCLEAN_TANK') {
+        this.onExportUncleanTankDetail(report_inv_cln_dtl, date, report_type);
+      }
+      else {
+        this.onExportDetail(report_inv_cln_dtl, date, report_type);
+      }
     }
 
 
   }
 
-  onExportDetail(repCln: report_inventory_cleaning_detail[], date: string,report_type:string) {
+  onExportDetailExcel(repCln: report_inventory_cleaning_detail[], date: string, report_type: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+
+    const dialogRef = this.dialog.open(CleaningDetailInventoryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_inventory: repCln,
+        date: date,
+        report_type: report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportDetail(repCln: report_inventory_cleaning_detail[], date: string, report_type: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -835,7 +884,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       data: {
         report_inventory: repCln,
         date: date,
-        report_type:report_type
+        report_type: report_type
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -845,7 +894,37 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
-   onExportUncleanTankDetail(repCln: report_inventory_cleaning_detail[], date: string,report_type:string) {
+  onExportUncleanTankDetailExcel(repCln: report_inventory_cleaning_detail[], date: string, report_type: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+
+    const dialogRef = this.dialog.open(UncleanTankDetailInventoryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_inventory: repCln,
+        date: date,
+        report_type: report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportUncleanTankDetail(repCln: report_inventory_cleaning_detail[], date: string, report_type: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -865,7 +944,37 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       data: {
         report_inventory: repCln,
         date: date,
-        report_type:report_type
+        report_type: report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportCargoUNWiseExcel(repCln: cleaning_report_summary_item[], date: string, report_type: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+
+    const dialogRef = this.dialog.open(CargoUNWiseInventorySummaryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_summary_cleaning_item: repCln,
+        date: date,
+        report_type: report_type
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -896,6 +1005,35 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         report_summary_cleaning_item: repCln,
         date: date,
         report_type: report_type
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportCustomerWiseExcel(repCln: cleaning_report_summary_item[], date: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+
+    const dialogRef = this.dialog.open(CustomerWiseInventorySummaryPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_summary_cleaning_item: repCln,
+        date: date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -938,23 +1076,23 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     this.resetForm();
   }
 
-   ShowWarningMessage() {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(ErrorDialogComponent, {
-        disableClose: true,
-        data: {
-          headerText: this.translatedLangText.WARNING,
-          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
-          act: "warn"
-        },
-        direction: tempDirection
-      });
-      dialogRef.afterClosed().subscribe(result => {
-      });
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
 }

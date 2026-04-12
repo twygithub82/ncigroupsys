@@ -40,10 +40,12 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { YardDetailInventoryExcelComponent } from 'app/document-template/excel/reports/yard/details/yard-detail-excel.component';
 import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { YardChartPdfComponent } from 'app/document-template/pdf/status/yard/charts/yard-chart-pdf.component';
 import { YardDetailInventoryPdfComponent } from 'app/document-template/pdf/status/yard/details/yard-detail-pdf.component';
 import { YardStatusDetailSummaryPdfComponent } from 'app/document-template/pdf/status/yard/summary-pdf/yard-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -219,7 +221,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -935,10 +938,41 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     else if (report_type == 2) {
       this.onExportSummaryDetail(repStatus);
     }
+    else if(report_type==5)
+    {
+      this.onExportDetailExcel(repStatus);
+    }
     else {
       this.onExportDetail(repStatus);
     }
 
+  }
+
+  onExportDetailExcel(repStatus: report_status[]) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YardDetailInventoryExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_yard_detail: repStatus,
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportDetail(repStatus: report_status[]) {

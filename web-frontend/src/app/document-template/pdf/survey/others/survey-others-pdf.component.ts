@@ -604,6 +604,7 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
       const rows: any[][] = [];
 
       const in_gate = this.igDS?.getInGateItem(item.in_gate!);
+      
       const out_gate = (item.out_gate?.length || 0 > 0) ? item.out_gate?.[0] : null;
 
       // 🔹 IN GATE ROW
@@ -623,20 +624,20 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
       }
 
       // 🔹 OUT GATE ROW
-      if (out_gate) {
-        rows.push([
-          index++, // keep blank to avoid duplicate numbering
-          item.tank_no || "-",
-          item.storing_order?.customer_company?.name || "-",
-          out_gate?.eir_no || "-",
-          this.displayDate(out_gate?.eir_dt) || "-",
-          this.translatedLangText.OUT_GATE,
-          this.displayDate(out_gate?.out_gate_survey?.create_dt) || "-",
-          item.status_cv || "-",
-          out_gate?.out_gate_survey?.create_by || "-",
-          out_gate?.remarks || "-"
-        ]);
-      }
+      // if (out_gate) {
+      //   rows.push([
+      //     index++, // keep blank to avoid duplicate numbering
+      //     item.tank_no || "-",
+      //     item.storing_order?.customer_company?.name || "-",
+      //     out_gate?.eir_no || "-",
+      //     this.displayDate(out_gate?.eir_dt) || "-",
+      //     this.translatedLangText.OUT_GATE,
+      //     this.displayDate(out_gate?.out_gate_survey?.create_dt) || "-",
+      //     item.status_cv || "-",
+      //     out_gate?.out_gate_survey?.create_by || "-",
+      //     out_gate?.remarks || "-"
+      //   ]);
+      // }
 
       return rows;
     });

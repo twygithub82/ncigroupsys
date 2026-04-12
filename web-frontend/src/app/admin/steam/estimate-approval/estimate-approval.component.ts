@@ -237,7 +237,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    private modulePackageService: ModulePackageService,
+    public modulePackageService: ModulePackageService,
   ) {
     super();
     this.translateLangText();

@@ -39,7 +39,9 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { SteamPerformanceDetailExcelComponent } from 'app/document-template/excel/admin-reports/performance/steam/steam-detail-excel.component';
 import { SteamPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/steam/steam-detail.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -232,7 +234,8 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+     public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -499,7 +502,13 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
       .subscribe(data => {
 
         this.repData = data;
-        this.onExportSteamPerformanceReport(this.repData, date!, team!);
+        if(report_type==5 )
+        {
+          this.onExportSteamPerformanceExcelReport(this.repData, date!, team!);
+        }
+        else{
+          this.onExportSteamPerformanceReport(this.repData, date!, team!);
+        }
         this.isGeneratingReport = false;
         // if (data.length > 0) {
         //   this.repData = data;
@@ -732,5 +741,50 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
   get pageSizeInfo() {
     return pageSizeInfo
+  }
+
+   export_excel()
+    {
+      this.search(5);
+    }
+  
+
+onExportSteamPerformanceExcelReport(repData: SteamPerformance[], date: string, team: string) {
+
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SteamPerformanceDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 }

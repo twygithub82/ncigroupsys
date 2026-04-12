@@ -38,7 +38,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ZeroApprovalCostExcelComponent } from 'app/document-template/excel/admin-reports/zero-approval-cost/zero-approval-cost-excel.component';
 import { ZeroApprovalCostPdfComponent } from 'app/document-template/pdf/admin-reports/zero-approval-cost/zero-approval-cost-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -216,7 +218,8 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -401,7 +404,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  search() {
+  search(repType: number=0) {
     var cond_counter = 0;
     var report_type: string = "ALL";
     const where: any = {};
@@ -476,11 +479,12 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
 
     }
     this.lastSearchCriteria = where;
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, date, customer, code);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, date, customer, code,repType);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, date?: string, customer?: string, code?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, 
+    date?: string, customer?: string, code?: string,repType:number=0) {
     // this.selection.clear();
     this.subs.sink = this.repDS.searchAdminReportZeroApprovalCostReport(this.lastSearchCriteria)
       .subscribe(data => {
@@ -489,7 +493,13 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+        if(repType==5)
+         { 
+          this.onExportDetailExcel(data, report_type!, date!, customer!, code!);
+         }
+        else{
         this.onExportDetail(data, report_type!, date!, customer!, code!);
+        }
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -671,5 +681,43 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     return bAllow;
+  }
+  export_excel()
+  {
+    this.search(5);
+  }
+
+   onExportDetailExcel(repData: ZeroApprovalCostItem[], report_type: string, date: string, customer: string, code: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    if (repData.length == 0) {
+      this.isGeneratingReport = false;
+      // return;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ZeroApprovalCostExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        repType: report_type,
+        date: date,
+        customer: customer,
+        code: code
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 }

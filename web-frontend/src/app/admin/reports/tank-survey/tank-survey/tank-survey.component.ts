@@ -38,7 +38,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TankSurveyExcelComponent } from 'app/document-template/excel/reports/tank-survey/tank-survey-excel.component';
 import { TankSurveyPdfComponent } from 'app/document-template/pdf/tank-survey/tank-survey-pdf/tank-survey-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -220,7 +222,8 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -468,17 +471,17 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       return;
     }
     // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(dailytankSurveyReq, date);
+    this.performSearch(dailytankSurveyReq, date, report_type);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
-  performSearch(dailytankSurveyReq: any, date: string) {
+  performSearch(dailytankSurveyReq: any, date: string, repType: number = 1) {
     this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq, { survey_dt: 'ASC' })
       .subscribe(data => {
         this.surveyList = data;
-        this.ProcessReportTankSurvey(date);
+        this.ProcessReportTankSurvey(date, repType);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -562,7 +565,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-  ProcessReportTankSurvey(date: string) {
+  ProcessReportTankSurvey(date: string, repType: number = 1) {
     // if (this.surveyList.length === 0) {
     //   this.isGeneratingReport = false;
     //   return;
@@ -587,10 +590,44 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
 
+    if (repType == 5) { 
+      this.onExportSummaryExcel(report_summary, date);
+    }
+    else {
 
-    this.onExportSummary(report_summary, date);
+      this.onExportSummary(report_summary, date);
+    }
 
 
+  }
+
+  onExportSummaryExcel(repStatus: tank_survey_summary_group_by_survey_dt[], date: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(TankSurveyExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_tank_survey: repStatus,
+        date: date
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
   onExportSummary(repStatus: tank_survey_summary_group_by_survey_dt[], date: string) {

@@ -5,18 +5,15 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
+          @if (modulePackageService.AllowExcelReport()) {
+            
+          
           <div class="m-l-" [matTooltip]="translatedLangText.LOCATION_STATUS">
             <button mat-mini-fab color="primary" (click)="search_location_summary()" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async) || isGeneratingReport)">
               <mat-icon>receipt</mat-icon>
             </button>
           </div>
-          <!-- <div class="m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
-                <button mat-mini-fab class="orange-button" (click)="search_summary()" (click)="$event.stopPropagation()"
-                  [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
-                  <mat-icon>show_chart</mat-icon>
-                </button>
-              </div> -->
           <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_SUMMARY">
             <button mat-mini-fab class="accent-light" (click)="search_summary_detail()"
               (click)="$event.stopPropagation()" [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
@@ -29,6 +26,13 @@
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
+          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}} - Excel">
+            <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
+              [disabled]="isGeneratingReport">
+              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+            </button>
+          </div>
+        }
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async) || isGeneratingReport)">

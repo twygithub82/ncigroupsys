@@ -570,6 +570,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
     let currentY = topMargin;
     let scale = this.scale;
+    let sPosY=0;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
@@ -602,7 +603,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
      startPosY+= PDFUtility.GapBetweenSubTitleAndTable_Portrait();  
     // startPosY+= PDFUtility.GapBetweenLeftTitleAndTable();
     lastTableFinalY=startPosY;
-
+    sPosY=startPosY
     startPosY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,startPosY,
       minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
       startPosY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
@@ -671,7 +672,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
           body: data,
           //  startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin, top: startY },
+          margin: { left: leftMargin, top: sPosY },
           tableWidth: pageWidth - leftMargin - rightMargin,
           styles: {
             fontSize: fontSz_body,

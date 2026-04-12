@@ -37,8 +37,10 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS } from 'app/data-sources/user';
+import { SurveyorDetailPerformanceExcelComponent } from 'app/document-template/excel/admin-reports/performance/surveyor/detail/surveyor-detail-excel.component';
 import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/detail/surveyor-detail-pdf.component';
 import { SurveyorPerformanceSummaryPdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/summary/surveyor-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -233,7 +235,8 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -588,7 +591,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.performSearchSurveyorPerformanceSummary(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team);
   }
 
-  searchDetail() {
+  searchDetail(repType:number=0) {
 
     var cond_counter = 1;
     let queryType = 1;
@@ -675,7 +678,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     }
 
     this.lastSearchCriteria = where;
-    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team);
+    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team,repType);
   }
 
   performSearchSurveyorPerformanceSummary(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
@@ -701,7 +704,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   performSearchSurveyorPerformanceDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-    before?: string, queryType?: number, date?: string, team?: string) {
+    before?: string, queryType?: number, date?: string, team?: string,repType:number=0) {
 
     // if(queryType==1)
     // {
@@ -715,7 +718,12 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         //   this.isGeneratingReport = false
         // }
         this.repData = data;
-        this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
+        if(repType==5)
+        {
+          this.onExportSurveyorPerformanceDetailExcelReport(this.repData, date!, team!);}
+        else{
+        this.onExportSurveyorPerformanceDetailReport(this.repData, date!, team!);
+        }
       });
   }
 
@@ -907,7 +915,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
   }
 
-  onExportSurveyorPerformanceDetialReport(repData: DailyQCDetail[], date: string, team: string) {
+  onExportSurveyorPerformanceDetailReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -915,7 +923,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //   this.isGeneratingReport = false;
     //   return;
     // }
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1011,6 +1019,43 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   onTabFocused() {
     this.resetFormSummary();
     this.resetFormDetail();
+  }
+
+  export_excel() {
+    this.searchDetail(5);
+  }
+  onExportSurveyorPerformanceDetailExcelReport(repData: DailyQCDetail[], date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SurveyorDetailPerformanceExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
   }
 
 }

@@ -11,13 +11,15 @@
               <mat-icon>view_week</mat-icon>
             </button>
           </div>
+           @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-10" [matTooltip]="translatedLangText.ACTIVITY_REPORT">
             <button mat-mini-fab class="primary-light" (click)="search(1)" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
-          @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+        }
+          @if (modulePackageService.AllowExcelReport()) {
           <div class="m-l-5" matTooltip="{{translatedLangText.ACTIVITY_REPORT}} - Excel">
             <button mat-mini-fab class="light-green-button" (click)="search(3)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport">
