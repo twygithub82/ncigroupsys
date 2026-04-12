@@ -912,7 +912,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right pt-2 mb-0">
                   @if (modulePackageService.isGrowthPackage() ||
                   modulePackageService.isCustomizedPackage()) {
-                  @if (canExport()) {
+                  @if (canExport() && modulePackageService.AllowPdfReport()) {
                   <button mat-flat-button
                     [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async) || (isExportingPDF)"
                     class="m-r-5 orange-button" (click)="ExportDialogDmgImg($event)">

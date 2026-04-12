@@ -303,7 +303,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

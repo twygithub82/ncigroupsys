@@ -970,6 +970,7 @@
                   </button>
                 </div>
                 <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 align-right mb-0">
+                  @if ( modulePackageService.AllowPdfReport()) {
                   <button mat-flat-button [disabled]="(repairDS.loading$ | async) || (isExportingPDF)"
                     class="orange-button" (click)="onExport($event)">
                     @if (!(repairDS.loading$ | async) && !(isExportingPDF)) {
@@ -981,6 +982,7 @@
                     }
                     {{translatedLangText.EXPORT}}
                   </button>
+                  }
                   @if (isAllowEdit() && repairDS.canRollbackStatus(repairItem, repList)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5"
                     (click)="onRollback($event)">

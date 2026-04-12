@@ -21,13 +21,15 @@
                             <mat-icon>search</mat-icon>
                           </button>
                         </div>
+                        @if (modulePackageService.AllowPdfReport()) {
                          <div class="m-l-5" [matTooltip]="translatedLangText.DETAIL_REPORT">
                             <button mat-mini-fab color="primary" (click)="export_pdf()" (click)="$event.stopPropagation()"
                               [disabled]="((sotDS.loading$ | async) ||isGeneratingReport)">
                               <mat-icon>assignment</mat-icon>
                             </button>
                           </div>
-                           @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                        }
+                           @if (modulePackageService.AllowExcelReport()) {
                             <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}} - Excel">
                             <button mat-mini-fab
                                 class="light-green-button"

@@ -93,9 +93,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-survey-others-report-pdf',
-  templateUrl: './survey-others-pdf.component.html',
-  styleUrls: ['./survey-others-pdf.component.scss'],
+  selector: 'app-survey-period-report-pdf',
+  templateUrl: './survey-period-pdf.component.html',
+  styleUrls: ['./survey-period-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -109,7 +109,7 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SurveyPeriodPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -216,6 +216,7 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     IN_GATE: 'COMMON-FORM.IN-GATE',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    PERIOD_TEST_SURVEY: 'COMMON-FORM.PERIOD-TEST-SURVEY',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -277,7 +278,7 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
 
   constructor(
-    public dialogRef: MatDialogRef<SurveyOthersPdfComponent>,
+    public dialogRef: MatDialogRef<SurveyPeriodPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -579,7 +580,7 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    const reportTitle = this.translatedLangText.EXTERNAL_SURVEY;
+    const reportTitle = this.translatedLangText.PERIOD_TEST_SURVEY;
 
 
 
@@ -604,7 +605,6 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
       const rows: any[][] = [];
 
       const in_gate = this.igDS?.getInGateItem(item.in_gate!);
-      
       const out_gate = (item.out_gate?.length || 0 > 0) ? item.out_gate?.[0] : null;
 
       // 🔹 IN GATE ROW
@@ -726,7 +726,7 @@ export class SurveyOthersPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   getReportTitle(): string {
-    return this.translatedLangText.EXTERNAL_SURVEY;
+    return this.translatedLangText.PERIOD_TEST_SURVEY;
   }
 
   downloadFile(blob: Blob, fileName: string) {

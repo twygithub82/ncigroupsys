@@ -59,6 +59,7 @@ import { ESTIMATE_APPROVED_STATUS, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -330,7 +331,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public modulePackageService: ModulePackageService,
   ) {
     super();
     this.translateLangText();
@@ -458,21 +460,21 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       })
     ).subscribe();
 
-     // Detect job_no change
-  this.steamEstForm?.get('job_no')?.valueChanges.subscribe(value => {
-    this.isDirty = true;
-    
-  });
+      // Detect job_no change
+    this.steamEstForm?.get('job_no')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+      
+    });
 
-  this.steamEstForm?.get('bill_to')?.valueChanges.subscribe(value => {
-    this.isDirty = true;
-    
-  });
+    this.steamEstForm?.get('bill_to')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+      
+    });
 
-  // Detect remarks change
-  this.steamEstForm?.get('remarks')?.valueChanges.subscribe(value => {
-    this.isDirty = true;
-  });
+    // Detect remarks change
+    this.steamEstForm?.get('remarks')?.valueChanges.subscribe(value => {
+      this.isDirty = true;
+    });
   }
 
   public loadData() {
@@ -1334,7 +1336,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canExport(): boolean {
-    return !!this.steam_guid;
+    return !!this.steam_guid ;
   }
 
   getPackageSteamAlias(alias?: string) {
