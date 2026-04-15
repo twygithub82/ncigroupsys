@@ -38,9 +38,6 @@
                             (paste)="onOtpPaste($event)" autocomplete="one-time-code" />
                         }
                     </div>
-                    @if (totpControl.hasError('required')) {
-                    <mat-error>{{ translatedLangText.TOTP_REQUIRED }}</mat-error>
-                    }
                     @if (totpControl.hasError('invalidCode')) {
                     <mat-error>{{ translatedLangText.TOTP_INVALID }}</mat-error>
                     }
