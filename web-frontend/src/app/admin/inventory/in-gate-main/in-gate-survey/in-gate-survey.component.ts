@@ -497,15 +497,16 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
+    // event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
     this.resetForm();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
