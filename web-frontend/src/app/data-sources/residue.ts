@@ -1035,7 +1035,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
 
   canAmend(re: ResidueItem): boolean {
-    if (!re) return true;
+     if (!re?.status_cv) return true;
     const validStatus = ['PENDING']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
