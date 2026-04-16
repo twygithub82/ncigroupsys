@@ -1232,15 +1232,18 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canAmend(re: SteamItem): boolean {
-    if (!re) return true;
+    
+    if (!re?.status_cv) return true;
     const validStatus = ['PENDING']
-    return validStatus.includes(re?.status_cv!);
+    var r:any=re;
+    return validStatus.includes(r?.status_cv!);
   }
 
   canMonitorTemp(re: SteamItem): boolean {
-    if (!re) return true;
+    if (!re?.status_cv) return true;
     const validStatus = ['ASSIGNED', 'JOB_IN_PROGRESS']
-    return validStatus.includes(re?.status_cv!);
+    var r:any=re;
+    return validStatus.includes(r?.status_cv!);
   }
 
   canSave(re: SteamItem): boolean {
