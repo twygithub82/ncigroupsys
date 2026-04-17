@@ -20,7 +20,7 @@
                   #preinspection_cost  >
                    @if (pcForm.get('code')?.hasError('duplicated')) {
                   <mat-error>
-                    {{translatedLangText.CODE }} {{translatedLangText.EXISTED }}
+                    {{translatedLangText.RECORD_EXISTS }}
                   </mat-error>
                   }
                 <!-- @if (pcForm.get('preinspection_cost')?.hasError('required')) {
@@ -50,11 +50,11 @@
                 <mat-label>{{translatedLangText.RATE }}</mat-label>
                 <input matInput formControlName="rate" appNumericText type="text" required min="0" #storage_cost
                  #rate (focus)="rate.select()" [allowDecimal]="true" [decimalLimit]="5">
-                 @if (pcForm.get('rate')?.hasError('positiveNumber')) {
+                 <!-- @if (pcForm.get('rate')?.hasError('positiveNumber')) {
                       <mat-error>
                         {{translatedLangText.RATE }} {{translatedLangText.VALUE_ZERO }}
                       </mat-error>
-                      } 
+                      }  -->
               </mat-form-field>
             </div>
             <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">

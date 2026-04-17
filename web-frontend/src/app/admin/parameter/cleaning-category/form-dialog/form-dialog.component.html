@@ -22,7 +22,7 @@
                 } -->
                 @if (pcForm.get('name')?.hasError('existed')) {
                 <mat-error>
-                  {{langText.CATEGORY_NAME | translate}}: {{langText.EXISTED | translate}}
+                  {{translatedLangText.RECORD_EXISTS | translate}}
                 </mat-error>
                 }
               </mat-form-field>

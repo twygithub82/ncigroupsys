@@ -261,7 +261,7 @@
                          </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="dimension">
-                      <mat-header-cell *matHeaderCellDef
+                      <mat-header-cell *matHeaderCellDef 
                         [ngClass]="''">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
                         <span
@@ -279,7 +279,7 @@
                         "-"}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gname">
-                      <mat-header-cell *matHeaderCellDef
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="gname" disableClear
                         [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" 
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"

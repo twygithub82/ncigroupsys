@@ -123,7 +123,8 @@ export class FormDialogComponent {
     MAX_DURATION: "COMMON-FORM.MAX-DURATION",
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
     FORMULA: "COMMON-FORM.FORMULA",
-    DURATION: "COMMON-FORM.DURATION-MIN"
+    DURATION: "COMMON-FORM.DURATION-MIN",
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   };
 
   selectedItem: CleaningFormulaItem;
@@ -204,9 +205,9 @@ export class FormDialogComponent {
       where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    if (this.pcForm!.value['duration']) {
-      where.duration = { eq: this.pcForm!.value['duration'] };
-    }
+    // if (this.pcForm!.value['duration']) {
+    //   where.duration = { eq: this.pcForm!.value['duration'] };
+    // }
 
     if (cf.guid) {
       where.guid = { neq: cf.guid };

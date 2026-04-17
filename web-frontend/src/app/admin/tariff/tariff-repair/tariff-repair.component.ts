@@ -254,6 +254,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   isGeneratingReport = false;
   isMobile=false;
+  
 
   @ViewChild('partInput', { static: true }) partInput?: ElementRef<HTMLInputElement>;
 
@@ -1104,7 +1105,13 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
           },
         };
         break;
-
+  case 'gname':
+        this.lastOrderBy = {
+          tariff_repair: {
+            group_name_cv: dirEnum,
+          },
+        };
+        break;
       case 'last_date':
         this.lastOrderBy = {
           tariff_repair: {

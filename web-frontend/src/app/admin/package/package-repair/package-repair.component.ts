@@ -327,7 +327,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       material_cost: [''],
       //handled_item_cv: ['ALL']
     });
-    this.handleItemControl.setValue('ALL');
+     this.handleItemControl.setValue('ALL');
   }
 
   displayColumnChanged() {
@@ -1008,10 +1008,14 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.partNameControl.reset('');
     this.groupNameControl.reset('');
     this.subGroupNameControl.reset('');
-    this.handleItemControl.reset('');
+    // this.handleItemControl.reset('');
     this.pcForm?.get('labour_hour')?.reset('');
     this.pcForm?.get('material_cost')?.reset('');
-    //this.pcForm?.get('handled_item_cv')?.reset('');
+    // this.pcForm?.get('handled_item_cv')?.reset('ALL');
+    // this.pcForm?.get('handled_item_cv')?.reset(this.getHandledItem('ALL'));
+      this.pcForm?.get("handled_item_cv")!.setValue(
+        this.handledItemCvList.find(t => t.description === 'All')
+      );
     this.selectedCustomers = [];
   }
 
@@ -1239,6 +1243,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
    
 
   }
+
+  getHandledItem(codeVal: string | undefined): CodeValuesItem | undefined {
+    return this.CodeValuesDS.getCodeObject(codeVal, this.handledItemCvList);
+  }
+
 
   getHandledItemDescription(codeVal: string | undefined): string | undefined {
     return this.CodeValuesDS.getCodeDescription(codeVal, this.handledItemCvList);

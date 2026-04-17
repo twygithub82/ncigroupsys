@@ -188,6 +188,7 @@ export class FormDialogComponent {
   ) {
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
+    this.updatedMethodFormulaLinkList.sort((a, b) => a.sequence! - b.sequence!);
     this.removeDeletedSteps();
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);

@@ -183,6 +183,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
     SAVE:'COMMON-FORM.SAVE',
     VALUE_ZERO:'COMMON-FORM.VALUE-ZERO',
+    
   };
   unit_type_control = new UntypedFormControl();
 

@@ -204,7 +204,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_FLASH_POINT }}</mat-label>
-                          <input matInput formControlName="flash_point" type="number"
+                          <input matInput formControlName="flash_point" type="text" maxlength="4"
                             [required]="isRequired_FlashPoint()">
                           <!-- @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
@@ -234,8 +234,8 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1 d-flex align-items-center">
-                        <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
+                      <div class="col-xl-1- col-lg-1-25 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center">
+                        <mat-label  class="no-wrap">{{translatedLangText.SDS_FILE }}</mat-label>
                         <button mat-mini-fab (click)="isFileSelectable ? fileInput.click() : null" type="button"
                           matTooltip={{translatedLangText.ATTACH_FILE}} class="m-l-15">
                           <!-- [disabled]="!isFileSelectable"> -->
@@ -256,7 +256,7 @@
                       </mat-error>
                       }
                       <!-- Display file name and preview button -->
-                      <div *ngIf="selectedFile" class="col-xl-1-5 col-lg-1-5 col-md-12 col-sm-12 col-xs-12 mb-1 ps-0">
+                      <div *ngIf="selectedFile" class="col-xl-1-5 col-lg-1-5 col-md-12 col-sm-12 col-xs-12 mb-0 ml-1">
                         <!-- <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                           <span *ngIf="selectedFileChanged">*</span>
                         </p> -->

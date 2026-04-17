@@ -504,11 +504,12 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   resetForm() {
     this.searchForm?.patchValue({
       description: '',
-      name: '',
+      processName: '',
       category:'',
     });
     this.name_removeAllSelected();
     this.description_removeAllSelected();
+    this.category_removeAllSelected();
   }
 
 

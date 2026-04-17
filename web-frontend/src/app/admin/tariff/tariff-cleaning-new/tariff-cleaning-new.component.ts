@@ -42,6 +42,7 @@ import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'r
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 
 @Component({
@@ -75,7 +76,8 @@ import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dial
     MatDividerModule,
     MatMenuModule,
     HttpClientModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective,
   ]
 })
 
@@ -293,6 +295,28 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         // });
       })
     ).subscribe();
+
+    this.tcForm?.get('flash_point')?.valueChanges.subscribe(val => {
+      const control = this.tcForm?.get('flash_point');
+
+      if (val && !/^[-]?\d*\.?\d*$/.test(val)) {
+        control?.setValue(val.slice(0, -1), { emitEvent: false });
+        return;
+      }
+
+      const num = Number(val);
+
+      if (!isNaN(num)) {
+        const min = -500;
+        const max = 500;
+
+        if (num < min) {
+          control?.setValue(min, { emitEvent: false });
+        } else if (num > max) {
+          control?.setValue(max, { emitEvent: false });
+        }
+      }
+    });
   }
 
 
@@ -382,7 +406,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
 
-      this.hazardLevelCvList =  [...data].sort((a: any, b: any) =>
+      this.hazardLevelCvList = [...data].sort((a: any, b: any) =>
         (a.description || '').localeCompare(b.description || '')
       );
 
@@ -880,6 +904,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
+    this.tcForm?.get("cargo_name")?.setErrors({ required: true });
     const dialogRef = this.dialog.open(ErrorDialogComponent, {
       //width: '380px',
       //autoFocus: false,

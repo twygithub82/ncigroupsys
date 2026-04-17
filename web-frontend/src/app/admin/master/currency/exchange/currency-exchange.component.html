@@ -101,7 +101,7 @@
           <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.RATE}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.RATE
-              }}:</span>{{row.rate}}</mat-cell>
+              }}:</span>{{ convertNumber(row.rate,4)}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="mobile">
           <mat-header-cell *matHeaderCellDef mat-sort-header="mobile" disableClear

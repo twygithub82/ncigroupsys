@@ -1417,7 +1417,8 @@
     "SCAN-QR-THEN-PROCEED": "Scan the QR code and proceed",
     "PROCEED-TO-VERIFY": "Proceed",
     "REGISTER-TOTP": "Register TOTP",
-    "VERIFY-TOTP": "Verify TOTP"
+    "VERIFY-TOTP": "Verify TOTP",
+    "RECORD-EXISTS": "Record Already Exists"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
