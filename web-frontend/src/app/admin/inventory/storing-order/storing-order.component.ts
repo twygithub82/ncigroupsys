@@ -375,6 +375,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
+      this.purposeOptionCvList = [{ code_val: "NO_REPAIR", description: "No Repair" }, ...this.purposeOptionCvList];
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -502,9 +503,13 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         if (purpose.includes('OFFHIRE')) {
           repairPurposes.push('OFFHIRE');
         }
-
+        
+        sotSome.purpose_repair_cv = { or: [] }
+        if (purpose.includes('NO_REPAIR')) {
+          sotSome.purpose_repair_cv.or.push({ in: "" });
+        }
         if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv = { in: repairPurposes };
+          sotSome.purpose_repair_cv.or.push({ in: repairPurposes });
         }
       }
 
