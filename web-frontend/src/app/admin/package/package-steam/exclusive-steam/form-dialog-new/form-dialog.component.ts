@@ -216,6 +216,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     MAX_TEMP_EXCEED_FLASH_POINT: 'COMMON-FORM.MAX-TEMP-EXCEED-FLASH-POINT',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   };
   unit_type_control = new UntypedFormControl();
 

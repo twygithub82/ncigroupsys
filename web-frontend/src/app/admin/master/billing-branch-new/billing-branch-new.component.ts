@@ -234,7 +234,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     SAME: "COMMON-FORM.SAME",
     MIN_3_ALPHA: 'COMMON-FORM.MIN-3-ALPHA',
     ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
-    S_N: 'COMMON-FORM.S_N'
+    S_N: 'COMMON-FORM.S_N',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -275,7 +276,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
-  tfDepotDS:TariffDepotDS;
+  tfDepotDS: TariffDepotDS;
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -307,7 +308,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    this.tfDepotDS= new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
 
     this.countryCodes = Utility.getCountryCodes();
     this.countryCodesFiltered = this.countryCodes;
@@ -501,8 +502,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }
     })
 
-     this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=data;
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = data;
       if (this.selectedBillingBranch) {
         this.ccForm?.patchValue({
           default_profile: this.getDefaultTank(this.selectedBillingBranch?.def_tank_guid!),
@@ -1325,7 +1326,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-   getDefaultTank(guid: string): TankItem | undefined {
+  getDefaultTank(guid: string): TankItem | undefined {
     if (this.depotProfileList?.length! > 0) {
       const tnkItm = this.depotProfileList?.filter((x: any) => x.guid === guid).map(item => {
         return item;
@@ -1391,5 +1392,18 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
+  }
+
+  checkBranchCodeExists(): void {
+    const where: any = {};
+     var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
+    
+    where.and = [{ code: { eq: customerCode } }, { delete_dt: { eq: null } }]
+    this.ccDS.search(where).subscribe(result => {
+     if (result.length > 0 && this.branch_guid == undefined) {
+        this.ccForm?.get('branch_code')?.setErrors({ existed: true });
+      }
+    
+    });
   }
 }

@@ -844,7 +844,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
       var sortedData = this.sortByDescription(data);
-      this.groupNameCvList = addDefaultSelectOption(sortedData, 'All');;
+      // this.groupNameCvList = addDefaultSelectOption(sortedData, 'All');;
+      this.groupNameCvList = sortedData;
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -1030,7 +1031,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
           if (value.child_code) {
             this.subGroupNameCvList = this.allSubGroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
             if ((this.subGroupNameCvList?.length ?? 0) > 1) {
-              this.subGroupNameCvList = addDefaultSelectOption(this.subGroupNameCvList, 'All', '');
+              // this.subGroupNameCvList = addDefaultSelectOption(this.subGroupNameCvList, 'All', '');
               subgroupName?.enable();
             } else {
               subgroupName?.disable();

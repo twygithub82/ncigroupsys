@@ -52,6 +52,14 @@
                   <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.length}}{{getUnitTypeDescription(row.length_unit_cv)}}
                 </mat-cell>
               </ng-container>
+               <ng-container matColumnDef="labour">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  {{data.translatedLangText.LABOUR}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" class="">
+                  <span class="mobile-label">{{data.translatedLangText.LABOUR}}:</span>{{row.labour_hour}}
+                </mat-cell>
+              </ng-container>
               <ng-container matColumnDef="material_cost">
                 <mat-header-cell *matHeaderCellDef >
                   {{data.translatedLangText.MATERIAL_COST}}

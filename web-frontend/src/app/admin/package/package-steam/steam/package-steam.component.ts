@@ -272,7 +272,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       min_cost: [''],
       max_cost: [''],
       min_labour: [''],
-      max_labour: ['']
+      max_labour: [''],
+      flat_rate: '',
+      hourly_rate: ''
     });
     this.selectedCustomers = [];
   }
@@ -521,31 +523,43 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       where.and.push({ customer_company: { code: { in: custCodes } } });
     }
 
+     if (this.pcForm!.value["hourly_rate"]) {
+      const hourly_rate: number = Number(this.pcForm!.value["hourly_rate"]);
+      where.and.push(  { labour: { eq: hourly_rate } } )
+    }
+
+    if (this.pcForm!.value["flat_rate"]) {
+
+      const flat_rate: number = Number(this.pcForm!.value["flat_rate"]);
+      where.and.push({  cost: { eq: flat_rate }  })
+    }
+
+
     // if (this.pcForm!.get('customer_code')?.value) {
     //   where.and.push({ customer_company: { code: { contains: this.pcForm!.value['customer_code'].code } } });
 
     // }
 
-    if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.and.push({ labour: { gte: minLabour } })
-    }
+    // if (this.pcForm!.value["min_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   where.and.push({ labour: { gte: minLabour } })
+    // }
 
-    if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.and.push({ labour: { ngte: maxLabour } })
+    // if (this.pcForm!.value["max_labour"]) {
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.and.push({ labour: { ngte: maxLabour } })
 
-    }
+    // }
 
-    if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({ cost: { gte: minCost } })
-    }
+    // if (this.pcForm!.value["min_cost"]) {
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.and.push({ cost: { gte: minCost } })
+    // }
 
-    if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.and.push({ cost: { ngte: maxCost } })
-    }
+    // if (this.pcForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.and.push({ cost: { ngte: maxCost } })
+    // }
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamDS.SearchPackageSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {

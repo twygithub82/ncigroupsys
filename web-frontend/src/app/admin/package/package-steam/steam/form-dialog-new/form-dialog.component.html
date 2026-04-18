@@ -69,10 +69,10 @@
               class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
               <ng-container matColumnDef="fName">
                 <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-2 justify-content-center extra-left-padding'">{{translatedLangText.CUSTOMER_CODE
+                  [ngClass]="'tbl-col-width-per-2 '">{{translatedLangText.CUSTOMER_CODE
                   }}</mat-header-cell>
                 <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-2 justify-content-center extra-left-padding'">
+                  [ngClass]="'tbl-col-width-per-2 '">
                   <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                     }}:</span>{{row.customer_company.code}}</mat-cell>
               </ng-container>

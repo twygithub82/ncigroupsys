@@ -234,6 +234,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   }
 
   @ViewChild('custInput', { static: true })

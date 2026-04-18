@@ -39,7 +39,7 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
                     <input matInput formControlName="branch_code" class="text-uppercase" (input)="onAlphaOnly($event)"
-                      maxlength="6" required [readonly]="!isAllowedToChangedMainCustomer">
+                      maxlength="6" required [readonly]="!isAllowedToChangedMainCustomer"  (blur)="checkBranchCodeExists()">
                     <!-- @if (ccForm?.get('branch_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -47,7 +47,7 @@
                     } -->
                     @if (ccForm?.get('branch_code')?.hasError('existed')) {
                     <mat-error>
-                      {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.EXISTED}}
+                      {{this.translatedLangText.RECORD_EXISTS}}
                     </mat-error>
                     }
                     @if (ccForm?.get('branch_code')?.hasError('duplicated')) {

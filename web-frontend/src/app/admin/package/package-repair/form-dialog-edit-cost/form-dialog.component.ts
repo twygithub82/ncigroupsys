@@ -80,7 +80,7 @@ interface Condition {
     MatSortModule,
     PreventNonNumericDirective,
     NumericTextDirective,
-    MatChipsModule
+     MatChipsModule
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
@@ -111,7 +111,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
 
   pckRepairDS: PackageRepairDS;
   tnkItems?: TankItem[] = [];
-  customer_companyList: CustomerCompanyItem[] = [];
+customer_companyList: CustomerCompanyItem[] = [];
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -129,7 +129,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   customerCompanyControl = new UntypedFormControl();
 
   selectedTariffRepair?: TariffRepairItem;
-  separatorKeysCodes: number[] = [ENTER, COMMA];
+ separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -210,12 +210,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    GROUP_ADJUSTMENT:'COMMON-FORM.GROUP-ADJUSTMENT',
   };
   unit_type_control = new UntypedFormControl();
 
   selectedItems: PackageRepairItem[];
   UpdateInProgress: boolean = false;
-  selectedCustomers: any[] = [];
+ selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
@@ -239,11 +240,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.loadData();
     this.EnableValidator('material_cost_percentage');
     this.EnableValidator('labour_hour_percentage');
-
+   
     this.initializeFilterCustomerCompany();
   }
 
-  initializeFilterCustomerCompany() {
+   initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -259,7 +260,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     ).subscribe();
   }
 
-  searchCustomerCompanyList(searchCriteria: string) {
+   searchCustomerCompanyList(searchCriteria: string) {
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
       if (this.custInput?.nativeElement.value === searchCriteria) {
@@ -286,7 +287,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
           'labour_hour_percentage'
         )
       }
-    );
+  );
   }
 
   displayPartNameFn(tr: string): string {
@@ -298,7 +299,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   GetTitle() {
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
+    // return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
+    return this.translatedLangText.GROUP_ADJUSTMENT;
   }
 
   translateLangText() {
@@ -500,20 +502,20 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   atLeastOneRequiredValidator(
-    field1: string,
-    field2: string
-  ): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const value1 = group.get(field1)?.value;
-      const value2 = group.get(field2)?.value;
+  field1: string,
+  field2: string
+): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const value1 = group.get(field1)?.value;
+    const value2 = group.get(field2)?.value;
 
-      if (!value1 && !value2) {
-        return { atLeastOneRequired: true };
-      }
+    if (!value1 && !value2) {
+      return { atLeastOneRequired: true };
+    }
 
-      return null;
-    };
-  }
+    return null;
+  };
+}
   DisableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
@@ -552,6 +554,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     // this.DisableValidator('material_cost_percentage');
     // this.DisableValidator('labour_hour_percentage');
 
+    
     if (!this.pcForm?.valid) return;
 
     this.UpdateInProgress = true;
@@ -574,7 +577,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
 
     var guids: string[] = [];
-    if (this.selectedCustomers?.length > 0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
+    if(this.selectedCustomers?.length>0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
     // if (this.customerCompanyControl.value) {
     //   if (this.customerCompanyControl.value.length > 0) {
     //     const customerCodes: CustomerCompanyItem[] = this.customerCompanyControl.value;
@@ -669,51 +672,52 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     ]);
   }
 
-  updateLabourHourPercentage() {
+  updateLabourHourPercentage()
+  {
     // var labour_hour_percentage = this.pcForm!.value['labour_hour_percentage'];
     // if(labour_hour_percentage>this.maxMaterialC)
   }
 
-  @ViewChild('custInput', { static: true })
-  custInput?: ElementRef<HTMLInputElement>;
-
-
-  add(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
-    // Add our fruit
-    if ((value || '').trim()) {
-      //this.fruits.push(value.trim());
+   @ViewChild('custInput', { static: true })
+    custInput?: ElementRef<HTMLInputElement>;
+    
+  
+    add(event: MatChipInputEvent): void {
+      const input = event.input;
+      const value = event.value;
+      // Add our fruit
+      if ((value || '').trim()) {
+        //this.fruits.push(value.trim());
+      }
+      // Reset the input value
+      if (input) {
+        input.value = '';
+      }
+      this.customerCompanyControl.setValue(null);
     }
-    // Reset the input value
-    if (input) {
-      input.value = '';
+  
+    remove(cust: any): void {
+      const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+      if (index >= 0) {
+        this.selectedCustomers.splice(index, 1);
+  
+      }
     }
-    this.customerCompanyControl.setValue(null);
-  }
-
-  remove(cust: any): void {
-    const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
-    if (index >= 0) {
-      this.selectedCustomers.splice(index, 1);
-
+  
+  
+  
+    // displayCustomerCompanyFn(customer: any): string {
+    //   if (!customer) return '';
+    //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+    // }
+  
+    private updateFormControl(): void {
+      // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
     }
-  }
 
-
-
-  // displayCustomerCompanyFn(customer: any): string {
-  //   if (!customer) return '';
-  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-  // }
-
-  private updateFormControl(): void {
-    // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
-  }
-
-  removeAllSelectedCustomers(): void {
+   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
-
+   
   }
 
   getSelectedCustomersDisplay(): string {
@@ -760,20 +764,20 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   isAtLeastOneInvalid(): boolean {
-    return (
-      this.pcForm.errors?.['atLeastOneRequired'] &&
-      (this.pcForm.get('material_cost_percentage')?.touched ||
-        this.pcForm.get('labour_hour_percentage')?.touched)
-    );
-  }
+  return (
+    this.pcForm.errors?.['atLeastOneRequired'] &&
+    (this.pcForm.get('material_cost_percentage')?.touched ||
+     this.pcForm.get('labour_hour_percentage')?.touched)
+  );
+}
 
-  isFieldInvalid(field: string): boolean {
-    const control = this.pcForm.get(field);
+isFieldInvalid(field: string): boolean {
+  const control = this.pcForm.get(field);
 
-    return (
-      this.pcForm.errors?.['atLeastOneRequired'] &&
-      control?.touched &&
-      !control?.value
-    );
-  }
+  return (
+    this.pcForm.errors?.['atLeastOneRequired'] &&
+    control?.touched &&
+    !control?.value
+  );
+}
 }

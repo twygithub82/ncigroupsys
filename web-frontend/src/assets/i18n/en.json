@@ -1419,6 +1419,7 @@
     "REGISTER-TOTP": "Register TOTP",
     "VERIFY-TOTP": "Verify TOTP",
     "RECORD-EXISTS": "Record Already Exists"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
