@@ -478,7 +478,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.customer_guid = undefined;
     }
 
-    this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
+    this.curDS.search({}, { currency_code: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
       if (this.historyState.customerCompany) {
         var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
