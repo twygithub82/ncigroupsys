@@ -327,10 +327,6 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
     );
     const queries = [
-      //{ alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      //{ alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      //{ alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      //{ alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
       { alias: 'salesCostTypeCv', codeValType: 'SALES_COST_TYPE' },
     ];

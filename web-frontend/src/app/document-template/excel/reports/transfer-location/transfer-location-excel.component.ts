@@ -397,14 +397,6 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
     const queries = [
       //{ alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yardCv', codeValType: 'YARD' },
-      // { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      // { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);

@@ -267,27 +267,6 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    // const queries = [
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-    //   { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-    //   { alias: 'yardCv', codeValType: 'YARD' },
-    // ];
-    // this.cvDS.getCodeValuesByType(queries);
-    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-    //   this.purposeOptionCvList = data;
-    // });
-    // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-    //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
-    // });
-    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-    //   this.tankStatusCvListDisplay = data;
-    //   this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-    // });
-    // this.cvDS.connectAlias('yardCv').subscribe(data => {
-    //   this.yardCvList = addDefaultSelectOption(data, 'All');
-    // });
-    //this.search();
   }
   showNotification(
     colorName: string,

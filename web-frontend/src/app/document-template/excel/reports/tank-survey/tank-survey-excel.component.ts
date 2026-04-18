@@ -373,8 +373,6 @@ export class TankSurveyExcelComponent extends UnsubscribeOnDestroyAdapter implem
 
   public loadData(dataDlg: DialogData) {
     const queries = [
-      //{ alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      //{ alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
       { alias: 'surveyStatusCv', codeValType: 'SURVEY_STATUS' },
       // { alias: 'yardCv', codeValType: 'YARD' },
