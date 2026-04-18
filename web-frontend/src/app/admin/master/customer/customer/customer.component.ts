@@ -188,6 +188,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   customerCodeControl = new UntypedFormControl();

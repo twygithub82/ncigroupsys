@@ -30,7 +30,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, RowInput, Styles } from 'jspdf-autotable';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { PDFUtility } from 'app/utilities/pdf-utility';
-import { TariffRepairGroup } from 'app/data-sources/tariff-repair';
+import { TariffRepairGroup, TariffRepairItem, TariffRepairSubGroup } from 'app/data-sources/tariff-repair';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -554,55 +554,7 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
-  // getGroupSeq(codeVal: string | undefined): number | undefined {
-  //   const gncv = this.groupNameCvList?.filter(x => x.code_val === codeVal);
-  //   if (gncv.length) {
-  //     return gncv[0].sequence;
-  //   }
-  //   return -1;
-  // }
-
-  // getLastTest(igs: any): string | undefined {
-  //   return this.getLastTestIGS(igs);
-  // }
-
-  // getLastTestIGS(igs: any): string | undefined {
-  //   if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
-
-  //   if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-  //     const test_type = igs.last_test_cv;
-  //     const test_class = igs.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getLastTestTI(): string | undefined {
-  //   if (!this.populateCodeValues?.testTypeCvList?.length || !this.populateCodeValues?.testClassCvList?.length || !this.tiItem) return "";
-
-  //   if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
-  //     const test_type = this.tiItem.last_test_cv;
-  //     const test_class = this.tiItem.test_class_cv;
-  //     return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
-  //   }
-  //   return "";
-  // }
-
-  // getTestTypeDescription(codeVal: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-  // }
-
-  // getTestClassDescription(codeValType: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
-  // }
-
-  // getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  // }
-
-  // getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
-  // }
+  
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
@@ -775,6 +727,75 @@ export class TariffRepairCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.dialogRef.close();
 }
 
+mergeSubGroups(
+  ...subgroupArrays: TariffRepairSubGroup[][]
+): TariffRepairSubGroup[] {
+
+  const allSubgroups = subgroupArrays.flat();
+
+  const itemMap = new Map<string, TariffRepairItem>();
+  let subgroupName = '';
+  let subgroupDesc = '';
+
+  for (const sg of allSubgroups) {
+
+    // keep first available metadata (optional rule)
+    if (!subgroupName && sg.subgroup_name_cv) {
+      subgroupName = sg.subgroup_name_cv;
+    }
+
+    if (!subgroupDesc && sg.subgroup_name_desc) {
+      subgroupDesc = sg.subgroup_name_desc;
+    }
+
+    for (const item of sg.items || []) {
+      const key = item.guid || JSON.stringify(item);
+      if (!itemMap.has(key)) {
+        itemMap.set(key, item);
+      }
+    }
+  }
+
+  return [
+    new TariffRepairSubGroup(
+      subgroupName || 'ALL',
+      subgroupDesc || '',
+      Array.from(itemMap.values())
+    )
+  ];
+}
+
+mergeTariffRepairGroups(groups: TariffRepairGroup[]): TariffRepairGroup[] {
+  const groupMap = new Map<string, TariffRepairGroup>();
+
+  for (const group of groups) {
+    let existingGroup = groupMap.get(group.group_name_cv);
+
+    if (!existingGroup) {
+      existingGroup = new TariffRepairGroup(
+        group.group_name_cv,
+        group.group_name_desc || '',
+        []
+      );
+
+      groupMap.set(group.group_name_cv, existingGroup);
+    }
+
+    // merge subgroups (ALWAYS, even if first or nth occurrence)
+    existingGroup.subgroups = this.mergeSubGroups(
+      existingGroup.subgroups,
+      group.subgroups || []
+    );
+
+    // keep description if missing
+    if (!existingGroup.group_name_desc && group.group_name_desc) {
+      existingGroup.group_name_desc = group.group_name_desc;
+    }
+  }
+
+  return Array.from(groupMap.values());
+}
+
 
 async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -869,11 +890,12 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
     var buffer = 25;
     var CurrentPage = 0;
     let index = 1;
-    for (let n = 0; n < groups.length; n++) {
+    var grps = this.mergeTariffRepairGroups(groups);
+    for (let n = 0; n < grps.length; n++) {
      
      
       
-      let group = groups[n];
+      let group = grps[n];
      
      // lastTableFinalY += 7;
     //  startY = lastTableFinalY + 8;

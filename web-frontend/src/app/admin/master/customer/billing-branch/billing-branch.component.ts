@@ -845,7 +845,16 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         
         // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
         this.ccDS.searchAll(where).subscribe(res=>{
-              var prcList:CustomerCompanyItem[]=res;
+              var prcList:CustomerCompanyItem[]=[];
+              res.forEach((item) => {
+                var itm:any = item;
+                const c: CustomerCompanyItem = {
+                  ...itm,
+                  default_profile_name:this.getDepotProfileName(itm.def_tank_guid),
+                };
+                prcList.push(c);
+              });
+
               this.exportExcelReport(prcList);
     
           })

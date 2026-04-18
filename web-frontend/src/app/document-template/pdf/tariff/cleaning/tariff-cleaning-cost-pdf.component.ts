@@ -278,84 +278,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-  // async getCodeValuesData(): Promise<void> {
-  //   const queries = [
-  //     { alias: 'yardCv', codeValType: 'YARD' },
-  //     { alias: 'yesnoCv', codeValType: 'YES_NO' },
-  //     { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-  //     { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-  //     { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-  //     { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-  //     { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-  //     { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-  //     { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-  //     { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-  //   ];
-
-  //   await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-  //   // Wrap all alias connections in promises
-  //   const promises = [
-  //     firstValueFrom(this.cvDS.connectAlias('yardCv')).then(async data => {
-  //       this.yardCvList = data || [];
-  //       // const subqueries: any[] = [];
-  //       // data.map(d => {
-  //       //   if (d.child_code) {
-  //       //     let q = { alias: d.child_code, codeValType: d.child_code };
-  //       //     const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-  //       //     if (!hasMatch) {
-  //       //       subqueries.push(q);
-  //       //     }
-  //       //   }
-  //       // });
-
-  //       // // Process subqueries if any
-  //       // if (subqueries.length > 0) {
-  //       //   await this.cvDS?.getCodeValuesByTypeAsync(subqueries);
-
-  //       //   for (const s of subqueries) {
-  //       //     const subData = await firstValueFrom(this.cvDS.connectAlias(s.alias));
-  //       //     if (subData) {
-  //       //       this.subgroupNameCvList = [...new Set([...this.subgroupNameCvList, ...subData])];
-  //       //     }
-  //       //   }
-  //       // }
-
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-  //       this.yesnoCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-  //       this.soTankStatusCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('purposeOptionCvList')).then(data => {
-  //       this.purposeOptionCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
-  //       this.testTypeCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('testClassCv')).then(data => {
-  //       this.testClassCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('partLocationCv')).then(data => {
-  //       this.partLocationCvList = data || [];
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('damageCodeCv')).then(data => {
-  //       this.damageCodeCvList = data || [];
-  //       this.chunkedDamageCodeCvList = this.chunkArray(this.damageCodeCvList, 10);
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('repairCodeCv')).then(data => {
-  //       this.repairCodeCvList = data || [];
-  //       this.chunkedRepairCodeCvList = this.chunkArray(this.repairCodeCvList, 10);
-  //     }),
-  //     firstValueFrom(this.cvDS.connectAlias('unitTypeCv')).then(data => {
-  //       this.unitTypeCvList = data || [];
-  //     })
-  //   ];
-
-  //   // Wait for all promises to resolve
-  //   await Promise.all(promises);
-  // }
+ 
 
   chunkArray(array: any[], chunkSize: number): any[][] {
     const chunks: any[][] = [];
@@ -486,7 +409,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const comStyles: any = {
       0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-      1: { cellWidth: 46 ,valign: 'middle', halign: 'left'},   // "NAME"
+      1: { cellWidth: 46 ,valign: 'middle', halign: 'left',  overflow: 'ellipsize' },   // "NAME"
       2: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
       3: { cellWidth: 19, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
       4: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "

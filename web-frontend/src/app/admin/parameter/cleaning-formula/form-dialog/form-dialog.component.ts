@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -152,8 +152,18 @@ export class FormDialogComponent {
 
   createCleaningFormula(): UntypedFormGroup {
     return this.fb.group({
-      duration: [{ value: this.selectedItem?.duration, disabled: !this.canEdit() }],
-      description: [{ value: this.selectedItem?.description, disabled: !this.canEdit() }],
+      duration: [
+        { value: this.selectedItem?.duration, disabled: !this.canEdit() },
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(999),          // ✅ limit value
+          Validators.pattern(/^\d{1,3}$/) // ✅ max 3 digits
+        ]
+      ],
+      description: [
+        { value: this.selectedItem?.description, disabled: !this.canEdit() }
+      ],
     });
   }
 
@@ -254,5 +264,18 @@ export class FormDialogComponent {
 
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_ADD']);
+  }
+
+  blockDecimal(event: KeyboardEvent) {
+    if (event.key === '.' || event.key === 'e' || event.key === '-') {
+      event.preventDefault();
+    }
+  }
+  limitLength(event: any) {
+    const input = event.target;
+    if (input.value.length > 3) {
+      input.value = input.value.slice(0, 3);
+      this.pcForm.get('duration')?.setValue(input.value);
+    }
   }
 }
