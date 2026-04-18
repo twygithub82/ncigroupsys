@@ -44,11 +44,11 @@
                   {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.INVALID}}
                 </mat-error>
                 }
-                <!-- @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
+                @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
                 <mat-error>
-                  {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.EXISTED}}
+                  {{data.translatedLangText.RECORD_EXISTS}}
                 </mat-error>
-                } -->
+                }
               </mat-form-field>
             </div>
           </div>
