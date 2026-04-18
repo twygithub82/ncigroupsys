@@ -222,7 +222,7 @@ namespace IDMS.Customer.GqlTypes
 
                 return res;
             }
-            catch (Exception ex)
+            catch (Exception ex)    
             {
                 _logger.LogError(ex, "Error in UpdateCustomerCompany for GUID {Guid}: {Message}", customer?.guid, ex.Message);
                 throw new GraphQLException(
