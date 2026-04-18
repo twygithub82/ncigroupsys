@@ -301,9 +301,6 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'salesCostTypeCv', codeValType: 'SALES_COST_TYPE' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
     ];

@@ -417,9 +417,6 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     );
 
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'repairTypeCv', codeValType: 'REPAIR_OPTION' },
     ];
