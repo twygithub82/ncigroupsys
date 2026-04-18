@@ -186,7 +186,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   cvDS: CodeValuesDS;
   userDS: UserDS;
   teamDS: TeamDS;
-  reportDS: ReportDS;
+  reportDS: ReportDS ;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
