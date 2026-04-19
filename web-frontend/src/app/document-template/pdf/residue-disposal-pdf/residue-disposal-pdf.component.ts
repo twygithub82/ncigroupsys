@@ -658,11 +658,18 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var repData: RowInput[] = [];
     var items = this.residuePartList;
     const grpFontSz = 7;
+    var isNoActionEst=this.isNoActionEst();
     items?.forEach((item, index) => {
       repData.push([
         item.index + 1, item.description, `${item.quantity} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
-        this.parse2Decimal(item.quantity * item.cost), this.parse2Decimal(item.approve_cost)]);
+        this.parse2Decimal(item.quantity * item.cost), isNoActionEst?0:this.parse2Decimal(item.approve_cost)]);
     });
+
+    //   items?.forEach((item, index) => {
+    //   repData.push([
+    //     item.index + 1, item.description, `${item.quantity} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
+    //     this.parse2Decimal(item.quantity * item.cost), this.parse2Decimal(item.approve_cost)]);
+    // });
 
     autoTable(pdf, {
       head: headers,
@@ -755,7 +762,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var title: string = this.translatedLangText.RESIDUE_DISPOSAL_ESTIMATE;
     if(this.isNoActionEst())
       {
-        title += ` (${this.translatedLangText.NO_ACTION})` ; 
+        // title += ` (${this.translatedLangText.NO_ACTION})` ; 
       }
     return title;
   }
@@ -975,13 +982,13 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       // {
       item.approve_part = item.approve_part ?? true;
 
-      if (!item.approve_part) 
-      {
-        if (!isNoActionEst)
-        {  
-          return;
-        }
-      }
+      // if (!item.approve_part) 
+      // {
+      //   if (!isNoActionEst)
+      //   {  
+      //     return;
+      //   }
+      // }
       var qty = item.quantity;
       var cost = item.cost;
       var app = (item.approve_part) ? "O" : "X";
@@ -990,6 +997,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         cost = item.approve_cost;
       }
       var totalCost = qty * cost;
+      if(isNoActionEst || !item.approve_part)totalCost=0;
       if (item.approve_part) estTotalCost += totalCost;
       repData.push([
         (++index), item.description, `${qty} ${item.qty_unit_type_cv}`,
@@ -997,6 +1005,13 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         { content: `${this.parse2Decimal(totalCost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost } } }
         //, app
       ]);
+
+      // repData.push([
+      //   (++index), item.description, `${qty} ${item.qty_unit_type_cv}`,
+      //   { content: `${this.parse2Decimal(cost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost - 1 } } },
+      //   { content: `${this.parse2Decimal(totalCost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost } } }
+      //   //, app
+      // ]);
       // }
     });
 
@@ -1150,7 +1165,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var isNoActionEst=this.isNoActionEst();
     if(isNoActionEst)
     {
-      fileName = `${this.residueItem.storing_order_tank.tank_no} (${this.estimate_no!}) (${this.translatedLangText.NO_ACTION}).pdf`; 
+      // fileName = `${this.residueItem.storing_order_tank.tank_no} (${this.estimate_no!}) (${this.translatedLangText.NO_ACTION}).pdf`; 
     }
     return fileName;
   }
