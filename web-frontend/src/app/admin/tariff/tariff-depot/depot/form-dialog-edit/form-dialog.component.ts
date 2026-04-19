@@ -81,7 +81,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   trfDepotDS: TariffDepotDS;
 
   tnkItems?: TankItem[] = [];
-  isMobile: boolean=false;
+  isMobile: boolean = false;
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -89,6 +89,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   translatedLangText: any = {};
+  isDirty: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -212,7 +213,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   ngOnInit() {
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     if (!this.canEdit()) {
       this.pcForm?.get('name')?.disable()
       this.pcForm?.get('description')?.disable()
@@ -228,20 +229,39 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   createTariffDepot(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItem: this.selectedItem,
       action: this.action,
-      name: this.selectedItem.profile_name,
-      description: this.selectedItem.description,
-      preinspection_cost: this.selectedItem.preinspection_cost,
-      lolo_cost: this.selectedItem.lolo_cost,
-      storage_cost: this.selectedItem.storage_cost,
-      free_storage: this.selectedItem.free_storage,
-      gate_in_cost: this.selectedItem.gate_in_cost,
-      gate_out_cost: this.selectedItem.gate_out_cost,
+      name: this.selectedItem?.profile_name,
+      description: this.selectedItem?.description,
+      preinspection_cost: this.selectedItem?.preinspection_cost,
+      lolo_cost: this.selectedItem?.lolo_cost,
+      storage_cost: this.selectedItem?.storage_cost,
+      free_storage: this.selectedItem?.free_storage,
+      gate_in_cost: this.selectedItem?.gate_in_cost,
+      gate_out_cost: this.selectedItem?.gate_out_cost,
       unit_types: this.unit_type_control,
       last_updated: ['']
     });
+
+    // attach flags
+    (group as any).isInitialized = false;
+    (group as any).isDirty = false;
+
+    // monitor changes
+    group.valueChanges.subscribe(() => {
+      if ((group as any).isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    // delay initialization (500ms)
+    setTimeout(() => {
+      group.markAsPristine();
+      (group as any).isInitialized = true;
+    }, 500);
+
+    return group;
   }
 
   GetButtonCaption() {
@@ -380,14 +400,15 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   isAllowEdit() {
+
     return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
   }
-  isAllowSave(){
+  isAllowSave() {
     return this.unit_type_control?.value?.length > 0;
   }
 
   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 }

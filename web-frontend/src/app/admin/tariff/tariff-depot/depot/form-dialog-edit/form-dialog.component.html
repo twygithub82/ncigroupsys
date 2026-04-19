@@ -17,16 +17,7 @@
                 <mat-label>{{translatedLangText.PROFILE_NAME }}</mat-label>
                 <input matInput formControlName="name" type="text" required
                   (input)="onAlphaNumericWithSpace($event, 'name')">
-                <!-- @if (pcForm.get('name')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.PROFILE_NAME }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      }
-                      @if (pcForm.get('name')?.hasError('existed')) {
-                        <mat-error>
-                          {{translatedLangText.PROFILE_NAME }}: {{translatedLangText.EXISTED }}
-                        </mat-error>
-                        } -->
+              
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
@@ -42,11 +33,7 @@
                 <mat-label>{{translatedLangText.PREINSPECTION_COST}}</mat-label>
                 <input matInput formControlName="preinspection_cost" appNumericText type="text" required min="0"
                   #preinspection_cost (focus)="preinspection_cost.select()">
-                <!-- @if (pcForm.get('preinspection_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.PREINSPECTION_COST }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      } -->
+               
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
@@ -54,11 +41,7 @@
                 <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
                 <input matInput formControlName="lolo_cost" appNumericText type="text" required min="0" #lolo_cost
                   (focus)="lolo_cost.select()">
-                <!-- @if (pcForm.get('lolo_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      } -->
+             
               </mat-form-field>
             </div>
 
@@ -145,7 +128,8 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()">
+        <!-- <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()" > -->
+          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isDirty" >
           <mat-icon>
             save
           </mat-icon>

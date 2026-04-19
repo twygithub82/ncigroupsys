@@ -243,7 +243,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
   selectedItems: TariffRepairItem[];
   isMobile: boolean = false;
-
+  isDirty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -267,18 +267,36 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   createTarifRepair(): UntypedFormGroup {
-    return this.fb.group({
-      selectedItems: this.selectedItems,
-      action: this.action,
-      group_name_cv: [''],
-      sub_group_name_cv: [''],
-      part_name: this.partNameControl,
-      dimension: this.dimensionControl,
-      length: this.lengthControl,
-      material_cost_percentage: [''],
-      labour_hour_percentage: [''],
-    });
-  }
+
+  const initDelayMs = 500; // ✅ local variable inside function
+
+  const group = this.fb.group({
+    selectedItems: this.selectedItems,
+    action: this.action,
+    group_name_cv: [''],
+    sub_group_name_cv: [''],
+    part_name: this.partNameControl,
+    dimension: this.dimensionControl,
+    length: this.lengthControl,
+    material_cost_percentage: [''],
+    labour_hour_percentage: [''],
+  });
+
+  let isInitialized = false;
+
+  group.valueChanges.subscribe(() => {
+    if (isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  setTimeout(() => {
+    group.markAsPristine();
+    isInitialized = true;
+  }, initDelayMs); // ✅ uses local variable
+
+  return group;
+}
 
   GetButtonCaption() {
     return this.translatedLangText.CANCEL;
