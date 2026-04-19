@@ -124,7 +124,7 @@ namespace IDMS.Survey.GqlTypes
                         if (sot.purpose_steam ?? false)
                         {
                             sot.tank_status_cv = TankMovementStatus.STEAM;
-                            await AddSteaming(context, sot, ingate.create_dt);
+                            await AddSteaming(context, sot, ingate.create_dt, config);
                             currentTankMovement = TankMovementStatus.STEAM;
                         }
                         else if (sot.purpose_cleaning ?? false)
@@ -423,7 +423,7 @@ namespace IDMS.Survey.GqlTypes
                   
                 //Add steaming by auto
                 if (sot?.purpose_steam ?? false)
-                    await AddSteaming(context, sot, inGateRequest.create_dt);
+                    await AddSteaming(context, sot, inGateRequest.create_dt, config);
 
                 //Add cleaning by auto
                 if (sot?.purpose_cleaning ?? false)
@@ -505,7 +505,7 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
+        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, IConfiguration config)
         {
             int retval = 0;
             try
@@ -517,7 +517,9 @@ namespace IDMS.Survey.GqlTypes
                 var customerGuid = sot?.storing_order?.customer_company_guid;
                 var last_cargo_guid = sot?.last_cargo_guid;
                 var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
-                var description = $"Steaming/Heating cost of ({last_cargo})";
+                var description = config["SteamingDescPrefix"] ?? "Heating Cost For";
+                description = description + $" {last_cargo}";
+
                 var repTemp = sot?.required_temp;
 
                 //Added for later use
