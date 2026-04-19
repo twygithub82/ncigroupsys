@@ -98,7 +98,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -208,37 +208,32 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createPackageResidue(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500; // interval variable
+
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       cost_cust: [''],
       cost_standard: ['-'],
       remarks: [''],
-
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
-  // profileChanged()
-  // {
-  //   if(this.profileNameControl.value)
-  //   {
-  //     const selectedProfile:PackageResidueItem= this.profileNameControl.value;
-  //     this.pcForm.patchValue({
-  //       preinspection_cost_cust: selectedProfile.preinspection_cost,
-  //       preinspection_cost_standard:selectedProfile.preinspection_cost,
-  //       lolo_cost_cust:selectedProfile.lolo_cost,
-  //       lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-  //       storage_cost_cust:selectedProfile.storage_cost,
-  //       storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-  //       free_storage_days:selectedProfile.free_storage,
-  //       gate_in_cost:selectedProfile.gate_in_cost,
-  //       gate_out_cost:selectedProfile.gate_out_cost,
-  //       remarks:selectedProfile.remarks,
-  //       //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-  //     });
-  //     this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-
-
-  //   }
-  // }
+  
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -427,9 +422,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
-   getCostLabel():string{
-    var retval =this.translatedLangText.COST;
-    if(this.selectedItems.length>1){
+  getCostLabel(): string {
+    var retval = this.translatedLangText.COST;
+    if (this.selectedItems.length > 1) {
       // retval = retval.replace("$","%");
     }
     return retval;

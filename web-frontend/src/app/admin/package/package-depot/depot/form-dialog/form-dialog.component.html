@@ -136,7 +136,7 @@
           </div>
           <div mat-dialog-actions class="mb-1 align-right">
             @if (canEdit()) {
-            <button mat-flat-button color="primary" class="me-1" (click)="save()" autofocus>
+            <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="!isDirty" autofocus>
               <mat-icon>
                 save
               </mat-icon>

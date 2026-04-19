@@ -91,7 +91,7 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   packLabourDS: PackageLabourDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -238,12 +238,30 @@ export class FormDialogComponent {
   }
 
   createPackageLabour(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500; // interval variable
+
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       adjusted_cost: [''],
       standard_cost: ['-'],
       remarks: ['']
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
 
