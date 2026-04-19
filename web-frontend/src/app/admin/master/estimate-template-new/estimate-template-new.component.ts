@@ -262,7 +262,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  isDirty: boolean = false;
   @ViewChild('custInput', { static: false }) custInput?: ElementRef<HTMLInputElement>;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -436,28 +438,43 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  initTempForm() {
-    this.tempForm = this.fb.group({
-      guid: [''],
-      customer_company_guid: [''],
-      customer: [''],
-      customer_code: [''],
-      template_name: [''],
-      remarks: [''],
-      repList: [''],
-      labour_hour: ['0'],
-      labour_rate: ['0.00'],
-      labour_additional: ['0.00'],
-      labour_total: ['0.00'],
-      total_material_cost: ['0.00'],
-      total_cost: ['0.00'],
-      labour_discount: [0],
-      material_discount: [0],
-      labour_discount_amount: ['0.00'],
-      material_discount_amount: ['0.00'],
-      net_cost: ['0.00']
-    });
-  }
+ initTempForm() {
+
+  this.tempForm = this.fb.group({
+    guid: [''],
+    customer_company_guid: [''],
+    customer: [''],
+    customer_code: [''],
+    template_name: [''],
+    remarks: [''],
+    repList: [''],
+    labour_hour: ['0'],
+    labour_rate: ['0.00'],
+    labour_additional: ['0.00'],
+    labour_total: ['0.00'],
+    total_material_cost: ['0.00'],
+    total_cost: ['0.00'],
+    labour_discount: [0],
+    material_discount: [0],
+    labour_discount_amount: ['0.00'],
+    material_discount_amount: ['0.00'],
+    net_cost: ['0.00']
+  });
+
+  let isInitialized = false;
+
+  this.tempForm.valueChanges.subscribe(() => {
+    if (isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  const intTO=1000;
+  setTimeout(() => {
+    // this.tempForm.markAsPristine();
+    isInitialized = true;
+  }, intTO);
+}
 
   initializeFilter() {
   }

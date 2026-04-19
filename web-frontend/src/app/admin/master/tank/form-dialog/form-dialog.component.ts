@@ -109,7 +109,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -233,7 +233,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createTankItem(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItem: this.selectedItem,
       unit_type: [''],
       lift_on: [false],
@@ -244,6 +247,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       iso_format: [false],
       flat_rate: [false]
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   displayName(cc?: CustomerCompanyItem): string {

@@ -242,7 +242,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   currentBillingBranch: any = undefined;
   defDiscThd: number = defaultDiscountThreshold;
   isBillingBranchEmpty: boolean = true;
-
+  isDirty: boolean = false;
   starterPackageNotAllowCustomerType = [
     "BRANCH"
   ]
@@ -326,35 +326,51 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   }
 
-  initCCForm() {
-    this.ccForm = this.fb.group({
-      guid: [''],
-      customer_company_guid: [''],
-      customer_code: ['', [
-        Validators.required,
-        Validators.minLength(3), // Minimum 3 characters
-        Validators.maxLength(6), // Maximum 6 characters
-        Validators.pattern('^[A-Za-z]+$') // Only alphabets
-      ]],
-      customer_name: [''],
-      customer_type: [''],
-      billing_branches: [''],
-      country_code: [''],//[DEFAULT_COUNTRY_CODE],
-      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
-      email: ['', [Validators.required, Validators.email]],
-      web: [''],
-      currency: [''],
-      default_profile: [''],
-      address1: [''],
-      address2: [''],
-      postal_code: [''],
-      city_name: [''],
-      country: [''],
-      remarks: [''],
-      repList: [],
-      approval_threshold: []
-    });
-  }
+ initCCForm() {
+
+  const initDelayMs = 500; // ✅ interval variable
+
+  this.ccForm = this.fb.group({
+    guid: [''],
+    customer_company_guid: [''],
+    customer_code: ['', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(6),
+      Validators.pattern('^[A-Za-z]+$')
+    ]],
+    customer_name: [''],
+    customer_type: [''],
+    billing_branches: [''],
+    country_code: [''],
+    phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
+    email: ['', [Validators.required, Validators.email]],
+    web: [''],
+    currency: [''],
+    default_profile: [''],
+    address1: [''],
+    address2: [''],
+    postal_code: [''],
+    city_name: [''],
+    country: [''],
+    remarks: [''],
+    repList: [],
+    approval_threshold: []
+  });
+
+  let isInitialized = false;
+
+  this.ccForm.valueChanges.subscribe(() => {
+    if (isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  setTimeout(() => {
+    
+    isInitialized = true;
+  }, initDelayMs);
+}
 
   SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
     var retval: TemplateEstPartItem[] = items.sort((a, b) => b.create_dt! - a.create_dt!);
@@ -993,6 +1009,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.ccForm?.get('repList')?.setErrors(null);
+    this.isDirty=true;
   }
 
   handleDelete(event: Event, row: any, index: number): void {

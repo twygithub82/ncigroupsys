@@ -388,7 +388,7 @@
                 </div> -->
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
                   @if (canEdit()) {
-                  <button mat-flat-button color="primary" [disabled]="!isAnyItemEdited()">
+                  <button mat-flat-button color="primary" [disabled]="!isAnyItemEdited()" [disabled]="!isDirty && this.branch_guid">
                     <mat-icon>save</mat-icon>
                     {{this.branch_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
