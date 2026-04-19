@@ -44,7 +44,7 @@ export class ExclusiveToggleDirective implements OnInit {
             if (currentValue.length === 1 && currentValue[0] === this.lastClickedValue) {
                 control.setValue([]); // unselect
             } else {
-                if (currentValue[0]) {
+                if (currentValue[0] || currentValue[0] === '') {
                     control.setValue([currentValue[0]]); // exclusive select
                 } else {
                     control.setValue([]); // unselect

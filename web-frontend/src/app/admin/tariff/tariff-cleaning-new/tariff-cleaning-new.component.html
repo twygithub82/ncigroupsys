@@ -197,15 +197,15 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
                           <input matInput formControlName="un_no" [maxLength]="4" (blur)="onUnNoBlur()"
-                            (input)="onUNNumericOnly($event, 'un_no')"
-                            [ngStyle]="{ 'color': this.newUNNo ? '#048efb' : 'black' }" >
+                            (input)="onUNNumericOnly($event, 'un_no')" [readonly]="isReadonlyUNNo()" >
+                            <!-- [ngStyle]="{ 'color': this.newUNNo ? '#048efb' : 'black' }" > -->
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_FLASH_POINT }}</mat-label>
                           <input matInput formControlName="flash_point" type="text" maxlength="4"
-                            [required]="isRequired_FlashPoint()">
+                            [required]="isRequired_FlashPoint()" >
                           <!-- @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.CARGO_FLASH_POINT }} {{translatedLangText.CARGO_REQUIRED }}
@@ -256,7 +256,7 @@
                       </mat-error>
                       }
                       <!-- Display file name and preview button -->
-                      <div *ngIf="selectedFile" class="col-xl-1-5 col-lg-1-5 col-md-12 col-sm-12 col-xs-12 mb-0 ml-1">
+                      <div *ngIf="selectedFile" class="col-xl-1-5 col-lg-1-5 col-md-12 col-sm-12 col-xs-12 mb-0 pl-30">
                         <!-- <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                           <span *ngIf="selectedFileChanged">*</span>
                         </p> -->
