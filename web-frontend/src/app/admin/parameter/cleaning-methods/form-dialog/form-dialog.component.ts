@@ -106,7 +106,7 @@ export class FormDialogComponent {
   cleanFormulaList: CleaningFormulaItem[] = [];
   updatedMethodFormulaLinkList: CleaningStepItem[] = [];
   existingMethodFormulaLinkList: CleaningStepItem[] = [];
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -201,7 +201,7 @@ export class FormDialogComponent {
   }
 
   removeDeletedSteps() {
-    this.updatedMethodFormulaLinkList = this.updatedMethodFormulaLinkList.filter(f => f.delete_dt==0||f.delete_dt==null);
+    this.updatedMethodFormulaLinkList = this.updatedMethodFormulaLinkList.filter(f => f.delete_dt == 0 || f.delete_dt == null);
   }
   loadData() {
     const where: any = { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] };
@@ -238,7 +238,7 @@ export class FormDialogComponent {
 
           this.cleanFormulaList = data.filter(f => f.delete_dt == 0 || f.delete_dt == null);
           this.cleanFormulaList.forEach(f => {
-            var cfm=f.cleaning_method_formula?.filter(f => f.delete_dt == 0 || f.delete_dt == null);
+            var cfm = f.cleaning_method_formula?.filter(f => f.delete_dt == 0 || f.delete_dt == null);
             f.cleaning_method_formula = cfm;
           })
           this.updateValidators(this.cleanFormulaControl, this.cleanFormulaList);
@@ -254,12 +254,30 @@ export class FormDialogComponent {
   }
 
   createCleaningCategory(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       name: this.selectedItem.name,
       description: this.selectedItem.description,
       formula: this.cleanFormulaControl,
       category: ['']
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   GetButtonCaption() {
@@ -399,6 +417,7 @@ export class FormDialogComponent {
   cancelItem(event: Event, index: number): void {
     event.stopPropagation();
     this.updatedMethodFormulaLinkList.splice(index, 1);
+    this.isDirty=true;
   }
 
   drop2(event: CdkDragDrop<CleaningStepItem[]>) {
@@ -406,6 +425,7 @@ export class FormDialogComponent {
     this.updatedMethodFormulaLinkList.forEach((item, index) => {
       item.sequence = index + 1; // Assign sequence starting from 1
     });
+    this.isDirty=true;
   }
 
   removeCleaningFormulaFromUpdatedMethodFormulaLinkList(): CleaningStepItem[] {

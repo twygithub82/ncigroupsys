@@ -77,7 +77,7 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   fmlDS: CleaningFormulaDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -151,20 +151,38 @@ export class FormDialogComponent {
   }
 
   createCleaningFormula(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       duration: [
         { value: this.selectedItem?.duration, disabled: !this.canEdit() },
         [
           Validators.required,
           Validators.min(0),
-          Validators.max(999),          // ✅ limit value
-          Validators.pattern(/^\d{1,3}$/) // ✅ max 3 digits
+          Validators.max(999),
+          Validators.pattern(/^\d{1,3}$/)
         ]
       ],
       description: [
         { value: this.selectedItem?.description, disabled: !this.canEdit() }
       ],
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   GetButtonCaption() {
