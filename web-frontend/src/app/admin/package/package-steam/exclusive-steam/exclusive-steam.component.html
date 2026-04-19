@@ -149,9 +149,9 @@
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-2_75'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2_75'">
+                [ngClass]="'tbl-col-width-per-3'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_CARGO
                   }}:</span>{{row.tariff_cleaning?.cargo}}</mat-cell>
             </ng-container>
@@ -174,17 +174,17 @@
             </ng-container>
             <ng-container matColumnDef="cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1 justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1 justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
                 {{displayNumber(row.package_steaming?.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-1_25 justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_25 justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
                 {{displayNumber(row.package_steaming?.labour)}}</mat-cell>
             </ng-container>
@@ -198,7 +198,7 @@
               <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1_25'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_25'">
+                [ngClass]="'tbl-col-width-per-1'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
