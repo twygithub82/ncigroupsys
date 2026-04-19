@@ -99,7 +99,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -238,13 +238,30 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createPackageRepair(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       material_cost: [],
       labour_hour: [],
       remarks: [''],
-
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
 
@@ -329,8 +346,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
-    if(this.pcForm.get('labour_hour')?.hasError('min')||this.pcForm.get('labour_hour')?.hasError('max')||
-    this.pcForm.get('material_cost')?.hasError('min')||this.pcForm.get('material_cost')?.hasError('max')){
+    if (this.pcForm.get('labour_hour')?.hasError('min') || this.pcForm.get('labour_hour')?.hasError('max') ||
+      this.pcForm.get('material_cost')?.hasError('min') || this.pcForm.get('material_cost')?.hasError('max')) {
       return;
     }
     if (this.isMultiSelect() &&

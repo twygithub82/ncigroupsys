@@ -289,7 +289,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   isAllowedToChangedMainCustomer: boolean = true;
-
+  isDirty: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -358,31 +358,47 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initCCForm() {
-    this.ccForm = this.fb.group({
-      guid: [''],
-      customer_code: this.customerCodeControl,
-      branch_code: ['', [
-        Validators.required,
-        Validators.minLength(3), // Minimum 3 characters
-        Validators.maxLength(6), // Maximum 6 characters
-        Validators.pattern('^[A-Za-z]+$') // Only alphabets
-      ]],
-      branch_name: [''],
-      country_code: [''], //[DEFAULT_COUNTRY_CODE],
-      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
-      email: ['', [Validators.required, Validators.email]],
-      web: [''],
-      currency: [''],
-      default_profile: [''],
-      address1: [''],
-      address2: [''],
-      postal_code: [''],
-      city_name: [''],
-      country: [''], //['Singapore'],
-      remarks: [''],
-      repList: ['']
-    });
-  }
+
+  const initDelayMs = 1000;
+
+  this.ccForm = this.fb.group({
+    guid: [''],
+    customer_code: this.customerCodeControl,
+    branch_code: ['', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(6),
+      Validators.pattern('^[A-Za-z]+$')
+    ]],
+    branch_name: [''],
+    country_code: [''],
+    phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
+    email: ['', [Validators.required, Validators.email]],
+    web: [''],
+    currency: [''],
+    default_profile: [''],
+    address1: [''],
+    address2: [''],
+    postal_code: [''],
+    city_name: [''],
+    country: [''],
+    remarks: [''],
+    repList: ['']
+  });
+
+  let isInitialized = false;
+
+  this.ccForm.valueChanges.subscribe(() => {
+    if (isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  setTimeout(() => {
+    this.ccForm?.markAsPristine();
+    isInitialized = true;
+  }, initDelayMs);
+}
 
   patchData(currentBillingBranch: CustomerCompanyItem) {
     if (currentBillingBranch) {
@@ -607,7 +623,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         });
         data.unshift(newItem);
         this.updateData(data);
-
+        this.isDirty=true;
         //this.calculateCostSummary();
       }
     });
@@ -1116,12 +1132,14 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.ccForm?.get('repList')?.setErrors(null);
+    //  this.isDirty=true;
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     event.preventDefault(); // Prevents the form submission
     event.stopPropagation();
     this.deleteItem(row, index);
+    this.isDirty=true;
   }
 
   handleSaveSuccess(count: any) {

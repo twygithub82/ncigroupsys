@@ -20,7 +20,7 @@
                   #preinspection_cost  >
                    @if (pcForm.get('code')?.hasError('duplicated')) {
                   <mat-error>
-                    {{translatedLangText.RECORD_EXISTS }}
+                    {{translatedLangText.CODE }} {{translatedLangText.EXISTED }}
                   </mat-error>
                   }
                 <!-- @if (pcForm.get('preinspection_cost')?.hasError('required')) {
@@ -72,7 +72,7 @@
       <div mat-dialog-actions class="mb-1 align-right">
        <!-- @if(isAllowEdit()) -->
         <!-- { -->
-          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()">
+          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()" [disabled]="!isDirty && !isNew()">
             <mat-icon>
               save
             </mat-icon>

@@ -245,6 +245,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   trfCleaningSubmitting: boolean = false;
 
   isMobile: boolean = false;
+  isDirty: boolean = false;
+  isInitialized: any;
 
   constructor(
     public httpClient: HttpClient,
@@ -270,6 +272,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.selectedFileLoading = new BehaviorSubject<boolean>(false);
     this.submitForSaving = new BehaviorSubject<boolean>(false);
+    this.isDirty = false;
   }
 
   initializeValueChanges() {
@@ -341,6 +344,18 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
       remarks: ['']
     });
+
+    this.tcForm.valueChanges.subscribe(() => {
+    if (this.isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  // After all initial values / patchValue done
+  setTimeout(() => {
+    this.isInitialized = true;
+  },1000);
+
     // this.classNoControl.setValue("NA");
   }
 
@@ -442,21 +457,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
           this.initializeValueChanges();
           this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-            // if (value && !value.startsWith(this.prefix) && value != '-') {
-            //   // Remove existing prefix before adding a new one
-            //   const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-            //   if (numericPart && !isNaN(Number(numericPart))) {
-            //     const newValue = this.prefix + value.replace(this.prefix, '');
-            //     this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-            //   }
-            // }
+            
             this.CheckUnNoValidity();
           });
           this.CheckUnNoValidity();
+          
         }
       });
     } else {
       this.initializeValueChanges();
+       
     }
 
     if (!this.canEdit()) {
@@ -476,6 +486,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.hazardLevelControl.disable();
       this.banTypeControl.disable();
       this.openGateControl.disable();
+      
     }
   }
 

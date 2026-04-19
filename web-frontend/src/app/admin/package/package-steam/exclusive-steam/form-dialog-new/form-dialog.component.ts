@@ -221,7 +221,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: ExclusiveSteamingItem;
-
+  isDirty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -263,9 +263,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   createExclusiveSteam(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItem: null,
-      action: "new",
+      action: 'new',
       min_temp: ['', [Validators.required]],
       max_temp: [''],
       labour: [''],
@@ -273,8 +276,24 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       remarks: [''],
       customer_code: [''],
       last_cargo: ['']
-    },
-      { validators: tempRangeValidator });
+    }, {
+      validators: tempRangeValidator
+    });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   public InitValueChanges() {

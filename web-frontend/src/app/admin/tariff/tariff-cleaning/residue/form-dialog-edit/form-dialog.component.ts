@@ -79,6 +79,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   translatedLangText: any = {};
+  isDirty = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -150,7 +151,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffResidueItem;
-  isMobile: boolean=false;
+  isMobile: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -180,13 +181,34 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   createTariffResidue(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItem: this.selectedItem,
-      action: "edit",
-      description: this.selectedItem.description,
-      cost: this.selectedItem.cost?.toFixed(2),
-      remarks: this.selectedItem.remarks
+      action: 'edit',
+      description: this.selectedItem?.description,
+      cost: this.selectedItem?.cost != null
+        ? this.selectedItem.cost.toFixed(2)
+        : null,
+      remarks: this.selectedItem?.remarks
     });
+
+    // attach custom flags
+    (group as any).isInitialized = false;
+    (group as any).isDirty = false;
+
+    // listen to changes
+    group.valueChanges.subscribe(() => {
+      if ((group as any).isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    // delay init (500ms as you requested)
+    setTimeout(() => {
+      group.markAsPristine();
+      (group as any).isInitialized = true;
+    }, 500);
+
+    return group;
   }
 
   GetTitle() {
@@ -271,9 +293,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_EDIT']);
   }
 
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
 }

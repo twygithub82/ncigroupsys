@@ -332,7 +332,7 @@
               <div class="ms-auto">
                 @if (!(submitForSaving | async)) {
                   @if (canEdit()) {
-                    <button mat-flat-button color="primary" type="submit">
+                    <button mat-flat-button color="primary" type="submit" [disabled]="!isDirty">
                       <mat-icon>save</mat-icon>
                       {{ this.tc_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
                     </button>

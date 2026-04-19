@@ -120,7 +120,7 @@
           {{translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
         @else {
-        <button mat-flat-button color="primary" class="me-1" (click)="update()">
+        <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isDirty">
           <mat-icon>
             save
           </mat-icon>

@@ -90,6 +90,7 @@ export class FormDialogComponent {
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   catDS: CleaningCategoryDS;
   translatedLangText: any = {};
+  isDirty: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     ADD: 'COMMON-FORM.ADD',
@@ -178,13 +179,31 @@ export class FormDialogComponent {
   }
 
   createCleaningCategory(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItem: [{ value: this.selectedItem, disabled: !this.canEdit() }],
       adjusted_cost: [{ value: Utility.convertNumber(this.selectedItem.cost, 2), disabled: !this.canEdit() }],
       name: [{ value: this.selectedItem.name, disabled: !this.canEdit() }],
       description: [{ value: this.selectedItem.description, disabled: !this.canEdit() }],
       remarks: ['']
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   GetButtonCaption() {

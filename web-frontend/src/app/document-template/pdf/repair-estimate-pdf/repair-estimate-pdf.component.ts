@@ -1755,10 +1755,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
+      
       repData.push([
         rep.index + 1, this.displayDamageRepairCode(rep.rp_damage_repair, 0), this.displayDamageRepairCode(rep.rp_damage_repair, 1),
         rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
-        rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost)
+        rep.approve_qty, rep.approve_hour, rep.approve_part === true ? this.parse2Decimal(rep.approve_cost) :0
       ])
     });
 

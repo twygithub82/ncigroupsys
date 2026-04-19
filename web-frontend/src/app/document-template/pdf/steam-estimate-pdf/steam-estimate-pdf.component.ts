@@ -1389,17 +1389,22 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     items?.forEach((item, index) => {
 
       item.approve_part = item.approve_part ?? true;
-      if (!item.approve_part) return;
+      // if (!item.approve_part) return;
 
       var qty = (this.isEstimateApproved ? item.approve_qty : item.quantity);
       var cost = (this.isEstimateApproved ? item.approve_cost : item.cost);
       var labour = this.isEstimateApproved ? item.approve_labour : item.labour;
-      var totalCost = item.approve_part ? (qty * cost) : '-';
+      var totalCost = item.approve_part ? (qty * cost) : '0';
 
       if (item.approve_part) {
         estTotalLbr += Number(labour);
         estTotalCost += Number(totalCost);
       }
+      else
+      {
+        qty=0;
+      }
+      
       //item.approve_cost = item.approve_part?item.cost:0;
       var app = ((item.approve_part === null) || item.approve_part) ? "O" : "X";
       repData.push([
@@ -1681,7 +1686,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     items?.forEach((item, index) => {
       item.approve_part = item.approve_part ?? true;
-      if (!item.approve_part) return;
+      // if (!item.approve_part) return;
       var qty = "-";
       // var cost = this.steamItem.rate;
       var cost = this.packageLabourCost;
@@ -1691,6 +1696,10 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       if (item.approve_part) {
         //estTotalLbr+=Number(labour);
         estTotalCost += Number(totalCost);
+      }
+      else
+      {
+        labour=0;
       }
       //item.approve_cost = item.approve_part?item.cost:0;
       var app = ((item.approve_part === null) || item.approve_part) ? "O" : "X";
