@@ -687,7 +687,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         if (result.selectedValue) {
           this.tcForm!.patchValue({
             class_no: result.selectedValue,
+
           });
+          if (this.isReadonlyUNNo()) {
+            this.tcForm!.patchValue({
+              un_no: '',
+
+            });
+          }
         }
       }
     });
@@ -948,6 +955,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     const centerClass = Padding ? 'mx-3' : '';
     return `${baseClasses} ${centerClass}`.trim();
   }
+
+  isReadonlyUNNo() {
+    var clsNo = this.tcForm?.get("class_no")?.value || '';
+    if (clsNo?.trim() === "NA") return true;
+    else return false;
+  }
+
+
 
 }
 

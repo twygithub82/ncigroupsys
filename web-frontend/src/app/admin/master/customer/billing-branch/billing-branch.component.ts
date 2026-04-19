@@ -212,7 +212,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
-  depotProfileList : TariffDepotItem[] = [];
+  depotProfileList: TariffDepotItem[] = [];
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   all_customer_companyList: CustomerCompanyItem[] = [];
@@ -239,7 +239,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
   constructor(
     private router: Router,
@@ -260,7 +260,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.branchCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
-    this.tfDepotDS=new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -386,12 +386,12 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     where.and = [
       { customer_company: { type_cv: { in: ["BRANCH"] } } },
       { customer_company: { delete_dt: { eq: null } } },
-      { customer_company: {main_customer_guid: { neq: null } }},
-      { customer_company: {main_customer_guid: { neq: "" } }}
+      { customer_company: { main_customer_guid: { neq: null } } },
+      { customer_company: { main_customer_guid: { neq: "" } } }
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-      where.and.push({ customer_company:{ main_customer_company: { guid: { eq: customerCode.guid } } }});
+      where.and.push({ customer_company: { main_customer_company: { guid: { eq: customerCode.guid } } } });
       // if (where.main_customer_company == null) where.main_customer_company = {};
       // where.main_customer_company.guid = { eq: customerCode.guid };
     }
@@ -407,7 +407,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.def_tank_guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-       where.and.push({ customer_company: { def_tank_guid:{ eq: this.pcForm!.get("default_profile")?.value?.guid } } });
+      where.and.push({ customer_company: { def_tank_guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } });
       // const tankSearch: any = {};
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       // if (where.customer_company == null) where.customer_company = {};
@@ -417,13 +417,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.country = { contains: this.pcForm!.value["country"] };
-       where.and.push({ customer_company: { country:{ contains: this.pcForm!.value["country"] } } });
+      where.and.push({ customer_company: { country: { contains: this.pcForm!.value["country"] } } });
     }
 
     if (this.pcForm!.value["contact_person"]) {
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
-      where.and.push({ customer_company: { cc_contact_person:{ some: { name: { eq: this.pcForm!.value["contact_person"] } }} } });
+      where.and.push({ customer_company: { cc_contact_person: { some: { name: { eq: this.pcForm!.value["contact_person"] } } } } });
     }
 
     this.lastSearchCriteria = where;
@@ -590,8 +590,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   public loadData() {
 
-    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=[{ guid: '', profile_name: 'All' },...data];
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = [{ guid: '', profile_name: 'All' }, ...data];
 
     });
 
@@ -813,89 +813,89 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
   }
-   getDepotProfileName(guid:String):String{
-    var retval:String="-";
+  getDepotProfileName(guid: String): String {
+    var retval: String = "-";
 
     if (this.depotProfileList && this.depotProfileList.length > 0) {
       var depotProfile = this.depotProfileList.find(x => x.guid == guid);
       if (depotProfile) {
-        retval = depotProfile.profile_name??"-";
+        retval = depotProfile.profile_name ?? "-";
       }
     }
     return retval;
   }
 
-  export_excel()
-      {
-        this.isGeneratingReport=true;
-        // const where: any = {};
-        //  where.and = [
-        //     { type_cv: { in: ["BRANCH"] } } ,
-        //    { delete_dt: { eq: null } } 
-        // ];
-        const filters=this.lastSearchCriteria.and||[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
-        var where: any= {};
-        if (filters.length>0){
-           where.and=filters.map((item:any) => item.customer_company);
-        }
-        else
-        {
-          where=[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
-        }
-        
-        // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
-        this.ccDS.searchAll(where).subscribe(res=>{
-              var prcList:CustomerCompanyItem[]=[];
-              res.forEach((item) => {
-                var itm:any = item;
-                const c: CustomerCompanyItem = {
-                  ...itm,
-                  default_profile_name:this.getDepotProfileName(itm.def_tank_guid),
-                };
-                prcList.push(c);
-              });
+  export_excel() {
+    this.isGeneratingReport = true;
+    // const where: any = {};
+    //  where.and = [
+    //     { type_cv: { in: ["BRANCH"] } } ,
+    //    { delete_dt: { eq: null } } 
+    // ];
+    const filters = this.lastSearchCriteria.and || [{ type_cv: { in: ["BRANCH"] } }, { delete_dt: { eq: null } }];
+    var where: any = {};
+    if (filters.length > 0) {
+      where.and = filters.map((item: any) => item.customer_company);
+    }
+    else {
+      where = [{ type_cv: { in: ["BRANCH"] } }, { delete_dt: { eq: null } }];
+    }
 
-              this.exportExcelReport(prcList);
-    
-          })
-    
-          
-      }
-      exportExcelReport(repData:any) {
-          
-             //this.preventDefault(event);
-              let cut_off_dt = new Date();
-          
-          
-              let tempDirection: Direction;
-              if (localStorage.getItem('isRtl') === 'true') {
-                tempDirection = 'rtl';
-              } else {
-                tempDirection = 'ltr';
-              }
-          
-              const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
-                width: reportPreviewWindowDimension.portrait_width_rate,
-                maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                
-                data: {
-                  repData: repData
-                },
-          
-                // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                direction: tempDirection
-              });
-          
-                dialogRef.updatePosition({
-                top: '-90vh',  // Move far above the screen
-                left: '0px'  // Move far to the left of the screen
-              });
-          
-              this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                this.isGeneratingReport = false;
-              });
-      
-        }
+    // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
+    this.ccDS.searchAll(where).subscribe(res => {
+      var prcList: CustomerCompanyItem[] = [];
+      res.forEach((item) => {
+        var itm: any = item;
+        const c: CustomerCompanyItem = {
+          ...itm,
+          default_profile_name: this.getDepotProfileName(itm.def_tank_guid),
+        };
+        prcList.push(c);
+      });
+
+      this.exportExcelReport(prcList);
+
+    })
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+ 
 }
 
