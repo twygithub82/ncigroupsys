@@ -242,6 +242,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     HRS:'COMMON-FORM.HRS',
     SUMMARY_COST:'COMMON-FORM.SUMMARY-COST',
     NOTE:'COMMON-FORM.NOTE',
+    S_N: 'COMMON-FORM.S_N',
     
     
   }
@@ -1025,7 +1026,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
           rowSpan: 2,
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
@@ -1638,7 +1639,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
           rowSpan: 2,
           styles: {
             fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,

@@ -359,46 +359,46 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   initCCForm() {
 
-  const initDelayMs = 1000;
+    const initDelayMs = 1000;
 
-  this.ccForm = this.fb.group({
-    guid: [''],
-    customer_code: this.customerCodeControl,
-    branch_code: ['', [
-      Validators.required,
-      Validators.minLength(3),
-      Validators.maxLength(6),
-      Validators.pattern('^[A-Za-z]+$')
-    ]],
-    branch_name: [''],
-    country_code: [''],
-    phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
-    email: ['', [Validators.required, Validators.email]],
-    web: [''],
-    currency: [''],
-    default_profile: [''],
-    address1: [''],
-    address2: [''],
-    postal_code: [''],
-    city_name: [''],
-    country: [''],
-    remarks: [''],
-    repList: ['']
-  });
+    this.ccForm = this.fb.group({
+      guid: [''],
+      customer_code: this.customerCodeControl,
+      branch_code: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(6),
+        Validators.pattern('^[A-Za-z]+$')
+      ]],
+      branch_name: [''],
+      country_code: [''],
+      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
+      email: ['', [Validators.required, Validators.email]],
+      web: [''],
+      currency: [''],
+      default_profile: [''],
+      address1: [''],
+      address2: [''],
+      postal_code: [''],
+      city_name: [''],
+      country: [''],
+      remarks: [''],
+      repList: ['']
+    });
 
-  let isInitialized = false;
+    let isInitialized = false;
 
-  this.ccForm.valueChanges.subscribe(() => {
-    if (isInitialized) {
-      this.isDirty = true;
-    }
-  });
+    this.ccForm.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
 
-  setTimeout(() => {
-    this.ccForm?.markAsPristine();
-    isInitialized = true;
-  }, initDelayMs);
-}
+    setTimeout(() => {
+      this.ccForm?.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+  }
 
   patchData(currentBillingBranch: CustomerCompanyItem) {
     if (currentBillingBranch) {
@@ -623,7 +623,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         });
         data.unshift(newItem);
         this.updateData(data);
-        this.isDirty=true;
+        this.isDirty = true;
         //this.calculateCostSummary();
       }
     });
@@ -1139,7 +1139,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     event.preventDefault(); // Prevents the form submission
     event.stopPropagation();
     this.deleteItem(row, index);
-    this.isDirty=true;
+    this.isDirty = true;
   }
 
   handleSaveSuccess(count: any) {
@@ -1332,7 +1332,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
                   { name: { contains: searchCriteria } },
                   { code: { contains: searchCriteria } }
                 ]
-              }
+              },
+              { delete_dt: { eq: null } },
+
+
             ]
           },
           { code: 'ASC' }).subscribe(data => {
@@ -1414,14 +1417,14 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   checkBranchCodeExists(): void {
     const where: any = {};
-     var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
-    
+    var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
+
     where.and = [{ code: { eq: customerCode } }, { delete_dt: { eq: null } }]
     this.ccDS.search(where).subscribe(result => {
-     if (result.length > 0 && this.branch_guid == undefined) {
+      if (result.length > 0 && this.branch_guid == undefined) {
         this.ccForm?.get('branch_code')?.setErrors({ existed: true });
       }
-    
+
     });
   }
 }

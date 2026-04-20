@@ -588,77 +588,182 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
-    this.searchStateService.setPagination(this.pageStateType, {
-      pageSize,
-      pageIndex,
+  performSearch(
+  pageSize: number,
+  pageIndex: number,
+  first?: number,
+  after?: string,
+  last?: number,
+  before?: string,
+  callback?: () => void
+) {
+  this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+  this.searchStateService.setPagination(this.pageStateType, {
+    pageSize,
+    pageIndex,
+    first,
+    after,
+    last,
+    before
+  });
+
+  console.log(this.searchStateService.getPagination(this.pageStateType));
+
+  this.subs.sink = this.sotDS
+    .searchStoringOrderTanksSteamEstimate(
+      this.lastSearchCriteria,
+      this.lastOrderBy,
       first,
       after,
       last,
       before
-    });
-    console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      .subscribe(data => {
-        if (data) {
-          const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
-          this.sotList = data.map(sot => {
-            sot.steaming = (sot.steaming || []).map(stm => {
+    )
+    .subscribe(data => {
+      if (data) {
+        const steamingStatusFilter = this.searchForm?.value['est_status_cv'] || [];
+
+        // ✅ FIXED LOGIC
+        this.sotList = data.map(sot => ({
+          ...sot,
+          steaming: (sot.steaming || [])
+
+            // 🔥 remove invalid values (null, [], etc.)
+            .filter(stm => stm && !Array.isArray(stm))
+
+            // 🔥 filter by status
+            .filter(stm => {
+              if (steamingStatusFilter.length) {
+                return steamingStatusFilter.includes(stm.status_cv);
+              }
+              return stm.status_cv !== 'CANCELED';
+            })
+
+            // 🔥 process valid items
+            .map(stm => {
               const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
 
-              if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
-                // this.calculateNetCost_r1(stm);
-                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
+              return {
+                ...stm,
+                steaming_part: stm_part,
+                net_cost: "0.01" // or your calculation
+                // net_cost: this.calculateNetCost_r1(stm)
+              };
+            })
+        }));
 
-              } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
-                // this.calculateNetCost_r1(stm);
-                return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
-              }
+        // ================= MOBILE PAGINATION =================
+        if (this.isMobile) {
+          const chunkSize = 1;
+          this.pagedSteamDataFull = {};
+          this.pagedSteamData = {};
+          this.currentSteamIndex = {};
 
-              return {};
-            }).filter(stm => Object.keys(stm).length > 0);
+          this.sotList.forEach((sot: any) => {
+            const steaming = sot.steaming || [];
+            const chunks: any[][] = [];
 
-            return sot;
+            for (let i = 0; i < steaming.length; i += chunkSize) {
+              chunks.push(steaming.slice(i, i + chunkSize));
+            }
+
+            this.pagedSteamDataFull[sot.guid] = chunks;
+            this.currentSteamIndex[sot.guid] = 0;
+            this.pagedSteamData[sot.guid] = chunks[0] || [];
           });
-
-          if (this.isMobile) {
-            const chunkSize = 1;
-            this.pagedSteamDataFull = {};
-            this.pagedSteamData = {};
-            this.currentSteamIndex = {};
-
-            this.sotList.forEach((sot: any) => {
-              const steaming = sot.steaming || [];
-              const chunks: any[][] = [];
-
-              for (let i = 0; i < steaming.length; i += chunkSize) {
-                chunks.push(steaming.slice(i, i + chunkSize));
-              }
-
-              this.pagedSteamDataFull[sot.guid] = chunks;
-              this.currentSteamIndex[sot.guid] = 0;
-              this.pagedSteamData[sot.guid] = chunks[0] || [];
-            });
-          } else {
-            // Reset if not in mobile view
-            this.pagedSteamDataFull = {};
-            this.pagedSteamData = {};
-            this.currentSteamIndex = {};
-          }
-          this.cardListComponent?.resetExpanded();
+        } else {
+          this.pagedSteamDataFull = {};
+          this.pagedSteamData = {};
+          this.currentSteamIndex = {};
         }
 
-        this.RefreshSotNetCost();
-        this.endCursor = this.sotDS.pageInfo?.endCursor;
-        this.startCursor = this.sotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-      });
+        this.cardListComponent?.resetExpanded();
+      }
 
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
-  }
+      this.RefreshSotNetCost();
+
+      this.endCursor = this.sotDS.pageInfo?.endCursor;
+      this.startCursor = this.sotDS.pageInfo?.startCursor;
+      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+      callback?.();
+    });
+
+  this.pageSize = pageSize;
+  this.pageIndex = pageIndex;
+}
+
+  // performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  //   this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+  //   this.searchStateService.setPagination(this.pageStateType, {
+  //     pageSize,
+  //     pageIndex,
+  //     first,
+  //     after,
+  //     last,
+  //     before
+  //   });
+  //   console.log(this.searchStateService.getPagination(this.pageStateType))
+  //   this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  //     .subscribe(data => {
+  //       if (data) {
+  //         const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
+  //         this.sotList = data.map(sot => {
+  //           sot.steaming = (sot.steaming || []).map(stm => {
+  //             const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
+
+  //             if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
+  //               // this.calculateNetCost_r1(stm);
+  //               return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
+
+  //             } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
+  //               // this.calculateNetCost_r1(stm);
+  //               return { ...stm, steaming_part: stm_part, net_cost: "0.01" };
+  //             }
+
+  //             return {};
+  //           }).filter(stm => Object.keys(stm).length > 0);
+
+  //           return sot;
+  //         });
+
+  //         if (this.isMobile) {
+  //           const chunkSize = 1;
+  //           this.pagedSteamDataFull = {};
+  //           this.pagedSteamData = {};
+  //           this.currentSteamIndex = {};
+
+  //           this.sotList.forEach((sot: any) => {
+  //             const steaming = sot.steaming || [];
+  //             const chunks: any[][] = [];
+
+  //             for (let i = 0; i < steaming.length; i += chunkSize) {
+  //               chunks.push(steaming.slice(i, i + chunkSize));
+  //             }
+
+  //             this.pagedSteamDataFull[sot.guid] = chunks;
+  //             this.currentSteamIndex[sot.guid] = 0;
+  //             this.pagedSteamData[sot.guid] = chunks[0] || [];
+  //           });
+  //         } else {
+  //           // Reset if not in mobile view
+  //           this.pagedSteamDataFull = {};
+  //           this.pagedSteamData = {};
+  //           this.currentSteamIndex = {};
+  //         }
+  //         this.cardListComponent?.resetExpanded();
+  //       }
+
+  //       this.RefreshSotNetCost();
+  //       this.endCursor = this.sotDS.pageInfo?.endCursor;
+  //       this.startCursor = this.sotDS.pageInfo?.startCursor;
+  //       this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+  //       this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+  //     });
+
+  //   this.pageSize = pageSize;
+  //   this.pageIndex = pageIndex;
+  // }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
