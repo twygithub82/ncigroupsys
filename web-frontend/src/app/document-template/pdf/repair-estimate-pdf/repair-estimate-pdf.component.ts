@@ -242,6 +242,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     HRS:'COMMON-FORM.HRS',
     SUMMARY_COST:'COMMON-FORM.SUMMARY-COST',
     NOTE:'COMMON-FORM.NOTE',
+    S_N: 'COMMON-FORM.S_N',
     
     
   }
@@ -1025,7 +1026,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
           rowSpan: 2,
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
@@ -1638,7 +1639,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
           rowSpan: 2,
           styles: {
             fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
@@ -1755,10 +1756,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
+      
       repData.push([
         rep.index + 1, this.displayDamageRepairCode(rep.rp_damage_repair, 0), this.displayDamageRepairCode(rep.rp_damage_repair, 1),
         rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
-        rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost)
+        rep.approve_qty, rep.approve_hour, rep.approve_part === true ? this.parse2Decimal(rep.approve_cost) :0
       ])
     });
 

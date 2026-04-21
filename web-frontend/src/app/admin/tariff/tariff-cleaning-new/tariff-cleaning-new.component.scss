@@ -14,3 +14,15 @@ wide-error {
 element.style {
     padding-left: 0px;
 }
+
+.custom-negative-bottom {
+  margin-bottom: -5px;
+}
+
+::ng-deep .no-wrap {
+  white-space: nowrap;
+}
+
+::ng-deep .pl-30 {
+  padding-left: 30px;
+}

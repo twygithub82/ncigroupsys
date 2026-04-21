@@ -164,6 +164,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   }
 
   clean_statusList: CodeValuesItem[] = [];

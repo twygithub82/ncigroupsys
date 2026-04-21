@@ -97,7 +97,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
-  isMobile:boolean=false;
+  isMobile: boolean = false;
+  isDirty: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -222,14 +223,30 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   createTariffLabour(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItem: this.selectedItem,
       action: this.action,
-      description: this.selectedItem.description,
-      cost: this.selectedItem.cost,
-      remarks: this.selectedItem.remarks,
-
+      description: this.selectedItem?.description,
+      cost: this.selectedItem?.cost,
+      remarks: this.selectedItem?.remarks,
     });
+
+    // local init flag (no need to store on group anymore)
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;   // 🔥 global flag
+      }
+    });
+
+    // delay initialization (500ms)
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, 500);
+
+    return group;
   }
 
 
@@ -451,9 +468,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
-    getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
 }

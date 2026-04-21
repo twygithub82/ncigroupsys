@@ -438,7 +438,7 @@ export class PackageExclusiveSteamingCostExcelComponent extends UnsubscribeOnDes
           index+1,
           itm.package_steaming?.customer_company?.name || "-",
           itm.tariff_cleaning?.cargo || "-",
-          itm.temp_min || "-",
+          itm.temp_min || 0,
           itm.temp_max  || "-",
           this.parse2Decimal(itm.package_steaming?.cost!) || "-",
           this.parse2Decimal(itm.package_steaming?.labour!) || "-",

@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h4>{{dialogTitle}}</h4>
@@ -22,7 +22,7 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <div class="responsive_table">
-            <table mat-table [dataSource]="tariffRepairFilteredList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+            <table mat-table [dataSource]="tariffRepairFilteredList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
               <!-- ID Column -->
               <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef ></mat-header-cell>
@@ -44,23 +44,33 @@
                   <span class="mobile-label">{{data.translatedLangText.DIMENSION}}:</span>{{row.dimension}}
                 </mat-cell>
               </ng-container>
-              <ng-container matColumnDef="length">
-                <mat-header-cell *matHeaderCellDef >
+              <ng-container matColumnDef="length" >
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-center'">
                   {{data.translatedLangText.LENGTH}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
                   <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.length}}{{getUnitTypeDescription(row.length_unit_cv)}}
                 </mat-cell>
               </ng-container>
-              <ng-container matColumnDef="material_cost">
-                <mat-header-cell *matHeaderCellDef >
-                  {{data.translatedLangText.MATERIAL_COST}}
+               <ng-container matColumnDef="labour">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                  {{data.translatedLangText.LABOUR}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                  <span class="mobile-label">{{data.translatedLangText.LABOUR}}:</span>{{row.labour_hour}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="material_cost">
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
+                  {{data.translatedLangText.MATERIAL_COST}} $
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
                   <span class="mobile-label">{{data.translatedLangText.MATERIAL_COST}}:</span>
-                  <div class="cost-label">
-                    <span>$</span><span>{{row.material_cost | number: '1.2-2'}}</span>
-                  </div>
+                  <!-- <div class="cost-label jutify-content-center"> -->
+                    <!--<span>$</span><span>{{row.material_cost | number: '1.2-2'}}</span>-->
+                    <!-- $ {{row.material_cost | number: '1.2-2'}} -->
+                    {{row.material_cost | number: '1.2-2'}}
+                  <!-- </div> -->
                 </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

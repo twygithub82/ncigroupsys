@@ -22,7 +22,7 @@
                 } -->
                 @if (pcForm.get('name')?.hasError('existed')) {
                 <mat-error>
-                  {{langText.CATEGORY_NAME | translate}}: {{langText.EXISTED | translate}}
+                  {{translatedLangText.RECORD_EXISTS | translate}}
                 </mat-error>
                 }
               </mat-form-field>
@@ -50,7 +50,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">
+        <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="!isDirty">
           <mat-icon>save</mat-icon>
           {{GetButtonCaption()}}</button>
         }

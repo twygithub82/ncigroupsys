@@ -80,7 +80,7 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center extra-left-padding'"
+                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_CODE
                       }}</mat-header-cell>
                     <mat-cell
@@ -151,7 +151,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 mt-2 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">
+        <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="!isDirty">
           <mat-icon>
             save
           </mat-icon>

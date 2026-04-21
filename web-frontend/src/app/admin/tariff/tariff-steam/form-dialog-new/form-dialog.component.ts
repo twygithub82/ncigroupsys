@@ -89,6 +89,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -197,9 +198,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
     RANGE: 'COMMON-FORM.RANGE',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   };
   unit_type_control = new UntypedFormControl();
-  isMobile:boolean=false;
+  isMobile: boolean = false;
   selectedItem: TariffSteamingItem;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
@@ -228,8 +230,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.pcForm.get('cost')?.disable();
       this.pcForm.get('remarks')?.disable();
     }
-    this.isMobile=Utility.isMobile();
-    
+    this.isMobile = Utility.isMobile();
+
   }
 
   patchTariffSteam(row: TariffSteamingItem) {
@@ -245,17 +247,35 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   createTariffSteam(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItem: null,
-      action: "new",
+      action: 'new',
       min_temp: ['', [Validators.required]],
       max_temp: [''],
       labour: [''],
       cost: [''],
       remarks: ['']
+    }, {
+      validators: tempRangeValidator
+    });
 
-    },
-      { validators: tempRangeValidator });
+    // local init flag
+    let isInitialized = false;
+
+    // listen to changes
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    // delay init (500ms)
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, 500);
+
+    return group;
   }
 
   public InitValueChanges() {
@@ -299,12 +319,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
-     this.pcForm?.get('cost')?.setErrors(null);
-      this.pcForm?.get('labour')?.setErrors(null);
+    this.pcForm?.get('cost')?.setErrors(null);
+    this.pcForm?.get('labour')?.setErrors(null);
 
-     if(this.pcForm?.get('cost')?.value ) {
-      
-    
+    if (this.pcForm?.get('cost')?.value) {
+
+
       if (this.pcForm?.get('cost')?.value <= 0) {
         this.pcForm?.get('cost')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
@@ -312,10 +332,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     }
 
-     if(this.pcForm?.get('labour')?.value ) {
-      
-    
-      if (this.pcForm?.get('labour')?.value <=0) {
+    if (this.pcForm?.get('labour')?.value) {
+
+
+      if (this.pcForm?.get('labour')?.value <= 0) {
         this.pcForm?.get('labour')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
         return;
@@ -356,12 +376,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   update() {
-     this.pcForm?.get('cost')?.setErrors(null);
-      this.pcForm?.get('labour')?.setErrors(null);
+    this.pcForm?.get('cost')?.setErrors(null);
+    this.pcForm?.get('labour')?.setErrors(null);
 
-     if(this.pcForm?.get('cost')?.value ) {
-      
-    
+    if (this.pcForm?.get('cost')?.value) {
+
+
       if (this.pcForm?.get('cost')?.value <= 0) {
         this.pcForm?.get('cost')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
@@ -369,10 +389,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     }
 
-     if(this.pcForm?.get('labour')?.value ) {
-      
-    
-      if (this.pcForm?.get('labour')?.value <=0) {
+    if (this.pcForm?.get('labour')?.value) {
+
+
+      if (this.pcForm?.get('labour')?.value <= 0) {
         this.pcForm?.get('labour')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
         return;
@@ -470,13 +490,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_ADD']);
   }
 
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
-    isEdit()
-    {
-      return this.action === 'edit';
-    }
+  isEdit() {
+    return this.action === 'edit';
+  }
 }

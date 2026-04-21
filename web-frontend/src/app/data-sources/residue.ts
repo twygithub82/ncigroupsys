@@ -1047,7 +1047,8 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canApprove(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
-    const validStatus = ['PENDING', 'APPROVED']
+    // const validStatus = ['PENDING', 'APPROVED']
+    const validStatus = ['PENDING']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 

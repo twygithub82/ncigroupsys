@@ -93,7 +93,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   isMobile: boolean=false;
   langText = {
@@ -204,7 +204,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createPackageCleaning(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500; // interval variable
+
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       preinspection_cost_cust: [],
       lolo_cost_cust: [],
@@ -221,6 +224,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       gate_out_cost_standard: [],
       profile_name: this.profileNameControl,
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   profileChanged() {

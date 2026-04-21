@@ -201,6 +201,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
     CURRENCY: 'COMMON-FORM.CURRENCY',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     POSTAL_CODE: "COMMON-FORM.POSTAL-CODE",
+    TYPE: "COMMON-FORM.TYPE",
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -442,6 +443,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
         index + 1,
         item.code || "-",
         item.name || "-",
+        item.customer_type || "-",
         item.default_profile_name || "-",
         item.currency?.currency_code || "-",
         item.country || "-",
@@ -450,6 +452,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
         item.postal || "-",
         item.email || "-",
         item.phone || "-",
+        item.remarks || "-",
         this.displayLastUpdated(item)
       ];
       return row;
@@ -459,6 +462,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
       this.translatedLangText.S_N,
       this.translatedLangText.CODE,
       this.translatedLangText.CUSTOMER_COMPANY_NAME,
+      this.translatedLangText.TYPE,
       this.translatedLangText.DEFAULT_PROFILE,
       this.translatedLangText.CURRENCY,
       this.translatedLangText.COUNTRY,
@@ -467,6 +471,7 @@ export class CustomerExcelComponent extends UnsubscribeOnDestroyAdapter implemen
       this.translatedLangText.POSTAL_CODE,
       this.translatedLangText.EMAIL,
       this.translatedLangText.CONTACT_NO,
+      this.translatedLangText.REMARKS,
       this.translatedLangText.LAST_UPDATED
     ]];
 

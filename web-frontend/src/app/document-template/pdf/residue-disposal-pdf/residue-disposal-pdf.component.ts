@@ -172,6 +172,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     RESIDUE_DISPOSAL_ESTIMATE: 'COMMON-FORM.RESIDUE-DISPOSAL-ESTIMATE',
     APPROVED: 'COMMON-FORM.APPROVED',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    NO_ACTION:'COMMON-FORM.NO-ACTION',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -233,7 +235,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.RESIDUE_DISPOSAL_ESTIMATE;
+   
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
@@ -249,6 +251,13 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       this.updateData(this.residueItem?.residue_part);
 
       this.cdr.detectChanges();
+      
+      this.pdfTitle = this.getReportTitle();
+      // if(this.isNoActionEst())
+      // {
+      //   this.pdfTitle += `(${this.translatedLangText.NO_ACTION})` ; 
+      // }
+      
     }
 
     this.generatePDF();
@@ -608,7 +617,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },
@@ -650,11 +659,18 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var repData: RowInput[] = [];
     var items = this.residuePartList;
     const grpFontSz = 7;
+    var isNoActionEst=this.isNoActionEst();
     items?.forEach((item, index) => {
       repData.push([
         item.index + 1, item.description, `${item.quantity} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
-        this.parse2Decimal(item.quantity * item.cost), this.parse2Decimal(item.approve_cost)]);
+        this.parse2Decimal(item.quantity * item.cost), isNoActionEst?0:this.parse2Decimal(item.approve_cost)]);
     });
+
+    //   items?.forEach((item, index) => {
+    //   repData.push([
+    //     item.index + 1, item.description, `${item.quantity} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
+    //     this.parse2Decimal(item.quantity * item.cost), this.parse2Decimal(item.approve_cost)]);
+    // });
 
     autoTable(pdf, {
       head: headers,
@@ -744,7 +760,12 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   getReportTitle() {
-    return this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
+    var title: string = this.translatedLangText.RESIDUE_DISPOSAL_ESTIMATE;
+    if(this.isNoActionEst())
+      {
+        // title += ` (${this.translatedLangText.NO_ACTION})` ; 
+      }
+    return title;
   }
 
   async exportToPDF_r2(fileName: string = 'document.pdf') {
@@ -776,14 +797,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     const reportTitle = '';
 
-    // const headers = [[
-    //   this.translatedLangText.NO,
-    //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-    //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-    //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-    //   this.translatedLangText.PROCEDURE
-    // ]];
-
+    
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
@@ -815,10 +829,14 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     let startY = 0; // Start table 20mm below the customer name
     var item = this.residueItem;
     var cc = item.storing_order_tank?.storing_order?.customer_company;
-
+    // var isNoActionEst = this.isNoActionEst();
+    // if(isNoActionEst){
+    //   this.pdfTitle += ` (${this.translatedLangText.NO_ACTION})` ;
+    // }
      startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
        this.translate, this.pdfTitle, '');
        startY +=  6;
+
     // startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin, leftMargin, rightMargin, this.translate, cc);
 
@@ -916,7 +934,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },
@@ -959,11 +977,19 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const grpFontSz = 7;
     var estTotalCost = 0;
     var rightPadding_cost = 5;
+    var isNoActionEst = this.isNoActionEst();
     items?.forEach((item, index) => {
       // if(item.approve_part)
       // {
       item.approve_part = item.approve_part ?? true;
-      if (!item.approve_part) return;
+
+      // if (!item.approve_part) 
+      // {
+      //   if (!isNoActionEst)
+      //   {  
+      //     return;
+      //   }
+      // }
       var qty = item.quantity;
       var cost = item.cost;
       var app = (item.approve_part) ? "O" : "X";
@@ -972,6 +998,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         cost = item.approve_cost;
       }
       var totalCost = qty * cost;
+      if(isNoActionEst || !item.approve_part)totalCost=0;
       if (item.approve_part) estTotalCost += totalCost;
       repData.push([
         (++index), item.description, `${qty} ${item.qty_unit_type_cv}`,
@@ -979,6 +1006,13 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         { content: `${this.parse2Decimal(totalCost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost } } }
         //, app
       ]);
+
+      // repData.push([
+      //   (++index), item.description, `${qty} ${item.qty_unit_type_cv}`,
+      //   { content: `${this.parse2Decimal(cost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost - 1 } } },
+      //   { content: `${this.parse2Decimal(totalCost)}`, styles: { halign: 'right', valign: 'middle', cellPadding: { right: rightPadding_cost } } }
+      //   //, app
+      // ]);
       // }
     });
 
@@ -1129,7 +1163,15 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
   getPdfFileName(): string {
     var fileName = `${this.residueItem.storing_order_tank.tank_no} (${this.estimate_no!}).pdf`;
-
+    var isNoActionEst=this.isNoActionEst();
+    if(isNoActionEst)
+    {
+      // fileName = `${this.residueItem.storing_order_tank.tank_no} (${this.estimate_no!}) (${this.translatedLangText.NO_ACTION}).pdf`; 
+    }
     return fileName;
+  }
+  isNoActionEst()
+  {
+    return this.residueItem.status_cv == "NO_ACTION";
   }
 }

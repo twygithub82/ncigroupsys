@@ -22,7 +22,7 @@
                       } -->
                 @if (pcForm.get('description')?.hasError('existed')) {
                 <mat-error>
-                  {{translatedLangText.DESCRIPTION}} {{translatedLangText.EXISTED}}
+                  {{translatedLangText.RECORD_EXISTS}}
                 </mat-error>
                 }
               </mat-form-field>
@@ -30,7 +30,8 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.DURATION}}</mat-label>
-                <input matInput formControlName="duration" type="number" min="0" required>
+                <input matInput formControlName="duration" type="number" min="0" step="1"  (input)="limitLength($event)"
+                  (keydown)="blockDecimal($event)" [allowDecimal]="false" required>
                 <!-- @if (pcForm.get('duration')?.hasError('required')) {
                     <mat-error>
                       {{langText.DURATION | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -43,7 +44,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">
+        <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="!isDirty">
           <mat-icon>
             save
           </mat-icon>

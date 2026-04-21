@@ -210,6 +210,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -217,7 +218,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   UpdateInProgress: boolean = false;
   selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
-
+  isDirty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -271,7 +272,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   createPackageRepair(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 1000;
+
+    const group = this.fb.group({
       action: this.action,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
@@ -281,14 +285,27 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       length: this.lengthControl,
       material_cost_percentage: [''],
       labour_hour_percentage: [''],
-    },
-      {
-        validators: this.atLeastOneRequiredValidator(
-          'material_cost_percentage',
-          'labour_hour_percentage'
-        )
+    }, {
+      validators: this.atLeastOneRequiredValidator(
+        'material_cost_percentage',
+        'labour_hour_percentage'
+      )
+    });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
       }
-    );
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   displayPartNameFn(tr: string): string {
@@ -300,7 +317,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   GetTitle() {
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
+    // return this.translatedLangText.EDIT + " " + this.translatedLangText.MATERIAL_COST;
+    return this.translatedLangText.GROUP_ADJUSTMENT;
   }
 
   translateLangText() {
@@ -553,6 +571,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   update() {
     // this.DisableValidator('material_cost_percentage');
     // this.DisableValidator('labour_hour_percentage');
+
 
     if (!this.pcForm?.valid) return;
 

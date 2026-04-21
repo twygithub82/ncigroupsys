@@ -100,6 +100,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   isMobile: boolean = false;
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -239,13 +240,30 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createPackageRepair(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       material_cost: [],
       labour_hour: [],
       remarks: [''],
-
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
 

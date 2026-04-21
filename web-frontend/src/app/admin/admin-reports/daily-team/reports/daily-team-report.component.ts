@@ -343,9 +343,6 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'repairTypeCv', codeValType: 'REPAIR_OPTION' },
     ];
     this.cvDS.getCodeValuesByType(queries);

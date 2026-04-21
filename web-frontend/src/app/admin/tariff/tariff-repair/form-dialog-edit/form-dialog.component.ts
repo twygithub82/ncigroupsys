@@ -115,8 +115,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
   isMobile = false;
-  isSubGroupEmpty=false;
-
+  isSubGroupEmpty = false;
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -232,7 +232,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   };
   unit_type_control = new UntypedFormControl();
   minPercentage = -100;
-  maxPercentage=100;
+  maxPercentage = 100;
   unitTypeChangedEventUnsub: boolean = false;
   selectedItems: TariffRepairItem[];
   atLeastOneRequired = (field1: string, field2: string): ValidatorFn => {
@@ -328,14 +328,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   createTarifRepair(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       action: this.action,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
       part_name: [''],
-      alias: ({ value: '', disabled: true }),
-      dimension: ({ value: '', disabled: true }),
+      alias: this.fb.control({ value: '', disabled: true }),
+      dimension: this.fb.control({ value: '', disabled: true }),
       height_diameter: [''],
       height_diameter_unit_cv: this.heightDiameterUnitControl,
       width_diameter: [''],
@@ -347,6 +347,25 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       labour_hour: [''],
       material_cost: [''],
     });
+
+    // init flag
+    let isInitialized = false;
+
+    // monitor changes
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    var interval =1000;
+    // mark init complete after setup
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, interval);
+
+    return group;
   }
 
   GetButtonCaption() {
@@ -417,10 +436,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       var aliasName = value?.child_code;
       if (aliasName === undefined) return;
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
-      
+
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
-        this.isSubGroupEmpty= data.length == 0;
+        this.isSubGroupEmpty = data.length == 0;
         data = [...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
         if (this.selectedItems.length == 1) {
@@ -490,7 +509,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   update() {
     let update = true;
-    
+
     if (this.isMultiSelect() && !this.pcForm?.get('labour_hour')?.value && !this.pcForm?.get('material_cost')?.value) {
       // this.pcForm?.get('labour_hour')?.setErrors({ required: true });
       // this.pcForm?.get('material_cost')?.setErrors({ required: true });
@@ -507,20 +526,20 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    if(this.pcForm?.get('material_cost')?.value && this.isMultiSelect() ) {
-      
-    
-      if (this.pcForm?.get('material_cost')?.value < this.minPercentage ||this.pcForm?.get('material_cost')?.value > this.maxPercentage) {
+    if (this.pcForm?.get('material_cost')?.value && this.isMultiSelect()) {
+
+
+      if (this.pcForm?.get('material_cost')?.value < this.minPercentage || this.pcForm?.get('material_cost')?.value > this.maxPercentage) {
         this.pcForm?.get('material_cost')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
         return;
       }
     }
 
-     if(this.pcForm?.get('labour_hour')?.value && this.isMultiSelect()) {
-      
-    
-      if (this.pcForm?.get('labour_hour')?.value < this.minPercentage ||this.pcForm?.get('material_cost')?.value > this.maxPercentage) {
+    if (this.pcForm?.get('labour_hour')?.value && this.isMultiSelect()) {
+
+
+      if (this.pcForm?.get('labour_hour')?.value < this.minPercentage || this.pcForm?.get('material_cost')?.value > this.maxPercentage) {
         this.pcForm?.get('labour_hour')?.setErrors({ invalid: true });
         this.markFormGroupTouched(this.pcForm);
         return;

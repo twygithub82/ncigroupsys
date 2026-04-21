@@ -79,17 +79,18 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   index?: number;
   dialogTitle?: string;
 
-  
+
   currencyDS: CurrencyDS;
 
   tnkItems?: TankItem[] = [];
-  isMobile: boolean=false;
+  isMobile: boolean = false;
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -178,11 +179,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     CURRENCY: 'COMMON-FORM.CURRENCY',
-    CODE:'COMMON-FORM.CODE',
-    RATE:'COMMON-FORM.RATE',
-    SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
-    SAVE:'COMMON-FORM.SAVE',
-    VALUE_ZERO:'COMMON-FORM.VALUE-ZERO',
+    CODE: 'COMMON-FORM.CODE',
+    RATE: 'COMMON-FORM.RATE',
+    SYSTEM_CURRENCY: 'COMMON-FORM.SYSTEM-CURRENCY',
+    SAVE: 'COMMON-FORM.SAVE',
+    VALUE_ZERO: 'COMMON-FORM.VALUE-ZERO',
+
   };
   unit_type_control = new UntypedFormControl();
 
@@ -220,7 +222,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   ngOnInit() {
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     // if (!this.canEdit()) {
     //   this.pcForm?.get('code')?.disable()
     //   this.pcForm?.get('description')?.disable()
@@ -236,31 +238,37 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   createCurrencyForm(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItem: this.selectedItem,
       action: this.action,
-      code: this.selectedItem?.currency_code??[''],
-      description: this.selectedItem?.currency_name??[''],
-      rate: [this.selectedItem?.rate??[''], [Validators.required, positiveNumberValidator()]],
-     last_updated: ['']
+      code: [this.selectedItem?.currency_code ?? ''],
+      description: [this.selectedItem?.currency_name ?? ''],
+      rate: [
+        this.selectedItem?.rate ?? '',
+        [Validators.required, positiveNumberValidator()]
+      ],
+      last_updated: ['']
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
-  // createTariffDepot(): UntypedFormGroup {
-  //   return this.fb.group({
-  //     selectedItem: this.selectedItem,
-  //     action: this.action,
-  //     name: this.selectedItem.profile_name,
-  //     description: this.selectedItem.description,
-  //     preinspection_cost: this.selectedItem.preinspection_cost,
-  //     lolo_cost: this.selectedItem.lolo_cost,
-  //     storage_cost: this.selectedItem.storage_cost,
-  //     free_storage: this.selectedItem.free_storage,
-  //     gate_in_cost: this.selectedItem.gate_in_cost,
-  //     gate_out_cost: this.selectedItem.gate_out_cost,
-  //     unit_types: this.unit_type_control,
-  //     last_updated: ['']
-  //   });
-  // }
+
 
   GetButtonCaption() {
     return this.translatedLangText.CANCEL;
@@ -268,7 +276,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
   GetTitle() {
     var title = this.translatedLangText.EDIT + " " + this.translatedLangText.CURRENCY;
-    if(this.isNew())title=this.translatedLangText.NEW + " " + this.translatedLangText.CURRENCY;
+    if (this.isNew()) title = this.translatedLangText.NEW + " " + this.translatedLangText.CURRENCY;
     return title;
   }
 
@@ -293,55 +301,52 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   update() {
     if (!this.pcForm?.valid) return;
 
-    if(this.isNew())
-    {
+    if (this.isNew()) {
       this.addCurrencyRate();
     }
-    else
-    {
+    else {
       this.updateCurrencyRate();
     }
 
-   
+
   }
 
-  async addCurrencyRate(){
+  async addCurrencyRate() {
 
     const dup: boolean = await this.checkDuplication();
     if (dup) {
       this.pcForm?.get("code")?.setErrors({ duplicated: true });
       return;
     }
-    var newCurrency= new CurrencyItem();
-    newCurrency.currency_code=this.pcForm?.value['code'];
-    newCurrency.currency_name=this.pcForm?.value['description'];
-    newCurrency.rate=Number(this.pcForm?.value['rate']);
+    var newCurrency = new CurrencyItem();
+    newCurrency.currency_code = this.pcForm?.value['code'];
+    newCurrency.currency_name = this.pcForm?.value['description'];
+    newCurrency.rate = Number(this.pcForm?.value['rate']);
     this.currencyDS.addCurrency([newCurrency]).subscribe(result => {
       this.handleSaveSuccess(result?.data?.addCurrency);
     });
   }
 
   async checkDuplication(): Promise<boolean> {
-     var retval: boolean = false;
-        
-       const code = `${this.pcForm?.get("code")?.value}`;
-        const where: any = {};
-        where.and = [
-          {currency_code : { eq: `${code}` }},
-          {is_active : { eq: true }}
-        ];
-        const data = await firstValueFrom(this.currencyDS!.search(where));
-        if (data.length > 0) {
-            retval = true;
-        }
-        return retval;
+    var retval: boolean = false;
+
+    const code = `${this.pcForm?.get("code")?.value}`;
+    const where: any = {};
+    where.and = [
+      { currency_code: { eq: `${code}` } },
+      { is_active: { eq: true } }
+    ];
+    const data = await firstValueFrom(this.currencyDS!.search(where));
+    if (data.length > 0) {
+      retval = true;
+    }
+    return retval;
   }
-  updateCurrencyRate()
-  {
-    var updateCurrency= new CurrencyItem(this.selectedItem);
-       updateCurrency.currency_code=this.pcForm?.value['code'];
-    updateCurrency.currency_name=this.pcForm?.value['description'];
-    updateCurrency.rate=Number(this.pcForm?.value['rate']);
+  updateCurrencyRate() {
+    var updateCurrency = new CurrencyItem(this.selectedItem);
+    updateCurrency.currency_code = this.pcForm?.value['code'];
+    updateCurrency.currency_name = this.pcForm?.value['description'];
+    updateCurrency.rate = Number(this.pcForm?.value['rate']);
     this.currencyDS.updateCurrency(updateCurrency).subscribe(result => {
       this.handleSaveSuccess(result?.data?.updateCurrency);
     });
@@ -366,12 +371,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
 
   displayLastUpdated(r: TariffDepotItem) {
-     const epoch =
-    r.update_dt ??
-    r.create_dt ??
-    Math.floor(Date.now() / 1000); // current Unix timestamp (seconds)
+    const epoch =
+      r.update_dt ??
+      r.create_dt ??
+      Math.floor(Date.now() / 1000); // current Unix timestamp (seconds)
 
-  return Utility.convertEpochToDateStr(epoch);
+    return Utility.convertEpochToDateStr(epoch);
   }
 
   onAlphaNumericWithSpace(event: Event, controlName: string): void {
@@ -397,45 +402,44 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   isAllowEdit() {
     return this.action !== "new";
   }
-  isAllowSave(){
+  isAllowSave() {
     return true;
   }
 
-  isNew()
-  {
+  isNew() {
     const retval = this.action === "new";
     return retval;
   }
   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    const centerClass = Padding ? 'px-3' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
   toUppercase(event: Event) {
-  const input = event.target as HTMLInputElement;
-  input.value = input.value.toUpperCase();
-  this.pcForm.get('code')?.setValue(input.value, { emitEvent: false });
-}
-    
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.toUpperCase();
+    this.pcForm.get('code')?.setValue(input.value, { emitEvent: false });
+  }
+
 
 }
 
 export function positiveNumberValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
-    
+
     // Check if value is empty (let required validator handle that)
     if (value === null || value === undefined || value === '') {
       return null;
     }
-    
+
     // Parse the value as a number
     const numValue = parseFloat(value);
-    
+
     // Check if it's a valid number and greater than 0
     if (isNaN(numValue) || numValue <= 0) {
       return { 'positiveNumber': true };
     }
-    
+
     return null;
   };
 }

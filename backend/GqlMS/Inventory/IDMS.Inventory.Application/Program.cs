@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using HotChocolate.Data;
 using HotChocolate.Types.Pagination;
 using IDMS.Booking.GqlTypes;
@@ -62,27 +62,37 @@ namespace IDMS.Inventory
                     o.EnableSensitiveDataLogging(false);
                 });
 
+                //var mappingConfig = new MapperConfiguration(cfg =>
+                //{
+
+                //    cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
+                //        .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                //    cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
+                //        .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                //    cfg.CreateMap<StoringOrderTankRequest, storing_order_tank>();
+                //    cfg.CreateMap<StoringOrderRequest, storing_order>();
+
+                //    //cfg.CreateMap<tank_info, tank_info>()
+                //    //    .ForMember(dest => dest.storing_order_tank, opt => opt.Ignore())
+                //    //    .ForMember(dest => dest.guid, opt => opt.Ignore())
+                //    //    .ForMember(dest => dest.create_dt, opt => opt.Ignore())
+                //    //    .ForMember(dest => dest.create_by, opt => opt.Ignore());
+                //});
+
+
+
+                var loggerFactory = LoggerFactory.Create(builder => { });
                 var mappingConfig = new MapperConfiguration(cfg =>
                 {
+                    cfg.AddProfile<MapperProfile>();
+                }, loggerFactory);
 
-                    cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
-                        .ForMember(dest => dest.guid, opt => opt.Ignore());
-
-                    cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
-                        .ForMember(dest => dest.guid, opt => opt.Ignore());
-
-                    cfg.CreateMap<StoringOrderTankRequest, storing_order_tank>();
-                    cfg.CreateMap<StoringOrderRequest, storing_order>();
-
-                    cfg.CreateMap<tank_info, tank_info>()
-                        .ForMember(dest => dest.storing_order_tank, opt => opt.Ignore())
-                        .ForMember(dest => dest.guid, opt => opt.Ignore())
-                        .ForMember(dest => dest.create_dt, opt => opt.Ignore())
-                        .ForMember(dest => dest.create_by, opt => opt.Ignore());
-                });
-
-                IMapper mapper = mappingConfig.CreateMapper();
+                //mappingConfig.AssertConfigurationIsValid();
+                IMapper mapper = mappingConfig.CreateMapper();    
                 builder.Services.AddSingleton(mapper);
+
                 //builder.Services.AddHostedService<DbKeepAliveService>();
                 builder.Services.AddHostedService<KeepAliveService>();
                 //builder.Services.AddControllers();

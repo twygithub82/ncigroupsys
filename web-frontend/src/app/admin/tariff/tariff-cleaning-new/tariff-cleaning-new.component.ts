@@ -42,6 +42,7 @@ import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'r
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 
 @Component({
@@ -75,7 +76,8 @@ import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dial
     MatDividerModule,
     MatMenuModule,
     HttpClientModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective,
   ]
 })
 
@@ -243,6 +245,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   trfCleaningSubmitting: boolean = false;
 
   isMobile: boolean = false;
+  isDirty: boolean = false;
+  isInitialized: any;
 
   constructor(
     public httpClient: HttpClient,
@@ -268,6 +272,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.selectedFileLoading = new BehaviorSubject<boolean>(false);
     this.submitForSaving = new BehaviorSubject<boolean>(false);
+    this.isDirty = false;
   }
 
   initializeValueChanges() {
@@ -293,6 +298,28 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         // });
       })
     ).subscribe();
+
+    this.tcForm?.get('flash_point')?.valueChanges.subscribe(val => {
+      const control = this.tcForm?.get('flash_point');
+
+      if (val && !/^[-]?\d*\.?\d*$/.test(val)) {
+        control?.setValue(val.slice(0, -1), { emitEvent: false });
+        return;
+      }
+
+      const num = Number(val);
+
+      if (!isNaN(num)) {
+        const min = -500;
+        const max = 500;
+
+        if (num < min) {
+          control?.setValue(min, { emitEvent: false });
+        } else if (num > max) {
+          control?.setValue(max, { emitEvent: false });
+        }
+      }
+    });
   }
 
 
@@ -317,6 +344,18 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
       remarks: ['']
     });
+
+    this.tcForm.valueChanges.subscribe(() => {
+    if (this.isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  // After all initial values / patchValue done
+  setTimeout(() => {
+    this.isInitialized = true;
+  },1000);
+
     // this.classNoControl.setValue("NA");
   }
 
@@ -382,7 +421,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
 
-      this.hazardLevelCvList =  [...data].sort((a: any, b: any) =>
+      this.hazardLevelCvList = [...data].sort((a: any, b: any) =>
         (a.description || '').localeCompare(b.description || '')
       );
 
@@ -418,21 +457,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
           this.initializeValueChanges();
           this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-            // if (value && !value.startsWith(this.prefix) && value != '-') {
-            //   // Remove existing prefix before adding a new one
-            //   const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-            //   if (numericPart && !isNaN(Number(numericPart))) {
-            //     const newValue = this.prefix + value.replace(this.prefix, '');
-            //     this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-            //   }
-            // }
+            
             this.CheckUnNoValidity();
           });
           this.CheckUnNoValidity();
+          
         }
       });
     } else {
       this.initializeValueChanges();
+       
     }
 
     if (!this.canEdit()) {
@@ -452,6 +486,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.hazardLevelControl.disable();
       this.banTypeControl.disable();
       this.openGateControl.disable();
+      
     }
   }
 
@@ -663,7 +698,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         if (result.selectedValue) {
           this.tcForm!.patchValue({
             class_no: result.selectedValue,
+
           });
+          if (this.isReadonlyUNNo()) {
+            this.tcForm!.patchValue({
+              un_no: '',
+
+            });
+          }
         }
       }
     });
@@ -880,6 +922,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
+    this.tcForm?.get("cargo_name")?.setErrors({ required: true });
     const dialogRef = this.dialog.open(ErrorDialogComponent, {
       //width: '380px',
       //autoFocus: false,
@@ -923,6 +966,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     const centerClass = Padding ? 'mx-3' : '';
     return `${baseClasses} ${centerClass}`.trim();
   }
+
+  isReadonlyUNNo() {
+    var clsNo = this.tcForm?.get("class_no")?.value || '';
+    if (clsNo?.trim() === "NA") return true;
+    else return false;
+  }
+
+
 
 }
 

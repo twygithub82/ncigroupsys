@@ -373,12 +373,8 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
 
   public loadData(dataDlg: DialogData) {
     const queries = [
-      //{ alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      //{ alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
       { alias: 'surveyStatusCv', codeValType: 'SURVEY_STATUS' },
-      // { alias: 'yardCv', codeValType: 'YARD' },
-      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
