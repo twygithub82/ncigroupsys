@@ -170,8 +170,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     'PENDING',
     // 'COMPLETED',
     // 'NO_ACTION',
-    // 'ASSIGNED',
-    // 'PARTIAL_ASSIGNED',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
   ]
   searchForm?: UntypedFormGroup;
 
