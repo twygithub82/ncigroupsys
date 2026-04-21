@@ -190,6 +190,7 @@ export class FormDialogComponent {
     TYPE: 'COMMON-FORM.TYPE'
   };
   selectedItems: PackageBufferItem[] = [];
+  isDirty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -224,12 +225,27 @@ export class FormDialogComponent {
   }
 
   createPackageLabour(): UntypedFormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       selectedItems: this.selectedItems,
       adjusted_cost: [''],
       standard_cost: ['-'],
       remarks: ['']
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+   const msInterval = 500;
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, msInterval);
+
+    return group;
   }
 
   translateLangText() {

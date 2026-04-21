@@ -31,7 +31,7 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirSubject_InGate(string tankNumber)
         {
-            return $"EIR IN_Tank no: {tankNumber}_Photos";
+            return $"EIR IN_Tank Number: {tankNumber}_Photos";
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirSubject_OutGate(string tankNumber)
         {
-            return $"EIR OUT_Tank no: {tankNumber}_Photos";
+            return $"EIR OUT_Tank Number: {tankNumber}_Photos";
         }
 
         public static string GetTankActivitySubject(string customerName)

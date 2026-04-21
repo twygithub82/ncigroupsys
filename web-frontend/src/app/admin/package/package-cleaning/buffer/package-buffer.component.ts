@@ -485,11 +485,19 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       where.cost = { eq: selectedCost }
     }
 
-    if (this.pcForm?.get('profile_name')?.value) {
-      const tariffBuffer: any = {}
-      tariffBuffer.buffer_type = { eq: this.pcForm?.get('profile_name')?.value }
+    const profileNames = this.pcForm?.get('profile_name')?.value;
+
+    if (Array.isArray(profileNames) && profileNames.length > 0 && !profileNames.includes('ALL')) {
+      const tariffBuffer: any = {};
+      tariffBuffer.buffer_type = { in: profileNames }; // use 'in' since it's an array
       where.tariff_buffer = tariffBuffer;
     }
+
+    // if (this.pcForm?.get('profile_name')?.value) {
+    //   const tariffBuffer: any = {}
+    //   tariffBuffer.buffer_type = { eq: this.pcForm?.get('profile_name')?.value }
+    //   where.tariff_buffer = tariffBuffer;
+    // }
 
     if (this.pcForm!.value["alias"]) {
       where.customer_company = where.customer_company || {};
@@ -646,7 +654,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
     });
 
-    this.subs.sink = this.tariffBuffDS.QueryTariffBufferForSelect({}, null, 100).subscribe(data => {
+    this.subs.sink = this.tariffBuffDS.QueryTariffBufferForSelect({}, { buffer_type: 'ASC' }, 100).subscribe(data => {
       this.bufferList = data;
     });
   }

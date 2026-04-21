@@ -334,8 +334,6 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
   public loadData() {
     const queries = [
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'repairTypeCv', codeValType: 'REPAIR_OPTION' },
     ];

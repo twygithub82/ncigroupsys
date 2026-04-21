@@ -9,10 +9,12 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="16.1.1" />
 		<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.AspNetCore.Subscriptions" Version="10.5.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />

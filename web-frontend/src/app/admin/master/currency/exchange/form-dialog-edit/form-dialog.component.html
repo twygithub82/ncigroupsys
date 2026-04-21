@@ -50,11 +50,11 @@
                 <mat-label>{{translatedLangText.RATE }}</mat-label>
                 <input matInput formControlName="rate" appNumericText type="text" required min="0" #storage_cost
                  #rate (focus)="rate.select()" [allowDecimal]="true" [decimalLimit]="5">
-                 @if (pcForm.get('rate')?.hasError('positiveNumber')) {
+                 <!-- @if (pcForm.get('rate')?.hasError('positiveNumber')) {
                       <mat-error>
                         {{translatedLangText.RATE }} {{translatedLangText.VALUE_ZERO }}
                       </mat-error>
-                      } 
+                      }  -->
               </mat-form-field>
             </div>
             <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
@@ -72,7 +72,7 @@
       <div mat-dialog-actions class="mb-1 align-right">
        <!-- @if(isAllowEdit()) -->
         <!-- { -->
-          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()">
+          <button mat-flat-button color="primary" class="me-1" (click)="update()" [disabled]="!isAllowSave()" [disabled]="!isDirty && !isNew()">
             <mat-icon>
               save
             </mat-icon>

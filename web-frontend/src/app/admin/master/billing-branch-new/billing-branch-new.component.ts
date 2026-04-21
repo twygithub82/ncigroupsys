@@ -234,7 +234,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     SAME: "COMMON-FORM.SAME",
     MIN_3_ALPHA: 'COMMON-FORM.MIN-3-ALPHA',
     ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
-    S_N: 'COMMON-FORM.S_N'
+    S_N: 'COMMON-FORM.S_N',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -275,7 +276,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   curDS: CurrencyDS;
-  tfDepotDS:TariffDepotDS;
+  tfDepotDS: TariffDepotDS;
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
@@ -289,6 +290,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   countryCodesFiltered: any = [];
   isAllowedToChangedMainCustomer: boolean = true;
   isMobile: boolean = false;
+  isDirty: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -308,7 +310,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.curDS = new CurrencyDS(this.apollo);
-    this.tfDepotDS= new TariffDepotDS(this.apollo);
+    this.tfDepotDS = new TariffDepotDS(this.apollo);
 
     this.countryCodes = Utility.getCountryCodes();
     this.countryCodesFiltered = this.countryCodes;
@@ -359,18 +361,21 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initCCForm() {
+
+    const initDelayMs = 1000;
+
     this.ccForm = this.fb.group({
       guid: [''],
       customer_code: this.customerCodeControl,
       branch_code: ['', [
         Validators.required,
-        Validators.minLength(3), // Minimum 3 characters
-        Validators.maxLength(6), // Maximum 6 characters
-        Validators.pattern('^[A-Za-z]+$') // Only alphabets
+        Validators.minLength(3),
+        Validators.maxLength(6),
+        Validators.pattern('^[A-Za-z]+$')
       ]],
       branch_name: [''],
-      country_code: [''], //[DEFAULT_COUNTRY_CODE],
-      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
+      country_code: [''],
+      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
       email: ['', [Validators.required, Validators.email]],
       web: [''],
       currency: [''],
@@ -379,10 +384,23 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       address2: [''],
       postal_code: [''],
       city_name: [''],
-      country: [''], //['Singapore'],
+      country: [''],
       remarks: [''],
       repList: ['']
     });
+
+    let isInitialized = false;
+
+    this.ccForm.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      this.ccForm?.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
   }
 
   patchData(currentBillingBranch: CustomerCompanyItem) {
@@ -503,8 +521,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }
     })
 
-     this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({},{ profile_name: 'ASC' }).subscribe(data=>{
-      this.depotProfileList=data;
+    this.subs.sink = this.tfDepotDS.SearchTariffDepotAll({}, { profile_name: 'ASC' }).subscribe(data => {
+      this.depotProfileList = data;
       if (this.selectedBillingBranch) {
         this.ccForm?.patchValue({
           default_profile: this.getDefaultTank(this.selectedBillingBranch?.def_tank_guid!),
@@ -608,7 +626,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         });
         data.unshift(newItem);
         this.updateData(data);
-
+        this.isDirty = true;
         //this.calculateCostSummary();
       }
     });
@@ -1117,12 +1135,14 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.ccForm?.get('repList')?.setErrors(null);
+    //  this.isDirty=true;
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     event.preventDefault(); // Prevents the form submission
     event.stopPropagation();
     this.deleteItem(row, index);
+    this.isDirty = true;
   }
 
   handleSaveSuccess(count: any) {
@@ -1315,7 +1335,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
                   { name: { contains: searchCriteria } },
                   { code: { contains: searchCriteria } }
                 ]
-              }
+              },
+              { delete_dt: { eq: null } },
+
+
             ]
           },
           { code: 'ASC' }).subscribe(data => {
@@ -1327,7 +1350,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-   getDefaultTank(guid: string): TankItem | undefined {
+  getDefaultTank(guid: string): TankItem | undefined {
     if (this.depotProfileList?.length! > 0) {
       const tnkItm = this.depotProfileList?.filter((x: any) => x.guid === guid).map(item => {
         return item;
@@ -1393,6 +1416,19 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
+  }
+
+  checkBranchCodeExists(): void {
+    const where: any = {};
+    var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
+
+    where.and = [{ code: { eq: customerCode } }, { delete_dt: { eq: null } }]
+    this.ccDS.search(where).subscribe(result => {
+      if (result.length > 0 && this.branch_guid == undefined) {
+        this.ccForm?.get('branch_code')?.setErrors({ existed: true });
+      }
+
+    });
   }
 
    getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,

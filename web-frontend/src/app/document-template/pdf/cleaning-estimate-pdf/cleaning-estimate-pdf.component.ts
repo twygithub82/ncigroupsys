@@ -167,6 +167,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     TOTAL: 'COMMON-FORM.TOTAL',
     CLEANING_ESTIMATE: 'COMMON-FORM.CLEANING-ESTIMATE',
     COST: 'COMMON-FORM.COST',
+    S_N: 'COMMON-FORM.S_N',
   }
 
 
@@ -441,32 +442,6 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   async getCodeValuesData(): Promise<void> {
-    // const queries = [
-    //   { alias: 'yesnoCv', codeValType: 'YES_NO' },
-    //   { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-    //   { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-    //   { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-    //   { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-    //   { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-    //   { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-    // ];
-
-    // await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-    // // Wrap all alias connections in promises
-    // const promises = [
-    //   firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-    //     this.yesnoCvList = data || [];
-    //   }),
-    //   firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-    //     this.soTankStatusCvList = data || [];
-    //   }),
-    // ];
-
-    // // Wait for all promises to resolve
-    // await Promise.all(promises);
   }
 
   chunkArray(array: any[], chunkSize: number): any[][] {
@@ -1096,7 +1071,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 255, lineWidth: 0.0, cellPadding: 2 }
         },

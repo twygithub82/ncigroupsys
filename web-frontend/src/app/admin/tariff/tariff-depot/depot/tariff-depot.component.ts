@@ -625,11 +625,14 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
-    this.tdForm?.patchValue({
-      profile_name: '',
-      description: ''
-    });
+    // this.tdForm?.patchValue({
+    //   profile_name: '',
+    //   description: ''
+    // });
+    this.tdForm?.get('profile_name')?.reset();
+    this.tdForm?.get('description')?.reset();
     this.unit_type_control.reset();
+    
   }
 
   onTabFocused() {

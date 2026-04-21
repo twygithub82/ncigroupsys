@@ -377,39 +377,10 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
   }
 
   public loadData(dataDlg: DialogData) {
-    //   const queries = [
-    //     { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //     { alias: 'yardCv', codeValType: 'YARD' },
-    //     { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-    //     // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-    //     // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-    //     // { alias: 'yardCv', codeValType: 'YARD' },
-    //     // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
-    //   ];
-    //   this.cvDS.getCodeValuesByType(queries);
-    //   this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-    //     if (data.length) {
-    //       this.repairTypeCvList = data;
-    //       // this.report_customer_inventory = dataDlg.report_inventory;
-    //       // this.date = dataDlg.date;
-    //       //this.processHorizontalBarValue(this.report_summary_status);
-    //       //this.processCustomerStatus(this.report_summary_status);
-    //     }
-    //   });
   }
   async getCodeValuesData(): Promise<void> {
     const queries = [
-      // { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      //  { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      // { alias: 'TankStatusCv', codeValType: 'TANK_STATUS' },
-      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      // { alias: 'yardCv', codeValType: 'YARD' },
-      // { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'repairTypeCv', codeValType: 'REPAIR_OPTION' },
-      // { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
 
     await this.cvDS.getCodeValuesByTypeAsync(queries);

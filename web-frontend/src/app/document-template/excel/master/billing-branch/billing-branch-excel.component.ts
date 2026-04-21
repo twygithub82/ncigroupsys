@@ -202,6 +202,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CURRENCY: "COMMON-FORM.CURRENCY",
     POSTAL_CODE: "COMMON-FORM.POSTAL-CODE",
+    
 
   }
 
@@ -416,7 +417,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
 
-  async exportExcel(items: CustomerCompanyItem[]) {
+  async exportExcel(items: any[]) {
     const doc = new jsPDF();
 
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -445,6 +446,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
         item.main_customer_company?.name || "-",
         item.code || "-",
         item.name || "-",
+        item.default_profile_name||"-",
         item.currency?.currency_code || "-",
         item.country || "-",
         item.address_line1 || "-",
@@ -452,6 +454,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
         item.postal || "-",
         item.email || "-",
         item.phone || "-",
+        item.remarks || "-",
         this.displayLastUpdated(item)
       ];
       return row;
@@ -462,6 +465,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
       this.translatedLangText.MAIN_CUSTOMER,
       this.translatedLangText.BRANCH_CODE,
       this.translatedLangText.CUSTOMER_COMPANY_NAME,
+      this.translatedLangText.DEFAULT_PROFILE,
       this.translatedLangText.CURRENCY,
       this.translatedLangText.COUNTRY,
       this.translatedLangText.ADDRESS_1,
@@ -469,6 +473,7 @@ export class BilingBranchExcelComponent extends UnsubscribeOnDestroyAdapter impl
       this.translatedLangText.POSTAL_CODE ,
       this.translatedLangText.EMAIL,
       this.translatedLangText.CONTACT_NO,
+      this.translatedLangText.REMARKS,
       this.translatedLangText.LAST_UPDATED
     ]];
 

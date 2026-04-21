@@ -34,6 +34,7 @@ namespace IDMS.UserAuthentication.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly string _companyName;
         private readonly string _resetUrl;
+        private readonly string _resetEmailSubject;
         private readonly ILogger<UserAuthenticationController> _logger;
 
         public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
@@ -52,6 +53,7 @@ namespace IDMS.UserAuthentication.Controllers
 
             _companyName = _configuration["EmailConfiguration:CompanyName"] ?? "IDMS Support Team";
             _resetUrl = _configuration["ResetLinkConfiguration:Url"] ?? "http://localhost:4200/#/authentication/reset-password";
+            _resetEmailSubject = _configuration["ResetLinkConfiguration:ResetEmailSubject"] ?? "IDMS - Get Back to Your Account";
         }
 
 
@@ -340,7 +342,7 @@ namespace IDMS.UserAuthentication.Controllers
                     messageBody = messageBody.Replace("{{CompanyName}}", WebUtility.HtmlEncode(_companyName));
 
 
-                    var res = await _emailService.SendResetLinkAsync(user.Email, "Reset Password", messageBody);
+                    var res = await _emailService.SendResetLinkAsync(user.Email, _resetEmailSubject, messageBody);
                     if (res)
                         return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password reset request is sent on Email {user.Email}" } });
                     else

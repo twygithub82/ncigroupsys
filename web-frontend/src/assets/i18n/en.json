@@ -982,7 +982,7 @@
     "CONTACT-NO": "Contact No.",
     "CATEGORY": "Category",
     "REPORT-TYPE": "Report Type",
-    "MIN-3-ALPHA": "Min 3 alphabet",
+    "MIN-3-ALPHA": "Minimum 3 Alphabet",
     "ONLY-ALPHA-NUMERIC": "Only alpha numeric",
     "S_N": "S/N",
     "DAMAGED": "Damaged",
@@ -1022,9 +1022,9 @@
     "NEXT-TEST-TYPE-DUE": "Next Test Type",
     "OTHERS": "Others",
     "EMPTY-FORM": "Empty Form",
-    "COMPARTMENT-TYPE-BTM-EMPTY": "Compartment Type (Bottom) not completed",
-    "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) not completed",
-    "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) not completed",
+    "COMPARTMENT-TYPE-BTM-EMPTY": "Compartment Type (Bottom) Not Completed",
+    "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) Not Completed",
+    "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) Not Completed",
     "ARE-YOU-SURE-TO-SUBMIT": "Submit?",
     "ARE-YOU-SURE-TO-SAVE-AND-PUBLISH": "Save & Publish?",
     "NOT-DUE": "Not Due",
@@ -1378,6 +1378,7 @@
     "PACKAGE-LABOUR-COST": "Package - Labour Cost",
     "PACKAGE-REPAIR": "Package - Repair",
     "PACKAGE-STEAMING": "Package - Steaming",
+    "PACKAGE-RESIDUE": "Package - Residue Disposal",
     "PACKAGE-EXCLUSIVE-STEAMING": "Package - Exclusive Steaming",
     "BILLING-BRANCH-LIST": "Billing Branch List",
     "CUSTOMER-LIST": "Customer List",
@@ -1417,7 +1418,9 @@
     "SCAN-QR-THEN-PROCEED": "Scan the QR code and proceed",
     "PROCEED-TO-VERIFY": "Proceed",
     "REGISTER-TOTP": "Register TOTP",
-    "VERIFY-TOTP": "Verify TOTP"
+    "VERIFY-TOTP": "Verify TOTP",
+    "RECORD-EXISTS": "Record Already Exists"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

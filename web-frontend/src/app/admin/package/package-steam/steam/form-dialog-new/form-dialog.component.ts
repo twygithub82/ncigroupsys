@@ -106,6 +106,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+  isDirty: boolean = false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -279,18 +280,34 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
 
   createPackageSteam(): UntypedFormGroup {
-    return this.fb.group({
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
       selectedItem: null,
-      action: "edit",
+      action: 'edit',
       labour: [''],
-      // qty:[''],
       cost: [''],
       remarks: ['']
+    }, {
+      validators: tempRangeValidator
+    });
 
-    },
-      { validators: tempRangeValidator });
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
-
   public InitValueChanges() {
 
     // this.pcForm.get("cost")?.valueChanges.subscribe(data=>{

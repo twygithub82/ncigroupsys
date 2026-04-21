@@ -70,6 +70,7 @@ export class SearchFormDialogComponent {
     'part_name',
     'dimension',
     'length',
+    'labour',
     'material_cost'
   ];
 

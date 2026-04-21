@@ -638,8 +638,8 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.tdForm?.patchValue({
-      profile_name: '',
-      description: ''
+      code: '',
+      
     });
     this.unit_type_control.reset();
   }
@@ -778,5 +778,9 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
           GetSystemCurrency()
           {
             return this.translatedLangText.SYSTEM_CURRENCY + ' : ' + systemCurrencyCode;
+          }
+
+          convertNumber(input: string | number | boolean | undefined, decimals: number = 0):string {
+            return Utility.convertNumber(input, decimals).toFixed(decimals);
           }
 }

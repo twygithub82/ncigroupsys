@@ -674,32 +674,6 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   async getCodeValuesData(): Promise<void> {
-    // const queries = [
-    //   { alias: 'yesnoCv', codeValType: 'YES_NO' },
-    //   { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-    //   { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    //   { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-    //   { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-    //   { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-    //   { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-    //   { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-    //   { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
-    // ];
-
-    // await this.cvDS.getCodeValuesByTypeAsync(queries);
-
-    // // Wrap all alias connections in promises
-    // const promises = [
-    //   firstValueFrom(this.cvDS.connectAlias('yesnoCv')).then(data => {
-    //     this.yesnoCvList = data || [];
-    //   }),
-    //   firstValueFrom(this.cvDS.connectAlias('soTankStatusCv')).then(data => {
-    //     this.soTankStatusCvList = data || [];
-    //   }),
-    // ];
-
-    // // Wait for all promises to resolve
-    // await Promise.all(promises);
   }
 
   chunkArray(array: any[], chunkSize: number): any[][] {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -77,7 +77,7 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   fmlDS: CleaningFormulaDS;
-
+  isDirty: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -123,7 +123,8 @@ export class FormDialogComponent {
     MAX_DURATION: "COMMON-FORM.MAX-DURATION",
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
     FORMULA: "COMMON-FORM.FORMULA",
-    DURATION: "COMMON-FORM.DURATION-MIN"
+    DURATION: "COMMON-FORM.DURATION-MIN",
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   };
 
   selectedItem: CleaningFormulaItem;
@@ -151,10 +152,38 @@ export class FormDialogComponent {
   }
 
   createCleaningFormula(): UntypedFormGroup {
-    return this.fb.group({
-      duration: [{ value: this.selectedItem?.duration, disabled: !this.canEdit() }],
-      description: [{ value: this.selectedItem?.description, disabled: !this.canEdit() }],
+
+    const initDelayMs = 500;
+
+    const group = this.fb.group({
+      duration: [
+        { value: this.selectedItem?.duration, disabled: !this.canEdit() },
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(999),
+          Validators.pattern(/^\d{1,3}$/)
+        ]
+      ],
+      description: [
+        { value: this.selectedItem?.description, disabled: !this.canEdit() }
+      ],
     });
+
+    let isInitialized = false;
+
+    group.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+      group.markAsPristine();
+      isInitialized = true;
+    }, initDelayMs);
+
+    return group;
   }
 
   GetButtonCaption() {
@@ -205,9 +234,9 @@ export class FormDialogComponent {
       where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    if (this.pcForm!.value['duration']) {
-      where.duration = { eq: this.pcForm!.value['duration'] };
-    }
+    // if (this.pcForm!.value['duration']) {
+    //   where.duration = { eq: this.pcForm!.value['duration'] };
+    // }
 
     if (cf.guid) {
       where.guid = { neq: cf.guid };
@@ -254,6 +283,19 @@ export class FormDialogComponent {
 
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_ADD']);
+  }
+
+  blockDecimal(event: KeyboardEvent) {
+    if (event.key === '.' || event.key === 'e' || event.key === '-') {
+      event.preventDefault();
+    }
+  }
+  limitLength(event: any) {
+    const input = event.target;
+    if (input.value.length > 3) {
+      input.value = input.value.slice(0, 3);
+      this.pcForm.get('duration')?.setValue(input.value);
+    }
   }
 
    getColumnClasses(baseClasses: string, Padding: boolean = true): string {

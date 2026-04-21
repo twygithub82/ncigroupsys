@@ -159,6 +159,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
 
   selectedItem: TariffBufferItem;
   isMobile: boolean = false;
+  isDirty: boolean = false;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -187,14 +188,40 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
+  // createTariffBuffer(): UntypedFormGroup {
+  //   return this.fb.group({
+  //     selectedItem: this.selectedItem,
+  //     buffer_type: this.selectedItem.buffer_type,
+  //     cost: this.selectedItem.cost,
+  //     remarks: this.selectedItem.remarks
+  //   });
+  // }
+
   createTariffBuffer(): UntypedFormGroup {
-    return this.fb.group({
-      selectedItem: this.selectedItem,
-      buffer_type: this.selectedItem.buffer_type,
-      cost: this.selectedItem.cost,
-      remarks: this.selectedItem.remarks
-    });
-  }
+  const group = this.fb.group({
+    selectedItem: this.selectedItem,
+    buffer_type: this.selectedItem?.buffer_type,
+    cost: this.selectedItem?.cost,
+    remarks: this.selectedItem?.remarks
+  });
+
+  (group as any).isInitialized = false;
+  (group as any).isDirty = false;
+
+  group.valueChanges.subscribe(() => {
+    if ((group as any).isInitialized) {
+      this.isDirty = true;
+    }
+  });
+
+  // ⬇️ set delay to 500ms
+  setTimeout(() => {
+    group.markAsPristine();
+    (group as any).isInitialized = true;
+  }, 500);
+
+  return group;
+}
 
 
   removeTypename(obj: any): any {

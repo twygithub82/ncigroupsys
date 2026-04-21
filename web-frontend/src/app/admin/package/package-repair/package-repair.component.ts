@@ -329,7 +329,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       material_cost: [''],
       //handled_item_cv: ['ALL']
     });
-    this.handleItemControl.setValue('ALL');
+     this.handleItemControl.setValue('ALL');
   }
 
   displayColumnChanged() {
@@ -845,7 +845,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
       var sortedData = this.sortByDescription(data);
-      this.groupNameCvList = addDefaultSelectOption(sortedData, 'All');;
+      // this.groupNameCvList = addDefaultSelectOption(sortedData, 'All');;
+      this.groupNameCvList = sortedData;
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -1009,10 +1010,14 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.partNameControl.reset('');
     this.groupNameControl.reset('');
     this.subGroupNameControl.reset('');
-    this.handleItemControl.reset('');
+    // this.handleItemControl.reset('');
     this.pcForm?.get('labour_hour')?.reset('');
     this.pcForm?.get('material_cost')?.reset('');
-    //this.pcForm?.get('handled_item_cv')?.reset('');
+    // this.pcForm?.get('handled_item_cv')?.reset('ALL');
+    // this.pcForm?.get('handled_item_cv')?.reset(this.getHandledItem('ALL'));
+      this.pcForm?.get("handled_item_cv")!.setValue(
+        this.handledItemCvList.find(t => t.description === 'All')
+      );
     this.selectedCustomers = [];
   }
 
@@ -1027,7 +1032,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
           if (value.child_code) {
             this.subGroupNameCvList = this.allSubGroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
             if ((this.subGroupNameCvList?.length ?? 0) > 1) {
-              this.subGroupNameCvList = addDefaultSelectOption(this.subGroupNameCvList, 'All', '');
+              // this.subGroupNameCvList = addDefaultSelectOption(this.subGroupNameCvList, 'All', '');
               subgroupName?.enable();
             } else {
               subgroupName?.disable();
@@ -1246,6 +1251,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
    
 
   }
+
+  getHandledItem(codeVal: string | undefined): CodeValuesItem | undefined {
+    return this.CodeValuesDS.getCodeObject(codeVal, this.handledItemCvList);
+  }
+
 
   getHandledItemDescription(codeVal: string | undefined): string | undefined {
     return this.CodeValuesDS.getCodeDescription(codeVal, this.handledItemCvList);

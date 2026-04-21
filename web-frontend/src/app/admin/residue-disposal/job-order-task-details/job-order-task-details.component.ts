@@ -97,7 +97,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     'approve_part',
     'team',
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.RESIDUE-DISPOSAL.TEXT', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } },
     { text: 'MENUITEMS.REPAIR.LIST.JOB-ORDER', route: '/admin/residue-disposal/job-order', queryParams: { tabIndex: this.tabIndex } }

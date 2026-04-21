@@ -49,11 +49,15 @@ import {
 } from 'ng-apexcharts';
 import { CleaningPriceList } from 'app/data-sources/cleaning-method';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+;
+import { P } from '@angular/cdk/keycodes';
+import { PackageResidueItem } from 'app/data-sources/package-residue';
 
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: TariffCleaningItem[],
+  repData: PackageResidueItem[],
   date: string
 }
 
@@ -80,9 +84,9 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-tariff-cleaning-cost-report-pdf',
-  templateUrl: './tariff-cleaning-cost-pdf.component.html',
-  styleUrls: ['./tariff-cleaning-cost-pdf.component.scss'],
+  selector: 'app-package-residue-disposal-cost-pdf',
+  templateUrl: './package-residue-disposal-cost-pdf.component.html',
+  styleUrls: ['./package-residue-disposal-cost-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -96,53 +100,107 @@ export type ChartOptions = {
     BarChartModule,
   ],
 })
-export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PackageResidueDisposalCostPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-     STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
+   NEW: 'COMMON-FORM.NEW',
+    EDIT: 'COMMON-FORM.EDIT',
+    HEADER: 'COMMON-FORM.CARGO-DETAILS',
+    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
-    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
     TANK_NO: 'COMMON-FORM.TANK-NO',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
     PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
-    NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
-    CANCEL: 'COMMON-FORM.CANCEL',
-    CLOSE: 'COMMON-FORM.CLOSE',
-    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    ADD: 'COMMON-FORM.ADD',
-    NEW: 'COMMON-FORM.NEW',
-    REFRESH: 'COMMON-FORM.REFRESH',
-    EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    ST: 'COMMON-FORM.ST',
+    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    NAME: 'COMMON-FORM.NAME',
-    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    TARIFF_CARGO_ASSIGNED: 'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    STATUS: 'COMMON-FORM.STATUS',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    BACK: 'COMMON-FORM.BACK',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
-    SEARCH: "COMMON-FORM.SEARCH",
-    CARGO_SELECTED: 'COMMON-FORM.SELECTED',
-    PER_TANK: 'COMMON-FORM.PER-TANK',
-    PER_HOUR: 'COMMON-FORM.PER-HOUR',
-    S_N:'COMMON-FORM.S_N',
-    CLEANING_TARIFF: 'COMMON-FORM.CLEANING-TARIFF',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED',
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    BULK: 'COMMON-FORM.BULK',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    UNDO: 'COMMON-FORM.UNDO',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    EMAIL: 'COMMON-FORM.EMAIL',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    COST: "COMMON-FORM.COST",
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
+    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
+    COUNTRY: "COMMON-FORM.COUNTRY",
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    FAX_NO: "COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE',
+    TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    SEARCH: 'COMMON-FORM.SEARCH',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    S_N: 'COMMON-FORM.S_N',
+    PACKAGE_RESIDUE: 'COMMON-FORM.PACKAGE-RESIDUE',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -192,7 +250,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: TariffCleaningItem[];
+  repData?: PackageResidueItem[];
   date?: string;
   repType?: string;
   customer?: string;
@@ -203,7 +261,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
   constructor(
-    public dialogRef: MatDialogRef<TariffCleaningCostPdfComponent>,
+    public dialogRef: MatDialogRef<PackageResidueDisposalCostPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -368,55 +426,40 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     var items = this.repData!;
     var index = 1;
-    const data: any[][] = items
-        .map((item) => {
-          if (!item.cargo || item.cargo.trim() === '') {
-            return null;
-          }
+    const data: any[][] = items.map((item,index) => {
+     const row = [
+        index + 1,
+        item.customer_company?.name || "-",
+        item.tariff_residue?.description || "-",
+        this.parse2Decimal(item.cost!) || "-",
+        this.parse2Decimal(item.tariff_residue?.cost!) || "-",
+        this.displayLastUpdated(item) || "-",
 
-          const row = [
-            index++, // increment index for each item
-            item.cargo || "-",
-            item.class_cv || "-",
-            item.un_no || "-",
-            item.cleaning_method?.name || "-",
-            item.cleaning_category?.name || "-",
-            item.flash_point || "-",
-            item.ban_type_cv || "-",
-            Utility.formatNumberDisplay(item.cleaning_category?.cost)||"-", //.numb item.cleaning_category?.cost || "-",
-          ];
-
-          return row;
-        })
-    .filter((row): row is any[] => row !== null);
+      ];
+      return row;
+    });
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.S_N,
-      this.translatedLangText.NAME,
-      this.translatedLangText.CARGO_CLASS,
-      this.translatedLangText.CARGO_UN_NO,
-      this.translatedLangText.CARGO_METHOD,
-      this.translatedLangText.CARGO_CATEGORY,
-      this.translatedLangText.CARGO_FLASH_POINT,
-      this.translatedLangText.CARGO_BAN_TYPE,
-      this.translatedLangText.CARGO_COST,
+     this.translatedLangText.S_N,
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.RESIDUE_TYPE,
+      this.translatedLangText.CUSTOMER_COST,
+      this.translatedLangText.TARIFF_COST,
+      this.translatedLangText.LAST_UPDATED_DT
       
     ]];
 
     const comStyles: any = {
       0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "No."
-      1: { cellWidth: 46 ,valign: 'middle', halign: 'left',  overflow: 'ellipsize' },   // "NAME"
-      2: { cellWidth: 17, valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
-      3: { cellWidth: 19, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      1: { cellWidth: 55 ,valign: 'middle', halign: 'left'},   // "NAME"
+      2: { valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
+      3: { cellWidth: 26, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
       4: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
-      5: { cellWidth: 19, valign: 'middle', halign: 'center' },   // "CARGO_CATEGORY"
-      6: { cellWidth: 19, valign: 'middle', halign: 'center' },   // "CARGO_FLASH_POINT"
-      7: { cellWidth: 18, valign: 'middle', halign: 'center' },   // "CARGO_BAN_TYPE"
-      8: { cellWidth: 18, valign: 'middle', halign: 'center' },   // "CARGO_COST"
+      5: { cellWidth: 25, valign: 'middle', halign: 'center' },   // "CARGO_CATEGORY"
     };
 
     // Define headStyles with valid fontStyle
@@ -1103,21 +1146,7 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
 
   GetReportTitle(): string {
     var title: string = '';
-     title = `${this.translatedLangText.CLEANING_TARIFF}`;
-    // switch (this.repType) {
-    //   case "CLEANING":
-    //     title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    //   case "STEAMING":
-    //     title = `${this.translatedLangText.STEAM_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    //   case "REPAIR":
-    //     title = `${this.translatedLangText.REPAIR_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    //   case "RESIDUE":
-    //     title = `${this.translatedLangText.RESIDUE_MONTHLY_DETAILS_REPORT}`
-    //     break;
-    // }
+     title = `${this.translatedLangText.PACKAGE_RESIDUE}`;
     return `${title}`
   }
 
@@ -1293,6 +1322,19 @@ export class TariffCleaningCostPdfComponent extends UnsubscribeOnDestroyAdapter 
       //   this.onDownloadClick();
       // }, timeout);
     }
+  }
+
+    displayLastUpdated(r: any) {
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
+    }
+    return this.displayDate(updatedt);
+
+  }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
   }
 
 }

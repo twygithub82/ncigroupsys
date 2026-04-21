@@ -123,8 +123,8 @@
       </div>
       <div mat-dialog-actions class="mb-1 mt-3 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="update()"
-          [disabled]="trfRepairDS.loading$ | async" [class.auth-spinner]="trfRepairDS.loading$ | async">
+        <button mat-flat-button color="primary" class="me-1" (click)="update()" 
+           [disabled]="(trfRepairDS.loading$ | async) || !isDirty" [class.auth-spinner]="trfRepairDS.loading$ | async">
           <ng-container *ngIf="!(this.UpdateInProgress); else loading">
             <mat-icon class="icon-align">save</mat-icon>
             {{ translatedLangText.UPDATE }}

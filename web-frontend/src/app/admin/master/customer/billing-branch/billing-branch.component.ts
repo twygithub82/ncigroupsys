@@ -387,12 +387,12 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     where.and = [
       { customer_company: { type_cv: { in: ["BRANCH"] } } },
       { customer_company: { delete_dt: { eq: null } } },
-      { customer_company: {main_customer_guid: { neq: null } }},
-      { customer_company: {main_customer_guid: { neq: "" } }}
+      { customer_company: { main_customer_guid: { neq: null } } },
+      { customer_company: { main_customer_guid: { neq: "" } } }
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-      where.and.push({ customer_company:{ main_customer_company: { guid: { eq: customerCode.guid } } }});
+      where.and.push({ customer_company: { main_customer_company: { guid: { eq: customerCode.guid } } } });
       // if (where.main_customer_company == null) where.main_customer_company = {};
       // where.main_customer_company.guid = { eq: customerCode.guid };
     }
@@ -408,7 +408,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.def_tank_guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-       where.and.push({ customer_company: { def_tank_guid:{ eq: this.pcForm!.get("default_profile")?.value?.guid } } });
+      where.and.push({ customer_company: { def_tank_guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } });
       // const tankSearch: any = {};
       // tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       // if (where.customer_company == null) where.customer_company = {};
@@ -418,13 +418,13 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.country = { contains: this.pcForm!.value["country"] };
-       where.and.push({ customer_company: { country:{ contains: this.pcForm!.value["country"] } } });
+      where.and.push({ customer_company: { country: { contains: this.pcForm!.value["country"] } } });
     }
 
     if (this.pcForm!.value["contact_person"]) {
       // if (where.customer_company == null) where.customer_company = {};
       // where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
-      where.and.push({ customer_company: { cc_contact_person:{ some: { name: { eq: this.pcForm!.value["contact_person"] } }} } });
+      where.and.push({ customer_company: { cc_contact_person: { some: { name: { eq: this.pcForm!.value["contact_person"] } } } } });
     }
 
     this.lastSearchCriteria = where;

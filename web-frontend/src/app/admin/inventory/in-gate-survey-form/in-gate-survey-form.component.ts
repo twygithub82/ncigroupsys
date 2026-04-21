@@ -1067,7 +1067,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-      this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.testTypeCvList = addDefaultSelectOption(data, "NA");
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
@@ -1075,7 +1075,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = addDefaultSelectOption(data, "--Select--");
+      this.testClassCvList = addDefaultSelectOption(data, "NA");
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
@@ -1083,32 +1083,30 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
-      this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
+      this.manufacturerCvList = addDefaultSelectOption(data, "NA");
       this.detectChanges();
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
-      this.claddingCvList = addDefaultSelectOption(data, "--Select--");
+      this.claddingCvList = addDefaultSelectOption(data, "NA");
       this.detectChanges();
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
-      this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.maxGrossWeightCvList = addDefaultSelectOption(data, "NA");
       this.detectChanges();
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
-      this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.tankHeightCvList = addDefaultSelectOption(data, "NA");
       this.detectChanges();
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
-      this.walkwayCvList = addDefaultSelectOption(data, "--Select--");
+      this.walkwayCvList = addDefaultSelectOption(data, "NA");
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
-      // this.airlineCvList = addDefaultSelectOption(data, "N.A.");
       this.airlineCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
-      // this.airlineConnCvList = addDefaultSelectOption(data, "N.A.");
       this.airlineConnCvList = data;
       this.detectChanges();
     });
@@ -1140,7 +1138,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
-      this.manlidSealCvList = data;
+      this.manlidSealCvList = addDefaultSelectOption(data, "NA", "");
       this.detectChanges();
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {

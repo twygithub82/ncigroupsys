@@ -188,6 +188,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -234,7 +235,9 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   id?: number;
   pcForm?: UntypedFormGroup;
-  isGeneratingReport: boolean = false;
+  isGeneratingReport: boolean=false;
+  cvDS: CodeValuesDS;
+  customerTypeCvList?: CodeValuesItem[];
 
 
   constructor(
@@ -256,6 +259,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
     this.tfDepotDS = new TariffDepotDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -272,25 +276,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.initPcForm();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
-    // var state = history.state;
-    // if (state.type == "customer-company") {
-    //   let showResult = state.pagination.showResult;
-    //   if (showResult) {
-    //     this.searchCriteriaService = state.pagination.where;
-    //     this.pageIndex = state.pagination.pageIndex;
-    //     this.pageSize = state.pagination.pageSize;
-    //     this.hasPreviousPage = state.pagination.hasPreviousPage;
-    //     this.startCursor = state.pagination.startCursor;
-    //     this.endCursor = state.pagination.endCursor;
-    //     this.previous_endCursor = state.pagination.previous_endCursor;
-    //     this.paginator.pageSize = this.pageSize;
-    //     this.paginator.pageIndex = this.pageIndex;
-    //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-    //   }
-    // }
-    // else {
-    //   this.search();
-    // }
+  
   }
 
   initializeFilterCustomerCompany() {
@@ -561,34 +547,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
-  // searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number, previousPageIndex?: number) {
-  //   if (where === null || where === undefined) {
-  //     where = {}
-  //   }
-  //   // where = {
-  //   //   and: [
-  //   //     {
-  //   //       customer_company: {
-  //   //         type_cv: { neq: "SURVEYOR" },
-  //   //         delete_dt: { eq: null }
-  //   //       }
-  //   //     }
-  //   //   ]
-  //   // };
-  //   this.previous_endCursor = this.endCursor;
-  //   this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(where, order, first, after, last, before).subscribe(data => {
-  //     this.customer_companyResultList = data;
-  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
-  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
-  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-  //     this.pageIndex = pageIndex;
-  //     this.paginator.pageIndex = this.pageIndex;
-  //     this.selection.clear();
-  //     if (!this.hasPreviousPage)
-  //       this.previous_endCursor = undefined;
-  //   });
-  // }
+  
 
   removeSelectedRows() {
   }
@@ -627,39 +586,33 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       );
     }
 
+       const queries = [
+      { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
+      { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+
+    this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
+      this.customerTypeCvList = data;
+      this.customerTypeCvList = this.customerTypeCvList
+        .map(data => {
+          return data;
+        });
+      
+    });
+
+
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
   }
 
-  // export table data in excel file
-  exportExcel() {
-    // key name with space add in brackets
-    // const exportData: Partial<TableElement>[] =
-    //   this.dataSource.filteredData.map((x) => ({
-    //     'First Name': x.fName,
-    //     'Last Name': x.lName,
-    //     Email: x.email,
-    //     Gender: x.gender,
-    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-    //     Mobile: x.mobile,
-    //     Address: x.address,
-    //     Country: x.country,
-    //   }));
 
-    // TableExportUtil.exportToExcel(exportData, 'excel');
-  }
 
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
-    // this.contextMenuPosition.x = event.clientX + 'px';
-    // this.contextMenuPosition.y = event.clientY + 'px';
-    // if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-    //   this.contextMenu.menuData = { item: item };
-    //   this.contextMenu.menu.focusFirstItem('mouse');
-    //   this.contextMenu.openMenu();
-    // }
+   
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -675,12 +628,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
-    // const date = new Date(updatedt! * 1000);
-    // const day = String(date.getDate()).padStart(2, '0');
-    // const month = date.toLocaleString('en-US', { month: 'short' });
-    // const year = date.getFullYear();   
-
-    // Replace the '/' with '-' to get the required format
+   
 
 
     return this.displayDate(updatedt);
@@ -729,31 +677,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         this.deleteCustomerAndBillingBranch(row.guid!);
       }
     });
-    // this.id = row.id;
-
-    // var CanDeleteCustomer: boolean = await this.CanDeleteCustomer(row.guid!);
-    // if (!CanDeleteCustomer) {
-    //   let tempDirection: Direction;
-    //   if (localStorage.getItem('isRtl') === 'true') {
-    //     tempDirection = 'rtl';
-    //   } else {
-    //     tempDirection = 'ltr';
-    //   }
-    //   const dialogRef = this.dialog.open(MessageDialogComponent, {
-    //     width: '500px',
-    //     data: {
-    //       headerText: this.translatedLangText.WARNING,
-    //       messageText: [this.translatedLangText.CUSTOMER_ASSIGNED],
-    //       act: "warn"
-    //     },
-    //     direction: tempDirection
-    //   });
-    //   dialogRef.afterClosed().subscribe(result => {
-    //   });
-    // }
-    // else {
-    //   this.deleteCustomerAndBillingBranch(row.guid!);
-    // }
+    
 
   }
 
@@ -846,6 +770,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_DELETE']);
   }
 
+   getCustomerTypeCvObject(codeValType: string): CodeValuesItem | undefined {
+      return this.cvDS.getCodeObject(codeValType, this.customerTypeCvList!);
+    }
+
   getDepotProfileName(guid: String): String {
     var retval: String = "-";
 
@@ -885,6 +813,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
                 const c: CustomerCompanyItem = {
                   ...itm,
                   default_profile_name:this.getDepotProfileName(itm.def_tank_guid),
+                  customer_type:this.getCustomerTypeCvObject(itm.type_cv)?.description||""                
                 };
                 prcList.push(c);
               });
