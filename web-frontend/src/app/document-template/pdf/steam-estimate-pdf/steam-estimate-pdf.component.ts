@@ -179,6 +179,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     STEAMING_ESTIMATE: 'COMMON-FORM.STEAMING-ESTIMATE',
     TBA: 'COMMON-FORM.TBA',
     TOTAL_LABOUR: 'COMMON-FORM.TOTAL-LABOUR',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -1341,7 +1342,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },
@@ -1633,7 +1634,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },

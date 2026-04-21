@@ -1078,7 +1078,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   toggleRep(row: ResiduePartItem) {
-    if (!this.jobOrderDS.canJobAllocate(row?.job_order))
+    
+    if (!this.jobOrderDS.canJobAllocate(row?.job_order) || !row?.approve_part)
       return;
     this.repSelection.toggle(row);
   }

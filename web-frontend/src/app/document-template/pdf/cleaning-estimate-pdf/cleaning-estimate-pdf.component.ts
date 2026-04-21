@@ -167,6 +167,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     TOTAL: 'COMMON-FORM.TOTAL',
     CLEANING_ESTIMATE: 'COMMON-FORM.CLEANING-ESTIMATE',
     COST: 'COMMON-FORM.COST',
+    S_N: 'COMMON-FORM.S_N',
   }
 
 
@@ -1070,7 +1071,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 255, lineWidth: 0.0, cellPadding: 2 }
         },

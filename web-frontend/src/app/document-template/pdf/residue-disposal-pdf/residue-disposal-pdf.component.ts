@@ -173,6 +173,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     APPROVED: 'COMMON-FORM.APPROVED',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     NO_ACTION:'COMMON-FORM.NO-ACTION',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -616,7 +617,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },
@@ -933,7 +934,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     const headers: RowInput[] = [
       [
         {
-          content: this.translatedLangText.NO_DOT,
+          content: this.translatedLangText.S_N,
 
           styles: { fontSize: fontSz, halign: 'center', valign: vAlign, cellPadding: 2 }
         },

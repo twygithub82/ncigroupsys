@@ -46,6 +46,8 @@ import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
+import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate',
@@ -217,6 +219,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   currentResidueIndex: { [guid: string]: number } = {};
   currentIndex = 0;
   touchStartX = 0;
+  isExportingPDF: boolean=false;
 
   constructor(
     private route: ActivatedRoute,
@@ -227,7 +230,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -627,7 +631,15 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  performSearch(
+    pageSize: number,
+    pageIndex: number,
+    first?: number,
+    after?: string,
+    last?: number,
+    before?: string,
+    callback?: () => void
+  ) {
     this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
     this.searchStateService.setPagination(this.pageStateType, {
       pageSize,
@@ -637,42 +649,51 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       last,
       before
     });
-    console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+
+    console.log(this.searchStateService.getPagination(this.pageStateType));
+
+    this.subs.sink = this.sotDS
+      .searchStoringOrderTanksResidueEstimate(
+        this.lastSearchCriteria,
+        this.lastOrderBy,
+        first,
+        after,
+        last,
+        before
+      )
       .subscribe(data => {
         if (data) {
-          var residueStatusFilter = this.searchForm!.value['est_status_cv'];
-          this.sotList = data.map(sot => {
-            sot.residue = (sot.residue || []).map(res => {
-              if (residueStatusFilter.length) {
-                if (residueStatusFilter.includes(res.status_cv)) {
-                  var res_part = [...res.residue_part!];
-                  res.residue_part = res_part?.filter(data => !data.delete_dt);
-                  return { ...res, net_cost: this.calculateNetCost(res) }
-                } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
-                  return { ...res, net_cost: this.calculateNetCost(res) };
+          const residueStatusFilter = this.searchForm?.value['est_status_cv'] || [];
+
+          // ✅ MAIN FIXED LOGIC
+          this.sotList = data.map(sot => ({
+            ...sot,
+            residue: (sot.residue || [])
+
+              // 🔥 remove invalid items ([], null, undefined)
+              .filter(res => res && !Array.isArray(res))
+
+              // 🔥 filter by status
+              .filter(res => {
+                if (residueStatusFilter.length) {
+                  return residueStatusFilter.includes(res.status_cv);
                 }
-                return {};
-              }
-              else {
-                if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
-                  var res_part = [...res.residue_part!];
-                  res.residue_part = res_part?.filter(data => !data.delete_dt);
-                  return { ...res, net_cost: this.calculateNetCost(res) }
-                } else {
-                  return []
-                }
-              }
-            })
+                return res.status_cv !== 'CANCELED';
+              })
 
-            this.sotList = this.sotList.map(sot => {
-              sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
-              return sot;
-            });
+              // 🔥 process valid residue
+              .map(res => {
+                const res_part = (res.residue_part || []).filter(p => !p.delete_dt);
 
-            return sot;
-          });
+                return {
+                  ...res,
+                  residue_part: res_part,
+                  net_cost: this.calculateNetCost(res)
+                };
+              })
+          }));
 
+          // ================= MOBILE PAGINATION =================
           if (this.isMobile) {
             const chunkSize = 1;
             this.pagedResidueDataFull = {};
@@ -692,23 +713,114 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
               this.pagedResidueData[sot.guid] = chunks[0] || [];
             });
           } else {
-            // Reset if not in mobile view
             this.pagedResidueDataFull = {};
             this.pagedResidueData = {};
             this.currentResidueIndex = {};
           }
+
           this.cardListComponent?.resetExpanded();
         }
 
+        // ================= PAGE INFO =================
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        callback?.();
       });
 
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
   }
+
+  // performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  //   this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+  //   this.searchStateService.setPagination(this.pageStateType, {
+  //     pageSize,
+  //     pageIndex,
+  //     first,
+  //     after,
+  //     last,
+  //     before
+  //   });
+  //   console.log(this.searchStateService.getPagination(this.pageStateType))
+  //   this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  //     .subscribe(data => {
+  //       if (data) {
+  //         var residueStatusFilter = this.searchForm!.value['est_status_cv'];
+  //         this.sotList = data.map(sot => {
+  //           sot.residue = (sot.residue || []).map(res => {
+  //             if (residueStatusFilter.length) {
+  //               if (residueStatusFilter.includes(res.status_cv)) {
+  //                 var res_part = [...res.residue_part!];
+  //                 res.residue_part = res_part?.filter(data => !data.delete_dt);
+  //                 return { ...res, net_cost: this.calculateNetCost(res) }
+  //               } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+  //                 return { ...res, net_cost: this.calculateNetCost(res) };
+  //               }
+  //               return {};
+  //             }
+  //             else {
+  //               if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+  //                 var res_part = [...res.residue_part!];
+  //                 res.residue_part = res_part?.filter(data => !data.delete_dt);
+  //                 return { ...res, net_cost: this.calculateNetCost(res) }
+  //               } else {
+  //                 return []
+  //               }
+  //             }
+  //           })
+
+  //           this.sotList = this.sotList.map(sot => ({
+  //             ...sot,
+  //             residue: sot.residue?.filter(item => item?.guid)
+  //           }));
+
+  //           // this.sotList = this.sotList.map(sot => {
+  //           //   sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
+  //           //   return sot;
+  //           // });
+
+  //           return sot;
+  //         });
+
+  //         if (this.isMobile) {
+  //           const chunkSize = 1;
+  //           this.pagedResidueDataFull = {};
+  //           this.pagedResidueData = {};
+  //           this.currentResidueIndex = {};
+
+  //           this.sotList.forEach((sot: any) => {
+  //             const residue = sot.residue || [];
+  //             const chunks: any[][] = [];
+
+  //             for (let i = 0; i < residue.length; i += chunkSize) {
+  //               chunks.push(residue.slice(i, i + chunkSize));
+  //             }
+
+  //             this.pagedResidueDataFull[sot.guid] = chunks;
+  //             this.currentResidueIndex[sot.guid] = 0;
+  //             this.pagedResidueData[sot.guid] = chunks[0] || [];
+  //           });
+  //         } else {
+  //           // Reset if not in mobile view
+  //           this.pagedResidueDataFull = {};
+  //           this.pagedResidueData = {};
+  //           this.currentResidueIndex = {};
+  //         }
+  //         this.cardListComponent?.resetExpanded();
+  //       }
+
+  //       this.endCursor = this.sotDS.pageInfo?.endCursor;
+  //       this.startCursor = this.sotDS.pageInfo?.startCursor;
+  //       this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+  //       this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+  //     });
+
+  //   this.pageSize = pageSize;
+  //   this.pageIndex = pageIndex;
+  // }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -1095,4 +1207,36 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.goToPage(item, current - 1);
     }
   }
+
+  onExport(event: Event, row : ResidueItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.isExportingPDF = true;
+    const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        residue_guid: row?.guid,
+        estimate_no: row?.estimate_no
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+    });
+  }
+  canExport(row : ResidueItem): boolean {
+    return !!row?.guid;
+  }
+
 }

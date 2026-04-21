@@ -28,7 +28,7 @@
               <input matInput formControlName="filterJobOrder">
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput formControlName="customer" [formControl]="customerCodeControl"
@@ -40,6 +40,12 @@
                 </mat-option>
                 }
               </mat-autocomplete>
+            </mat-form-field>
+          </div>
+           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TEAM}}</mat-label>
+              <input matInput formControlName="team">
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
@@ -111,6 +117,17 @@
             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             <span class="mobile-tab-label">{{translatedLangText.ASSIGN_DATE}}:</span>
             <span>{{displayDate(row.create_dt)}}</span>
+          </mat-cell>
+        </ng-container>
+         <ng-container matColumnDef="team">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.TEAM}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.TEAM}}:</span>
+            <span>{{row.team?.description}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="status_cv">
