@@ -278,6 +278,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.repairPartForm = this.createForm();
       this.initializeValueChange();
       this.initializePartNameValueChange();
+      this.selected4XRepair = '';
     } else {
       this.dialogRef.close(returnDialog);
     }
