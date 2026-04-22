@@ -151,7 +151,8 @@
               @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
                 @if (canEdit()) {
-                @if ((!repairItem?.guid && !repair_guid) && (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage())) {
+                @if ((!repairItem?.guid && !repair_guid) && (modulePackageService.isGrowthPackage() ||
+                modulePackageService.isCustomizedPackage())) {
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
@@ -164,11 +165,12 @@
                   </mat-form-field>
                 </div>
                 @if (repairForm?.get('est_template')?.value?.guid) {
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <!-- requested to removed by celest on 23 April -->
+                <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-checkbox class="m-r-5" color="primary" formControlName="is_default_template">
                     {{translatedLangText.DEFAULT}}
                   </mat-checkbox>
-                </div>
+                </div> -->
                 }
                 }
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mt-2 mb-3">

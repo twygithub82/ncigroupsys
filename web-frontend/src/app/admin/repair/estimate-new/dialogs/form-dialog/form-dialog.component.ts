@@ -561,7 +561,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   extractDescription(rep: RepairPartItem) {
-    const concludeLength = rep.tariff_repair?.length
+    const concludeLength = rep.tariff_repair?.length && rep.tariff_repair?.length > 0
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
       : '';
     return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
@@ -625,7 +625,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPartLength(rep: any) {
-    const concludeLength = (rep?.tariff_repair?.length || rep?.tariff_repair?.length > 0)
+    const concludeLength = (rep?.tariff_repair?.length && rep?.tariff_repair?.length > 0)
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
       : '';
     return concludeLength;
