@@ -527,7 +527,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.testClassCvList = data;
     });
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = addDefaultSelectOption(data, '--Select--');
+      this.partLocationCvList = addDefaultSelectOption(data, '');
     });
     this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
       this.damageCodeCvList = data;
