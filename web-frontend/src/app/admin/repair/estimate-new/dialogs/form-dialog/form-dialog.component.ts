@@ -32,6 +32,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { Subject, debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
+import { NumericTextDirective } from "app/directive/numeric-text.directive";
 
 export interface DialogData {
   action?: string;
@@ -68,8 +69,9 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     MatProgressSpinnerModule,
-    PreventNonNumericDirective
-  ],
+    PreventNonNumericDirective,
+    NumericTextDirective
+],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   public dataSubject: Subject<any> = new Subject();
