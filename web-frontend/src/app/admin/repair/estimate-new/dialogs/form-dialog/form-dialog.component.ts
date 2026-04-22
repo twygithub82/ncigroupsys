@@ -549,8 +549,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (result) {
         console.log(result);
         this.repairPart.material_cost = result.selected_repair_part?.material_cost;
+        this.repairPart.hour = result.selected_repair_part?.hour;
         this.repairPart.tariff_repair_guid = result.selected_repair_part?.tariff_repair_guid;
         this.repairPart.tariff_repair = result.selected_repair_part?.tariff_repair;
+        this.repairPartForm.get('hour')?.setValue(this.repairPart?.hour);
         this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
       }
     });
