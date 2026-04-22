@@ -208,7 +208,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
-    
+    PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -708,6 +708,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
+        this.templateList = [{
+          "guid": "", "template_name": "Plan Template", "type_cv": "", "labour_cost_discount": 0, "material_cost_discount": 0, "remarks": "", "create_dt": 0, "create_by": undefined, "update_dt": 0, "update_by": undefined, "delete_dt": undefined, "totalMaterialCost": 0, "template_est_customer": [], "template_est_part": [], getTotalMaterialCost: function (): number { return 0; }
+        }, ...data]
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_guid) {
           if (def_guid) {
@@ -930,13 +933,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     // Add any additional logic if needed
   }
 
-  ExportDialogDmgImg( event: Event) {
+  ExportDialogDmgImg(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
     // const url = imgForm.get('preview')?.value;
 
-    if (!this.isOwner){
-      this.onExport(event,3);
+    if (!this.isOwner) {
+      this.onExport(event, 3);
       return;
     }
     let tempDirection: Direction;
@@ -949,21 +952,21 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       width: '250px',
       height: '180px',
       data: {
-        action:'EXPORT',
+        action: 'EXPORT',
         langText: this.translatedLangText
-        
+
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if(result.action==="confirmed"){
+      if (result.action === "confirmed") {
         var filter = result.result;
-        this.onExport(event,filter);
+        this.onExport(event, filter);
       }
     });
   }
 
-  onExport(event: Event,filter:number) {
+  onExport(event: Event, filter: number) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -981,7 +984,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
         estimate_no: this.repairItem?.estimate_no,
         repairEstimatePdf: this.repairEstimatePdf,
-        filter:filter
+        filter: filter
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
