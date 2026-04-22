@@ -624,6 +624,10 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
+  getGroupNameDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.groupNameCvList);
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
@@ -1094,7 +1098,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
-        repData.push([{ content: `${rep.group_name_cv}`, colSpan: 11, styles: { fillColor: 220, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
+        repData.push([{ content: `${this.getGroupNameDescription(rep.group_name_cv)}`, colSpan: 11, styles: { fillColor: 220, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
@@ -1748,9 +1752,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
-        var groupName = rep.group_name_cv.replaceAll('_',' ');
         repData.push([{
-          content: `${groupName}`, colSpan: 10,
+          content: `${this.getGroupNameDescription(rep.group_name_cv)}`, colSpan: 10,
           styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz }
         }]);
       }

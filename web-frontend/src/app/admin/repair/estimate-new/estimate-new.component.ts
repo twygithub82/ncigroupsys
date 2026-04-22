@@ -89,7 +89,6 @@ import { ExportDialogComponent } from './dialogs/export-dialog/export-dialog.com
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective,
     NumericTextDirective
   ]
 })
