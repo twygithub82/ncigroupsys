@@ -71,7 +71,7 @@ export interface DialogData {
     MatProgressSpinnerModule,
     PreventNonNumericDirective,
     NumericTextDirective
-],
+  ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   public dataSubject: Subject<any> = new Subject();
@@ -220,8 +220,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
         rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-        quantity: this.repairPartForm.get('quantity')?.value,
-        hour: this.repairPartForm.get('hour')?.value || 0,
+        quantity: Utility.convertNumber(this.repairPartForm.get('quantity')?.value),
+        hour: Utility.convertNumber(this.repairPartForm.get('hour')?.value, 2) || 0,
         material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
