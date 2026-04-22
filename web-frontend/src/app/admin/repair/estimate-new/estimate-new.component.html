@@ -158,8 +158,10 @@
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
                     <mat-select formControlName="est_template">
                       @for (template of templateList; track template) {
+                      <!-- <mat-option [value]="template"
+                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option> -->
                       <mat-option [value]="template"
-                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option>
+                        [ngClass]="">{{template.template_name}}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
