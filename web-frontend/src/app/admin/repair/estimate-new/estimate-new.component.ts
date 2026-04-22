@@ -208,6 +208,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
     PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
+    REVERT: 'COMMON-FORM.REVERT',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -811,6 +812,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   editEstDetails(event: Event, row: RepairPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
+    if (row.action === 'cancel') {
+      return;
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -887,21 +891,15 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  undoTempAction(row: any[], actionToBeRemove: string) {
-    const data: any[] = [...this.repList];
-    row.forEach((newItem: any) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+  undoAction(event: Event, row: RepairPartItem) {
+    // this.id = row.id;
+    this.stopPropagation(event);
+    this.undoTempAction(row)
+  }
 
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          ...newItem,
-          actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
-            : []
-        };
-      }
-    });
+  undoTempAction(row: any) {
+    const data: any[] = [...this.repList];
+    row.action = '';
     this.updateData(data);
   }
 
@@ -1108,6 +1106,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   handleDelete(event: Event, row: any, index: number): void {
+    this.deleteItem(event, row, index);
+  }
+
+  handleRevert(event: Event, row: any, index: number): void {
     this.deleteItem(event, row, index);
   }
 

@@ -370,10 +370,16 @@
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (canEdit()) {
+                            @if (canEdit() && row.action !== 'cancel') {
                             <button mat-menu-item (click)="handleDelete($event, row, row.index)">
                               <mat-icon color="warn">delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
+                            </button>
+                            }
+                            @if (canEdit() && row.action === 'cancel') {
+                            <button mat-menu-item (click)="undoAction($event, row)">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.REVERT}}</span>
                             </button>
                             }
                           </mat-menu>

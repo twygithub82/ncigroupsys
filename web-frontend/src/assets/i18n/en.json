@@ -1420,7 +1420,8 @@
     "REGISTER-TOTP": "Register TOTP",
     "VERIFY-TOTP": "Verify TOTP",
     "RECORD-EXISTS": "Record Already Exists",
-    "PLAIN-TEMPLATE": "Plain Template"
+    "PLAIN-TEMPLATE": "Plain Template",
+    "REVERT": "Revert"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
