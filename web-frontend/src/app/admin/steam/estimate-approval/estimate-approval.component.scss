@@ -57,3 +57,9 @@
     /* Critical: limits to viewport width */
     box-sizing: border-box;
 }
+
+@for $i from 1 through 150 {
+  .custom-padding-left-#{$i} {
+    padding-left: #{$i}px;
+  }
+}
