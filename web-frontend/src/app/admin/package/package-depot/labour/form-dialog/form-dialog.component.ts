@@ -26,6 +26,7 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
@@ -91,8 +92,8 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   packLabourDS: PackageLabourDS;
-  isMobile: boolean=false;
-  isDirty: boolean = false;
+    isDirty: boolean = isDirty;
+    isMobile: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

@@ -482,12 +482,6 @@
                                 <mat-icon>more_vert</mat-icon>
                               </button>
                               <mat-menu #menu="matMenu">
-                                @if(modulePackageService.AllowPdfReport()) {
-                                <button mat-menu-item (click)="onExport(item, repairRow)">
-                                  <mat-icon>file_download</mat-icon>
-                                  <span>{{translatedLangText.DOWNLOAD}}</span>
-                                </button>
-                                }
                                 @if (isAllowEdit() && repairDS.canCopy(repairRow)) {
                                 <button mat-menu-item (click)="copyRepair(repairRow)">
                                   <mat-icon>content_copy</mat-icon>
@@ -498,6 +492,12 @@
                                 <button mat-menu-item (click)="cancelRow(repairRow, item)">
                                   <mat-icon>delete_forever</mat-icon>
                                   <span>{{translatedLangText.DELETE}}</span>
+                                </button>
+                                }
+                                @if(modulePackageService.AllowPdfReport()) {
+                                <button mat-menu-item (click)="onExport(item, repairRow)">
+                                  <mat-icon>file_download</mat-icon>
+                                  <span>{{translatedLangText.EXPORT}}</span>
                                 </button>
                                 }
                               </mat-menu>

@@ -32,6 +32,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { Subject, debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
+import { NumericTextDirective } from "app/directive/numeric-text.directive";
 
 export interface DialogData {
   action?: string;
@@ -68,7 +69,8 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     MatProgressSpinnerModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -218,8 +220,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
         rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-        quantity: this.repairPartForm.get('quantity')?.value,
-        hour: this.repairPartForm.get('hour')?.value,
+        quantity: Utility.convertNumber(this.repairPartForm.get('quantity')?.value),
+        hour: Utility.convertNumber(this.repairPartForm.get('hour')?.value, 2) || 0,
         material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
@@ -278,6 +280,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.repairPartForm = this.createForm();
       this.initializeValueChange();
       this.initializePartNameValueChange();
+      this.selected4XRepair = '';
     } else {
       this.dialogRef.close(returnDialog);
     }
@@ -379,7 +382,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const hour = this.repairPartForm?.get('hour');
     var currentMaterialCost = this.parse2Decimal(this.repairPart?.material_cost);
     if (!isResetDisable) {
-      quantity?.setValue(1);
+      quantity?.setValue(0);
       quantity?.disable();
       hour?.setValue(0);
       hour?.disable();
@@ -549,8 +552,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (result) {
         console.log(result);
         this.repairPart.material_cost = result.selected_repair_part?.material_cost;
+        this.repairPart.hour = result.selected_repair_part?.hour;
         this.repairPart.tariff_repair_guid = result.selected_repair_part?.tariff_repair_guid;
         this.repairPart.tariff_repair = result.selected_repair_part?.tariff_repair;
+        this.repairPartForm.get('hour')?.setValue(this.repairPart?.hour);
         this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
       }
     });
@@ -561,7 +566,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   extractDescription(rep: RepairPartItem) {
-    const concludeLength = rep.tariff_repair?.length
+    const concludeLength = rep.tariff_repair?.length && rep.tariff_repair?.length > 0
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
       : '';
     return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
@@ -625,7 +630,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPartLength(rep: any) {
-    const concludeLength = (rep?.tariff_repair?.length || rep?.tariff_repair?.length > 0)
+    const concludeLength = (rep?.tariff_repair?.length && rep?.tariff_repair?.length > 0)
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
       : '';
     return concludeLength;

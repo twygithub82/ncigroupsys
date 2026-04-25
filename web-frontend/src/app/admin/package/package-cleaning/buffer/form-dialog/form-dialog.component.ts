@@ -28,6 +28,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
@@ -190,7 +191,7 @@ export class FormDialogComponent {
     TYPE: 'COMMON-FORM.TYPE'
   };
   selectedItems: PackageBufferItem[] = [];
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,

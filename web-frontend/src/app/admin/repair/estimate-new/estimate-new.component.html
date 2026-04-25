@@ -138,7 +138,7 @@
           <div class="card">
             <div class="header header-custom-padding">
               <h2>
-                {{translatedLangText.ESTIMATE_DETAILS}}
+                {{translatedLangText.BILLING_DETAILS}}
               </h2>
             </div>
             <div class="body">
@@ -151,24 +151,28 @@
               @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
                 @if (canEdit()) {
-                @if ((!repairItem?.guid && !repair_guid) && (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage())) {
+                @if ((!repairItem?.guid && !repair_guid) && (modulePackageService.isGrowthPackage() ||
+                modulePackageService.isCustomizedPackage())) {
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
                     <mat-select formControlName="est_template">
                       @for (template of templateList; track template) {
+                      <!-- <mat-option [value]="template"
+                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option> -->
                       <mat-option [value]="template"
-                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option>
+                        [ngClass]="">{{template.template_name}}</mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
                 </div>
                 @if (repairForm?.get('est_template')?.value?.guid) {
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                <!-- requested to removed by celest on 23 April -->
+                <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-checkbox class="m-r-5" color="primary" formControlName="is_default_template">
                     {{translatedLangText.DEFAULT}}
                   </mat-checkbox>
-                </div>
+                </div> -->
                 }
                 }
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mt-2 mb-3">
@@ -366,10 +370,16 @@
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (canEdit()) {
+                            @if (canEdit() && row.action !== 'cancel') {
                             <button mat-menu-item (click)="handleDelete($event, row, row.index)">
                               <mat-icon color="warn">delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
+                            </button>
+                            }
+                            @if (canEdit() && row.action === 'cancel') {
+                            <button mat-menu-item (click)="undoAction($event, row)">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.REVERT}}</span>
                             </button>
                             }
                           </mat-menu>
@@ -508,10 +518,10 @@
                       {{translatedLangText.ESTIMATE_DATE}}: <span
                         class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                     </div>
-                    <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                    <!-- <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       {{translatedLangText.STATUS}}: <span
                         [ngClass]="'font-bold ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
                 <div class="col-xl-8-5 col-lg-12 col-md-12 col-sm-12 m-b-0">

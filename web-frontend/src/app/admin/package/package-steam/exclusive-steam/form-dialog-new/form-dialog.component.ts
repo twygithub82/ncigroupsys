@@ -33,6 +33,7 @@ import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { isDirty } from 'environments/environment';
 
 export interface DialogData {
   action?: string;
@@ -222,7 +223,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: ExclusiveSteamingItem;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,

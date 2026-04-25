@@ -89,7 +89,6 @@ import { ExportDialogComponent } from './dialogs/export-dialog/export-dialog.com
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective,
     NumericTextDirective
   ]
 })
@@ -208,7 +207,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
-    
+    PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
+    REVERT: 'COMMON-FORM.REVERT',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -527,7 +528,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.testClassCvList = data;
     });
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = addDefaultSelectOption(data, '--Select--');
+      this.partLocationCvList = addDefaultSelectOption(data, '');
     });
     this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
       this.damageCodeCvList = data;
@@ -708,6 +709,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
+        this.templateList = [{
+          "guid": "", "template_name": "Plain Template", "type_cv": "", "labour_cost_discount": 0, "material_cost_discount": 0, "remarks": "", "create_dt": 0, "create_by": undefined, "update_dt": 0, "update_by": undefined, "delete_dt": undefined, "totalMaterialCost": 0, "template_est_customer": [], "template_est_part": [], getTotalMaterialCost: function (): number { return 0; }
+        }, ...data]
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_guid) {
           if (def_guid) {
@@ -809,6 +813,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   editEstDetails(event: Event, row: RepairPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
+    if (row.action === 'cancel') {
+      return;
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -885,21 +892,15 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  undoTempAction(row: any[], actionToBeRemove: string) {
-    const data: any[] = [...this.repList];
-    row.forEach((newItem: any) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+  undoAction(event: Event, row: RepairPartItem) {
+    // this.id = row.id;
+    this.stopPropagation(event);
+    this.undoTempAction(row)
+  }
 
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          ...newItem,
-          actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
-            : []
-        };
-      }
-    });
+  undoTempAction(row: any) {
+    const data: any[] = [...this.repList];
+    row.action = '';
     this.updateData(data);
   }
 
@@ -930,13 +931,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     // Add any additional logic if needed
   }
 
-  ExportDialogDmgImg( event: Event) {
+  ExportDialogDmgImg(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
     // const url = imgForm.get('preview')?.value;
 
-    if (!this.isOwner){
-      this.onExport(event,3);
+    if (!this.isOwner) {
+      this.onExport(event, 3);
       return;
     }
     let tempDirection: Direction;
@@ -949,21 +950,21 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       width: '250px',
       height: '180px',
       data: {
-        action:'EXPORT',
+        action: 'EXPORT',
         langText: this.translatedLangText
-        
+
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if(result.action==="confirmed"){
+      if (result.action === "confirmed") {
         var filter = result.result;
-        this.onExport(event,filter);
+        this.onExport(event, filter);
       }
     });
   }
 
-  onExport(event: Event,filter:number) {
+  onExport(event: Event, filter: number) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -981,7 +982,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
         estimate_no: this.repairItem?.estimate_no,
         repairEstimatePdf: this.repairEstimatePdf,
-        filter:filter
+        filter: filter
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -1106,6 +1107,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   handleDelete(event: Event, row: any, index: number): void {
+    this.deleteItem(event, row, index);
+  }
+
+  handleRevert(event: Event, row: any, index: number): void {
     this.deleteItem(event, row, index);
   }
 

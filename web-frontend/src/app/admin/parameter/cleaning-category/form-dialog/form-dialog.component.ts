@@ -26,6 +26,7 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { isDirty } from 'environments/environment';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -91,7 +92,7 @@ export class FormDialogComponent {
   catDS: CleaningCategoryDS;
   isMobile: boolean=false;
   translatedLangText: any = {};
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     ADD: 'COMMON-FORM.ADD',

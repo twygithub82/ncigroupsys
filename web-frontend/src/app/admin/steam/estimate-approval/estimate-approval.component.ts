@@ -169,13 +169,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   ]
 
   availableProcessStatus: string[] = [
-    'ASSIGNED',
-    //'PARTIAL_ASSIGNED',
+    'PENDING',
     'APPROVED',
+    'NO_ACTION',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
     'JOB_IN_PROGRESS',
     'COMPLETED',
-    'PENDING',
-    'NO_ACTION'
   ]
   searchForm?: UntypedFormGroup;
 
@@ -223,7 +223,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   touchStartX = 0;
 
   plDS: PackageLabourDS;
-  isExportingPDF: boolean =false;
+  isExportingPDF: boolean = false;
 
   // isSteamRepair?: boolean = true;
 
@@ -448,7 +448,14 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = data;
+      this.processStatusCvList = data
+        .filter(x => this.availableProcessStatus.includes(x.code_val ?? ''))
+        .sort((a, b) => {
+          const indexA = this.availableProcessStatus.indexOf(a.code_val ?? '');
+          const indexB = this.availableProcessStatus.indexOf(b.code_val ?? '');
+          return indexA - indexB;
+        });
+      // this.processStatusCvList = data;
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -589,109 +596,109 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   performSearch(
-  pageSize: number,
-  pageIndex: number,
-  first?: number,
-  after?: string,
-  last?: number,
-  before?: string,
-  callback?: () => void
-) {
-  this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
-  this.searchStateService.setPagination(this.pageStateType, {
-    pageSize,
-    pageIndex,
-    first,
-    after,
-    last,
-    before
-  });
-
-  console.log(this.searchStateService.getPagination(this.pageStateType));
-
-  this.subs.sink = this.sotDS
-    .searchStoringOrderTanksSteamEstimate(
-      this.lastSearchCriteria,
-      this.lastOrderBy,
+    pageSize: number,
+    pageIndex: number,
+    first?: number,
+    after?: string,
+    last?: number,
+    before?: string,
+    callback?: () => void
+  ) {
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
       first,
       after,
       last,
       before
-    )
-    .subscribe(data => {
-      if (data) {
-        const steamingStatusFilter = this.searchForm?.value['est_status_cv'] || [];
-
-        // ✅ FIXED LOGIC
-        this.sotList = data.map(sot => ({
-          ...sot,
-          steaming: (sot.steaming || [])
-
-            // 🔥 remove invalid values (null, [], etc.)
-            .filter(stm => stm && !Array.isArray(stm))
-
-            // 🔥 filter by status
-            .filter(stm => {
-              if (steamingStatusFilter.length) {
-                return steamingStatusFilter.includes(stm.status_cv);
-              }
-              return stm.status_cv !== 'CANCELED';
-            })
-
-            // 🔥 process valid items
-            .map(stm => {
-              const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
-
-              return {
-                ...stm,
-                steaming_part: stm_part,
-                net_cost: "0.01" // or your calculation
-                // net_cost: this.calculateNetCost_r1(stm)
-              };
-            })
-        }));
-
-        // ================= MOBILE PAGINATION =================
-        if (this.isMobile) {
-          const chunkSize = 1;
-          this.pagedSteamDataFull = {};
-          this.pagedSteamData = {};
-          this.currentSteamIndex = {};
-
-          this.sotList.forEach((sot: any) => {
-            const steaming = sot.steaming || [];
-            const chunks: any[][] = [];
-
-            for (let i = 0; i < steaming.length; i += chunkSize) {
-              chunks.push(steaming.slice(i, i + chunkSize));
-            }
-
-            this.pagedSteamDataFull[sot.guid] = chunks;
-            this.currentSteamIndex[sot.guid] = 0;
-            this.pagedSteamData[sot.guid] = chunks[0] || [];
-          });
-        } else {
-          this.pagedSteamDataFull = {};
-          this.pagedSteamData = {};
-          this.currentSteamIndex = {};
-        }
-
-        this.cardListComponent?.resetExpanded();
-      }
-
-      this.RefreshSotNetCost();
-
-      this.endCursor = this.sotDS.pageInfo?.endCursor;
-      this.startCursor = this.sotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-
-      callback?.();
     });
 
-  this.pageSize = pageSize;
-  this.pageIndex = pageIndex;
-}
+    console.log(this.searchStateService.getPagination(this.pageStateType));
+
+    this.subs.sink = this.sotDS
+      .searchStoringOrderTanksSteamEstimate(
+        this.lastSearchCriteria,
+        this.lastOrderBy,
+        first,
+        after,
+        last,
+        before
+      )
+      .subscribe(data => {
+        if (data) {
+          const steamingStatusFilter = this.searchForm?.value['est_status_cv'] || [];
+
+          // ✅ FIXED LOGIC
+          this.sotList = data.map(sot => ({
+            ...sot,
+            steaming: (sot.steaming || [])
+
+              // 🔥 remove invalid values (null, [], etc.)
+              .filter(stm => stm && !Array.isArray(stm))
+
+              // 🔥 filter by status
+              .filter(stm => {
+                if (steamingStatusFilter.length) {
+                  return steamingStatusFilter.includes(stm.status_cv);
+                }
+                return stm.status_cv !== 'CANCELED';
+              })
+
+              // 🔥 process valid items
+              .map(stm => {
+                const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
+
+                return {
+                  ...stm,
+                  steaming_part: stm_part,
+                  net_cost: "0.01" // or your calculation
+                  // net_cost: this.calculateNetCost_r1(stm)
+                };
+              })
+          }));
+
+          // ================= MOBILE PAGINATION =================
+          if (this.isMobile) {
+            const chunkSize = 1;
+            this.pagedSteamDataFull = {};
+            this.pagedSteamData = {};
+            this.currentSteamIndex = {};
+
+            this.sotList.forEach((sot: any) => {
+              const steaming = sot.steaming || [];
+              const chunks: any[][] = [];
+
+              for (let i = 0; i < steaming.length; i += chunkSize) {
+                chunks.push(steaming.slice(i, i + chunkSize));
+              }
+
+              this.pagedSteamDataFull[sot.guid] = chunks;
+              this.currentSteamIndex[sot.guid] = 0;
+              this.pagedSteamData[sot.guid] = chunks[0] || [];
+            });
+          } else {
+            this.pagedSteamDataFull = {};
+            this.pagedSteamData = {};
+            this.currentSteamIndex = {};
+          }
+
+          this.cardListComponent?.resetExpanded();
+        }
+
+        this.RefreshSotNetCost();
+
+        this.endCursor = this.sotDS.pageInfo?.endCursor;
+        this.startCursor = this.sotDS.pageInfo?.startCursor;
+        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        callback?.();
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
 
   // performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
   //   this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
@@ -1078,18 +1085,18 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     };
     this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data.length > 0) {
-        
+
         var cost: number = data[0].cost;
         sot.steaming = sot.steaming?.map(stm => {
           var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(stm);
           var isFlateRate = Boolean(stm.flat_rate)
           var net_cost = "";
-           var isApproved = this.IsApproved(stm);
+          var isApproved = this.IsApproved(stm);
           if (isAutoApproveSteaming) {
-           
+
             net_cost = this.displayNumber(stm.rate || 0);
             if (!stm.flat_rate) {
-              if(isApproved){
+              if (isApproved) {
                 cost = Number(stm?.steaming_part?.[0]?.approve_labour || 0);
               }
               net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
@@ -1106,7 +1113,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             }
           }
 
-          return { ...stm, net_cost: net_cost,labour_cost:cost };
+          return { ...stm, net_cost: net_cost, labour_cost: cost };
         });
         // var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
         // if (isAutoApproveSteaming) {
@@ -1405,7 +1412,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (bRetval) return bRetval;
     bRetval = this.isAllowDelete() && this.steamDS.canCancel(steamRow);
     if (bRetval) return bRetval;
-    bRetval = this.isAllowExport() 
+    bRetval = this.isAllowExport()
     if (bRetval) return bRetval;
 
     return bRetval;
@@ -1441,69 +1448,49 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
   }
 
-  
+
 
   onExport(event: Event, item: any) {
-      this.preventDefault(event);
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      this.isExportingPDF = true;
-      const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
-        width: '794px',
-        height: '80vh',
-        data: {
-          steam_guid: item?.guid,
-          estimate_no: item?.estimate_no,
-          // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
-          packageLabourCost: this.getRate(item)
-        },
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-      dialogRef.updatePosition({
-        top: '-9999px',  // Move far above the screen
-        left: '-9999px'  // Move far to the left of the screen
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isExportingPDF = false;
-      });
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+    this.isExportingPDF = true;
+    const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        steam_guid: item?.guid,
+        estimate_no: item?.estimate_no,
+        // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
+        packageLabourCost: this.getRate(item)
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+    });
+  }
 
-     getRate(item:any): number {
+  getRate(item: any): number {
     //   var rate = 0;
     //   var isSteamRepair=this.steamDS.IsSteamRepair(item!);
     //   if (isSteamRepair) {
     //    return item?.labour_cost || 0;
     //  }
-      return item?.labour_cost||0;
-    // if (isSteamRepair) {
-    //   return this.packageLabourItem?.cost || 0;
-    // }
-    // else {
-    //   if (!this.flat_rate) {
-    //     if (this.IsApproved()) {
-    //       return Number(this.steamItem?.steaming_part?.[0]?.approve_labour || 0);
-    //     }
-    //     else {
-    //       return this.packageLabourItem?.cost || 0;
-    //     }
-    //   }
-    //   else {
-    //     if (this.IsApproved()) {
-    //       return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
-    //     }
-    //     else {
-    //       return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
-    //     }
-    //   }
-    // }
+    return item?.labour_cost || 0;
+
   }
 
-  
 
-  
+
+
 }

@@ -402,14 +402,25 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
     if (this.filterResidueForm!.get('filterResidue')?.value) {
       const tankNo = this.filterResidueForm!.get('filterResidue')?.value;
-      where.and.push({
-        storing_order_tank: {
-          or: [
-            { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-          ]
-        }
-      });
+      // where.and.push({
+      //   storing_order_tank: {
+      //     or: [
+      //       { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+      //       { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+      //     ]
+      //   }
+      // });
+      where.or = [
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
+        { residue_part: { some: { residue: { estimate_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } } } } }
+      ];
     }
 
     if (this.filterResidueForm!.get('customer')?.value) {

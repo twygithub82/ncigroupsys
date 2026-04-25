@@ -53,6 +53,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { debounceTime, startWith, tap } from 'rxjs';
+import { isDirty } from 'environments/environment';
 
 @Component({
   selector: 'app-estimate-new',
@@ -265,7 +266,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
+  
   isMobile : boolean = false;
   @ViewChild('custInput', { static: false }) custInput?: ElementRef<HTMLInputElement>;
 

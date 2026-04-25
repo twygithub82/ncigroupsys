@@ -29,6 +29,7 @@ import { TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -106,8 +107,8 @@ export class FormDialogComponent {
   cleanFormulaList: CleaningFormulaItem[] = [];
   updatedMethodFormulaLinkList: CleaningStepItem[] = [];
   existingMethodFormulaLinkList: CleaningStepItem[] = [];
-  isMobile: boolean = false;
-  isDirty: boolean = false;
+    isDirty: boolean = isDirty;
+    isMobile: boolean = false;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

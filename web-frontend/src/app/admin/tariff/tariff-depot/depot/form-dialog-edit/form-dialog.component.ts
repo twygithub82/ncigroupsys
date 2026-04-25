@@ -27,6 +27,7 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
@@ -89,7 +90,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   translatedLangText: any = {};
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
