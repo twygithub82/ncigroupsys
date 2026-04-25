@@ -382,7 +382,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const hour = this.repairPartForm?.get('hour');
     var currentMaterialCost = this.parse2Decimal(this.repairPart?.material_cost);
     if (!isResetDisable) {
-      quantity?.setValue(1);
+      quantity?.setValue(0);
       quantity?.disable();
       hour?.setValue(0);
       hour?.disable();
