@@ -219,7 +219,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   currentResidueIndex: { [guid: string]: number } = {};
   currentIndex = 0;
   touchStartX = 0;
-  isExportingPDF: boolean=false;
+  isExportingPDF: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -544,6 +544,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       const tankNo = this.searchForm!.get('tank_no')?.value;
       or.push({ tank_no: { contains: Utility.formatContainerNumber(tankNo) } });
       or.push({ tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } });
+      // or.push({ residue: { some: { estimate_no: { contains: tankNo } } } });
       where.and = where.and || [];
       where.and.push({ or: or });
     }
@@ -1208,7 +1209,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
   }
 
-  onExport(event: Event, row : ResidueItem) {
+  onExport(event: Event, row: ResidueItem) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1235,7 +1236,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.isExportingPDF = false;
     });
   }
-  canExport(row : ResidueItem): boolean {
+  canExport(row: ResidueItem): boolean {
     return !!row?.guid;
   }
 

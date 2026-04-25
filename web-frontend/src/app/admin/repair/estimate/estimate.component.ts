@@ -582,7 +582,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        // { repair: { some: { estimate_no: { contains: tankNo } } } }
       ];
     }
 
@@ -609,7 +610,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       const soSome: any = {};
 
       if (this.searchForm!.value['customer_code']) {
-        where.storing_order={customer_company : { code: { contains: this.searchForm!.value['customer_code'].code } }};
+        where.storing_order = { customer_company: { code: { contains: this.searchForm!.value['customer_code'].code } } };
       }
     }
 
