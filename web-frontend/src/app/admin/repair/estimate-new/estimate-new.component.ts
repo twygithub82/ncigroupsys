@@ -209,6 +209,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PHOTOS: 'COMMON-FORM.PHOTOS',
     PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
     REVERT: 'COMMON-FORM.REVERT',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -709,7 +710,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
         this.templateList = [{
-          "guid": "", "template_name": "Plan Template", "type_cv": "", "labour_cost_discount": 0, "material_cost_discount": 0, "remarks": "", "create_dt": 0, "create_by": undefined, "update_dt": 0, "update_by": undefined, "delete_dt": undefined, "totalMaterialCost": 0, "template_est_customer": [], "template_est_part": [], getTotalMaterialCost: function (): number { return 0; }
+          "guid": "", "template_name": "Plain Template", "type_cv": "", "labour_cost_discount": 0, "material_cost_discount": 0, "remarks": "", "create_dt": 0, "create_by": undefined, "update_dt": 0, "update_by": undefined, "delete_dt": undefined, "totalMaterialCost": 0, "template_est_customer": [], "template_est_part": [], getTotalMaterialCost: function (): number { return 0; }
         }, ...data]
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_guid) {
