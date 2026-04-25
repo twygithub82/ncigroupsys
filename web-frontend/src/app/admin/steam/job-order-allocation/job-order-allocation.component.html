@@ -7,7 +7,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
+        <div class="card modal-card">
           <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
@@ -126,7 +126,7 @@
     <form class="ms-0" [formGroup]="steamEstForm!" #formDirective="ngForm">
       <div class="row" hidden>
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card ">
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.BILLING_PROFILE}}
@@ -189,7 +189,7 @@
       </div>
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.TEAM_ALLOCATION}}
@@ -204,7 +204,7 @@
               }
               @if (!(steamDs.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-sm-12 m-b-0">
+                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-sm-12 m-b-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEAM}}</mat-label>
                     <mat-select formControlName="team_allocation">
@@ -214,7 +214,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-sm-12 m-b-0 p-t-10">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-sm-12 m-b-0 p-t-10">
                   <button mat-flat-button color="accent" [disabled]="!isAssignEnabled()" (click)="assignTeam($event)">
                     <mat-icon>person_add</mat-icon>
                     {{translatedLangText.ASSIGN}}

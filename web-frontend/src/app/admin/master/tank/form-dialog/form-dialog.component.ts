@@ -32,6 +32,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { firstValueFrom } from 'rxjs';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { isDirty } from 'environments/environment';
 
 
 export interface DialogData {
@@ -109,7 +110,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   translatedLangText: any = {};
   isMobile: boolean = false;
   langText = {

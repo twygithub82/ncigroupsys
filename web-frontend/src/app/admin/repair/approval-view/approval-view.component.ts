@@ -172,7 +172,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     QTY: 'COMMON-FORM.QTY',
     HOUR: 'COMMON-FORM.HOUR',
     PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL$',
+    MATERIAL: 'COMMON-FORM.MATERIAL',
     TEMPLATE: 'COMMON-FORM.TEMPLATE',
     PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
     GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
@@ -212,6 +212,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     APPROVAL: 'COMMON-FORM.APPROVAL',
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     PHOTOS: 'COMMON-FORM.PHOTOS',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -271,7 +272,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
     private fileManagerService: FileManagerService,
-     
+
   ) {
     super();
     this.translateLangText();
@@ -1362,7 +1363,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
       return Utility.convertNumber(0, 2);
     }
-    
+
     const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
     return Utility.convertNumber(cost, 2);
   }

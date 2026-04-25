@@ -1978,6 +1978,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   displayApproveUpdateButton() {
-    return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
+    return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.APPROVE;
   }
 }

@@ -22,6 +22,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 
@@ -70,6 +71,7 @@ export class SearchFormDialogComponent {
     'part_name',
     'dimension',
     'length',
+    'hour',
     'material_cost'
   ];
 
@@ -167,7 +169,7 @@ export class SearchFormDialogComponent {
       tap(value => {
         if (value) {
           this.packageRepairFilteredList = this.packageRepairList
-          .filter(x => x.tariff_repair?.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.tariff_repair?.length}`.toLowerCase().includes(value.toLowerCase()));
+            .filter(x => x.tariff_repair?.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.tariff_repair?.length}`.toLowerCase().includes(value.toLowerCase()));
         } else {
           this.packageRepairFilteredList = [...this.packageRepairList];
         }
@@ -220,5 +222,9 @@ export class SearchFormDialogComponent {
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 }

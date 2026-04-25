@@ -624,6 +624,10 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
+  getGroupNameDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.groupNameCvList);
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
@@ -1094,7 +1098,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
-        repData.push([{ content: `${rep.group_name_cv}`, colSpan: 11, styles: { fillColor: 220, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
+        repData.push([{ content: `${this.getGroupNameDescription(rep.group_name_cv)}`, colSpan: 11, styles: { fillColor: 220, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
@@ -1748,9 +1752,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
-        var groupName = rep.group_name_cv.replaceAll('_',' ');
         repData.push([{
-          content: `${groupName}`, colSpan: 10,
+          content: `${this.getGroupNameDescription(rep.group_name_cv)}`, colSpan: 10,
           styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz }
         }]);
       }
@@ -1916,7 +1919,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
@@ -1927,7 +1930,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
@@ -2073,7 +2076,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
        { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2092,7 +2095,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       var foreignOwnerNetCost = ownerNetCost * rate;
       var foreignLesseeNetCost = lesseeNetCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle } },
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
          { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2252,7 +2255,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       rows.push([
       // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getDiscountAmount(), styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
@@ -2270,7 +2273,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       var foreignNetCosApv = (apvTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvTotalCost * rate));
     
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2460,7 +2463,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       rows.push([
       // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerDiscountAmount(false), styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
@@ -2486,7 +2489,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         var foreignLesseeNetCosApv = (apvLesseeTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvLesseeTotalCost * rate));
       
         rows.push([
-          { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
+          { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
           { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
           { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
           { content: foreignOwnerNetCostEst, styles: {  halign: 'center', fontStyle: fontStyle } },
@@ -2654,7 +2657,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST} (${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } }
@@ -2801,7 +2804,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       
     ]);
      rows.push([
-      { content: `${this.translatedLangText.NET_COST}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' ,fontSize:(fontSz)} },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' ,fontSize:(fontSz)} },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
        { content: this.getOwnerNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold', fontSize:(fontSz) } },
@@ -2818,7 +2821,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       var foreignOwnerNetCost = ownerNetCost * rate;
       var foreignLesseeNetCost = lesseeNetCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.NET_COST}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
          { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } },

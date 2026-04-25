@@ -1234,7 +1234,8 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   canAmend(re: SteamItem): boolean {
     
     if (!re?.status_cv) return true;
-    const validStatus = ['PENDING']
+    // const validStatus = ['PENDING']
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     var r:any=re;
     return validStatus.includes(r?.status_cv!);
   }
@@ -1253,7 +1254,8 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canApprove(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
+    // const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
+    const validStatus = ['PENDING']
     return validStatus.includes(re?.status_cv!);
   }
 

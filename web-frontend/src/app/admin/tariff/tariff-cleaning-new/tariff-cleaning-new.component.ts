@@ -43,6 +43,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { isDirty } from 'environments/environment';
 
 
 @Component({
@@ -245,7 +246,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   trfCleaningSubmitting: boolean = false;
 
   isMobile: boolean = false;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   isInitialized: any;
 
   constructor(
@@ -272,7 +273,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.selectedFileLoading = new BehaviorSubject<boolean>(false);
     this.submitForSaving = new BehaviorSubject<boolean>(false);
-    this.isDirty = false;
+    // this.isDirty = isDi;
   }
 
   initializeValueChanges() {

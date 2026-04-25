@@ -31,6 +31,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { isDirty } from 'environments/environment';
 
 export interface DialogData {
   action?: string;
@@ -89,7 +90,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

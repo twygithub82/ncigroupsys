@@ -14,7 +14,7 @@
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.FILTER}}</mat-label>
+            <mat-label>{{data.translatedLangText.DESCRIPTION}}</mat-label>
             <input matInput formControlName="filterTable">
           </mat-form-field>
         </div>
@@ -52,14 +52,22 @@
                   <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.tariff_repair.length}}{{getUnitTypeDescription(row.tariff_repair.length_unit_cv)}}
                 </mat-cell>
               </ng-container>
+              <ng-container matColumnDef="hour">
+                <mat-header-cell *matHeaderCellDef >
+                  {{data.translatedLangText.HOUR}}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span>{{row.tariff_repair.labour_hour}}
+                </mat-cell>
+              </ng-container>
               <ng-container matColumnDef="material_cost">
                 <mat-header-cell *matHeaderCellDef >
                   {{data.translatedLangText.MATERIAL_COST}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{data.translatedLangText.MATERIAL_COST}}:</span>
-                  <div class="cost-label">
-                    <span>$</span><span>{{row.material_cost | number: '1.2-2'}}</span>
+                  <div class="">
+                    <span>{{this.parse2Decimal(row.material_cost.toFixed(2))}}</span>
                   </div>
                 </mat-cell>
               </ng-container>
