@@ -31,6 +31,7 @@ import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { isDirty } from 'environments/environment';
 
 export interface DialogData {
   action?: string;
@@ -116,7 +117,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   thicknessUnitControl = new UntypedFormControl();
   isMobile = false;
   isSubGroupEmpty = false;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

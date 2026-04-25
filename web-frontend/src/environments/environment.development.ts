@@ -66,11 +66,11 @@ export const refreshTokenWithin: number = 1200000;
 
   // export const modulePackage: string = "starter";
 //  export const modulePackage: string = "growth";
-   export const modulePackage: string = "customized";
+export const modulePackage: string = "customized";
 export const maxTankCount: number = 5;
 export const systemCurrencyCode: string = "SGD";
 export const defaultDiscountThreshold: number = 25;
-
+export const isDirty: boolean = true;
 
 export interface cleanlinessReportTextBlock {
   text?: string | ((data: any) => string);

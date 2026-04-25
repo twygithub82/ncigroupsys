@@ -30,6 +30,7 @@ import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { isDirty } from 'environments/environment';
 
 export interface DialogData {
   action?: string;
@@ -106,7 +107,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};

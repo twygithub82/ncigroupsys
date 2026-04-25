@@ -25,6 +25,7 @@ import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive'
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -77,7 +78,7 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   fmlDS: CleaningFormulaDS;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

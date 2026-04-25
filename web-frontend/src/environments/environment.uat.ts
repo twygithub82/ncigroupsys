@@ -48,7 +48,7 @@ export const systemCurrencyCode: string = "SGD";
 
 export const defaultDiscountThreshold: number = 25;
 
-
+export const isDirty: boolean = true;
 export interface cleanlinessReportTextBlock {
   text?: string | ((data: any) => string);
   type?: 'text' | 'line';   // 👈 NEW

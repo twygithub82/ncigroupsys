@@ -29,6 +29,7 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
@@ -98,7 +99,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

@@ -48,7 +48,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
-import { defaultDiscountThreshold } from 'environments/environment';
+import { defaultDiscountThreshold, isDirty } from 'environments/environment';
 
 @Component({
   selector: 'app-customer-new',
@@ -242,10 +242,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   currentBillingBranch: any = undefined;
   defDiscThd: number = defaultDiscountThreshold;
   isBillingBranchEmpty: boolean = true;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   starterPackageNotAllowCustomerType = [
     "BRANCH"
   ]
+  isInitialized:boolean = false;
 
   @ViewChild('countrySelect') countrySelect!: MatSelect;
 
@@ -328,7 +329,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
  initCCForm() {
 
-  const initDelayMs = 500; // ✅ interval variable
+  const initDelayMs = 2000; // ✅ interval variable
 
   this.ccForm = this.fb.group({
     guid: [''],
@@ -358,17 +359,17 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     approval_threshold: []
   });
 
-  let isInitialized = false;
+  
 
   this.ccForm.valueChanges.subscribe(() => {
-    if (isInitialized) {
-      this.isDirty = true;
+    if (this.isInitialized) {
+       this.isDirty = true;
     }
   });
 
   setTimeout(() => {
     
-    isInitialized = true;
+    this.isInitialized = true;
   }, initDelayMs);
 }
 
@@ -1009,7 +1010,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.ccForm?.get('repList')?.setErrors(null);
-    this.isDirty=true;
+     if (this.isInitialized) {
+        this.isDirty = true;
+    }
+    // this.isDirty=true;
   }
 
   handleDelete(event: Event, row: any, index: number): void {

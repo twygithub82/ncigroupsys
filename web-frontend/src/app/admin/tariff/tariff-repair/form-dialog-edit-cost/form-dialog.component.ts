@@ -35,6 +35,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { isDirty } from 'environments/environment';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 
@@ -243,7 +244,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
   selectedItems: TariffRepairItem[];
   isMobile: boolean = false;
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,

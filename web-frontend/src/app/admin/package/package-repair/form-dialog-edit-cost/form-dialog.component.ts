@@ -39,6 +39,7 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { isDirty } from 'environments/environment';
 
 export interface DialogData {
   action?: string;
@@ -218,7 +219,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   UpdateInProgress: boolean = false;
   selectedCustomers: any[] = [];
   selectedProfiles: any[] = [];
-  isDirty: boolean = false;
+  isDirty: boolean = isDirty;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
