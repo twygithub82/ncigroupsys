@@ -229,7 +229,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                  <input matInput [formControl]="newQty" type="text" [min]="0" appNumericText required>
+                  <input matInput [formControl]="newQty" type="text" [min]="0" [max]="500" appNumericText [allowDecimal]="false"  required>
                 </mat-form-field>
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
@@ -272,12 +272,12 @@
             }
             <div class="row">
               <div class="responsive_table">
-                <table mat-table [dataSource]="deList" matSort
+                <table mat-table [dataSource]="this.filteredDeList()" matSort
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.S_N}}</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-between'">
                       {{i+1}}

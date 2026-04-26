@@ -1288,7 +1288,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canCopy(re: SteamItem): boolean {
-    return true;
+    return false;
   }
 
   canRollbackJobInProgress(re: SteamItem | undefined): boolean {

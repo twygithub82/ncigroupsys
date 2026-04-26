@@ -60,6 +60,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { isDirty } from 'environments/environment';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -96,7 +97,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
     NumericTextDirective
   ]
 })
-export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit , AfterViewInit  {
+export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   displayedColumns = [
     'seq',
     'desc',
@@ -249,6 +250,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     APPROVED: 'COMMON-FORM.APPROVED',
     ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -320,7 +322,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   autosteamTotalCost: string = '';
 
   isMobile = false;
-  isDirty = false;
+  isDirty = isDirty;
 
   constructor(
     public httpClient: HttpClient,
@@ -352,7 +354,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.packRepDS = new PackageRepairDS(this.apollo);
   }
   ngAfterViewInit(): void {
-    this.isDirty = false;
+     this.isDirty = isDirty;
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -370,7 +372,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.loadData();
   }
 
- 
+
 
 
   private updateView(width: number): void {
@@ -460,15 +462,15 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       })
     ).subscribe();
 
-      // Detect job_no change
+    // Detect job_no change
     this.steamEstForm?.get('job_no')?.valueChanges.subscribe(value => {
       this.isDirty = true;
-      
+
     });
 
     this.steamEstForm?.get('bill_to')?.valueChanges.subscribe(value => {
       this.isDirty = true;
-      
+
     });
 
     // Detect remarks change
@@ -750,7 +752,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (index === -1) {
       var newData = [...this.deList, steamPartItem];
       this.updateData(newData);
-      this.isDirty=true;
+      this.isDirty = true;
     }
     this.resetSelectedItemForUpdating();
   }
@@ -830,7 +832,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
-          this.isDirty=true;
+          this.isDirty = true;
         } else {
           const data = [...this.deList];
           data.splice(index, 1);
@@ -1083,7 +1085,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.stopEventTrigger(event);
     this.preventDefault(event);
     this.deleteItem(event, row, index);
-    
+
   }
 
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
@@ -1336,7 +1338,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canExport(): boolean {
-    return !!this.steam_guid ;
+    return !!this.steam_guid;
   }
 
   getPackageSteamAlias(alias?: string) {
@@ -1380,7 +1382,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         if (this.steamItem && !this.steamDS.canApprove(this.steamItem)) {
           bill_to?.disable();
         }
-        this.isDirty = false;
+        this.isDirty = isDirty;
       }
     });
     this.patchSteamEstForm(this.steamItem!);
@@ -1403,7 +1405,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
       // this.steamItem = this.historyState.selectedSteam;
-      this.steamItem= { ...this.historyState.selectedSteam };
+      this.steamItem = { ...this.historyState.selectedSteam };
       this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       console.log(this.steamItem)
       this.labourHour = this.steamItem?.est_hour || 1;
@@ -1707,7 +1709,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   updateAction(steamPart: any) {
     if (steamPart?.action === '' || steamPart?.action === null || steamPart?.action === undefined) {
       steamPart.action = 'EDIT';
-      this.isDirty=true;
+      this.isDirty = true;
     }
   }
 
@@ -1841,7 +1843,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   onExport(event: Event) {
     this.preventDefault(event);
-    var repItem =this.historyState.selectedSteam;
+    var repItem = this.historyState.selectedSteam;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1854,8 +1856,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       height: '80vh',
       data: {
 
-         steam_guid: this.steamItem?.guid,
-         estimate_no: this.steamItem?.estimate_no,
+        steam_guid: this.steamItem?.guid,
+        estimate_no: this.steamItem?.estimate_no,
         // packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
         packageLabourCost: this.getRate_r1(repItem)
       },
@@ -1935,7 +1937,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
-   getRate_r1(row:SteamItem): number {
+  getRate_r1(row: SteamItem): number {
     if (this.isSteamRepair) {
       return this.packageLabourItem?.cost || 0;
     }
@@ -1962,7 +1964,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   onFlatRateChanged(newValue: boolean) {
-     this.isDirty = (newValue)?true:this.isDirty;
+    this.isDirty = (newValue) ? true : this.isDirty;
     var cost = this.getRate();
     var totalCost = this.parse2Decimal(cost);
     if (!this.flat_rate) {
@@ -1979,5 +1981,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   displayApproveUpdateButton() {
     return this.steamItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.APPROVE;
+  }
+
+  filteredDeList() {
+    return this.deList.filter(x => !x.delete_dt);
   }
 }

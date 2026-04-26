@@ -180,9 +180,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
   availableProcessStatus: string[] = [
     'APPROVED',
-    'JOB_IN_PROGRESS',
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
+    'JOB_IN_PROGRESS',
   ]
 
   rsdEstList: ResidueItem[] = [];
@@ -298,7 +298,14 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = data;
+      // this.processStatusCvList = data;
+       this.processStatusCvList = data
+        .filter(x => this.availableProcessStatus.includes(x.code_val ?? ''))
+        .sort((a, b) => {
+          const indexA = this.availableProcessStatus.indexOf(a.code_val ?? '');
+          const indexB = this.availableProcessStatus.indexOf(b.code_val ?? '');
+          return indexA - indexB;
+        });
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
