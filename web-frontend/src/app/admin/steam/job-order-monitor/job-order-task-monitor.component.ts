@@ -296,7 +296,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   ttDS: TimeTableDS;
   isOwner = false;
   reqTemp?: number = 9999;
-
+  maxDate = new Date();
+  minDate = new Date(2000, 0, 1);
 
   public disabled = false;
   public showSpinners = true;
@@ -472,6 +473,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
                 this.steamItem = steam[0];
                 this.sotItem = this.steamItem?.storing_order_tank;
                 this.reqTemp = (!this.sotItem?.required_temp) ? this.reqTemp : this.sotItem?.required_temp;
+                const minEpoch = this.igDS.getInGateItem(this.sotItem?.in_gate)?.eir_dt || 0;
+                this.minDate = new Date(minEpoch * 1000);
                 this.QuerySteamTemp();
 
 
@@ -610,11 +613,18 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   updateData(newData: SteamTemp[] | undefined): void {
     if (newData?.length) {
-      this.deList = newData.map((row, index) => ({
-        ...row,
-        index: index,
-        edited: false
-      }));
+      this.deList = newData
+        .sort((a, b) => (a.report_dt ?? 0) - (b.report_dt ?? 0))
+        .map((row, index) => ({
+          ...row,
+          index: index,
+          edited: false
+        }));
+      // this.deList = newData.map((row, index) => ({
+      //   ...row,
+      //   index: index,
+      //   edited: false
+      // }));
     }
   }
 
@@ -1180,6 +1190,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
             if (result.data.recordSteamingTemp) {
               this.deList = [steamTemp, ...this.deList];
+              this.deList = this.deList
+                .sort((a, b) => (a.report_dt ?? 0) - (b.report_dt ?? 0))
+                .map((row, index) => ({
+                  ...row,
+                }));
               this.completeSteamJobWithoutConfirm(event!);
             }
           });

@@ -215,6 +215,8 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TIME}}</mat-label>
                     <input matInput [owlDateTimeTrigger]="date2" [owlDateTime]="date2" formControlName="time"
+                     [min]="minDate"
+                     [max]="maxDate"
                       required="true">
                     <mat-icon matSuffix [owlDateTimeTrigger]="date2" class="date-icon">today</mat-icon>
                     <owl-date-time #date2></owl-date-time>

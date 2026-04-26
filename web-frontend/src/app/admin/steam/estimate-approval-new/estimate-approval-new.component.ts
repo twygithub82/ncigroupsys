@@ -354,7 +354,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.packRepDS = new PackageRepairDS(this.apollo);
   }
   ngAfterViewInit(): void {
-     this.isDirty = isDirty;
+    this.isDirty = isDirty;
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -456,7 +456,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           this.newQty.setValue(null);
           this.newHour.setValue(desc_value?.labour_hour ? desc_value?.labour_hour : 0)
         }
-        else if (desc_value) {
+        else {
           this.getPackageSteamAlias(desc_value);
         }
       })
@@ -1065,7 +1065,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         ...row,
         index: index
       }));
-
+      if(this.steamItem?.status_cv === 'NO_ACTION')
+      {
+        this.deList.forEach((data) => {
+          data.approve_part=false;
+        });
+      }
       if (!this.isSteamRepair) this.onFlatRateChanged(false);
       //this.calculateCost();
     }
@@ -1358,6 +1363,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     where.customer_company_guid = { eq: custCompanyGuid };
     this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
       this.packSteamList = data;
+      
       this.displayPackSteamList = this.packSteamList;
       this.populateSteamPartList(this.steamItem!);
     });
@@ -1406,6 +1412,18 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.sotItem = this.historyState.selectedRow;
       // this.steamItem = this.historyState.selectedSteam;
       this.steamItem = { ...this.historyState.selectedSteam };
+
+      
+
+      if(this.steamItem) {
+      const parts = this.steamItem?.steaming_part ?? [];
+      
+      this.steamItem.steaming_part = parts
+        .filter(x => !x.delete_dt)
+        .sort((a, b) => (a.create_dt ?? 0) - (b.create_dt ?? 0));
+      }
+
+     
       this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       console.log(this.steamItem)
       this.labourHour = this.steamItem?.est_hour || 1;

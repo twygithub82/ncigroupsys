@@ -937,7 +937,7 @@
     "GATEIO": "Gate In/Out",
     "GATEIO-S": "Gate I/O",
     "PENDING-INVOICE-DETAIL": "Pending Invoice Detail",
-    "STEAM-PROGRESS-MONITORING-CHART": "Steam Progress Monitoring Chart",
+    "STEAM-PROGRESS-MONITORING-CHART": "Steam Monitoring Report",
     "TEMPERATURE": "Temperature",
     "INITIAL-TEMPERATURE": "Initial Temperature",
     "STEAM-BEGIN-ON": "Steam Begin On",
@@ -1421,7 +1421,8 @@
     "VERIFY-TOTP": "Verify TOTP",
     "RECORD-EXISTS": "Record Already Exists",
     "PLAIN-TEMPLATE": "Plain Template",
-    "REVERT": "Revert"
+    "REVERT": "Revert",
+    "JOB": "Job"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

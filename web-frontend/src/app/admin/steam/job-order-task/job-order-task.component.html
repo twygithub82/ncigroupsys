@@ -89,11 +89,11 @@
         </ng-container>
         <ng-container matColumnDef="customer">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
             <span
               class="mobile-tab-label-value truncate-2-line">{{row.storing_order_tank?.storing_order?.customer_company.name}}</span>
@@ -101,11 +101,11 @@
         </ng-container>
         <ng-container matColumnDef="estimate_no">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.ESTIMATE_NO}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             <span
               class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steaming?.estimate_no}}
           </mat-cell>
@@ -123,22 +123,22 @@
         </ng-container>
         <ng-container matColumnDef="team">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.TEAM}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             <span
               class="mobile-tab-label">{{translatedLangText.TEAM}}:</span>{{(row?.team?.description||'-')}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="status_cv">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.STATUS}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             <span
               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getJobStatusDescription(row?.status_cv)}}
           </mat-cell>
