@@ -87,10 +87,10 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 })
 export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsJobOrder = [
-    'tank_no',
-    'customer',
     'estimate_no',
+    'tank_no',
     'allocate_dt',
+    'customer',
     'team',
     'status_cv',
     'actions'

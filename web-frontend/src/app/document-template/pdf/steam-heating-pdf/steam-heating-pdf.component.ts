@@ -16,7 +16,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { SteamDS } from 'app/data-sources/steam';
+import { SteamDS, SteamTemp } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -160,6 +160,10 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
     APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
     SIGNATURE: 'COMMON-FORM.SIGNATURE',
     HH_MM: 'COMMON-FORM.HH-MM',
+    DAYS: 'COMMON-FORM.DAYS',
+    HOURS: 'COMMON-FORM.HRS',
+    MINS: 'COMMON-FORM.MINUTES',
+
   }
 
   type?: string | null;
@@ -422,14 +426,20 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
         { content: `${this.steamItem?.estimate_no}` }
       ],
       [
-        { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+        { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
+        { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDateTime(item?.storing_order_tank?.in_gate?.[0]?.eir_dt||0, false)}` }
+      ],
+      [
+        { content: `${this.translatedLangText.JOB_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `-` },
         { content: `${this.translatedLangText.FLASH_POINT}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.tariff_cleaning?.flash_point} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` }
       ],
       [
-        { content: `${this.translatedLangText.INITIAL_TEMPERATURE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.steamTempList?.[0]?.meter_temp} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` },
+        { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
         { content: `${this.translatedLangText.REQUIRED_TEMP}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.required_temp} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}` }
       ],
@@ -574,8 +584,9 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
       });
     }
 
-    const totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList!);
-    signatureY = PDFUtility.addText(pdf, `${this.translatedLangText.TOTAL_DURATION} ${totalDuration} ${this.translatedLangText.HH_MM}`, signatureY, leftMargin + 1, fontSz, true, fontFamily, false, undefined, false, '#000000');
+    // const totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList!);
+    const totalDuration = this.getTotalSteamDuration_r1(this.steamTempList!);
+    signatureY = PDFUtility.addText(pdf, `${this.translatedLangText.TOTAL_DURATION} ${totalDuration} `, signatureY, leftMargin + 1, fontSz, true, fontFamily, false, undefined, false, '#000000');
 
     const signatureBoxHeight = 25;
     const signatureBoxWidth = 60;
@@ -584,12 +595,12 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     pdf.setLineWidth(0.15);
 
-    signatureY+=15;
+    signatureY += 15;
     // Left signature box
     // pdf.rect(leftSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
-     PDFUtility.addText(pdf, `${this.translatedLangText.PREPARED_BY}: `, signatureY , leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
+    //  PDFUtility.addText(pdf, `${this.translatedLangText.PREPARED_BY}: `, signatureY , leftSignatureX + 2, fontSz, false, fontFamily, true, undefined, false, '#000000');
     // pdf.line(leftSignatureX + 2, signatureY + signatureBoxHeight - 10, leftSignatureX + signatureBoxWidth - 2, signatureY + signatureBoxHeight - 10);
-     PDFUtility.addText(pdf, `${customerInfo.companyName}`, signatureY , leftSignatureX + 22, fontSz+1, false, fontFamily, true, undefined, false, '#000000');
+    //  PDFUtility.addText(pdf, `${customerInfo.companyName}`, signatureY , leftSignatureX + 22, fontSz+1, false, fontFamily, true, undefined, false, '#000000');
 
     // Right signature box
     // pdf.rect(rightSignatureX, signatureY, signatureBoxWidth, signatureBoxHeight);
@@ -724,7 +735,7 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
   // }
 
   getTotalSteamDuration() {
-    this.totalDuration = this.steamDS.getTotalSteamDuration(this.steamTempList);
+    this.totalDuration = this.getTotalSteamDuration_r1(this.steamTempList);
   }
 
   calculateCost() {
@@ -819,5 +830,52 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   getReportTitle() {
     return `${this.steamItem?.estimate_no} ${this.translatedLangText.STEAM_PROGRESS_MONITORING_CHART}`;
+  }
+
+  getTotalSteamDuration_r1(steamTempList: SteamTemp[] | undefined): string {
+    if (!steamTempList || steamTempList.length <= 1) {
+      return "00:00";
+    }
+
+    let earliestReportDt = steamTempList.reduce((earliest, item) => {
+      if (item.report_dt != null) {
+        return earliest === undefined || item.report_dt < earliest
+          ? item.report_dt
+          : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    let latestReportDt = steamTempList.reduce((latest, item) => {
+      if (item.report_dt != null) {
+        return latest === undefined || item.report_dt > latest
+          ? item.report_dt
+          : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    if (earliestReportDt === undefined || latestReportDt === undefined) {
+      return "00:00";
+    }
+
+    // Convert seconds → ms if needed
+    if (earliestReportDt < 1e10) earliestReportDt *= 1000;
+    if (latestReportDt < 1e10) latestReportDt *= 1000;
+
+    const timeTakenMs = latestReportDt - earliestReportDt;
+    if (timeTakenMs <= 0) return "00:00";
+
+    const totalMinutes = Math.floor(timeTakenMs / 60000);
+
+    const days = Math.floor(totalMinutes / (24 * 60));
+    const remainingMinutesAfterDays = totalMinutes % (24 * 60);
+
+    const hours = Math.floor(remainingMinutesAfterDays / 60);
+    const minutes = remainingMinutesAfterDays % 60;
+
+    return `${String(days).padStart(2, '0')}${this.translatedLangText.DAYS} ` +
+      `${String(hours).padStart(2, '0')}${this.translatedLangText.HOURS} ` +
+      `${String(minutes).padStart(2, '0')}${this.translatedLangText.MINS}`;
   }
 }

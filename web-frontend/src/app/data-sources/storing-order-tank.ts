@@ -1744,6 +1744,10 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
             }
           }
           steaming_part {
+            create_by
+            create_dt
+            update_by
+            update_dt
             approve_cost
             approve_labour
             approve_qty

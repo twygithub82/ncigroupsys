@@ -220,7 +220,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     VIEW: 'COMMON-FORM.VIEW',
     UNASSIGN: 'COMMON-FORM.UNASSIGN',
     CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
-    APPROVED: 'COMMON-FORM.APPROVED'
+    APPROVED: 'COMMON-FORM.APPROVED',
+    JOB:'COMMON-FORM.JOB',
   }
 
   clean_statusList: CodeValuesItem[] = [];

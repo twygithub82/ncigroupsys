@@ -3,7 +3,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -42,6 +42,9 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { CleaningMethodDS } from 'app/data-sources/cleaning-method';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-in-gate',
@@ -72,6 +75,9 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatAutocompleteModule,
+    MatDividerModule,
+    MatChipsModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -96,6 +102,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     { text: 'MENUITEMS.CLEANING.TEXT', route: '/admin/cleaning/approval' }
   ]
 
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -133,7 +140,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     METHOD: "COMMON-FORM.METHOD",
     EXPORT: "COMMON-FORM.EXPORT",
     APPROVED_COST: "COMMON-FORM.APPROVED-COST",
-    PROCESS: "COMMON-FORM.PROCESS"
+    PROCESS: "COMMON-FORM.PROCESS",
+    PROCESS_NAME_SELECTED: "COMMON-FORM.SELECTED",
+    PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
   }
 
   availableTankStatus: string[] = [
@@ -159,6 +168,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   cvDS: CodeValuesDS;
   igCleanDS: InGateCleaningDS;
   tcDS: TariffCleaningDS;
+  mthAutoCompleteDS: CleaningMethodDS;
 
   inGateList: InGateCleaningItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -166,7 +176,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
+  processNameList: string[] = [];
 
+  processNameControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   last_cargoList?: TariffCleaningItem[];
 
@@ -194,6 +206,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   ) {
     super();
     this.translateLangText();
+    this.mthAutoCompleteDS = new CleaningMethodDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -222,10 +235,23 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       eir_no: [''],
       last_cargo: this.lastCargoControl,
       approval_status: [''],
+      eir_dt_start: [''],
+      eir_dt_end: [''],
+      process: ['']
     });
   }
 
   initializeValueChanges() {
+    this.processNameControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.mthAutoCompleteDS.search({ name: { contains: value || '' } }, { name: "ASC" }, 100).subscribe(data => {
+          this.processNameList = data.map(i => i.name || '');
+        });
+      })
+    ).subscribe();
+
     this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -375,7 +401,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.storing_order_tank.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        { in_gate: { some: { eir_no: { contains: tankNo } } } }
+
       ]
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
@@ -400,10 +428,17 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['start_approved_date']), lte: Utility.convertDate(this.searchForm!.value['end_approved_date']) };
     }
 
-    if (this.searchForm!.get('start_quotation_date')?.value && this.searchForm!.get('end_quotation_date')?.value) {
+
+    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate = {};
-      where.storing_order_tank.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['start_quotation_date']), lte: Utility.convertDate(this.searchForm!.value['end_quotation_date']) } } };
+      where.storing_order_tank.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
+    }
+
+      if (this.selectedNames.length > 0) {
+         if (!where.storing_order_tank) where.storing_order_tank = {};
+         if (!where.storing_order_tank.tariff_cleaning) where.storing_order_tank.tariff_cleaning = {};
+      where.storing_order_tank.tariff_cleaning =  { cleaning_method: { name: { in: this.selectedNames } } };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -526,10 +561,14 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       tank_no: '',
       eir_no: '',
       approval_status: '',
+      eir_dt_start: '',
+      eir_dt_end: '',
+      process: ''
 
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+    this.name_removeAllSelected();
   }
 
   stopEventTrigger(event: Event) {
@@ -636,15 +675,15 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   HiddenMenu(row: InGateCleaningItem, statusMenu: String): Boolean {
     var bRetval: Boolean = false;
 
-     if (statusMenu === "KIV" || statusMenu === "NO_ACTION")
-       bRetval = !!row.customer_billing_guid?.trim();
+    if (statusMenu === "KIV" || statusMenu === "NO_ACTION")
+      bRetval = !!row.customer_billing_guid?.trim();
 
     bRetval = (row.status_cv === statusMenu);
     if (!bRetval) bRetval = (row.status_cv == 'JOB_IN_PROGRESS');
     if (statusMenu === "APPROVED") bRetval = (row.status_cv == 'ASSIGNED' || row.status_cv == 'APPROVED');
 
     //If the estimate ald biiled.. not allow to do KIV or No action
-    
+
 
     return bRetval;
   }
@@ -695,5 +734,85 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
 
     return bRetval;
+  }
+
+  getMaxDate() {
+    return new Date();
+  }
+
+
+  @ViewChild('nameInput', { static: true })
+  nameInput?: ElementRef<HTMLInputElement>;
+  selectedNames: any[] = [];
+  name_itemSelected(row: any): boolean {
+    var itm = this.selectedNames;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c === row);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  name_getSelectedDisplay(): string {
+    var itm = this.selectedNames;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
+    }
+    else if (itm?.length == 1) {
+      const value = `${itm[0]}`;
+      retval = `${value}`;
+    }
+    return retval;
+  }
+
+  name_removeAllSelected(): void {
+    this.selectedNames = [];
+    this.search();
+  }
+
+  name_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedNames;
+    var cnt = this.processNameControl;
+    var elmInput = this.nameInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+
+    }
+    else {
+      itm.splice(index, 1);
+
+    }
+
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+    }
+
+    this.search();
+
+  }
+
+  name_onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.name_selected(fakeEvent);
+
+  }
+
+  name_add(event: MatChipInputEvent): void {
+    var cnt = this.processNameControl;
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
   }
 }

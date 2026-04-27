@@ -466,6 +466,7 @@ namespace IDMS.Repair.GqlTypes
                             var repPart = new repair_part() { guid = item.guid };
                             context.repair_part.Attach(repPart);
                             repPart.approve_part = false;
+                            context.Entry(repPart).Property(e => e.approve_part).IsModified = true;
                             repPart.update_dt = currentDateTime;
                             repPart.update_by = user;
                         }

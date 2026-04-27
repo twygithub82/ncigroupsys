@@ -53,9 +53,26 @@ export class AppComponent implements OnInit, OnDestroy {
       this.userActivitySubscription?.unsubscribe();
       this.router.navigate(['/authentication/signin']);
     });
-    this.authService.userLoggedIn.subscribe(() => { // ✅ Resubscribe when user logs in
+    this.authService.userLoggedIn.subscribe(() => {
       this.userActivitySubscription?.unsubscribe();
       this.detectUserActivity();
+    });
+    this.listenToStorageChanges();
+  }
+
+  private listenToStorageChanges() {
+    window.addEventListener('storage', (event: StorageEvent) => {
+      if (event.key !== 'userToken') return;
+
+      if (event.newValue === null) {
+        // Another tab logged out — follow suit in this tab
+        this.clearAllTimers();
+        this.userActivitySubscription?.unsubscribe();
+        this.router.navigate(['/authentication/signin']);
+      } else if (event.oldValue !== null && event.newValue !== null) {
+        // Another tab refreshed the token — sync our logout timer with the new expiry
+        this.resetAutoLogoutTimer();
+      }
     });
   }
 

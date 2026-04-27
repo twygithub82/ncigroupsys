@@ -29,6 +29,8 @@ export class AuthService {
   userLoggedOut = new Subject<void>();
 
   private regexCache = new Map<string, RegExp>();
+  private readonly REFRESH_LOCK_KEY = 'tokenRefreshLock';
+  private readonly REFRESH_LOCK_TTL_MS = 15000;
 
   constructor(private http: HttpClient, private authApiService: AuthApiService, private injector: Injector) {
     this.currentUserSubject = new BehaviorSubject<User>(
@@ -195,35 +197,60 @@ export class AuthService {
   }
 
   refreshToken(): Observable<UserToken | null> {
+    // Cross-tab mutex: if another tab is already refreshing, wait for it to finish
+    // and reuse the new token it writes to localStorage instead of racing.
+    const lockRaw = localStorage.getItem(this.REFRESH_LOCK_KEY);
+    if (lockRaw) {
+      const lock = JSON.parse(lockRaw);
+      if (Date.now() - lock.timestamp < this.REFRESH_LOCK_TTL_MS) {
+        return new Observable<UserToken | null>(observer => {
+          const poll = setInterval(() => {
+            if (!localStorage.getItem(this.REFRESH_LOCK_KEY)) {
+              clearInterval(poll);
+              const stored = localStorage.getItem(this.tokenKey);
+              const userToken = stored ? JSON.parse(stored) : null;
+              if (userToken?.token) {
+                this.tokenRefreshed.next();
+                observer.next(userToken);
+              } else {
+                observer.next(null);
+              }
+              observer.complete();
+            }
+          }, 300);
+          setTimeout(() => {
+            clearInterval(poll);
+            observer.next(null);
+            observer.complete();
+          }, this.REFRESH_LOCK_TTL_MS + 2000);
+        });
+      }
+    }
+
+    localStorage.setItem(this.REFRESH_LOCK_KEY, JSON.stringify({ timestamp: Date.now() }));
+
     const currentRefreshToken = this.getRefreshToken();
     if (!currentRefreshToken) {
+      localStorage.removeItem(this.REFRESH_LOCK_KEY);
       this.logout();
       return of(null);
     }
 
-    const refreshRequest$ = this.authApiService.refreshToken(currentRefreshToken, this.currentUserIsStaff)
-
-    return refreshRequest$.pipe(
+    return this.authApiService.refreshToken(currentRefreshToken, this.currentUserIsStaff).pipe(
       map(response => {
-        const expTime = new Date(response.expiration).getTime();
-        const now = Date.now();
-
-        // Optional: uncomment to reject short-lived token
-        // if (expTime - now < 5 * 60 * 1000) {
-        //   throw new Error('Received a near-expired token, aborting');
-        // }
-
         const userToken = new UserToken();
         userToken.token = response.token;
         userToken.expiration = response.expiration;
         userToken.refreshToken = response.refreshToken;
 
         localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
+        localStorage.removeItem(this.REFRESH_LOCK_KEY);
         this.tokenRefreshed.next();
 
         return userToken;
       }),
       catchError(error => {
+        localStorage.removeItem(this.REFRESH_LOCK_KEY);
         this.logout();
         return throwError(() => error);
       })
