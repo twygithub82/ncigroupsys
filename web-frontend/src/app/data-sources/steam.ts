@@ -1248,6 +1248,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canSave(re: SteamItem): boolean {
+     if (!re?.status_cv) return true;
     const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     var allowSave: boolean = validStatus.includes(re?.status_cv!);
     return allowSave;
@@ -1255,6 +1256,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canApprove(re: SteamItem): boolean {
     // const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
+     if (!re?.status_cv) return true;
     const validStatus = ['PENDING']
     return validStatus.includes(re?.status_cv!);
   }
@@ -1288,7 +1290,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canCopy(re: SteamItem): boolean {
-    return true;
+    return false;
   }
 
   canRollbackJobInProgress(re: SteamItem | undefined): boolean {

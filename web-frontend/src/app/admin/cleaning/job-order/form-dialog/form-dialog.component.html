@@ -189,7 +189,7 @@
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-10">
                 <!-- <mat-label style="display: flex; justify-content: left;">{{translatedLangText.REMARKS}}: -->
-                  <mat-label>{{translatedLangText.REMARKS}}:
+                <mat-label>{{translatedLangText.REMARKS}}:
                   {{this.getTariffCleaningRemarks()}}
                 </mat-label>
               </div>
@@ -256,11 +256,11 @@
                                 <div class="table-label cost-label">
                                   <span></span><span>
                                     {{
-                                    this.selectedItem?.status_cv === 'APPROVED'
+                                    selectedItem?.status_cv === 'APPROVED'
                                     ? '-'
-                                    : this.selectedItem?.job_order?.update_by
-                                    ? this.displayDate(this.selectedItem.job_order.update_by)
-                                    : '-'
+                                    : this.selectedItem?.job_order?.update_dt
+                                    ?selectedItem.job_order?.update_by:"-"
+                                    
                                     }}
                                   </span>
                                 </div>
@@ -272,7 +272,7 @@
                                     this.selectedItem?.status_cv === 'APPROVED'
                                     ? '-'
                                     : this.selectedItem?.job_order?.complete_dt
-                                    ? this.displayDate(this.selectedItem.job_order.update_by)
+                                    ? this.selectedItem.job_order.update_by
                                     : '-'
                                     }}
                                     <!-- {{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}} -->

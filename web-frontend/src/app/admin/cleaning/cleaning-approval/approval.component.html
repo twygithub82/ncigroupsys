@@ -30,9 +30,9 @@
                       </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div class="row">
-                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                          <mat-label>{{translatedLangText.TANK_NO}}/{{translatedLangText.EIR_NO}} </mat-label>
                           <input matInput formControlName="tank_no">
                         </mat-form-field>
                       </div>
@@ -69,7 +69,54 @@
                           }
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                          <mat-date-range-input [rangePicker]="eir_picker" [max]="getMaxDate()">
+                            <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                            <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                          </mat-date-range-input>
+                          <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                          <mat-date-range-picker #eir_picker></mat-date-range-picker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                       <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
+                          <mat-chip-grid #name_chipGrid class="nowrap single-line-chip-grid">
+                            @if(this.selectedNames.length>0){
+                            <mat-chip-row color="primary" (click)="name_removeAllSelected()">
+                              <span> {{name_getSelectedDisplay()}}</span>
+                              <button matChipRemove hidden>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                            }
+                            <input #nameInput [formControl]="processNameControl" [matAutocomplete]="processName"
+                              formControlName="processName" [matChipInputFor]="name_chipGrid"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="name_add($event)">
+                            <mat-autocomplete #processName="matAutocomplete" (optionSelected)="name_selected($event)">
+                              @for (pn of processNameList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="name_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="name_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="name_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.APPROVAL_STATUS}}</mat-label>
                           <mat-select multiple formControlName="approval_status">
@@ -208,10 +255,10 @@
                         [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         @if(IsEnable3Dots(row))
                         {
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
-                            [hidden]="MenuButtonHidden(row)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
+                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
+                          [hidden]="MenuButtonHidden(row)">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
                         }
                         <mat-menu #menu="matMenu">
                           <button mat-menu-item (click)="ApproveTank(row)" [hidden]="HiddenMenu(row,'APPROVED')">

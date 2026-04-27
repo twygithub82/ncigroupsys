@@ -1425,10 +1425,10 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     const comStyles: any = {
       0: { cellWidth: 11, halign: 'center', valign: 'middle' },
       1: { halign: 'left', valign: 'middle' },
-      2: { cellWidth: 15, halign: 'right', valign: 'middle' },
+      2: { cellWidth: 18, halign: 'right', valign: 'middle' },
       // 3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-      3: { cellWidth: 30, halign: 'right', valign: 'middle' },
-      4: { cellWidth: 15, halign: 'center', valign: 'middle' },
+      3: { cellWidth: 18, halign: 'right', valign: 'middle' },
+      4: { cellWidth: 18, halign: 'center', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},
     };
 

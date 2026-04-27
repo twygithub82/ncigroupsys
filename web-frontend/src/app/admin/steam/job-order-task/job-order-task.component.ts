@@ -92,6 +92,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'customer',
     'estimate_no',
     'allocate_dt',
+    'team',
     'status_cv',
     'actions'
   ];
@@ -131,6 +132,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     TO_COMPLETE: "COMMON-FORM.TO-COMPLETE",
     STEAM_HEAT_TYPE: "COMMON-FORM.STEAM-HEAT-TYPE",
     SEARCH: 'COMMON-FORM.SEARCH',
+    TEAM: 'COMMON-FORM.TEAM',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -217,6 +219,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
       jobStatusCv: [''],
+      team: [''],
       customer: this.customerCodeControl,
     });
   }
@@ -323,6 +326,13 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       };
     }
 
+     if (this.filterJobOrderForm!.get('team')?.value) {
+      if (!where.and) where.and = [];
+      where.and.push({
+        team: {  description: { eq: (this.filterJobOrderForm!.get('team')?.value) }  }
+      });
+    }
+    
     if (this.filterJobOrderForm!.get('customer')?.value) {
       if (!where.and) where.and = [];
       where.and.push({
@@ -767,7 +777,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       jobStatusCv: '',
-      customer: ''
+      customer: '',
+      team:''
+
     });
   }
 

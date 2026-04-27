@@ -167,13 +167,13 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   ]
 
   availableProcessStatus: string[] = [
-    'APPROVED',
-    'JOB_IN_PROGRESS',
     'PENDING',
-    // 'COMPLETED',
-    // 'NO_ACTION',
+    'APPROVED',
+    'NO_ACTION',
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED',
   ]
   searchForm?: UntypedFormGroup;
 
@@ -436,7 +436,15 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = data;
+
+      // this.processStatusCvList = data;
+      this.processStatusCvList = data
+        .filter(x => this.availableProcessStatus.includes(x.code_val ?? ''))
+        .sort((a, b) => {
+          const indexA = this.availableProcessStatus.indexOf(a.code_val ?? '');
+          const indexB = this.availableProcessStatus.indexOf(b.code_val ?? '');
+          return indexA - indexB;
+        });
     });
 
     var actionId = this.route.snapshot.paramMap.get('id');

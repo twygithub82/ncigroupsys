@@ -32,3 +32,18 @@
 .card .header {
   border-bottom: unset;
 }
+
+
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-table {
+  width: auto;           /* override bootstrap full width */
+}
+
+.custom-table table {
+  width: auto;           /* shrink table */
+  min-width: 500px;      /* optional for readability */
+}
