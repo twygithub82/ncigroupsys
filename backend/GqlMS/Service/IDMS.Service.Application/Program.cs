@@ -51,11 +51,12 @@ namespace IDMS.ServiceMS
             });
 
 
+            var loggerFactory = LoggerFactory.Create(builder => { });
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                //cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
-                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
-            });
+            }, loggerFactory);
+
+
 
             IMapper mapper = mappingConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
