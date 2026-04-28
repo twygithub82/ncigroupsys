@@ -56,6 +56,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { isDirty } from 'environments/environment';
 
 @Component({
   selector: 'app-estimate-new',
@@ -293,7 +294,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   updateSelectedItem: any = undefined;
   isExportingPDF: boolean = false;
   isMobile = false;
-  isDirty = false;
+  isDirty = isDirty;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -330,7 +331,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   contextMenuPosition = { x: '0px', y: '0px' };
 
     ngAfterViewInit(): void {
-    this.isDirty = false;
+    this.isDirty = isDirty;
   }
 
   ngOnInit() {
@@ -1519,7 +1520,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         if (this.residueItem && !this.residueDS.canApprove(this.residueItem)) {
           bill_to?.disable();
         }
-        this.isDirty = false;
+        this.isDirty = isDirty;
       }
     });
     this.patchResidueEstForm(this.residueItem!);
