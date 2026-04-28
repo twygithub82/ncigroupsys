@@ -461,10 +461,14 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         igSearch.eir_dt = { gte: Utility.convertDate(eirStartDt), lte: Utility.convertDate(eirEndDt, true) };
       }
 
-      if (this.searchForm!.get('yard_cv')?.value) {
-        igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value };
-      }
-      where.in_gate = { some: igSearch };
+      // if (this.searchForm!.get('yard_cv')?.value) {
+      //   igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value };
+      // }
+      where.in_gate = { some: { ...where.in_gate.some, ...igSearch } };
+    }
+
+    if (this.searchForm!.get('yard_cv')?.value) {
+      where.tank_info = { yard_cv: { contains: this.searchForm!.get('yard_cv')?.value } };
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
