@@ -10,7 +10,7 @@
 
 	
 		<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="AutoMapper" Version="16.1.1" />
 		<PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.AspNetCore.Subscriptions" Version="10.5.5" />
