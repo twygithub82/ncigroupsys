@@ -440,12 +440,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.filterSteamForm!.get('filterSteam')?.value) {
       const tankNo = this.filterSteamForm!.get('filterSteam')?.value;
       where.and.push({
-        storing_order_tank: {
+        or:[
+        {storing_order_tank: {
           or: [
             { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
             { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
           ]
-        }
+        }},
+         { steaming_part: { some: { steaming: { estimate_no: { contains: tankNo } } } } }
+      ]
       });
     }
 
