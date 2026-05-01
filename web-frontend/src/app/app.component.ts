@@ -4,7 +4,7 @@ import { Event, Router, NavigationStart, NavigationEnd, RouterModule } from '@an
 import { PageLoaderComponent } from './layout/page-loader/page-loader.component';
 import { AuthService } from '@core/service/auth.service';
 import { Subscription, timer, fromEvent, merge } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { debounceTime, take } from 'rxjs/operators';
 import { RefreshTokenDialogComponent } from '@shared/components/refresh-token-dialog/refresh-token-dialog.component';
 import { refreshTokenWithin } from 'environments/environment';
@@ -23,9 +23,10 @@ import { refreshTokenWithin } from 'environments/environment';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private isRefreshing = false; // Prevent multiple simultaneous refresh calls
+  private isRefreshing = false;
   private refreshPromptTimer: Subscription | null = null;
   private userActivitySubscription: Subscription | null = null;
+  private refreshDialogRef: MatDialogRef<RefreshTokenDialogComponent> | null = null;
 
   currentUrl!: string;
   constructor(public _router: Router, private authService: AuthService, private dialog: MatDialog, private router: Router) {
@@ -65,20 +66,30 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event.key !== 'userToken') return;
 
       if (event.newValue === null) {
-        // Another tab logged out — follow suit in this tab
+        // Another tab logged out — dismiss dialog and follow suit
         this.clearAllTimers();
         this.userActivitySubscription?.unsubscribe();
+        this.dismissRefreshDialog();
         this.router.navigate(['/authentication/signin']);
       } else if (event.oldValue !== null && event.newValue !== null) {
-        // Another tab refreshed the token — sync our logout timer with the new expiry
+        // Another tab refreshed the token — dismiss dialog and sync timers
+        this.dismissRefreshDialog();
         this.resetAutoLogoutTimer();
       }
     });
   }
 
+  private dismissRefreshDialog() {
+    if (this.refreshDialogRef) {
+      this.refreshDialogRef.close('renewed_by_other_tab');
+      this.refreshDialogRef = null;
+    }
+  }
+
   ngOnDestroy() {
     this.clearAllTimers();
     this.userActivitySubscription?.unsubscribe();
+    this.refreshDialogRef?.close();
   }
 
   private detectUserActivity() {
@@ -158,21 +169,23 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private showRefreshDialog() {
-    // this.userActivitySubscription?.unsubscribe();
-    // this.userActivitySubscription = null;
-    const dialogRef = this.dialog.open(RefreshTokenDialogComponent, {
+    if (this.refreshDialogRef) return; // already open in this tab
+
+    this.refreshDialogRef = this.dialog.open(RefreshTokenDialogComponent, {
       width: '800px',
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe((response) => {
+    this.refreshDialogRef.afterClosed().subscribe((response) => {
+      this.refreshDialogRef = null;
+      if (response === 'renewed_by_other_tab') {
+        console.log('Token renewed by another tab');
+        return;
+      }
       if (response === 'renew') {
         console.log('User selected renew');
         this.authService.refreshToken().subscribe({
-          next: () => {
-            // this.resetAutoLogoutTimer();  // ⏱ restart timers
-            // this.detectUserActivity();    // ✅ resume user activity detection
-          },
+          next: () => { },
           error: () => {
             console.error('Token refresh failed - Logging out user');
             this.authService.logout();
