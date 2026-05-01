@@ -159,6 +159,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     BACK: 'COMMON-FORM.BACK',
     INTERNAL_SURVEYOR: 'COMMON-FORM.INTERNAL-SURVEYOR',
+    DATE: 'COMMON-FORM.DATE',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   sotDS: StoringOrderTankDS;
@@ -321,6 +323,15 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   sortByDescription<T extends { description?: string }>(list: T[]): T[] {
     return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
+  }
+
+  sortByDate<T extends { create_dt?: number }>(list: T[]): T[] {
+    return [...list].sort((a, b) => {
+      if (a.create_dt == null && b.create_dt == null) return 0;
+      if (a.create_dt == null) return 1;
+      if (b.create_dt == null) return -1;
+      return a.create_dt - b.create_dt;
+    });
   }
 
   showNotification(

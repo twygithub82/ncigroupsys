@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -25,13 +25,10 @@ import { RepairCostTableItem } from 'app/data-sources/repair';
 import { ResidueDS } from 'app/data-sources/residue';
 import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import autoTable, { Styles } from 'jspdf-autotable';
 
-import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, ESTIMATE_APPROVED_STATUS, Utility } from "app/utilities/utility";
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { PackageBufferItem } from 'app/data-sources/package-buffer';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { ESTIMATE_APPROVED_STATUS, Utility } from "app/utilities/utility";
 
 // import { fileSave } from 'browser-fs-access';
 
