@@ -40,17 +40,17 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { InventorySchedulingExcelComponent } from 'app/document-template/excel/inventory/scheduling/inventory-scheduling-excel.component';
+import { SchedulingPdfComponent } from 'app/document-template/pdf/inventory/scheduling-pdf/scheduling-report-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { reportPreviewWindowDimension } from 'environments/environment';
-import { InventorySchedulingExcelComponent } from 'app/document-template/excel/inventory/scheduling/inventory-scheduling-excel.component';
-import { SchedulingPdfComponent } from 'app/document-template/pdf/inventory/scheduling-pdf/scheduling-report-pdf.component';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -196,7 +196,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  tankStatusInYard = TANK_STATUS_IN_YARD;
 
   selectedCompany?: string = "";
 

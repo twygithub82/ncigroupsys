@@ -4818,7 +4818,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   searchStoringOrderTanksInventoryReportAll(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksInventoryReportAll(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     let allNodes: StoringOrderTankItem[] = [];
     var pageSize: number = 50
     const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
@@ -5469,44 +5469,44 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   searchAllStoringOrderTanksForBooking(
-  where: any,
-  order?: any,
-  batchSize: number = 100
-): Observable<StoringOrderTankItem[]> {
+    where: any,
+    order?: any,
+    batchSize: number = 100
+  ): Observable<StoringOrderTankItem[]> {
 
-  this.loadingSubject.next(true);
+    this.loadingSubject.next(true);
 
-  let allItems: StoringOrderTankItem[] = [];
-  let after: string | undefined = undefined;
+    let allItems: StoringOrderTankItem[] = [];
+    let after: string | undefined = undefined;
 
-  const loadBatch = (): Observable<StoringOrderTankItem[]> => {
-    return this.searchStoringOrderTanksForBooking(
-      where,
-      order,
-      batchSize,
-      after   
-    ).pipe(
-      switchMap(items => {
+    const loadBatch = (): Observable<StoringOrderTankItem[]> => {
+      return this.searchStoringOrderTanksForBooking(
+        where,
+        order,
+        batchSize,
+        after
+      ).pipe(
+        switchMap(items => {
 
-        allItems = [...allItems, ...items];
+          allItems = [...allItems, ...items];
 
-        if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
-          after = this.pageInfo.endCursor;   // update cursor
-          return loadBatch();                // load next page
-        }
+          if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
+            after = this.pageInfo.endCursor;   // update cursor
+            return loadBatch();                // load next page
+          }
 
-        return of(allItems); // stop recursion
+          return of(allItems); // stop recursion
+        })
+      );
+    };
+
+    return loadBatch().pipe(
+      finalize(() => {
+        this.loadingSubject.next(false);
+        this.totalCount = allItems.length;
       })
     );
-  };
-
-  return loadBatch().pipe(
-    finalize(() => {
-      this.loadingSubject.next(false);
-      this.totalCount = allItems.length;
-    })
-  );
-}
+  }
 
 
   getStoringOrderTankByIDForRepair(id: string): Observable<StoringOrderTankItem[]> {
@@ -5556,7 +5556,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   searchStoringOrderTanksForSurveyInOut(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksForSurveyInOut(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
@@ -5580,44 +5580,44 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
- searchAllStoringOrderTanksForSurvey(
-  where?: any,
-  order?: any
-): Observable<StoringOrderTankItem[]> {
+  searchAllStoringOrderTanksForSurvey(
+    where?: any,
+    order?: any
+  ): Observable<StoringOrderTankItem[]> {
 
-  this.loadingSubject.next(true);
+    this.loadingSubject.next(true);
 
-  let allItems: StoringOrderTankItem[] = [];
-  let after: string | undefined = undefined;
-  let batchSize: number = 100;
-  const loadBatch = (): Observable<StoringOrderTankItem[]> => {
-    return this.searchStoringOrderTanksForSurveyInOut(
-      where,
-      order,
-      batchSize,
-      after   
-    ).pipe(
-      switchMap(items => {
+    let allItems: StoringOrderTankItem[] = [];
+    let after: string | undefined = undefined;
+    let batchSize: number = 100;
+    const loadBatch = (): Observable<StoringOrderTankItem[]> => {
+      return this.searchStoringOrderTanksForSurveyInOut(
+        where,
+        order,
+        batchSize,
+        after
+      ).pipe(
+        switchMap(items => {
 
-        allItems = [...allItems, ...items];
+          allItems = [...allItems, ...items];
 
-        if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
-          after = this.pageInfo.endCursor;   // update cursor
-          return loadBatch();                // load next page
-        }
+          if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
+            after = this.pageInfo.endCursor;   // update cursor
+            return loadBatch();                // load next page
+          }
 
-        return of(allItems); // stop recursion
+          return of(allItems); // stop recursion
+        })
+      );
+    };
+
+    return loadBatch().pipe(
+      finalize(() => {
+        this.loadingSubject.next(false);
+        this.totalCount = allItems.length;
       })
     );
-  };
-
-  return loadBatch().pipe(
-    finalize(() => {
-      this.loadingSubject.next(false);
-      this.totalCount = allItems.length;
-    })
-  );
-}
+  }
 
   getStoringOrderTanksForOtherSurveyByID(sot_guid: any): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
@@ -6410,7 +6410,19 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     let where: any = {
       and: [
         { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
-        { tank_status_cv: { in: TANK_STATUS_IN_YARD } }
+        {
+          tank_status_cv: {
+            in: [
+              'CLEANING',
+              'STEAM',
+              'REPAIR',
+              'RESIDUE',
+              'STORAGE',
+              'RO_GENERATED',
+              'RELEASED'
+            ] // TANK_STATUS_IN_YARD
+          }
+        }
       ]
     };
     return this.apollo
