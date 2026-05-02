@@ -162,6 +162,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   patchForm() {
+
+    this.data.populateData.groupNameCvList = this.data.populateData.groupNameCvList
+      .slice() // avoid mutating original reference if needed
+      .sort((a: any, b: any) =>
+        (a.description || '').localeCompare(b.description || '')
+      );
+
     const selectedCodeValue = this.data.populateData.groupNameCvList.find(
       (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     );
