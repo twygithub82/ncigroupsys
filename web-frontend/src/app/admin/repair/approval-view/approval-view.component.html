@@ -136,9 +136,9 @@
       </div>
     </div>
     <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
-      <div class="row clearfix">
+      <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.BILLING_DETAILS}}
@@ -166,13 +166,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                    <input matInput formControlName="job_no" required>
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
@@ -183,6 +177,12 @@
                     </mat-select>
                   </mat-form-field>
                   }
+                </div>
+                <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                    <input matInput formControlName="job_no" required>
+                  </mat-form-field>
                 </div>
                 <div class="col-xl-3-5 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5">
                   <mat-form-field class="example-full-width" appearance="fill">
