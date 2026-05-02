@@ -32,6 +32,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -65,7 +66,8 @@ export interface DialogData {
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -159,6 +161,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   patchForm() {
+
+    // Sort group list alphabetically before using it
+    this.data.populateData.groupNameCvList = this.data.populateData.groupNameCvList
+    .slice() // avoid mutating original reference if needed
+    .sort((a: any, b: any) =>
+      (a.description || '').localeCompare(b.description || '')
+    );
+
     const selectedCodeValue = this.data.populateData.groupNameCvList.find(
       (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     );
