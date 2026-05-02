@@ -160,6 +160,10 @@
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                 </div>
+                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-12 m-b-10 text-start text-md-center text-xl-center">
+                  {{translatedLangText.SURVEYOR_NAME}}: <span
+                    class="font-bold">{{repairItem?.aspnetsuser?.userName}}</span>
+                </div>
                 <div class="col-xl-2 col-lg-4 col-md-4 col-sm-12 m-b-10 text-start text-md-end text-xl-end">
                   {{translatedLangText.STATUS}}: <span
                     [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
@@ -559,10 +563,10 @@
                     </div>
                   </div> -->
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.SURVEYOR_NAME}}: <span
                         class="font-bold">{{repairItem?.aspnetsuser?.userName}}</span>
-                    </div>
+                    </div> -->
                     <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
