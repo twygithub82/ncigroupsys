@@ -557,10 +557,16 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       where.and.push({ or: or });
     }
 
-    if (this.searchForm!.value['last_cargo']) {
+     if (this.lastCargoControl?.value) {
       if (!where.tariff_cleaning) where.tariff_cleaning = {};
-      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
+      where.tariff_cleaning.cargo = { contains: this.lastCargoControl?.value?.cargo };
     }
+
+
+    // if (this.searchForm!.value['last_cargo']) {
+    //   if (!where.tariff_cleaning) where.tariff_cleaning = {};
+    //   where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
+    // }
 
     if (this.searchForm!.value['eir_no']) {
       if (!where.in_gate) where.in_gate = {};
