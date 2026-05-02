@@ -318,7 +318,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
       if (savedCriteria) {
-        this.searchForm?.patchValue(savedCriteria);
+        // this.searchForm?.patchValue(savedCriteria);
         this.constructSearchCriteria();
       }
 
@@ -445,6 +445,11 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
+    if(this.lastCargoControl.value) {
+      if (!where.storing_order_tank) where.storing_order_tank = {};
+      if (!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate = {};
+      where.storing_order_tank.tariff_cleaning = {  cargo: { contains: this.lastCargoControl.value?.cargo } } ;
+    }
     if (this.searchForm!.get('job_no')?.value) {
 
       where.job_no = { contains: this.searchForm!.value['job_no'].code };
@@ -560,12 +565,13 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.searchForm?.patchValue({
       tank_no: '',
       eir_no: '',
-      approval_status: '',
-      eir_dt_start: '',
-      eir_dt_end: '',
-      process: ''
+      eir_dt_start: [''],
+      eir_dt_end: [''],
+      process: ['']
 
     });
+
+    this.searchForm?.get('approval_status')?.setValue([]);
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
     this.name_removeAllSelected();
