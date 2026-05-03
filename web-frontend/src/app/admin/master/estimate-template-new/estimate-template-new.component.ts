@@ -216,6 +216,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
     FILTER: 'COMMON-FORM.DESCRIPTION',
+    ALL:'COMMON-FORM.ALL',
   }
 
   clean_statusList: CodeValuesItem[] = [];
