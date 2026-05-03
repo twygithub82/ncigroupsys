@@ -395,11 +395,20 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       where.and.push({
         storing_order_tank: {
           or: [
+            // { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+            // { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+
             { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+            { in_gate: { some: { eir_no: { contains: tankNo } } } }
           ]
         }
       });
+    }
+
+    if (this.filterCleanForm!.get('eir_no')?.value) {
+      if (!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate = {};
+      where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.filterCleanForm!.get('eir_no')?.value } } };
     }
 
     if (this.filterCleanForm!.get('customer')?.value) {
