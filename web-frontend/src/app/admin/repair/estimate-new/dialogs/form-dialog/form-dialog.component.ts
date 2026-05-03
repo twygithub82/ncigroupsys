@@ -172,6 +172,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const selectedCodeValue = this.data.populateData.groupNameCvList.find(
       (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     );
+
     this.repairPartForm.patchValue({
       guid: this.repairPart.guid,
       tariff_repair_guid: this.repairPart.tariff_repair_guid,
@@ -321,7 +322,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               subgroupName?.enable();
             }
             if ((this.subgroupNameCvList?.length ?? 0) > 1) {
-              this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, 'All', '');
+              //this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, 'All', '');
+              this.subgroupNameCvList!
+                    .sort((a: any, b: any) =>
+                      (a.description || '').localeCompare(b.description || '')
+                    );
             } else {
               subgroupName?.disable();
             }

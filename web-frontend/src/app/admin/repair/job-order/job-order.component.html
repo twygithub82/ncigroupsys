@@ -36,7 +36,7 @@
                           </mat-panel-description>
                         </mat-expansion-panel-header>
                         <div class="row">
-                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <!-- <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span> -->
                               <mat-label>
@@ -45,7 +45,7 @@
                               <input matInput formControlName="filterRepair">
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                               <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
@@ -59,7 +59,7 @@
                               </mat-autocomplete>
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.APPROVE_DATE}}</mat-label>
                               <mat-date-range-input [rangePicker]="approval_picker" [max]="getMaxDate()">
@@ -70,7 +70,7 @@
                               <mat-date-range-picker #approval_picker></mat-date-range-picker>
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.STATUS}}</mat-label>
                               <mat-select multiple formControlName="status_cv" (selectionChange)="AutoSearch()">

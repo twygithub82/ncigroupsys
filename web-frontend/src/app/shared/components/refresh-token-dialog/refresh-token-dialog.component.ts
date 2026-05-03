@@ -30,7 +30,7 @@ export class RefreshTokenDialogComponent extends UnsubscribeOnDestroyAdapter imp
 
   translatedLangText: any = {}
   langText: any = {
-    RESET: 'COMMON-FORM.RESET',
+    RESET: 'COMMON-FORM.CONTINUE',
     LOGOUT: 'COMMON-FORM.LOGOUT',
     SESSION_EXPIRE_WARNING: 'COMMON-FORM.SESSION-EXPIRE-WARNING',
     SESSION_EXPIRE_WARNING_DESCRIPTION: 'COMMON-FORM.SESSION-EXPIRE-WARNING-DESCRIPTION'
