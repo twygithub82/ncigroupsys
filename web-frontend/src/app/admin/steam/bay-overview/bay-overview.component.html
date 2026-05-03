@@ -47,6 +47,18 @@
                   }
                 </mat-label>
               </div>
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <span class="font-bold">{{translatedLangText.STARTED}}:</span>
+                <mat-label>
+                  @if (team.isOccupied)
+                  {
+                  {{displayDateTime(team.jobOrderItem)}}
+                  }
+                  @else {
+                  {{"-"}}
+                  }
+                </mat-label>
+              </div>
             </div>
           </mat-card-content>
           <mat-card-actions class="d-flex justify-content-center align-items-center">

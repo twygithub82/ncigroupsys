@@ -841,4 +841,19 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   onTabFocused() {
     this.QueryBays();
   }
+
+  displayDateTime(jobOrderItem: JobOrderItem): any {
+    //var dtValue?:Date = Utility.convertDate(jobOrderItem.start_dt,false,true);
+    //return new Date(Number(jobOrderItem.start_dt) * 1000).toLocaleString();
+    const dt = new Date(Number(jobOrderItem.start_dt) * 1000);
+    const formatted =
+      //dt.getFullYear() + '-' +
+      String(dt.getDate()).padStart(2, '0') + '-' +
+      String(dt.getMonth() + 1).padStart(2, '0') + '-' +
+      String(dt.getFullYear()) + ' ' +
+      String(dt.getHours()).padStart(2, '0') + ':' +
+      String(dt.getMinutes()).padStart(2, '0');
+
+    return formatted;
+  }
 }
