@@ -739,7 +739,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
     // Check if surface types form is valid
     if (this.surfaceTypesFormArray.invalid) {
-      this.validationErrorMessage = this.data.translatedLangText.PLEASE_FILL_REQUIRED_FIELDS;
+      this.validationErrorMessage = "";//this.data.translatedLangText.PLEASE_FILL_REQUIRED_FIELDS;
       return false;
     }
 

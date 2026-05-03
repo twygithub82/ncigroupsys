@@ -535,11 +535,11 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE} : ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
-    var inspect_dt = `${this.translatedLangText.INSPECTION_DATE}: ${this.getInspectionDateDisplay()}`;
+    var inspect_dt = `${this.translatedLangText.INSPECTION_DATE} : ${this.getInspectionDateDisplay()}`;
     PDFUtility.AddTextAtRightCornerPage(pdf, inspect_dt, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     var tnkNo = `${this.translatedLangText.TANK_NO} : ${this.sot?.tank_no}`;
     var tnkPosX=leftMargin;

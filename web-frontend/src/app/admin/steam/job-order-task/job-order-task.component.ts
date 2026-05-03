@@ -49,6 +49,8 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 import { AuthService } from '@core/service/auth.service';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-job-order-task',
@@ -146,6 +148,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
   steamDs: SteamDS;
+  teamDS: TeamDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -157,6 +160,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   customerCodeControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
+
+  userTeam: string[] = [];
+  teamList: TeamItem[] = [];
 
   pageStateType = 'SteamJobOrder'
   pageIndexJobOrder = 0;
@@ -187,6 +193,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private router: Router,
     private searchStateService: SearchStateService,
     private notificationService: SingletonNotificationService,
+    public modulePackageService: ModulePackageService,
     private authService: AuthService,
   ) {
     super();
@@ -202,6 +209,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.steamDs = new SteamDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -219,7 +227,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
       jobStatusCv: [''],
-      team: [''],
+      teamList: [''],
       customer: this.customerCodeControl,
     });
   }
@@ -248,6 +256,13 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    this.userTeam = this.authService?.getTeamsGuid('REPAIR');
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.teamDS.getTeamListByDepartmentAndGuid(this.userTeam, ['REPAIR']).subscribe(data => {
+        this.teamList = data
+      });
+    }
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
     const savedPagination = this.searchStateService.getPagination(this.pageStateType);
@@ -347,10 +362,19 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     // Get login user team
-    const userTeam = this.authService?.getTeamsGuid('REPAIR');
-    if (userTeam?.length) {
-      where.team_guid = { in: userTeam }
+    if (this.filterJobOrderForm!.get('teamList')?.value?.length) {
+      const team_guidList = this.filterJobOrderForm!.get('teamList')?.value?.map((x: any) => x.guid) ?? []
+      where.team_guid = { in: team_guidList }
+    } else {
+      if (this.userTeam?.length) {
+        where.team_guid = { in: this.userTeam }
+      }
     }
+
+    // const userTeam = this.authService?.getTeamsGuid('REPAIR');
+    // if (userTeam?.length) {
+    //   where.team_guid = { in: userTeam }
+    // }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
   }
@@ -778,7 +802,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       filterJobOrder: '',
       jobStatusCv: '',
       customer: '',
-      team:''
+      teamList:''
 
     });
   }

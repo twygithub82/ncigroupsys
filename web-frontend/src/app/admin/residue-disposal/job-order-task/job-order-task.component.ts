@@ -42,7 +42,9 @@ import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
@@ -87,10 +89,10 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 })
 export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsJobOrder = [
-    'estimate_no',
     'tank_no',
-    'allocate_dt',
     'customer',
+    'estimate_no',
+    'allocate_dt',
     'team',
     'status_cv',
     'actions'
@@ -146,6 +148,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
   residueDS: ResidueDS;
+  teamDS: TeamDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -157,6 +160,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   customerCodeControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
+
+  userTeam: string[] = [];
+  teamList: TeamItem[] = [];
 
   private joSubscriptions = new Map<string, Subscription>();
 
@@ -184,6 +190,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private translate: TranslateService,
     private searchStateService: SearchStateService,
     private notificationService: SingletonNotificationService,
+    public modulePackageService: ModulePackageService,
     private authService: AuthService,
   ) {
     super();
@@ -199,6 +206,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.residueDS = new ResidueDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -225,7 +233,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
       jobStatusCv: [''],
-      team: [''],
+      teamList: [''],
       customer: this.customerCodeControl,
     });
   }
@@ -255,6 +263,16 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       this.processStatusCvList = data;
     });
 
+
+    
+    this.userTeam = this.authService?.getTeamsGuid('RESIDUE_DISPOSAL');
+
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
+      this.teamDS.getTeamListByDepartmentAndGuid(this.userTeam, ['RESIDUE_DISPOSAL']).subscribe(data => {
+        this.teamList = data
+      });
+    }
+  
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
     const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
@@ -341,10 +359,22 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     // TODO:: Get login user team
-    const userTeam = this.authService?.getTeamsGuid('RESIDUE_DISPOSAL');
-    if (userTeam?.length) {
-      where.team_guid = { in: userTeam }
+    if (this.filterJobOrderForm!.get('teamList')?.value?.length) {
+      const team_guidList = this.filterJobOrderForm!.get('teamList')?.value?.map((x: any) => x.guid) ?? []
+      where.team_guid = { in: team_guidList }
+    } else {
+      if (this.userTeam?.length) {
+        where.team_guid = { in: this.userTeam }
+      }
     }
+
+
+    // const userTeam = this.authService?.getTeamsGuid('RESIDUE_DISPOSAL');
+    // if (userTeam?.length) {
+    //   where.team_guid = { in: userTeam }
+    // }
+
+
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
   }
@@ -580,7 +610,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.filterJobOrderForm?.patchValue({
       filterJobOrder: '',
       customer: '',
-      jobStatusCv: ''
+      jobStatusCv: '',
+      teamList: ''
     });
   }
 
