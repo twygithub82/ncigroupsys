@@ -77,7 +77,7 @@ export class ReownerTankFormDialogComponent {
     // Set the defaults
     this.action = data.action!;
     if (this.action === 'recustomer') {
-      this.dialogTitle = `${data.translatedLangText?.UPDATE} ${data.translatedLangText?.CUSTOMER}`;
+      this.dialogTitle = `${data.translatedLangText?.CUSTOMER}`;
     } else {
       this.dialogTitle = `${data.translatedLangText?.REOWNERSHIP}`;
     }

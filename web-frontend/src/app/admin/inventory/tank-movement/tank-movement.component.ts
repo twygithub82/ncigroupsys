@@ -132,7 +132,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     'CLEANING',
     'STEAM',
     'REPAIR',
-    'RESIDUE',
+    //'RESIDUE',
     'STORAGE',
     'RELEASED'
   ]
