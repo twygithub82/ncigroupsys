@@ -93,8 +93,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'customer',
     'estimate_no',
     'allocate_dt',
-    'status_cv',
     'team',
+    'status_cv',
     'actions'
   ];
 
@@ -279,8 +279,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         'customer',
         'estimate_no',
         'allocate_dt',
-        'status_cv',
         'team',
+        'status_cv',
         'actions'
       ];
     }
