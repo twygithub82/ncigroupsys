@@ -218,6 +218,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     FILTER: 'COMMON-FORM.DESCRIPTION',
     S_N: 'COMMON-FORM.S_N',
     ID: 'COMMON-FORM.ID',
+    ALL:'COMMON-FORM.ALL',
   }
 
   clean_statusList: CodeValuesItem[] = [];

@@ -9,7 +9,7 @@
       <mat-icon>close</mat-icon>
     </button>
   </div>
-  <div mat-dialog-content class="">
+  <div mat-dialog-content>
     <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.GROUP_NAME}}</mat-label>
             <mat-select formControlName="group_name_cv" required>
@@ -63,7 +63,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>
               {{data.translatedLangText.SUBGROUP_NAME}}
@@ -80,7 +80,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.LOCATION}}</mat-label>
             <mat-select formControlName="location_cv">
@@ -96,15 +96,9 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.COMMENT}}</mat-label>
-            <input matInput formControlName="comment">
-          </mat-form-field>
-        </div>
       </div>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label class="d-flex">{{data.translatedLangText.PART_NAME}}
               @if (trDS.loadingSubject | async) {
@@ -126,13 +120,23 @@
           </button>
           }
         </div> -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 d-flex mb-0">
+        <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 d-flex mb-0">
           @if (canEdit()) {
           <button mat-mini-fab color="primary" class="me-4" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
             <mat-icon>search</mat-icon>
           </button>
           }
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.COMMENT}}</mat-label>
+            <input matInput formControlName="comment">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
             <input matInput formControlName="remarks">
@@ -152,7 +156,8 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.QTY}}</mat-label>
-            <input matInput formControlName="quantity" type="text" [min]="0" [allowDecimal]="false" appNumericText required>
+            <input matInput formControlName="quantity" type="text" [min]="0" [allowDecimal]="false" appNumericText
+              required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
@@ -164,16 +169,18 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="material_cost" type="text" [min]="0" [allowDecimal]="true" appNumericText required>
+            <input matInput formControlName="material_cost" type="text" [min]="0" [allowDecimal]="true" appNumericText
+              required>
           </mat-form-field>
         </div>
       </div>
       <div mat-dialog-actions class="align-right">
         @if(!isEdit()) {
-        <button mat-flat-button color="accent" class="mb-2" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">
-          <!-- <mat-icon>
+        <button mat-flat-button color="accent" class="mb-2" [disabled]="!this.repairPart.tariff_repair_guid"
+          (click)="submit(true)">
+          <mat-icon>
             add
-          </mat-icon> -->
+          </mat-icon>
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
         @if (canEdit()) {
