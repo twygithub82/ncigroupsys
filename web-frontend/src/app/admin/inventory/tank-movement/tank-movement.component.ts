@@ -590,11 +590,14 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       tank_no: '',
       job_no: '',
       purpose: '',
+      yard_cv: '',
       tank_status_cv: '',
       eir_status_cv: '',
       last_cargo: ''
     });
     this.customerCodeControl.reset('');
+    this.selectedNames = [];
+    this.cargo_removeAllSelected();
   }
 
   @ViewChild('nameInput', { static: true })
