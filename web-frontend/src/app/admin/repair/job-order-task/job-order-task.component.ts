@@ -284,6 +284,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         'actions'
       ];
     }
+    
     if (this.modulePackageService.isStarterPackage()) {
       this.displayedColumnsJobOrder = [
         'tank_no',
