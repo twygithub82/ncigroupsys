@@ -33,6 +33,7 @@ import { debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -66,7 +67,8 @@ export interface DialogData {
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -162,12 +164,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   patchForm() {
+
+    // Sort group list alphabetically before using it
+    this.data.populateData.groupNameCvList = this.data.populateData.groupNameCvList
+    .slice() // avoid mutating original reference if needed
+    .sort((a: any, b: any) =>
+      (a.description || '').localeCompare(b.description || '')
+    );
+
     const selectedCodeValue = this.data.populateData.groupNameCvList.find(
       (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     );
     if (selectedCodeValue) {
       this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === selectedCodeValue.child_code)
-      this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
+      var allText =this.data.translatedLangText.ALL;
+      this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, allText, '');
     }
     this.repairPartForm.patchValue({
       guid: this.repairPart.guid,
@@ -359,47 +370,75 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
+
     this.repairPartForm?.get('group_name_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-
-        if (!value) return;
-        this.partNameList = [];
-        this.subgroupNameCvList = [];
-        this.resetPartSelectedDetail();
-        this.repairPartForm.patchValue({
-          subgroup_name_cv: undefined,
-          part_name: undefined
-        });
-
-        if (value?.child_code) {
-
-          this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
-          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
-          // const queries = [
-          //   { alias: 'subgroupNameCv', codeValType: value.child_code },
-          // ];
-          // this.cvDS.getCodeValuesByType(queries);
-          // this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-          //   this.data.populateData.subgroupNameCvList = data;
-          // });
-
-        }
-
+        const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
         if (value) {
-          this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-            this.partNameList = data;
-          });
+          this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+          if (value.child_code) {
+            if (this.canEdit()) {
+              subgroupName?.enable();
+            }
+            if ((this.subgroupNameCvList?.length ?? 0) > 1) {
+              this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList,this.data.translatedLangText.ALL, '');
+            } else {
+              subgroupName?.disable();
+            }
+          } else {
+            subgroupName?.setValue('');
+            subgroupName?.disable();
+          }
+        } else {
+          subgroupName?.disable();
         }
-        // if(value){
-        // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-        //   this.partNameList = data;
-        // }); 
-        //}
-
       })
     ).subscribe();
+
+    // this.repairPartForm?.get('group_name_cv')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+
+    //     if (!value) return;
+    //     this.partNameList = [];
+    //     this.subgroupNameCvList = [];
+    //     this.resetPartSelectedDetail();
+    //     this.repairPartForm.patchValue({
+    //       subgroup_name_cv: undefined,
+    //       part_name: undefined
+    //     });
+
+    //     if (value?.child_code) {
+
+    //       this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+    //       var allText =this.data.translatedLangText.ALL;
+    //       this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, allText, '');
+    //       // const queries = [
+    //       //   { alias: 'subgroupNameCv', codeValType: value.child_code },
+    //       // ];
+    //       // this.cvDS.getCodeValuesByType(queries);
+    //       // this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
+    //       //   this.data.populateData.subgroupNameCvList = data;
+    //       // });
+
+    //     }
+
+    //     if (value) {
+    //       this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+    //         this.partNameList = data;
+    //       });
+    //     }
+    //     // if(value){
+    //     // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+    //     //   this.partNameList = data;
+    //     // }); 
+    //     //}
+
+    //   })
+    // ).subscribe();
 
     this.repairPartForm?.get('subgroup_name_cv')!.valueChanges.pipe(
       startWith(''),
