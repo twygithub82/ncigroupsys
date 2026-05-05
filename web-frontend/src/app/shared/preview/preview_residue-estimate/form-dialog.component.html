@@ -6,8 +6,8 @@
       </div>
     </div>
   </div>
-  <div mat-dialog-content class="content-block">
-    <div class="card modal-card">
+  <div mat-dialog-content>
+    <!-- <div class="card modal-card">
       <div class="header header-custom-padding">
         <h2>
           {{translatedLangText.TANK_DETAILS}}
@@ -83,14 +83,14 @@
           </div>
         </mat-card-content>
       </div>
-    </div>
-    <div class="card modal-card">
-      <div class="header header-custom-padding">
+    </div> -->
+    <!-- <div class="card modal-card"> -->
+      <!-- <div class="header header-custom-padding">
         <h2>
           {{translatedLangText.ESTIMATE_DETAILS}}
         </h2>
-      </div>
-      <div class="body">
+      </div> -->
+      <div class="row">
         <mat-card-content>
           <div class="responsive_table">
             <table mat-table [dataSource]="deList!" matSort
@@ -230,7 +230,7 @@
           }
         </mat-card-content>
       </div>
-    </div>
+    <!-- </div> -->
     <div mat-dialog-actions class="pt-2 pb-2 align-right">
       <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
     </div>
