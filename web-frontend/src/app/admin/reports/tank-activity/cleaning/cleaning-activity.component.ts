@@ -52,6 +52,7 @@ import { CargoUNWiseInventorySummaryExcelComponent } from 'app/document-template
 import { E } from '@angular/cdk/keycodes';
 import { UncleanTankDetailInventoryExcelComponent } from 'app/document-template/excel/reports/cleaning-activity/unclean-tank-detail/unclean-tank-excel.component';
 import { CleaningDetailInventoryExcelComponent } from 'app/document-template/excel/reports/cleaning-activity/cleaning-detail/cleaning-detail-excel.component';
+import { CustomerWiseInventorySummaryExcelComponent } from 'app/document-template/excel/inventory/cleaning-summary/customer-wise/customer-wise-inventory-summary-excel.component';
 @Component({
   selector: 'app-cleaning-activity',
   standalone: true,
@@ -1027,7 +1028,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     }
 
 
-    const dialogRef = this.dialog.open(CustomerWiseInventorySummaryPdfComponent, {
+    const dialogRef = this.dialog.open(CustomerWiseInventorySummaryExcelComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
