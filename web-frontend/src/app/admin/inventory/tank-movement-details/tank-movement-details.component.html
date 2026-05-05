@@ -56,7 +56,7 @@
                         <button mat-menu-item (click)="overwriteTankSummaryDialog($event)">
                           {{translatedLangText.TANK_SUMMARY}}</button>
                         }
-                        @if (canRenumberTank()) { 
+                        @if (canRenumberTank()) {
                         <button mat-menu-item
                           (click)="renumberTankDialog($event)">{{translatedLangText.RENUMBER}}</button>
                         }
@@ -1200,11 +1200,11 @@
                                       </ng-container>
                                       <ng-container matColumnDef="estimate_no">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           {{translatedLangText.ESTIMATE_NO}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           <span
                                             class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                                         </mat-cell>
@@ -1222,11 +1222,11 @@
                                       </ng-container>
                                       <ng-container matColumnDef="approve_dt">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           {{translatedLangText.APPROVED_NO_ACTION}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           <span
                                             class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
                                           <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
@@ -1256,18 +1256,18 @@
                                       </ng-container>
                                       <ng-container matColumnDef="status_cv">
                                         <mat-header-cell mat-header-cell *matHeaderCellDef
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           {{translatedLangText.STATUS}}
                                         </mat-header-cell>
                                         <mat-cell mat-cell *matCellDef="let row"
-                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                                           <span
                                             class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                                         </mat-cell>
                                       </ng-container>
                                       <ng-container matColumnDef="actions">
                                         <mat-header-cell
-                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                                           *matHeaderCellDef>
                                         </mat-header-cell>
                                         <mat-cell *matCellDef="let row; let i=index;"
@@ -1373,11 +1373,9 @@
 
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item class=""
-                                    (click)="exportCleaningReport($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CLEANING_REPORT}}</button>
+                                    (click)="exportCleaningReport($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CERTIFICATE}}</button>
                                   <button mat-menu-item class=""
-                                    (click)="UpdateSealNo(cleaningItem?.[0]!)">{{translatedLangText.UPDATE_SEAL_NO}}</button>
-                                  <button mat-menu-item class=""
-                                    (click)="exportCleaningQuotation($event, cleaningItem?.[0]?.guid)">{{translatedLangText.CLEANING_QUOTATION}}</button>
+                                    (click)="UpdateSealNo(cleaningItem?.[0]!)">{{translatedLangText.SEAL_NO}}</button>
                                   @if (canOverwriteCleaningApproval() && allowPerformAction()) {
                                   <button mat-menu-item
                                     (click)="overwriteCleaningApprovalDialog($event)">{{translatedLangText.APPROVAL}}</button>
@@ -1390,6 +1388,8 @@
                                   <button mat-menu-item class=""
                                     (click)="onRollbackCleaning($event, cleaningItem?.[0])">{{translatedLangText.REINSTATE}}</button>
                                   }
+                                  <button mat-menu-item class=""
+                                    (click)="exportCleaningQuotation($event, cleaningItem?.[0]?.guid)">{{translatedLangText.EXPORT}}</button>
                                   @if (canRemoveCleanPurpose()) {
                                   <button mat-menu-item class=""
                                     (click)="updatePurposeDialog($event, 'cleaning', 'remove')">{{translatedLangText.REMOVE}}</button>
@@ -1398,17 +1398,16 @@
                                 }
                                 <div class="row justify-content-center pt-5">
                                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                    <div class="row right-align-display">
+                                    <!-- <div class="row right-align-display">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                         <span class="label-display-info">{{translatedLangText.GATE_IN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <span class="value-display-info">
-                                          <!-- {{displayDate(cleaningItem?.[0]?.create_dt) || "-"}} -->
                                           {{displayDate(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
                                         </span>
                                       </div>
-                                    </div>
+                                    </div> -->
                                     <div class="row right-align-display">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                         <span class="label-display-info">{{translatedLangText.APPROVED_DATE}}:</span>

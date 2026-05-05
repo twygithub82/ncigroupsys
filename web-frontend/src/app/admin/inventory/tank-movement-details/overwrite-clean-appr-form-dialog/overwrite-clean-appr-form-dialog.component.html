@@ -6,7 +6,7 @@
       </div>
     </div>
   </div>
-  <div mat-dialog-content>
+  <div mat-dialog-content class="p-4">
     <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -22,7 +22,53 @@
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
             </div>
           </div> -->
-          <div class="row d-flex justify-content-center">
+          <div class="card modal-card">
+            <div class="header header-custom-padding">
+              <h2>{{data.translatedLangText.CLEANING_DETAILS}}</h2>
+            </div>
+            <div class="body">
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{data.translatedLangText.CLEANING}} {{data.translatedLangText.COST}}</mat-label>
+                          <input matInput formControlName="cleaning_cost" type="number" min="0" required>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{data.translatedLangText.CLEANING_COST}}</mat-label>
+                          <input matInput formControlName="buffer_cost" type="number" min="0" required>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{data.translatedLangText.COMPARTMENT_TYPE}}</mat-label>
+                          <mat-select formControlName="tank_comp_guid" required>
+                            @for (buffer of data.populateData.packageBufferList; track buffer) {
+                            <mat-option
+                              [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="overwrite_remarks" required>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </div>
+          </div>
+
+
+          <!-- <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.CLEANING}} {{data.translatedLangText.COST}}</mat-label>
@@ -35,8 +81,8 @@
                 <input matInput formControlName="overwrite_remarks" required>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row d-flex justify-content-center">
+          </div> -->
+          <!-- <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.BUFFER_CLEANING_COST}}</mat-label>
@@ -51,14 +97,10 @@
                   <mat-option [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
                   }
                 </mat-select>
-                <!-- @if (overwriteForm.get('tank_comp_guid')?.hasError('required')) {
-                <mat-error>
-                  {{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}} {{data.translatedLangText.SO_REQUIRED}}
-                </mat-error>
-                } -->
               </mat-form-field>
             </div>
-          </div>
+          </div> -->
+
           <!-- <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
@@ -85,87 +127,11 @@
               <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
             </div>
           </div> -->
-          <div class="card m-4 p-4 m-t-0">
-            <!-- <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row">
-                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.TANK_NO}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{sot.tank_no}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.CUSTOMER}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(sot.storing_order?.customer_company)}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.JOB_NO}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{cleaningItem.job_no}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.CARGO_NAME}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{sot.tariff_cleaning?.cargo}}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.EIR_NO}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{igItem.eir_no}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.EIR_DATE}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{displayDate(igItem.eir_dt)}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.QUOTATION_DATE}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{displayDate(cleaningItem.create_dt)}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
-                        <span>{{data.translatedLangText.STATUS}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                        <div [class]="'contact-detail-info'"><span
-                            [class]="'font-bold ' + getProcessStatusBadgeClass(cleaningItem.status_cv)">{{getProcessStatusDescription(cleaningItem.status_cv)}}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> -->
-            <div class="row mt-4">
+          <div class="card">
+            <!-- <div class="card m-4 m-t-0"> -->
+            <div class="row mt-1">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 d-flex justify-content-center">
-                <h3 class="text-decoration-underline">{{data.translatedLangText.LAST_CARGO_CLEANING_QUOTATION}}</h3>
+                <h3 class="text-decoration-underline">{{data.translatedLangText.ESTIMATE_DETAILS}}</h3>
               </div>
             </div>
             <div class="body overflow-auto">
@@ -203,7 +169,8 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <!-- <span class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}} -->
-                       <span class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(getCleaningCost(row,false))}}
+                      <span
+                        class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(getCleaningCost(row,false))}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
@@ -218,12 +185,13 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <!-- <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}} -->
-                       <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(getCleaningCost(row,true))}}
+                      <span
+                        class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(getCleaningCost(row,true))}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
                       <!-- {{parse2Decimal(cleaningItem.cleaning_cost)}} -->
-                       {{parse2Decimal(getTotalCleaningCost())}}
+                      {{parse2Decimal(getTotalCleaningCost())}}
                     </mat-footer-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

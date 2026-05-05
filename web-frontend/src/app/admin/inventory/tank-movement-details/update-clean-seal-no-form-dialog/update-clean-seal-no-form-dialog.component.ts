@@ -78,7 +78,7 @@ export class UpdateCleanSealNoFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.UPDATE_CLEANING;
+    this.dialogTitle = data.translatedLangText?.SEAL_NO || 'Seal No';
     this.cleaningDs=new InGateCleaningDS(this.apollo);
     this.cleanItem = data.selectedItem!;
     this.overwriteForm = this.createForm();
