@@ -397,16 +397,19 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
     where.and = [
-      { or: [
-        { repair: { any: false } },
-        {
-          or:[
-            { repair:{ all:{status_cv:{in:["CANCELED","NO_ACTION"]}}}},
-          ]
-        }
-      ] },
+      {
+        or: [
+          { repair: { any: false } },
+          {
+            or: [
+              { repair: { all: { status_cv: { in: ["CANCELED", "NO_ACTION"] } } } },
+            ]
+          }
+        ]
+      },
       // { repair: { any: false } },
       { tank_status_cv: { in: ["REPAIR"] } }
+
     ]
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
@@ -554,18 +557,20 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     // {
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReportAll(this.lastSearchCriteria, {}, first)
       .subscribe(data => {
-        this.sotList = data;
+        const filteredList = data.filter(x =>
+          (x.cleaning?.length||0) === 0 ||
+          x.cleaning?.some(c => c.complete_dt != null)
+        );
+        this.sotList = filteredList;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        if(report_type===5)
-        {
-           this.onExportDetailExcel(this.sotList);
+        if (report_type === 5) {
+          this.onExportDetailExcel(this.sotList);
         }
-        else
-        {
-           this.onExportDetail(this.sotList);
+        else {
+          this.onExportDetail(this.sotList);
         }
         //this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
         //this.checkInvoicedAndGetTotalCost();
