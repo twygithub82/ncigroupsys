@@ -1812,7 +1812,8 @@ export class PendingEstimateReportExcelComponent extends UnsubscribeOnDestroyAda
 
   DisplayDays(sot: StoringOrderTankItem) {
     //if (!sot.repair?.[0]?.allocate_dt) return '';
-    var dtValue = sot.update_dt || sot.create_dt;
+    // var dtValue = sot.update_dt || sot.create_dt;
+    var dtValue = this.getStartDate(sot);
 
     let today = new Date();
     today.setHours(23, 59, 59, 59);
@@ -1838,4 +1839,18 @@ export class PendingEstimateReportExcelComponent extends UnsubscribeOnDestroyAda
     }
   }
 
+   getStartDate(sot: StoringOrderTankItem) {
+    
+    if((sot.cleaning?.length||0)>0)
+    {
+      var cleanCmpDate = sot.cleaning?.[0]?.complete_dt||0;
+      return cleanCmpDate
+    }
+    else
+    {
+      var gateInDate = sot.in_gate?.[0]?.create_dt||0;
+      return gateInDate
+    }
+    
+  }
 }
