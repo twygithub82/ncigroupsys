@@ -39,3 +39,11 @@
 .card .header {
   border-bottom: unset;
 }
+
+.mat-mdc-card-content:first-child {
+  padding-top: 0 !important;
+}
+
+.mat-mdc-card-content:last-child {
+  padding-bottom: 0 !important;
+}
