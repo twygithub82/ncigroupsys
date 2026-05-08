@@ -632,7 +632,7 @@ export interface CleanerSummary {
     last_cargo?:string;
     method?:string;
     tank_no?:string;
-    duration?:number;
+    duration?:string;
     constructor(item: Partial<CleanerPerformance> = {}) {
 
       this.bay=item.bay;
