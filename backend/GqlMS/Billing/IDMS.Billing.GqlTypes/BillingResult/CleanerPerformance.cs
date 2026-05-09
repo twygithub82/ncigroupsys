@@ -25,6 +25,6 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? bay { get; set; }
         [NotMapped]
         public string? cleaner_name { get; set; }
-        public double? duration { get; set; } 
+        public string? duration { get; set; }
     }
 }
