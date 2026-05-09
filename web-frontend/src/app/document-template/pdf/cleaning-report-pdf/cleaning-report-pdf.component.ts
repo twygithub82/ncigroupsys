@@ -678,8 +678,8 @@ export class CleanReportPdfComponent extends UnsubscribeOnDestroyAdapter impleme
        
        this.addStyledTextArrayRTL(pdf, 
         [
-          { text: `${this.translatedLangText.CERTIFICATE_NO}: `, fontSize: 12, textColor: [0, 0, 0] },
-          { text: `${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`, fontSize: 12, textColor: [0, 0, 0], underline: false }
+          { text: `${this.translatedLangText.CERTIFICATE_NO}: `, fontSize: 11, textColor: [0, 0, 0] },
+          { text: `${item.storing_order_tank?.in_gate?.[0]?.eir_no||''}`, fontSize: 11, textColor: [0, 0, 0], underline: false }
         ], 
         startY-3, rightMargin+2);
         startY+=9;
@@ -1111,7 +1111,7 @@ async AddCleaningStepsTable(
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${item?.storing_order_tank?.customer_company?.name}` },
+        { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
        { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
       ],
@@ -1119,7 +1119,7 @@ async AddCleaningStepsTable(
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.tank_no}` },
          { content: `${this.translatedLangText.COMPLETION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.displayDateTime(item?.complete_dt) || "-"}` }
+        { content: `${this.displayDate(item?.complete_dt) || "-"}` }
       ],
       [
         { content: `${this.translatedLangText.CARGO_NAME}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
