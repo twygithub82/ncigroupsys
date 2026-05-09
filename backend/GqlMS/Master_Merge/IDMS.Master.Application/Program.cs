@@ -66,10 +66,10 @@ namespace IDMS.Master.Application
                     o.EnableSensitiveDataLogging(false);
                 });
 
+                var loggerFactory = LoggerFactory.Create(builder => { });
                 var mappingConfig = new MapperConfiguration(cfg =>
                 {
-                    cfg.CreateMap<CustomerRequest, customer_company>();
-                });
+                }, loggerFactory);
 
                 IMapper mapper = mappingConfig.CreateMapper();
                 builder.Services.AddSingleton(mapper);
