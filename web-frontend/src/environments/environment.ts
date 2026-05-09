@@ -110,7 +110,7 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
   {
     text: 'Dear Sir / Madam,',
     style: { size: fzSize },
-    marginTop: 13
+    marginTop: 5
   },
   {
     // text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
@@ -144,7 +144,7 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
     text: (data) => `Seal No.: `,
     style: { font: 'bold', size: fzSize },
     inline: true,
-    marginTop: 50
+    marginTop: 15
   },
   {
     text: (data) => `${data.sealNo || ''}`,
@@ -156,28 +156,28 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
     // text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
     text:`This certificate confirms that the tank met the required cleanliness standards at the time and place of inspection. It applies solely to the condition of the tank at the time of inspection.`,
     style: { size: fzSize },
-    marginTop: 25
+    marginTop: 15
   },
+  // {
+  //   type: 'line',
+  //   marginTop: 3,
+  //   style: {
+  //     lineWidth: 0.3
+  //   }
+  // },
+  // {
+  //   text: 'Remark:',
+  //   style: { size: fzSize, font: 'bold' },
+  //   marginTop: 5
+  // },
+  // {
+  //   text: (data) => `${data.remark || ''}`,
+  //   style: { size: fzSize },
+  //   marginTop: 5
+  // },
   {
     type: 'line',
-    marginTop: 3,
-    style: {
-      lineWidth: 0.3
-    }
-  },
-  {
-    text: 'Remark:',
-    style: { size: fzSize, font: 'bold' },
-    marginTop: 5
-  },
-  {
-    text: (data) => `${data.remark || ''}`,
-    style: { size: fzSize },
-    marginTop: 5
-  },
-  {
-    type: 'line',
-    marginTop: 23,
+    marginTop: 108,
     style: {
       lineWidth: 0.3
     }
