@@ -57,7 +57,7 @@ namespace IDMS.Billing.GqlTypes
                              join jo in context.job_order on r.job_order_guid equals jo.guid
                              join t in context.team on jo.team_guid equals t.guid
                              where r.status_cv == completedStatus && r.delete_dt == null &&
-                             r.complete_dt >= sDate && r.complete_dt <= eDate
+                             r.complete_dt >= sDate && r.complete_dt <= eDate && ig.delete_dt == null
                              select new CleanerPerformance
                              {
                                  eir_no = ig.eir_no,
@@ -66,11 +66,15 @@ namespace IDMS.Billing.GqlTypes
                                  eir_dt = ig.eir_dt,
                                  last_cargo = tc.cargo,
                                  complete_dt = r.complete_dt,
-                                 cost = r.cleaning_cost,
+                                 cost = r.cleaning_cost + r.buffer_cost,
                                  cleaner_name = r.complete_by,
                                  method = cm.name,
                                  bay = t.description,
-                                 duration = jo.working_hour ?? 0.0
+                                 //duration = jo.working_hour ?? 0.0
+
+                                 duration = string.Format("{0:D2}h:{1:D2}m",
+                                                    (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) / 60,
+                                                    (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) % 60)
                              })
                              //.AsSplitQuery()
                              .AsQueryable();
@@ -234,6 +238,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
+                string cancelStatus = "CANCELED";
+
                 int year = surveyorPerfSummaryRequest.year;
                 int start_month = surveyorPerfSummaryRequest.start_month;
                 int end_month = surveyorPerfSummaryRequest.end_month;
@@ -254,7 +260,7 @@ namespace IDMS.Billing.GqlTypes
                              join so in context.storing_order on sot.so_guid equals so.guid
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid
                              join us in context.Set<aspnetusers>() on r.aspnetusers_guid equals us.Id
-                             where r.delete_dt == null && r.create_dt != null && r.create_dt >= startEpoch && r.create_dt <= endEpoch
+                             where r.delete_dt == null && r.status_cv != cancelStatus && r.create_dt != null && r.create_dt >= startEpoch && r.create_dt <= endEpoch
                              orderby r.create_dt
                              select new TempSurveyorPerformance
                              {

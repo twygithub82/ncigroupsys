@@ -12,7 +12,7 @@
 		<PackageReference Include="HotChocolate" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.Types" Version="13.9.5" />
 		<PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="TimeZoneConverter" Version="7.0.0" />
