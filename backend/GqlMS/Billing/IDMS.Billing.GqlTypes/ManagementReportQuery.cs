@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using TimeZoneConverter;
 
 namespace IDMS.Billing.GqlTypes
@@ -791,12 +792,16 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from ro in context.Set<release_order>()
                              join ros in context.Set<release_order_sot>() on ro.guid equals ros.ro_guid
-                             join sot in context.storing_order_tank on ros.sot_guid equals sot.guid
-                             join so in context.Set<storing_order>() on sot.so_guid equals so.guid
-                             join cc in context.customer_company on ro.customer_company_guid equals cc.guid
-                             join ig in context.out_gate on sot.guid equals ig.so_tank_guid
+                             join sot in context.storing_order_tank on ros.sot_guid equals sot.guid into sotGroup
+                             from sot in sotGroup.DefaultIfEmpty()
+                             join so in context.Set<storing_order>() on sot.so_guid equals so.guid into soGroup
+                             from so in soGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on ro.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             join ig in context.out_gate on sot.guid equals ig.so_tank_guid into igGroup
+                             from ig in igGroup.DefaultIfEmpty()
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             where ro.create_dt >= sDate && ro.create_dt <= eDate &&
+                             where ro.create_dt >= sDate && ro.create_dt <= eDate && so.status_cv != CANCELED && ig.delete_dt == null &&
                              (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
                              (string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no.Contains(orderTrackingRequest.ro_no))
                              select new OrderTrackingResult
@@ -832,7 +837,7 @@ namespace IDMS.Billing.GqlTypes
                              join ig in context.in_gate on sot.guid equals ig.so_tank_guid into igGroup
                              from ig in igGroup.DefaultIfEmpty()
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             where so.create_dt >= sDate && so.create_dt <= eDate &&
+                             where so.create_dt >= sDate && so.create_dt <= eDate && ro.status_cv != CANCELED && ig.delete_dt == null &&
                              (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
                              (string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no.Contains(orderTrackingRequest.so_no))
                              select new OrderTrackingResult
