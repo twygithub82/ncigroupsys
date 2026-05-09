@@ -90,60 +90,61 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
   //   style: { font: 'bold', size: 16, align: 'left' },
   //   marginTop: 10
   // },
-  {
-    text: 'Summary',
-    style: { size: fzSize, font: 'bold' },
-    marginTop: 5
-  },
-  {
-    text: 'This certificate confirms that the tank identified in this document has successfully completed cleaning and inspection at our depot and meets the required cleanliness standards at the time of inspection.',
-    style: { size: fzSize },
-    marginTop: 5
-  },
-  {
-    type: 'line',
-    marginTop: 3,
-    style: {
-      lineWidth: 0.3
-    }
-  },
+  // {
+  //   text: 'Summary',
+  //   style: { size: fzSize, font: 'bold' },
+  //   marginTop: 5
+  // },
+  // {
+  //   text: 'This certificate confirms that the tank identified in this document has successfully completed cleaning and inspection at our depot and meets the required cleanliness standards at the time of inspection.',
+  //   style: { size: fzSize },
+  //   marginTop: 5
+  // },
+  // {
+  //   type: 'line',
+  //   marginTop: 3,
+  //   style: {
+  //     lineWidth: 0.3
+  //   }
+  // },
   {
     text: 'Dear Sir / Madam,',
     style: { size: fzSize },
-    marginTop: 8
+    marginTop: 13
   },
   {
-    text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
+    // text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
+    text: `We hereby certify that the above-mentioned tank has undergone cleaning at our depot and was inspected upon completion.`,
     style: { size: fzSize },
     marginTop: 5
   },
   {
-    text: `The above-mentioned tank, including all valves, was inspected and found to be `,
+    text: `At the time of inspection, the tank and all associated valves were found to be `,
     style: { size: fzSize },
     inline: true,
     marginTop: 5
   },
   {
-    text: `dry, odorless, `,
+    text: `dry, odorless, residue-free and`,
     style: { font: 'bold', size: fzSize },
     inline: true
   },
   {
-    text: `residue-free and visually clean`,
+    text: `visually clean`,
     style: { font: 'bold', size: fzSize },
     marginTop: 5,
     inline: true
   },
-  {
-    text: ' at the time of inspection.',
-    style: { size: fzSize },
-    inline: true
-  },
+  // {
+  //   text: ' at the time of inspection.',
+  //   style: { size: fzSize },
+  //   inline: true
+  // },
   {
     text: (data) => `Seal No.: `,
     style: { font: 'bold', size: fzSize },
     inline: true,
-    marginTop: 25
+    marginTop: 50
   },
   {
     text: (data) => `${data.sealNo || ''}`,
@@ -152,7 +153,8 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
 
   },
   {
-    text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
+    // text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
+    text:`This certificate confirms that the tank met the required cleanliness standards at the time and place of inspection. It applies solely to the condition of the tank at the time of inspection.`,
     style: { size: fzSize },
     marginTop: 25
   },
@@ -192,7 +194,7 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
     inline: true
   },
   {
-    text: `                                                            Generated Date & Time:`,
+    text: `                                                                      Generated Date & Time:`,
     style: { font: 'normal', size: fzSize - 0.5 },
     inline: true
   },
