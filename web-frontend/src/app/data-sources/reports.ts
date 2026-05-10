@@ -171,7 +171,7 @@ export class openingBalance{
 }
 
 export class daily_inventory_summary{
-  code?:String;
+  code?:string;
   in_gate_count?:number;
   name?:String;
   out_gate_count?:number;

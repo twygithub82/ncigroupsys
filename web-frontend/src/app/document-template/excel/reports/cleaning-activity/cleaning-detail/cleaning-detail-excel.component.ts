@@ -1376,7 +1376,7 @@ export class CleaningDetailInventoryExcelComponent extends UnsubscribeOnDestroyA
   }
 
   DisplayCustomerName(sot: StoringOrderTankItem) {
-    return this.ccDS.displayName(sot.storing_order?.customer_company);
+    return this.ccDS.displayNameOnly(sot.storing_order?.customer_company);
   }
 
 

@@ -446,6 +446,7 @@ namespace IDMS.Repair.GqlTypes
                         break;
                     case ObjectAction.CANCEL:
                         updateRepair.status_cv = CurrentServiceStatus.CANCELED;
+                        updateRepair.delete_dt = currentDateTime;
                         _logger.LogInformation("Repair with guid: {RepairGuid} status updated to CANCELED", repair.guid);
                         break;
                     case ObjectAction.COMPLETE:

@@ -787,14 +787,17 @@ export class Utility {
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
-  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, 
+    rightMargin: number, topPosition: number, fontSize: number,bold: boolean = false) {
     pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
+    pdf.setFont("helvetica", bold ? "bold" : "normal");
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = leftMargin + 1; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
   }
+
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
     pdf.saveGraphicsState();

@@ -51,7 +51,7 @@ import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 export interface DialogData {
   repData: any[],
   date: string,
-  title:string
+  title: string
 }
 
 export type ChartOptions = {
@@ -128,7 +128,8 @@ export class YardSummaryReportExcelComponent extends UnsubscribeOnDestroyAdapter
     CATEGORY_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
     CATEGORY_NAME_SELECTED: 'COMMON-FORM.SELECTED',
     NO_TANK: 'COMMON-FORM.NO-TANK',
-    S_N:'COMMON-FORM.S_N',
+    S_N: 'COMMON-FORM.S_N',
+    TOTAL: 'COMMON-FORM.TOTAL',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -146,7 +147,7 @@ export class YardSummaryReportExcelComponent extends UnsubscribeOnDestroyAdapter
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  report_title:string="";
+  report_title: string = "";
   repairItem: any;
 
   last_test_desc?: string = ""
@@ -355,18 +356,18 @@ export class YardSummaryReportExcelComponent extends UnsubscribeOnDestroyAdapter
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item,index) => {
+    const data: any[][] = items.map((item, index) => {
       const row = [
         index + 1,
-        item.code|| "-",
+        item.code || "-",
         item.customer || "-",
         item.number_tank || "-"
       ];
       return row;
     });
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
-     const head: (string | number)[][] = [[
-       this.translatedLangText.S_N,
+    const head: (string | number)[][] = [[
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER_CODE,
       this.translatedLangText.CUSTOMER_NAME,
       this.translatedLangText.NO_TANK
@@ -375,41 +376,35 @@ export class YardSummaryReportExcelComponent extends UnsubscribeOnDestroyAdapter
     const reportTitle: (string | number)[][] = [
       [`${this.data.title}`],
     ];
-   const rows: (string | number)[][] = [
-      ...reportTitle,
-      [], // empty row after title
-      ...head,
-      ...data
+    //  const rows: (string | number)[][] = [
+    //     ...reportTitle,
+    //     [], // empty row after title
+    //     ...head,
+    //     ...data
+    //   ];
+
+    const totalTank = items.reduce((sum, item) => {
+      return sum + (Number(item.number_tank) || 0);
+    }, 0);
+
+    const totalRow: (string | number)[] = [
+      '',
+      '',
+      this.translatedLangText.TOTAL,
+      totalTank
     ];
 
+    const rows: (string | number)[][] = [
+      ...reportTitle,
+      [],
+      ...head,
+      ...data,
+      totalRow
+    ];
     const totalColumns = head[0].length;
-    var fileName =`${this.data.title.replace(": ","_")}.xlsx`;
+    var fileName = `${this.data.title.replace(": ", "_")}.xlsx`;
     Utility.saveExcel(rows, fileName, totalColumns);
-    // const head: (string | number)[][] = [[
-    //   this.translatedLangText.S_N,
-    //   this.translatedLangText.CUSTOMER_CODE,
-    //   this.translatedLangText.CUSTOMER_NAME,
-    //   this.translatedLangText.NO_TANK
-      
-    // ]];
 
-    // const rows: (string | number)[][] = [
-    //   ...head,
-    //   ...data
-    // ];
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
-    //   const maxLength = rows.reduce((max, row) => {
-    //     const cell = row[colIndex];
-    //     return Math.max(max, cell ? cell.toString().length : 0);
-    //   }, 10);
-    //   return { wch: maxLength + 2 };
-    // });
-    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-    // XLSX.writeFile(workbook, "CleaningCategory.xlsx");
     this.dialogRef.close();
   }
 

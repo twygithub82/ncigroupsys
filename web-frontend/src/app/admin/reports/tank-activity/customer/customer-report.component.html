@@ -12,7 +12,7 @@
             </button>
           </div>
            @if (modulePackageService.AllowPdfReport()) {
-          <div class="m-l-10" [matTooltip]="translatedLangText.ACTIVITY_REPORT">
+          <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
             <button mat-mini-fab class="primary-light" (click)="search(1)" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
               <mat-icon>assignment</mat-icon>
@@ -20,7 +20,7 @@
           </div>
         }
           @if (modulePackageService.AllowExcelReport()) {
-          <div class="m-l-5" matTooltip="{{translatedLangText.ACTIVITY_REPORT}} - Excel">
+          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
             <button mat-mini-fab class="light-green-button" (click)="search(3)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport">
               <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
@@ -63,12 +63,12 @@
               </mat-autocomplete>
               @if (this.customerCodeControl.hasError('required')) {
               <mat-error>
-                {{this.translatedLangText.CUSTOMER}} {{this.translatedLangText.SO_REQUIRED}}
+                <!-- {{this.translatedLangText.CUSTOMER}} {{this.translatedLangText.SO_REQUIRED}} -->
               </mat-error>
               }
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
               <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -97,16 +97,16 @@
               <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #eir_picker></mat-date-range-picker>
               @if (searchForm?.get('eir_dt_start')?.hasError('required')) {
-              <!-- <mat-error>
-                {{this.translatedLangText.EIR_DATE}} {{this.translatedLangText.SO_REQUIRED}}
-              </mat-error> -->
+               <mat-error>
+                <!-- {{this.translatedLangText.EIR_DATE}} {{this.translatedLangText.SO_REQUIRED}} -->
+              </mat-error> 
               }
               <!-- <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker> -->
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
               <mat-select formControlName="tank_status_cv">
@@ -447,8 +447,8 @@
     </mat-paginator>
   </div>
   @if (!(sotDS.loading$ | async) && this.noCond) {
-  <div class="m-l-20 pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+  <!-- <div class="m-l-20 pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
     <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
-  </div>
+  </div> -->
   }
 </div>

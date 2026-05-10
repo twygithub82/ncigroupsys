@@ -174,6 +174,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
     CARGO: 'COMMON-FORM.CARGO',
     UN_NUMBER: 'COMMON-FORM.UN-NUMBER',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   invForm?: UntypedFormGroup;
@@ -369,7 +370,13 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
 
     });
     this.cvDS.getAllClassNo().subscribe(data => {
-      this.classCvList = data;
+
+      // this.classCvList = data;
+
+      this.classCvList = addDefaultSelectOption(data, 'NA', 'NA');
+      this.classCvList = this.classCvList.filter(x =>
+        !x.description?.toLowerCase().includes('x')
+      );
     });
     // this.search();
   }
@@ -589,6 +596,10 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
           return;
         }
 
+
+        data.sort((a, b) =>
+          (a.code || '').localeCompare(b.code || '')
+        );
 
         this.cleaningSumList = data;
         if (repType == 5) {
@@ -814,7 +825,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       }
     });
 
-    if (repType == 5) { 
+    if (repType == 5) {
 
       if (report_type == 'UNCLEAN_TANK') {
         this.onExportUncleanTankDetailExcel(report_inv_cln_dtl, date, report_type);

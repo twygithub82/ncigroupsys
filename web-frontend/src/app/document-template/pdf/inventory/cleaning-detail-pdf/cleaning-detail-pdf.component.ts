@@ -673,7 +673,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       
       var subtitle=`${cust.cargo||"-"}  |  ${unNo||"-"}  |  ${process||"-"}`;
       
-      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize(),true);
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
       // /pdf.setLineWidth(0.1);
@@ -1178,7 +1178,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
   }
 
   DisplayCustomerName(sot: StoringOrderTankItem) {
-    return this.ccDS.displayName(sot.storing_order?.customer_company);
+    return this.ccDS.displayNameOnly(sot.storing_order?.customer_company);
   }
 
 
