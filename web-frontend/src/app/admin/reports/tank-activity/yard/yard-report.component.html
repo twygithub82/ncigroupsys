@@ -5,14 +5,14 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
-          <div class="m-l-" matTooltip="{{translatedLangText.SUMMARY_REPORT}} - PDF">
+          <div class="m-l-" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
             <button mat-mini-fab color="primary" (click)="search_summary()" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async) || isGeneratingReport)">
               <mat-icon>assessment</mat-icon>
             </button>
           </div>
           @if (modulePackageService.AllowPdfReport()) {
-          <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}} - PDF">
+          <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
             <button mat-mini-fab class="primary-light" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
               <mat-icon>assignment</mat-icon>
@@ -22,8 +22,8 @@
           @if (modulePackageService.AllowExcelReport()) {
           <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel(1)"
             (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
-            matTooltip="{{ translatedLangText.SUMMARY_REPORT }} - Excel">
-            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }} - Excel"
+            matTooltip="{{ translatedLangText.SUMMARY_REPORT}}">
+            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT}}"
               class="fab-icon">
           </button>
 
