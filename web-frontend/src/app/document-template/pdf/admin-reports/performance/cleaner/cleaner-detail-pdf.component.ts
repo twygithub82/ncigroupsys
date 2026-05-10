@@ -272,6 +272,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     DURATION: 'COMMON-FORM.DURATION',
     HRS: "COMMON-FORM.HRS",
     TOTAL_AMOUNT: "COMMON-FORM.TOTAL-AMOUNT",
+    PROCESS: 'COMMON-FORM.PROCESS',
   }
 
   type?: string | null;
@@ -624,7 +625,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.CARGO,
       this.translatedLangText.DURATION ,
-      this.translatedLangText.CLEAN_CATEGORY,
+      this.translatedLangText.PROCESS,
       this.translatedLangText.COST,
       // this.translatedLangText.EIR_NO,
       //  this.translatedLangText.ESTIMATE_DATE,
