@@ -5,22 +5,22 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
-           @if (modulePackageService.AllowPdfReport()) {
-          <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
+          @if (modulePackageService.AllowPdfReport()) {
+          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(isGeneratingReport)">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
-        }
-         @if (modulePackageService.AllowExcelReport()) {
+          }
+          @if (modulePackageService.AllowExcelReport()) {
 
-            <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()" [matTooltip]="translatedLangText.DETAIL_SUMMARY"
-              (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
-              matTooltip="{{ translatedLangText.EXPORT }}">
-              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
-            </button>
-            }
+          <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()"
+            [matTooltip]="translatedLangText.SUMMARY_REPORT" (click)="$event.stopPropagation()"
+            [disabled]="isGeneratingReport">
+            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+          </button>
+          }
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
               <mat-icon>clear_all</mat-icon>
@@ -30,19 +30,19 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -56,7 +56,7 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
               <mat-select formControlName="rep_type" multiple>
@@ -68,7 +68,19 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4  col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TEAM}}</mat-label>
+              <mat-select formControlName="team" multiple>
+                @for (t of repairTeamList; track t) {
+                <mat-option [value]="t.description">
+                  {{t.description}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
@@ -80,7 +92,7 @@
             </mat-form-field>
           </div>
 
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{ translatedLangText.APPROVED_DATE }}</mat-label>
               <input matInput [matDatepicker]="approved_picker" formControlName="app_dt" placeholder="Select date"
@@ -88,11 +100,6 @@
               <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
               <mat-datepicker #approved_picker></mat-datepicker>
             </mat-form-field>
-            <!-- @if (searchForm?.get('app_dt')?.hasError('required') && searchForm?.get('app_dt')?.touched) {
-                  <mat-error>
-                    {{ translatedLangText.APPROVED_DATE }} {{ translatedLangText.SO_REQUIRED }}
-                  </mat-error>
-                } -->
           </div>
           <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -114,7 +121,7 @@
                 }
 
               </div> -->
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.ALLOCATION_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="allocation_picker" [max]="getMaxDate()">
@@ -124,8 +131,8 @@
               <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #allocation_picker></mat-date-range-picker>
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{ translatedLangText.QC_DATE }}</mat-label>
               <input matInput [matDatepicker]="qc_picker" formControlName="qc_dt" placeholder="Select date"
@@ -133,11 +140,6 @@
               <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
               <mat-datepicker #qc_picker></mat-datepicker>
             </mat-form-field>
-            <!-- @if (searchForm?.get('qc_dt')?.hasError('required') && searchForm?.get('qc_dt')?.touched) {
-                  <mat-error>
-                    {{ translatedLangText.QC_DATE }} {{ translatedLangText.SO_REQUIRED }}
-                  </mat-error>
-                } -->
           </div>
           <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -150,18 +152,6 @@
                   <mat-date-range-picker #qc_picker></mat-date-range-picker>
                 </mat-form-field>
               </div> -->
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.TEAM}}</mat-label>
-              <mat-select formControlName="team" multiple>
-                @for (t of repairTeamList; track t) {
-                <mat-option [value]="t.description">
-                  {{t.description}}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <div class="radio-group" (change)="onReportTypeChange($event)">
               <input type="radio" id="option-one" name="report_type" formControlName="report_type" value="1"
