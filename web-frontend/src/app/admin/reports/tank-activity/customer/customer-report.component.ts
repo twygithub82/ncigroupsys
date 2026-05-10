@@ -590,6 +590,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
+   
 
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
@@ -599,16 +600,26 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
       this.isGeneratingReport = false;
-      return;
+      
+      // return;
     }
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     if ([1,3].includes(repType)) {
+      var bRetval =false;
       if (!this.customerCodeControl.value) {
         this.isGeneratingReport = false;
         this.customerCodeControl.setErrors({ 'required': true });
         this.customerCodeControl.markAsTouched(); // <-- Add this line
-        return;
+        bRetval=true ;
       }
+      if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
+        this.isGeneratingReport = false;
+        this.searchForm!.get('eir_dt_start')?.setErrors({ 'required': true });
+        this.searchForm!.get('eir_dt_start')?.markAsTouched(); // <-- Add this line
+          bRetval=true ;
+      }
+
+      if(bRetval) return;
       this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, customerNm);
     } else {
       if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
