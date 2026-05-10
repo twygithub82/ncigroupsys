@@ -22,8 +22,8 @@
           @if (modulePackageService.AllowExcelReport()) {
           <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel(1)"
             (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
-            matTooltip="{{ translatedLangText.SUMMARY_REPORT}}">
-            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT}}"
+            matTooltip="{{ translatedLangText.DETAIL_REPORT}}">
+            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.DETAIL_REPORT}}"
               class="fab-icon">
           </button>
 
@@ -39,19 +39,7 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-              <input matInput formControlName="tank_no">
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-              <input matInput formControlName="eir_no">
-            </mat-form-field>
-          </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -65,7 +53,7 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
               <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -84,7 +72,22 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+        </div>
+        <div class="row">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+              <input matInput formControlName="tank_no">
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+              <input matInput formControlName="eir_no">
+            </mat-form-field>
+          </div>
+         
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="release_picker" [max]="maxManuDOMDt">
@@ -95,7 +98,7 @@
               <mat-date-range-picker #release_picker></mat-date-range-picker>
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
               <mat-select #invTypeSelect formControlName="inv_type">

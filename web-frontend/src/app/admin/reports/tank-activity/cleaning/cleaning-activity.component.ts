@@ -372,8 +372,8 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
     this.cvDS.getAllClassNo().subscribe(data => {
 
       // this.classCvList = data;
-      
-      this.classCvList= addDefaultSelectOption(data, 'NA','NA');
+
+      this.classCvList = addDefaultSelectOption(data, 'NA', 'NA');
       this.classCvList = this.classCvList.filter(x =>
         !x.description?.toLowerCase().includes('x')
       );
@@ -596,6 +596,10 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
           return;
         }
 
+
+        data.sort((a, b) =>
+          (a.code || '').localeCompare(b.code || '')
+        );
 
         this.cleaningSumList = data;
         if (repType == 5) {

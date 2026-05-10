@@ -633,10 +633,10 @@ export class UncleanTankDetailInventoryExcelComponent extends UnsubscribeOnDestr
 
   // 🔹 Styles
   const border = {
-    top: { style: "thin" },
-    bottom: { style: "thin" },
-    left: { style: "thin" },
-    right: { style: "thin" }
+    // top: { style: "thin" },
+    // bottom: { style: "thin" },
+    // left: { style: "thin" },
+    // right: { style: "thin" }
   };
 
   const center = { horizontal: "center", vertical: "center" };
@@ -1350,7 +1350,7 @@ export class UncleanTankDetailInventoryExcelComponent extends UnsubscribeOnDestr
 
   DisplayCustomerName(sot: StoringOrderTankItem) {
     // return this.ccDS.displayName(sot.storing_order?.customer_company);
-    return sot.storing_order?.customer_company?.code||'';
+    return sot.storing_order?.customer_company?.name||'';
   }
 
 
