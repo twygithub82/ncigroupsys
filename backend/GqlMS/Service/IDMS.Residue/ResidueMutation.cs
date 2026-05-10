@@ -412,6 +412,7 @@ namespace IDMS.Residue.GqlTypes
                         break;
                     case ObjectAction.CANCEL:
                         updateResidue.status_cv = CurrentServiceStatus.CANCELED;
+                        updateResidue.delete_dt = currentDateTime;
                         _logger.LogInformation("UpdateResidueStatus: Residue with guid {Guid} marked as CANCELED", residue.guid);
                         break;
                     case ObjectAction.PARTIAL:

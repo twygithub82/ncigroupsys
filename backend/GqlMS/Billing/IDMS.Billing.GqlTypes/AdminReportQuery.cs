@@ -72,8 +72,13 @@ namespace IDMS.Billing.GqlTypes
                                  bay = t.description,
                                  //duration = jo.working_hour ?? 0.0
 
-                                 duration = string.Format("{0:D2}h:{1:D2}m",
-                                                    (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) / 60,
+                                 //duration = string.Format("{0}d:{1}h:{2:D2}m",
+                                 //                   (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) / 60,
+                                 //                   (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) % 60)
+
+                                 duration = string.Format("{0}d:{1}h:{2:D2}m",
+                                                    (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) / (24 * 60),
+                                                    ((int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) / 60) % 24,
                                                     (int)Math.Ceiling((jo.working_hour ?? 0.0) * 60) % 60)
                              })
                              //.AsSplitQuery()

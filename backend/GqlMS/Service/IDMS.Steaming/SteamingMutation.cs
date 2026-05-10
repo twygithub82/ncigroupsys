@@ -543,6 +543,7 @@ namespace IDMS.Steaming.GqlTypes
                         break;
                     case ObjectAction.CANCEL:
                         updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
+                        updateSteaming.delete_dt = currentDateTime; 
                         break;
                     case ObjectAction.PARTIAL:
                         updateSteaming.status_cv = CurrentServiceStatus.PARTIAL;

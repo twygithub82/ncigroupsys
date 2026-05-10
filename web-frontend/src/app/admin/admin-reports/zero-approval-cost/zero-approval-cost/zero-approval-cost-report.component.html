@@ -5,22 +5,21 @@
         <mat-panel-title>
         </mat-panel-title>
         <mat-panel-description>
-        @if (modulePackageService.AllowPdfReport()) {
-          <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
+          @if (modulePackageService.AllowPdfReport()) {
+          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
               [disabled]="((repDS.loading$ | async) || isGeneratingReport) || !AllowToSearch()">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
-            }
-            @if (modulePackageService.AllowExcelReport()) {
-
-            <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()" [matTooltip]="translatedLangText.DETAIL_SUMMARY"
-              (click)="$event.stopPropagation()" [disabled]="isGeneratingReport"
-              matTooltip="{{ translatedLangText.EXPORT }}">
-              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
-            </button>
-            }
+          }
+          @if (modulePackageService.AllowExcelReport()) {
+          <button mat-mini-fab class="light-green-button m-l-10" (click)="export_excel()"
+            [matTooltip]="translatedLangText.SUMMARY_REPORT" (click)="$event.stopPropagation()"
+            [disabled]="isGeneratingReport" matTooltip="{{ translatedLangText.EXPORT }}">
+            <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+          </button>
+          }
           <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
             <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
               [disabled]="((repDS.loading$ | async) || isGeneratingReport)">
@@ -31,7 +30,7 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
@@ -42,8 +41,8 @@
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -57,7 +56,35 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TYPE}}</mat-label>
+              <mat-select matInput formControlName="cost_type" required>
+
+                @for (cs of costTypeCvList; track cs) {
+                @if(filterCostType.includes(cs.code_val!))
+                {
+                <mat-option [value]="cs">
+                  {{cs.description}}
+                </mat-option>
+                }
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+              <mat-select formControlName="depot_status_cv">
+                @for (codeValue of depotStatusCvList; track codeValue) {
+                <mat-option [value]="codeValue.code_val">
+                  {{codeValue.description}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
               <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -75,8 +102,8 @@
               </mat-error>
               }
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.MONTH}}</mat-label>
               <mat-select formControlName="month">
@@ -88,7 +115,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.YEAR}}</mat-label>
               <mat-select formControlName="year">
@@ -96,34 +123,6 @@
                 <mat-option [value]="year">
                   {{year}}
                 </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-              <mat-select formControlName="depot_status_cv">
-                @for (codeValue of depotStatusCvList; track codeValue) {
-                <mat-option [value]="codeValue.code_val">
-                  {{codeValue.description}}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.COST_TYPE}}</mat-label>
-              <mat-select matInput formControlName="cost_type" required>
-
-                @for (cs of costTypeCvList; track cs) {
-                @if(filterCostType.includes(cs.code_val!))
-                {
-                <mat-option [value]="cs">
-                  {{cs.description}}
-                </mat-option>
-                }
                 }
               </mat-select>
             </mat-form-field>

@@ -169,10 +169,10 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     REVENUE: 'COMMON-FORM.REVENUE',
     APPROVAL: 'COMMON-FORM.APPROVAL',
     QC_DETAIL: 'COMMON-FORM.QC-DETAIL',
-    CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
+    CLEANING_PROCESS: 'COMMON-FORM.PROCESS',
     CARGO: "COMMON-FORM.CARGO",
     CLEANER: "COMMON-FORM.CLEANER",
-    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY",
+    CLEANING_BAY: "COMMON-FORM.BAY",
   }
 
   invForm?: UntypedFormGroup;
@@ -241,7 +241,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-     public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -401,8 +401,17 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       ]
     };
 
+    // this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
+    //   this.cleanTeamList = data;
+    // });
+
     this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
-      this.cleanTeamList = data;
+      this.cleanTeamList = data.sort((a, b) => {
+        const numA = parseInt((a.description ?? '').replace(/\D/g, ''), 10) || 0;
+        const numB = parseInt((b.description ?? '').replace(/\D/g, ''), 10) || 0;
+
+        return numA - numB;
+      });
     });
 
     const whereCln: any = {
@@ -557,12 +566,10 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         //   this.isGeneratingReport = false
         // }
         this.repData = data;
-        if(report_type==5)
-        {
+        if (report_type == 5) {
           this.onExportAdminReportCleanerPerformanceDetailExcelReport(this.repData, date!, team!);
         }
-        else
-        {
+        else {
           this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
         }
       });
@@ -763,8 +770,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     return pageSizeInfo
   }
 
-  export_excel()
-  {
+  export_excel() {
     this.search(5);
   }
 

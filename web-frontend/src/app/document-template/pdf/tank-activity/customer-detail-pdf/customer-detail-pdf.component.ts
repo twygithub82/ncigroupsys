@@ -1855,7 +1855,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
 
   DisplayTankOwner(sot: StoringOrderTankItem) {
     // return this.ccDS.displayName(sot.storing_order?.customer_company);
-    return `${sot.storing_order?.customer_company?.code}` || '';
+    // return `${sot.storing_order?.customer_company?.code}` || '';
+    return `${sot.customer_company?.code}` || '';
   }
 
 
