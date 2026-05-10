@@ -85,7 +85,7 @@
               <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
                 <input matStartDate placeholder="Start date" formControlName="est_dt_start">
-                <input matEndDate placeholder="End date" formControlName="est_dt_end">
+                <input matEndDate placeholder="End date" formControlName="est_dt_end" class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #est_picker></mat-date-range-picker>
