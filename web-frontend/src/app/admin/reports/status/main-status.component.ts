@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,9 +26,11 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { YardStatusReportComponent } from './yard/yard-status.component';
-
+import { TankActivitiyYardReportComponent } from '../tank-activity/yard/yard-report.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import {LocationTransferReportComponent} from '../transfer/location/location-transfer.component';
 @Component({
   selector: 'app-status-report',
   standalone: true,
@@ -59,6 +61,8 @@ import { YardStatusReportComponent } from './yard/yard-status.component';
     MatCardModule,
     MatTabsModule,
     YardStatusReportComponent,
+    TankActivitiyYardReportComponent,
+    LocationTransferReportComponent
   ]
 })
 export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -123,16 +127,18 @@ export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements 
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS'
+    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
+    LOCATION_TRANSFER: 'MENUITEMS.REPORTS.LIST.LOCATION-TRANSFER'
   }
-  
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -158,5 +164,41 @@ export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements 
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+   tabConfig = [
+    {
+      label: this.translatedLangText.YARD_STATUS,
+      component: 'app-yard-status-report',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.YARD_REPORT,
+      component: 'app-yard-report',
+      modulePackage: ['growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
+  @ViewChild('yardSatusReport') yardSatusReport!: YardStatusReportComponent;
+  @ViewChild('tankActivityYardReport') tankActivityYardReport!: TankActivitiyYardReportComponent;
+  @ViewChild('locationTransferReport') locationTransferReport!: LocationTransferReportComponent;
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
+      case 0:
+        this.yardSatusReport?.onTabFocused(); break;
+      case 1:
+        this.tankActivityYardReport?.onTabFocused(); break;
+      case 2:
+        this.locationTransferReport?.onTabFocused(); break;
+
+    }
   }
 }

@@ -1018,7 +1018,7 @@ namespace IDMS.Billing.GqlTypes
                                             type = depotType
                                         }).ToArrayAsync();
 
-                var resDepot = cleaningQuery.OrderBy(s => s.date).ToList();
+                var resDepot = depotQuery.OrderBy(s => s.date).ToList();
                 var resultDepot = GetResultInNoOfWeek(resDepot);
 
                 var allWeeks = resultCleaning

@@ -869,8 +869,8 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
       this.translatedLangText.LOCATION,
       this.translatedLangText.STEAM, this.translatedLangText.CLEAN,
       this.translatedLangText.REPAIR, this.translatedLangText.STORAGE,
-      this.translatedLangText.PENDING, this.translatedLangText.WITH_RO,
-      this.translatedLangText.TOTAL
+      // this.translatedLangText.PENDING, 
+      this.translatedLangText.WITH_RO, this.translatedLangText.TOTAL
     ]];
 
     const comStyles: any = {
@@ -884,7 +884,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       //10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
@@ -934,9 +934,9 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
         data.push([
           (++idx).toString(), itm.code || "", this.displayLocation(yard) || "",
           yard.noTank_steam || "0", yard.noTank_clean || "0", yard.noTank_repair || "0",
-          yard.noTank_storage || "0", yard.noTank_pending || "0",
-          yard.noTank_withRO || "0", 
-          this.displaySubTotal(yard)||"0"
+          yard.noTank_storage || "0", 
+          // yard.noTank_pending || "0",
+          yard.noTank_withRO || "0", this.displaySubTotal(yard)||"0"
           // this.displayInYardTotal(yard) || "0"
 
         ]);
@@ -946,7 +946,8 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
 
 
     data.push([this.translatedLangText.TOTAL, "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotalPending(),
+    this.displayTotalRepair(), this.displayTotalStorage(), 
+    // this.displayTotalPending(),
     this.displayTotalWithRO(), this.displayTotal()]);
 
     pdf.setDrawColor(0, 0, 0); // red line color
