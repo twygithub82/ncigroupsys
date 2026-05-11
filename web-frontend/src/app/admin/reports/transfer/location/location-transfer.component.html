@@ -32,7 +32,7 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
@@ -43,7 +43,7 @@
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">
             </mat-form-field>
-          </div>
+          </div> -->
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
@@ -58,18 +58,18 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TRANSFER_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="transfer_picker" [max]="maxManuDOMDt">
                 <input matStartDate placeholder="Start date" formControlName="trf_dt_start" required>
-                <input matEndDate placeholder="End date" formControlName="trf_dt_end" required>
+                <input matEndDate placeholder="End date" formControlName="trf_dt_end" required class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="transfer_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #transfer_picker></mat-date-range-picker>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.YARD}}</mat-label>
               <mat-select formControlName="yard" multiple>
