@@ -15,11 +15,11 @@
               <app-customer-report #tankActCustomerReport></app-customer-report>
             </mat-tab>
             }
-            @if (tab.component == 'app-yard-report') {
+            <!-- @if (tab.component == 'app-yard-report') {
             <mat-tab [label]="translatedLangText.YARD_REPORT">
               <app-yard-report #tankActYardReport></app-yard-report>
             </mat-tab>
-            }
+            } -->
             @if (tab.component == 'app-cleaning-activity') {
             <mat-tab [label]="translatedLangText.CLEANING_ACTIVITY">
               <app-cleaning-activity #tankActCleanReport></app-cleaning-activity>
@@ -36,9 +36,9 @@
           @if (tab.component == 'app-customer-report') {
           <app-customer-report #tankActCustomerReportg></app-customer-report>
           }
-          @if (tab.component == 'app-yard-report') {
+          <!-- @if (tab.component == 'app-yard-report') {
           <app-yard-report #tankActYardReportg></app-yard-report>
-          }
+          } -->
           }
           }
         </div>
