@@ -155,7 +155,8 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
-    STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS'
+    STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
   }
 
   invForm?: UntypedFormGroup;
@@ -666,6 +667,10 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
+
+  onTabFocused() {
+    this.resetForm();
+  }
 
 
 }

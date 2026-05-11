@@ -161,7 +161,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
-     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
 
   }
 
@@ -390,7 +390,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   search(report_type: number) {
 
     this.isGeneratingReport = true;
-    var cond_counter = 0;
+    var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
 
@@ -462,17 +462,21 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksStatusReportAll(this.lastSearchCriteria, this.lastOrderBy, first)
       .subscribe(data => {
+        data.sort((a, b) => {
+          const codeA = a.storing_order?.customer_company?.code ?? '';
+          const codeB = b.storing_order?.customer_company?.code ?? '';
+
+          return codeA.localeCompare(codeB);
+        });
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        if(report_type===4)
-        {
+        if (report_type === 4) {
           this.ProcessReportLocationStatus();
         }
-        else
-        {
+        else {
           this.ProcessReportStatus(report_type!);
         }
 
@@ -900,7 +904,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
             case "STORAGE":
               yard.noTank_storage! += 1;
               break;
-             case "IN_SURVEY":
+            case "IN_SURVEY":
               yard.noTank_in_survey! += 1;
               break;
             case "OUT_SURVEY":
@@ -928,15 +932,20 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.searchForm?.get('customer_code')?.value) {
       repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
     }
-    repStatus.forEach(r => r.yards?.sort((a, b) => (a.code || "").localeCompare(b.code || "")));
+    // repStatus.forEach(r => r.yards?.sort((a, b) => (a.code || "").localeCompare(b.code || "")));
+    repStatus.forEach(r => {
+      r.yards = r.yards
+        ?.filter(y => y.code && y.code.trim() !== '')
+        .sort((a, b) => (a.code || "").localeCompare(b.code || ""));
+    });
+
     if (report_type == 1) {
       this.onExportSummary(repStatus);
     }
     else if (report_type == 2) {
       this.onExportSummaryDetail(repStatus);
     }
-    else if(report_type==5)
-    {
+    else if (report_type == 5) {
       this.onExportDetailExcel(repStatus);
     }
     else {
@@ -1070,7 +1079,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     this.sotList.map(s => {
       if (s) {
-        var yard_cv = s.tank_info?.yard_cv||s.in_gate?.[0]?.yard_cv||undefined;
+        var yard_cv = s.tank_info?.yard_cv || s.in_gate?.[0]?.yard_cv || undefined;
         if (!yard_cv) return;
         var repCust: report_status = repStatus.find(r => r.code === s.storing_order?.customer_company?.code) || new report_status();
         let newCust = false;
@@ -1089,30 +1098,30 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
           yard.storing_order_tank = [];
           newYard = true;
         }
-         switch (s.tank_status_cv) {
-            case "STEAM":
-              yard.noTank_steam! += 1;
-              break;
-            case "OFFHIRE":
-            case "REPAIR":
-              yard.noTank_repair! += 1;
-              break;
-            case "CLEANING":
-              yard.noTank_clean! += 1;
-              break;
-            case "STORAGE":
-              yard.noTank_storage! += 1;
-              break;
-            case "IN_SURVEY":
-              yard.noTank_in_survey! += 1;
-              break;
-            case "OUT_SURVEY":
-              yard.noTank_out_survey! += 1;
-              break;
-            case "RO_GENERATED":
-              yard.noTank_withRO! += 1;
-              break;
-         }
+        switch (s.tank_status_cv) {
+          case "STEAM":
+            yard.noTank_steam! += 1;
+            break;
+          case "OFFHIRE":
+          case "REPAIR":
+            yard.noTank_repair! += 1;
+            break;
+          case "CLEANING":
+            yard.noTank_clean! += 1;
+            break;
+          case "STORAGE":
+            yard.noTank_storage! += 1;
+            break;
+          case "IN_SURVEY":
+            yard.noTank_in_survey! += 1;
+            break;
+          case "OUT_SURVEY":
+            yard.noTank_out_survey! += 1;
+            break;
+          case "RO_GENERATED":
+            yard.noTank_withRO! += 1;
+            break;
+        }
         // switch (s.tank_status_cv) {
         //   case "STEAM":
         //     yard.noTank_steam! += 1;
@@ -1140,39 +1149,43 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.searchForm?.get('customer_code')?.value) {
       repStatus = repStatus.filter(s => s.code == this.searchForm?.get('customer_code')?.value.code);
     }
-    
-      this.onExportLocationStatusSummary(repStatus);
-    
+
+    this.onExportLocationStatusSummary(repStatus);
+
   }
 
   onExportLocationStatusSummary(repStatus: report_status[]) {
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-      var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-        maxHeight: reportPreviewWindowDimension.report_maxHeight,
-        data: {
-          report_summary_status: repStatus,
-          yards: yardsCv
-        },
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport = false;
-      });
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    var yardsCv: CodeValuesItem[] = (this.searchForm?.get('yard')?.value || this.yardCvList);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_summary_status: repStatus,
+        yards: yardsCv
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onTabFocused() {
+    this.resetForm();
+  }
 
 
 

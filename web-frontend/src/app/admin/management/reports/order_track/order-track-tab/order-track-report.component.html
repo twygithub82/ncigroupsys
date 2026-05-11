@@ -94,7 +94,7 @@
                   <mat-label>{{translatedLangText.DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="eir_picker" [max]="maxManuDOMDt" required>
                     <input matStartDate placeholder="Start date" formControlName="dt_start" required>
-                    <input matEndDate placeholder="End date" formControlName="dt_end" required>
+                    <input matEndDate placeholder="End date" formControlName="dt_end" required class="ms-4">
                   </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #eir_picker></mat-date-range-picker>
