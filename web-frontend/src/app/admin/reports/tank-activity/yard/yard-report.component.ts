@@ -39,6 +39,7 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { YardDetailExcelComponent } from 'app/document-template/excel/tank-activity/yard-report/detail-report/yard-detail-excel.component';
 import { YardSummaryReportExcelComponent } from 'app/document-template/excel/tank-activity/yard-report/summary-report/summary-report-excel.component';
 import { YardDetailPdfComponent } from 'app/document-template/pdf/tank-activity/yard/detail-pdf/yard-detail-pdf.component';
 import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
@@ -464,12 +465,12 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       return;
     }
 
-
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     if (exportReport) this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number, queryType?: number, invType?: string, date?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+     before?: string, report_type?: number, queryType?: number, invType?: string, date?: string) {
 
     // if(queryType==1)
     // {
@@ -758,9 +759,18 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   export_excel(type: number) {
     this.isGeneratingReport = true;
     this.search(1, false);
-    // const where :any = this.GetFilterCondition();
-    //  var report_customer_tank_acts: report_customer_tank_activity[] = [];
+    var queryType=1;
+   var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
 
+    // where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
+    if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
+      queryType = 2;
+    }
+     var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
+    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+      date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
+    }
+ 
     this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReportAll(this.lastSearchCriteria, this.lastOrderBy)
       .subscribe(data => {
 
@@ -769,9 +779,14 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        if (type == 1) {
-          this.exportExcelSummary(data);
-        }
+        this.ProcessReportCustomerTankActivity_Excel(invType!, date!, type, queryType!);
+        // if (type == 1) {
+        //   this.exportExcelSummary(data);
+        // }
+        // else
+        // {
+        //   this.onExportExcelDetail(data,invType,date,queryType);
+        // }
         // this.ProcessReportCustomerTankActivity(invType!, date!, report_type!, queryType!);
         //this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
@@ -782,15 +797,16 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  exportExcelSummary(data: StoringOrderTankItem[]) {
-
-    var report_customer_tank_acts: report_customer_tank_activity[] = [];
-    if (data.length === 0) {
+  ProcessReportCustomerTankActivity_Excel(invType: string, date: string, report_type: number, queryType: number) {
+    if (this.sotList.length === 0) {
       this.isGeneratingReport = false;
       this.ShowWarningMessage();
       return;
     }
-    data.map(s => {
+
+    var report_customer_tank_acts: report_customer_tank_activity[] = [];
+
+    this.sotList.map(s => {
 
       if (s) {
         var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
@@ -811,12 +827,81 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       }
     });
 
+     report_customer_tank_acts.sort((a, b) => a.code!.localeCompare(b.code!));
+    if (report_type == 1) {
+      this.exportExcelSummary(report_customer_tank_acts);
+    }
+    else {
+      this.onExportExcelDetail(report_customer_tank_acts, invType, date, queryType);
+    }
+
+  }
+
+  onExportExcelDetail(repCustomerTankActivity: report_customer_tank_activity[], invType: string, date: string, queryType: number) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(YardDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        report_customer_tank_activity: repCustomerTankActivity,
+        type: invType,
+        date: date,
+        queryType: queryType
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  exportExcelSummary(report_customer_tank_acts: report_customer_tank_activity[]) {
+
+    // var report_customer_tank_acts: report_customer_tank_activity[] = [];
+    // if (data.length === 0) {
+    //   this.isGeneratingReport = false;
+    //   this.ShowWarningMessage();
+    //   return;
+    // }
+    // data.map(s => {
+
+    //   if (s) {
+    //     var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
+    //     let newCust = false;
+    //     if (!repCust.code) {
+    //       repCust.code = s.storing_order?.customer_company?.code;
+    //       repCust.customer = s.storing_order?.customer_company?.name;
+    //       newCust = true;
+    //     }
+    //     repCust.number_tank ??= 0;
+    //     repCust.number_tank += 1;
+    //     if (!repCust.storing_order_tank) repCust.storing_order_tank = [];
+    //     repCust.storing_order_tank?.push(s);
+    //     if (newCust) report_customer_tank_acts.push(repCust);
+
+
+
+    //   }
+    // });
+
     var title: string = `${this.translatedLangText.YARD_SUMMARY_REPORT}: ${this.translatedLangText.MASTER_IN}`;
 
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       title = `${this.translatedLangText.YARD_SUMMARY_REPORT}: ${this.translatedLangText.MASTER_OUT}`;
     }
-    report_customer_tank_acts.sort((a, b) => a.code!.localeCompare(b.code!));
+   
 
 
     this.exportExcelReport(report_customer_tank_acts, title);
