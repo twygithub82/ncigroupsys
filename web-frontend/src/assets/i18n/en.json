@@ -253,7 +253,7 @@
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login",
     "AUTH-CAPTION": "Software Platform by",
-    "FAILED-TO-LOGIN": "Invalid Username or Password"
+    "FAILED-TO-LOGIN": "Invalid Login Credentials"
   },
   "COMMON-FORM": {
     "TARIFF-CLEANING": "Cleaning",
