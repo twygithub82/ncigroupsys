@@ -6,7 +6,7 @@
         </mat-panel-title>
         <mat-panel-description>
           @if(modulePackageService.AllowPdfReport()){
-          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
+          <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
             <button mat-mini-fab color="primary" (click)="search_summary()" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async) ||isGeneratingReport)">
               <mat-icon>assessment</mat-icon>
@@ -14,10 +14,10 @@
           </div>
         }
           @if (modulePackageService.AllowExcelReport()) {
-          <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}} - Excel">
+          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}} ">
             <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport">
-              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">
+              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.DETAIL_REPORT }}" class="fab-icon">
             </button>
           </div>
         }
@@ -45,13 +45,13 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">

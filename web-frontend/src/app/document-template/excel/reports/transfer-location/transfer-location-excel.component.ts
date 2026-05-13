@@ -559,7 +559,7 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
     font: { bold: true, sz: 14 },
     alignment: { horizontal: 'center' }
   };
-  merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 8 } });
+  merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 9 } });
   rowIndex++;
 
   // ================= SUBTITLE =================
@@ -567,7 +567,7 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
   ws[`A${rowIndex + 1}`].s = {
     alignment: { horizontal: 'center' }
   };
-  merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 8 } });
+  merges.push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 9 } });
   rowIndex++;
 
   rowIndex++; // spacing
@@ -587,45 +587,69 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
     const headerRow1Index = rowIndex;
     const headerRow2Index = rowIndex + 1;
 
-    // ===== HEADER ROW 1 =====
+    // // ===== HEADER ROW 1 =====
+    // const headerRow1 = [
+    //   this.translatedLangText.S_N,
+    //   this.translatedLangText.TANK_NO,
+    //   this.translatedLangText.EIR_NO,
+    //   this.translatedLangText.EIR,
+    //   "",
+    //   this.translatedLangText.FROM_YARD,
+    //   this.translatedLangText.TO_YARD,
+    //   this.translatedLangText.TRANSFER,
+    //   ""
+    // ];
+
+    // // ===== HEADER ROW 2 =====
+    // const headerRow2 = [
+    //   "", "", "",
+    //   this.translatedLangText.IN_DATE,
+    //   this.translatedLangText.OUT_DATE,
+    //   "", "",
+    //   this.translatedLangText.IN_DATE,
+    //   this.translatedLangText.OUT_DATE
+    // ];
+
+     // ===== HEADER ROW 1 =====
     const headerRow1 = [
       this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO,
-      this.translatedLangText.EIR,
-      "",
+     this.translatedLangText.IN_DATE,
+      this.translatedLangText.OUT_DATE,
       this.translatedLangText.FROM_YARD,
       this.translatedLangText.TO_YARD,
       this.translatedLangText.TRANSFER,
-      ""
+     this.translatedLangText.IN_DATE,
+      this.translatedLangText.OUT_DATE,
     ];
 
     // ===== HEADER ROW 2 =====
-    const headerRow2 = [
-      "", "", "",
-      this.translatedLangText.IN_DATE,
-      this.translatedLangText.OUT_DATE,
-      "", "",
-      this.translatedLangText.IN_DATE,
-      this.translatedLangText.OUT_DATE
-    ];
+    // const headerRow2 = [
+    //   "", "", "",
+    //   this.translatedLangText.IN_DATE,
+    //   this.translatedLangText.OUT_DATE,
+    //   "", "",
+    //   this.translatedLangText.IN_DATE,
+    //   this.translatedLangText.OUT_DATE
+    // ];
 
     XLSX.utils.sheet_add_aoa(ws, [headerRow1], { origin: `A${rowIndex + 1}` });
     rowIndex++;
-    XLSX.utils.sheet_add_aoa(ws, [headerRow2], { origin: `A${rowIndex + 1}` });
-    rowIndex++;
+    // XLSX.utils.sheet_add_aoa(ws, [headerRow2], { origin: `A${rowIndex + 1}` });
+    // rowIndex++;
 
     // ===== MERGES (IMPORTANT) =====
     // RowSpan columns
-    merges.push({ s: { r: headerRow1Index, c: 0 }, e: { r: headerRow2Index, c: 0 } });
-    merges.push({ s: { r: headerRow1Index, c: 1 }, e: { r: headerRow2Index, c: 1 } });
-    merges.push({ s: { r: headerRow1Index, c: 2 }, e: { r: headerRow2Index, c: 2 } });
-    merges.push({ s: { r: headerRow1Index, c: 5 }, e: { r: headerRow2Index, c: 5 } });
-    merges.push({ s: { r: headerRow1Index, c: 6 }, e: { r: headerRow2Index, c: 6 } });
+    // merges.push({ s: { r: headerRow1Index, c: 0 }, e: { r: headerRow2Index, c: 0 } });
+    // merges.push({ s: { r: headerRow1Index, c: 1 }, e: { r: headerRow2Index, c: 1 } });
+    // merges.push({ s: { r: headerRow1Index, c: 2 }, e: { r: headerRow2Index, c: 2 } });
+    // merges.push({ s: { r: headerRow1Index, c: 5 }, e: { r: headerRow2Index, c: 5 } });
+    // merges.push({ s: { r: headerRow1Index, c: 6 }, e: { r: headerRow2Index, c: 6 } });
 
     // ColSpan groups
-    merges.push({ s: { r: headerRow1Index, c: 3 }, e: { r: headerRow1Index, c: 4 } }); // EIR
-    merges.push({ s: { r: headerRow1Index, c: 7 }, e: { r: headerRow1Index, c: 8 } }); // TRANSFER
+    // merges.push({ s: { r: headerRow1Index, c: 3 }, e: { r: headerRow1Index, c: 4 } }); // EIR
+    // merges.push({ s: { r: headerRow1Index, c: 7 }, e: { r: headerRow1Index, c: 8 } }); // TRANSFER
 
     // ===== DATA =====
     const data: any[][] = [];
@@ -649,7 +673,7 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
     XLSX.utils.sheet_add_aoa(ws, data, { origin: `A${rowIndex + 1}` });
 
     // ===== STYLING =====
-    const totalCols = 9;
+    const totalCols = 10;
 
     // Header style
     for (let r = headerRow1Index; r <= headerRow2Index; r++) {

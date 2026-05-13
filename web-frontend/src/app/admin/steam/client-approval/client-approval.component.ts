@@ -932,6 +932,10 @@ export class SteamEstimateApprovalClientComponent extends UnsubscribeOnDestroyAd
           var net_cost = "";
           if (isAutoApproveSteaming) {
             net_cost = this.displayNumber(stm.rate || 0);
+            if(stm.steaming_part && stm.steaming_part.length > 0) {
+              var approved = (stm.steaming_part[0].approve_part == null || stm.steaming_part[0].approve_part) ?true:false;
+              net_cost = this.displayNumber(approved?stm.steaming_part[0].approve_cost||stm.steaming_part[0].cost || 0:stm.steaming_part[0].cost || 0);
+            }
             if (!stm.flat_rate) {
               net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
             }

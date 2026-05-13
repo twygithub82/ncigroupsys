@@ -1945,11 +1945,14 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       else {
+         var lst = this.filteredDeList();
         if (this.IsApproved()) {
-          return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
+          return Number(lst?.[0]?.approve_cost || 0);
+          // return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);
         }
         else {
-          return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
+          return Number(lst?.[0]?.cost || 0);
+          // return Number(this.steamItem?.steaming_part?.[0]?.cost || 0);
         }
       }
     }
@@ -1971,11 +1974,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       }
       else {
         var approved = ESTIMATE_APPROVED_STATUS.includes(row?.status_cv!);
+        var lst = this.filteredDeList();
         if (approved) {
-          return Number(row?.steaming_part?.[0]?.approve_cost || 0);
+          return Number(lst?.[0]?.approve_cost || 0);
         }
         else {
-          return Number(row?.steaming_part?.[0]?.cost || 0);
+          return Number(lst?.[0]?.cost || 0);
         }
       }
     }
