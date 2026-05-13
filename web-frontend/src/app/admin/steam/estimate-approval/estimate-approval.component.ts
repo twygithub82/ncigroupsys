@@ -898,6 +898,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
         if (isAutoApproveSteaming) {
           row.net_cost = this.displayNumber(row.rate || 0);
+          if(row.steaming_part && row.steaming_part.length > 0) {
+              
+              row.net_cost = this.displayNumber(row.steaming_part[0].approve_cost||row.steaming_part[0].cost || 0);
+            }
+
           if (!row.flat_rate) {
             row.net_cost = this.displayNumber(row.total_hour * row.rate)
           }
@@ -1095,6 +1100,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           if (isAutoApproveSteaming) {
 
             net_cost = this.displayNumber(stm.rate || 0);
+            // if(stm.steaming_part && stm.steaming_part.length > 0) {
+            //   net_cost = this.displayNumber(stm?.steaming_part?.[0]?.approve_cost || stm?.steaming_part?.[0]?.cost || 0);
+            // }
+
             if (!stm.flat_rate) {
               if (isApproved) {
                 cost = Number(stm?.steaming_part?.[0]?.approve_labour || 0);
