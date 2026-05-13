@@ -554,7 +554,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
@@ -568,7 +568,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     // ]];
 
     const vAlign = "bottom";
-    const headers = [
+    const headers1 = [
       [
         { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
@@ -585,6 +585,22 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE, // Sub-headers for NEXT_PERIODIC_TEST
       ]
     ];
+
+      const headers = [[
+      this.translatedLangText.S_N,
+      this.translatedLangText.TANK_NO,
+      this.translatedLangText.EIR_NO,
+      this.translatedLangText.IN_DATE,
+      this.translatedLangText.OUT_DATE,
+      this.translatedLangText.FROM_YARD,
+      this.translatedLangText.TO_YARD,
+      this.translatedLangText.IN_DATE,
+      this.translatedLangText.OUT_DATE,
+      
+    ]];
+
+  
+    
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
@@ -608,41 +624,41 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    
+
 
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(),minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellwidth: 24,  minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellwidth: 24, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle',  cellWidth: 18,minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       //9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
     };
 
     lastTableFinalY += 8;
     //pdf.setFontSize(8);
     const invDate = PDFUtility.FormatColon(this.translatedLangText.TRANSFER_PERIOD, this.date);;
- //   Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY, 8);
-    
-    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin,this.translate,reportTitle,invDate);
-     StartPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-     
+    //   Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY, 8);
+
+    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, reportTitle, invDate);
+    StartPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+
     var CurrentPage = 1;
     var buffer = 20;
-    
+
     for (let n = 0; n < this.report_transfer_location.length; n++) {
       //if (n > 0) lastTableFinalY += 9;
-        if (n>0) lastTableFinalY+=5;
-        else lastTableFinalY=StartPosY;
+      if (n > 0) lastTableFinalY += 5;
+      else lastTableFinalY = StartPosY;
 
       let startY = 0;
       const data: any[][] = [];
-       // Explicitly define data as a 2D array
+      // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_transfer_location[n];
 
@@ -651,9 +667,9 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-         lastTableFinalY =StartPosY; // buffer for 2nd page onward first table's Method
+        lastTableFinalY = StartPosY; // buffer for 2nd page onward first table's Method
       }
       else {
         CurrentPage = repPage;
@@ -663,10 +679,10 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       // pdf.setFontSize(10);
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      var customer=`${cust.customer}`;
-      await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      var customer = `${cust.customer}`;
+      await Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize(), true);
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
-      startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+      startY = StartPosY + PDFUtility.GapBetweenLeftTitleAndTable();
 
       if ((cust.storing_order_tank?.length || 0) > 0) {
         // lastTableFinalY+=5;
@@ -681,7 +697,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           data.push([
             (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "",
             this.DisplayEIRDateIn(itm), this.DisplayEIRDateOut(itm), this.DisplayFromYard(itm) || "",
-            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", 
+            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "",
             // this.DisplayStorageDays(itm) || ""
           ]);
         }
@@ -693,15 +709,15 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         autoTable(pdf, {
           head: headers,
           body: data,
-         // startY: startY, // Start table at the current startY value
+          // startY: startY, // Start table at the current startY value
           theme: 'grid',
-           margin: {left:leftMargin, top:startY },
+          margin: { left: leftMargin, top: startY },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
-          tableWidth:contentWidth,
+          tableWidth: contentWidth,
           columnStyles: comStyles,
           headStyles: headStyles, // Custom header styles
           bodyStyles: {
@@ -732,7 +748,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     const totalPages = pdf.getNumberOfPages();
     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
 
-   
+
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
@@ -980,7 +996,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
     // ]];
 
-    const vAlign="bottom";
+    const vAlign = "bottom";
     const headers = [
       [
         { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
@@ -1038,7 +1054,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     lastTableFinalY += 8;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY, 8);
 
     var CurrentPage = 1;
     var buffer = 20;
@@ -1089,7 +1105,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         autoTable(pdf, {
           head: headers,
           body: data,
-         // startY: startY, // Start table at the current startY value
+          // startY: startY, // Start table at the current startY value
           theme: 'grid',
           margin: { left: leftMargin },
           styles: {

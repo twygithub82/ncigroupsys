@@ -62,8 +62,8 @@
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TRANSFER_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="transfer_picker" [max]="maxManuDOMDt">
-                <input matStartDate placeholder="Start date" formControlName="trf_dt_start" required>
-                <input matEndDate placeholder="End date" formControlName="trf_dt_end" required class="ms-4">
+                <input matStartDate placeholder="Start date" formControlName="trf_dt_start" >
+                <input matEndDate placeholder="End date" formControlName="trf_dt_end"  class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="transfer_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #transfer_picker></mat-date-range-picker>

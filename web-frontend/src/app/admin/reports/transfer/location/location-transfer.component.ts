@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -157,6 +158,8 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
     STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   invForm?: UntypedFormGroup;
@@ -360,7 +363,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search(report_type: number) {
-    var cond_counter = 0;
+    var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
 
@@ -573,6 +576,13 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
         if (newCust) report_customer_tank_acts.push(repCust);
       }
     });
+
+    if(report_customer_tank_acts.length==0)
+    {
+      this.isGeneratingReport = false;
+      this.ShowWarningMessage();
+      return;
+    }
     if(repType==5)
     {
 
@@ -673,4 +683,23 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
+   ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 }
