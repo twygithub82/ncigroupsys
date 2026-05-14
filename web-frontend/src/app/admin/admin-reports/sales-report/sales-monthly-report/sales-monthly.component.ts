@@ -305,7 +305,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
+    this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
       if(this.modulePackageService.isStarterPackage())
       {
         data = data.filter(c=>c.code_val != "RESIDUE" && c.code_val != "STEAMING")

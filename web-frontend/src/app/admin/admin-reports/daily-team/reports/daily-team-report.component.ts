@@ -514,16 +514,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       cond_counter++;
     }
 
-    if([1,3,4,6].includes(report_type)){
-    if ((this.searchForm!.get('qc_dt')?.value)) {
-      var start_dt = new Date(this.searchForm!.value['qc_dt']);
-      var end_dt = new Date(this.searchForm!.value['qc_dt']);
-      where.qc_start_date = Utility.convertDate(start_dt);
-      where.qc_end_date = Utility.convertDate(end_dt, true);
-      if ([1, 3,4,6].includes(report_type)) date = Utility.convertDateToStr(start_dt);
-      cond_counter++;
+    if ([1, 3, 4, 6].includes(report_type)) {
+      if ((this.searchForm!.get('qc_dt')?.value)) {
+        var start_dt = new Date(this.searchForm!.value['qc_dt']);
+        var end_dt = new Date(this.searchForm!.value['qc_dt']);
+        where.qc_start_date = Utility.convertDate(start_dt);
+        where.qc_end_date = Utility.convertDate(end_dt, true);
+        if ([1, 3, 4, 6].includes(report_type)) date = Utility.convertDateToStr(start_dt);
+        cond_counter++;
+      }
     }
-  }
 
     if ((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value)) {
       var start_dt = new Date(this.searchForm!.value['qc_dt_start']);
@@ -541,9 +541,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         team = teams.join(", ");
       }
     }
-    else
-    {
-       team = this.repairTeamList.map(t => t.description).join(", ");
+    else {
+      team = this.repairTeamList.map(t => t.description).join(", ");
     }
 
     if (this.searchForm!.get('repair_type')?.value) {
@@ -561,10 +560,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     this.lastSearchCriteria = where;
-    if (report_type == 2 || report_type==5) {
+    if (report_type == 2 || report_type == 5) {
       this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
-    else if (report_type == 1 || report_type==4) {
+    else if (report_type == 1 || report_type == 4) {
       this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
     }
     else {
@@ -579,18 +578,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
-         this.repData = data;
-         if(report_type==3)
-          {
+        this.repData = data;
+        if (report_type == 3) {
           this.onExportDailyQCDetailReport(this.repData, date!, team!);
-          }
-          else
-          {
-            this.onExportDailyQCDetailExcelReport(this.repData, date!, team!);
-          }
+        }
+        else {
+          this.onExportDailyQCDetailExcelReport(this.repData, date!, team!);
+        }
         if (data.length > 0) {
           this.repData = data;
-         // this.onExportDailyQCDetailReport(this.repData, date!, team!);
+          // this.onExportDailyQCDetailReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -609,16 +606,15 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-          if(report_type==1)
-          {
+        if (report_type == 1) {
           this.onExportDailyRevenueReport(this.repData, date!, team!);
-          }
-          else{
-            this.onExportDailyRevenueExcelReport(this.repData, date!, team!);
-          }
+        }
+        else {
+          this.onExportDailyRevenueExcelReport(this.repData, date!, team!);
+        }
         if (data.length > 0) {
           this.repData = data;
-         // this.onExportDailyRevenueReport(this.repData, date!, team!);
+          // this.onExportDailyRevenueReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -635,18 +631,35 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
       .subscribe(data => {
-        this.repData = data;
-        if(report_type==2)
-        {
-         this.onExportDailyApprovalReport(this.repData, date!, team!);
+        //this.repData = data;
+
+        this.repData = data.sort((a, b) => {
+          // Sort by customer code alphabetically
+          const customerCompare = (a.code || '')
+            .localeCompare(b.code || '');
+
+          // If same customer code, sort by estimate no ascending
+          if (customerCompare !== 0) {
+            return customerCompare;
+          }
+
+          // 2. estimate_no ascending
+          return (a.estimate_no || '').localeCompare(
+            (b.estimate_no || ''),
+            undefined,
+            { numeric: true, sensitivity: 'base' }
+          );
+        });
+
+        if (report_type == 2) {
+          this.onExportDailyApprovalReport(this.repData, date!, team!);
         }
-        else
-        {
+        else {
           this.onExportDailyApprovalExcelReport(this.repData, date!, team!);
         }
         if (data.length > 0) {
           this.repData = data;
-        //  this.onExportDailyApprovalReport(this.repData, date!, team!);
+          //  this.onExportDailyApprovalReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -805,8 +818,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
   }
 
-  
- onExportDailyApprovalExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
+
+  onExportDailyApprovalExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -840,7 +853,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-    onExportDailyRevenueExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
+  onExportDailyRevenueExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -1052,10 +1065,9 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     return new Date();
   }
 
-  export_excel()
-  {
-     var repType: number = Number(this.searchForm?.get("report_type")?.value);
-     repType+=3;
+  export_excel() {
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
+    repType += 3;
     this.search(repType);
   }
 }

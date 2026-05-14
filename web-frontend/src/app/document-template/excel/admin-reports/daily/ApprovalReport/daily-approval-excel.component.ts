@@ -564,8 +564,8 @@ export class DailyApprovalExcelComponent extends UnsubscribeOnDestroyAdapter imp
     this.translatedLangText.CODE,
     this.translatedLangText.ESTIMATE_NO,
     this.translatedLangText.REPAIR_TYPE,
-    this.translatedLangText.REPAIR_COST,
-    this.translatedLangText.STATUS
+    this.translatedLangText.STATUS,
+    this.translatedLangText.REPAIR_COST    
   ]];
 
   // Table Body
@@ -726,7 +726,7 @@ export class DailyApprovalExcelComponent extends UnsubscribeOnDestroyAdapter imp
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,
-      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.REPAIR_COST, this.translatedLangText.STATUS
+      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.STATUS, this.translatedLangText.REPAIR_COST
 
     ]];
 
@@ -788,7 +788,7 @@ export class DailyApprovalExcelComponent extends UnsubscribeOnDestroyAdapter imp
       totalRepairCost += repairCost; // Add to the total
       data.push([
         (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "",
-        this.getRepairOption(itm?.repair_type || ""), Utility.formatNumberDisplay(itm?.repair_cost), this.displayProcessStatus(itm?.status!)
+        this.getRepairOption(itm?.repair_type || ""),  this.displayProcessStatus(itm?.status!), Utility.formatNumberDisplay(itm?.repair_cost)
       ]);
     }
 
