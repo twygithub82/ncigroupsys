@@ -1327,7 +1327,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.PERIODIC_TEST_DUE} ${this.translatedLangText.REPORT}`
+    return `${this.translatedLangText.PERIODIC_TEST_DUE}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

@@ -41,7 +41,7 @@ import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/sta
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { AutocompleteSelectionValidator, requiredMultiSelect } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -161,6 +161,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     NOT_DUE: 'COMMON-FORM.NOT-DUE',
     DUE: 'COMMON-FORM.DUE',
      ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
   }
 
   invForm?: UntypedFormGroup;
@@ -217,6 +218,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   dueType: string[] = [];
   periodicTestRes: periodic_test_due_item[] = [];
   isGeneratingReport = false;
+  customer_companyFilterList: CustomerCompanyItem[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -268,8 +270,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       eir_no: [''],
       tank_no: [''],
       reference: [''],
-      due_type: [''],
+      due_type: [[], requiredMultiSelect()],
       next_test_due: ['']
+      
 
     });
   }
@@ -295,9 +298,27 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     ).subscribe();
 
 
-
-
   }
+  //  initializeFilterCustomerCompany() {
+  //   this.customerCodeControl.valueChanges.pipe(
+  //     startWith(''),
+  //     debounceTime(300),
+  //     tap(value => {
+  //       var searchCriteria = '';
+  //       if (value && typeof value === 'object') {
+  //         searchCriteria = value.code;
+  //       } else {
+  //         searchCriteria = value || '';
+  //       }
+  //       this.subs.sink = this.custCompDS.getOwnerLessee({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+  //         this.customer_companyFilterList = data
+  //         // this.search();
+  //       });
+  //     })
+  //   ).subscribe();
+  // }
+
+
 
   public loadData() {
     const queries = [
@@ -363,9 +384,16 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
   search(report_type: number) {
      this.isGeneratingReport = true;
-    var cond_counter = 0;
+    var cond_counter = 1;
     let queryType = 1;
     const periodicTestDueReq: any = {};
+    
+    if(this.searchForm?.invalid) 
+      {
+        this.searchForm.markAllAsTouched();
+        this.isGeneratingReport = false;
+        return;
+      }
 
     if (this.searchForm?.get('customer_code')?.value) {
 
@@ -617,7 +645,5 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     });
   }
-
-
 
 }

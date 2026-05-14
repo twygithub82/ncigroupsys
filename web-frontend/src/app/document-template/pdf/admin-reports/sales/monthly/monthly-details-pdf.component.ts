@@ -1176,21 +1176,21 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
     setTimeout(async () => {
 
-      startY = lastTableFinalY + 10;
-      let chartContentWidth = pageWidth - leftMargin - rightMargin;
-      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      // startY = lastTableFinalY + 10;
+      // let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
 
-      pdf.addPage();
-      // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-      startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
-        this.translate, reportTitle, repGeneratedDate,subtitlePos);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY += PDFUtility.SubTitleFontSize_Landscape()/2;
+      // pdf.addPage();
+      // // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+      // startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+      //   this.translate, reportTitle, repGeneratedDate,subtitlePos);
+      // pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      // startY += PDFUtility.SubTitleFontSize_Landscape()/2;
 
-      const card1 = cardElements[0];
-      const canvas1 = await html2canvas(card1, { scale: scale });
-      Utility.DrawImageAtCenterPage(pdf, canvas1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+      // const card1 = cardElements[0];
+      // const canvas1 = await html2canvas(card1, { scale: scale });
+      // Utility.DrawImageAtCenterPage(pdf, canvas1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
 
 
       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);

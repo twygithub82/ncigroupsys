@@ -6,13 +6,13 @@
         </mat-panel-title>
         <mat-panel-description>
           @if (modulePackageService.AllowPdfReport()) {
-          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY">
+          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search(1)" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async)||(isGeneratingReport))">
               <mat-icon>assessment</mat-icon>
             </button>
           </div>
-          <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL">
+          <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
             <button mat-mini-fab class="primary-light" (click)="search(2)" (click)="$event.stopPropagation()"
               [disabled]="((sotDS.loading$ | async)||(isGeneratingReport))">
               <mat-icon>assignment</mat-icon>
@@ -20,7 +20,7 @@
           </div>
           }
            @if (modulePackageService.AllowExcelReport()) {
-          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL}} - Excel">
+          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}} ">
             <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport">
               <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">

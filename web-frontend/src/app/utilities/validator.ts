@@ -52,3 +52,15 @@ export function strongPasswordValidator(): ValidatorFn {
     return null; // Return null if the password is valid
   };
 }
+
+export function requiredMultiSelect(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+
+    if (!value || value.length === 0) {
+      return { required: true };
+    }
+
+    return null;
+  };
+}
