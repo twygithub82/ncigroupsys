@@ -219,6 +219,11 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   noCond: boolean = false;
   surveyList: tank_survey_summary[] = [];
 
+  selectListSurveyTypes: string[] = [
+    "CLEANLINESS_SURVEY", "CONDITION_SURVEY", "DYE_PENT_TEST", "JOINT_INSPECT",
+    "MAGNET_PART_INSPECT", "NITROGEN_CERT", "OFF_HIRE_SURVEY", "ON_HIRE_SURVEY",
+    "PERIODIC_TEST",   "SPARK_TEST", "VACUUM_CERT", "WALL_THICKNESS", "X_RAY_TEST"];
+    // "Post-Inspection", "Pre-Inspection","Release Order",
   isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
@@ -346,7 +351,17 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
 
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
-      this.surveyTypeCvList = data;
+
+      // this.surveyTypeCvList = data;
+      this.surveyTypeCvList = [...data].sort((a, b) => {
+        const indexA = this.selectListSurveyTypes.indexOf(a.code_val || "");
+        const indexB = this.selectListSurveyTypes.indexOf(b.code_val || "");
+        // Put unmatched items at the end
+        const safeIndexA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
+        const safeIndexB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;
+
+        return safeIndexA - safeIndexB;
+      });
     });
     // this.cvDS.connectAlias('yardCv').subscribe(data => {
     //   this.yardCvList = addDefaultSelectOption(data, 'All');
