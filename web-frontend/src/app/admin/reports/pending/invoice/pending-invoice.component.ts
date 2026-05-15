@@ -131,8 +131,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
     INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
-    DETAIL: 'COMMON-FORM.DETAIL',
-    SUMMARY: 'COMMON-FORM.SUMMARY'
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT'
   }
 
   searchForm?: UntypedFormGroup;
@@ -1012,6 +1012,17 @@ async  export_report(reportType: number) {
       if (this.searchForm!.get('customer_code')?.value) {
         repCustomers = repCustomers.filter(c => c.guid === this.searchForm!.get('customer_code')?.value.guid);
       }
+
+      repCustomers.forEach(r => {
+      r.items?.sort((a, b) =>
+        (a.in_date || '').localeCompare(b.in_date || '')
+      );
+    });
+      
+        // Sort report_records by customer_code
+    repCustomers.sort((a, b) =>
+      (a.customer || '').localeCompare(b.customer || '')
+    );
 
       if (reportType === 1) {
         this.onExportSummary(repCustomers);

@@ -41,7 +41,7 @@ import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/sta
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { AutocompleteSelectionValidator, requiredMultiSelect } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -160,7 +160,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     NEXT_TEST_DUE: 'COMMON-FORM.NEXT-TEST-TYPE-DUE',
     NOT_DUE: 'COMMON-FORM.NOT-DUE',
     DUE: 'COMMON-FORM.DUE',
-     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
   }
 
   invForm?: UntypedFormGroup;
@@ -217,6 +218,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   dueType: string[] = [];
   periodicTestRes: periodic_test_due_item[] = [];
   isGeneratingReport = false;
+  customer_companyFilterList: CustomerCompanyItem[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -268,8 +270,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       eir_no: [''],
       tank_no: [''],
       reference: [''],
-      due_type: [''],
+      due_type: [[], requiredMultiSelect()],
       next_test_due: ['']
+
 
     });
   }
@@ -295,9 +298,27 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     ).subscribe();
 
 
-
-
   }
+  //  initializeFilterCustomerCompany() {
+  //   this.customerCodeControl.valueChanges.pipe(
+  //     startWith(''),
+  //     debounceTime(300),
+  //     tap(value => {
+  //       var searchCriteria = '';
+  //       if (value && typeof value === 'object') {
+  //         searchCriteria = value.code;
+  //       } else {
+  //         searchCriteria = value || '';
+  //       }
+  //       this.subs.sink = this.custCompDS.getOwnerLessee({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+  //         this.customer_companyFilterList = data
+  //         // this.search();
+  //       });
+  //     })
+  //   ).subscribe();
+  // }
+
+
 
   public loadData() {
     const queries = [
@@ -362,10 +383,16 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   search(report_type: number) {
-     this.isGeneratingReport = true;
-    var cond_counter = 0;
+    this.isGeneratingReport = true;
+    var cond_counter = 1;
     let queryType = 1;
     const periodicTestDueReq: any = {};
+
+    if (this.searchForm?.invalid) {
+      this.searchForm.markAllAsTouched();
+      this.isGeneratingReport = false;
+      return;
+    }
 
     if (this.searchForm?.get('customer_code')?.value) {
 
@@ -406,13 +433,12 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
 
     this.noCond = (cond_counter === 0);
-    if (this.noCond)
-      {
-        this.isGeneratingReport = false;
-         return;
-      }
+    if (this.noCond) {
+      this.isGeneratingReport = false;
+      return;
+    }
     this.lastSearchCriteria = periodicTestDueReq;
-    this.performSearch(periodicTestDueReq,report_type);
+    this.performSearch(periodicTestDueReq, report_type);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -420,7 +446,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-  performSearch(date: string, repType:number=1) {
+  performSearch(date: string, repType: number = 1) {
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.periodicTestRes = data;
@@ -510,7 +536,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       if (s) {
         var repTransaction: report_periodic_test_due_group_customer = report_records.find(r => r.customer_code === s.customer_code) || new report_periodic_test_due_group_customer();
         let newTnx = false;
-        if ((repTransaction.periodic_test_due?.length||0)===0) {
+        if ((repTransaction.periodic_test_due?.length || 0) === 0) {
           repTransaction.customer_code = s.customer_code;
           repTransaction.customer_name = s.customer_name;
           newTnx = true;
@@ -524,19 +550,29 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       }
     });
 
-    if(repType==5)
-    {
-       this.onExportDetailExcel(report_records);
+    report_records.forEach(r => {
+      r.periodic_test_due?.sort((a, b) =>
+        (a.eir_dt || 0) - (b.eir_dt || 0)
+      );
+    });
+
+    // Sort report_records by customer_code
+    report_records.sort((a, b) =>
+      (a.customer_code || '').localeCompare(b.customer_code || '')
+    );
+
+
+    if (repType == 5) {
+      this.onExportDetailExcel(report_records);
     }
-    else
-    {
-       this.onExportDetail(report_records);
+    else {
+      this.onExportDetail(report_records);
     }
 
 
   }
 
-   onExportDetailExcel(repStatus: report_periodic_test_due_group_customer[]) {
+  onExportDetailExcel(repStatus: report_periodic_test_due_group_customer[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -617,7 +653,5 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     });
   }
-
-
 
 }

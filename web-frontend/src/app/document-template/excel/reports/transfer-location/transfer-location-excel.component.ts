@@ -1695,7 +1695,7 @@ export class TransferLocationExcelComponent extends UnsubscribeOnDestroyAdapter 
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.LOCATION_TRANSFER} ${this.translatedLangText.DETAIL_REPORT}`
+    return `${this.translatedLangText.LOCATION_TRANSFER}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

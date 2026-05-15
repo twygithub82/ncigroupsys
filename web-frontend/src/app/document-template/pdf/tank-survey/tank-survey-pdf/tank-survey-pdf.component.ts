@@ -259,7 +259,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     DAILY_TANK_SURVEY: 'COMMON-FORM.DAILY-TANK-SURVEY',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     CODE: 'COMMON-FORM.CODE',
-    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
+    SURVEY_TYPE: 'COMMON-FORM.TYPE',
     VISIT: 'COMMON-FORM.VISIT',
     SURVEYOR: 'COMMON-FORM.SURVEYOR'
   }
@@ -661,7 +661,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         CurrentPage = repPage;
       }
 
-      Utility.AddTextAtLeftCornerPage(pdf,`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize());
+      Utility.AddTextAtLeftCornerPage(pdf,`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.RightSubTitleFontSize(),true);
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
       startY= startPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
 
