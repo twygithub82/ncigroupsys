@@ -1540,7 +1540,7 @@ export class PDFUtility {
   }
 
   static SubTitleFontSize_Portrait(): number {
-    return 8
+    return 10
   }
 
   static TitlePositionY_Landscape(): number {
@@ -1562,7 +1562,7 @@ export class PDFUtility {
   }
 
   static SubTitleFontSize_Landscape(): number {
-    return 8
+    return 10
   }
 
   static RightSubTitleFontSize(): number {

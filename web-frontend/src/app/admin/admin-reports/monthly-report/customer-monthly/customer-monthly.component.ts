@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -157,11 +158,9 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-    CUSTOMER_MONTHLY_SALES_REPORT: 'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT'
-
-
-
-
+    CUSTOMER_MONTHLY_SALES_REPORT: 'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
+     WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   invForm?: UntypedFormGroup;
@@ -395,9 +394,9 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = this.reportDS.searchAdminReportCustomerMonthlySalesReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-       
+
         this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!);
-        
+
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -493,18 +492,17 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
     if (repData.customer_sales?.length || 0 > 0) {
 
-      if(report_type==3)
-      {
-          this.onExportDetail(repData, date, customerName);
+      if (report_type == 3) {
+        this.onExportDetail(repData, date, customerName);
       }
-      else
-      {
-         this.onExportDetailExcel(repData, date, customerName);
+      else {
+        this.onExportDetailExcel(repData, date, customerName);
       }
     }
     else {
       this.sotList = [];
       this.isGeneratingReport = false;
+      this.ShowWarningMessage();
     }
 
 
@@ -652,11 +650,10 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     return pageSizeInfo
   }
 
-  export_excel()
-  {
+  export_excel() {
     this.search(5);
   }
-   onExportDetailExcel(repData: CustomerMonthlySales, date: string, customerName: string) {
+  onExportDetailExcel(repData: CustomerMonthlySales, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -691,6 +688,25 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;
+    });
+  }
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
     });
   }
 }

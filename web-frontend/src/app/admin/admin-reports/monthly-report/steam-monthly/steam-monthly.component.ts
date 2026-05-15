@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -157,7 +158,8 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
 
 
 
@@ -486,6 +488,11 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
 
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
 
 
     if (repData) {
@@ -495,7 +502,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
-       else if (report_type == 5) {
+      else if (report_type == 5) {
         this.onExportSummaryExcel(repData, date, customerName);
       }
 
@@ -507,47 +514,47 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
 
   }
- export_excel() {
-      this.search(5);
+  export_excel() {
+    this.search(5);
+  }
+
+  onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(MonthlySummaryExcelComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-        maxHeight: reportPreviewWindowDimension.report_maxHeight,
-        data: {
-          repData: repData,
-          date: date,
-          repType: this.processType,
-          customer: customerName,
-  
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-  
-      dialogRef.updatePosition({
-        top: '-90vh',  // Move far above the screen
-        left: '0px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport = false;
-      });
-    }
+
+    const dialogRef = this.dialog.open(MonthlySummaryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
@@ -652,5 +659,30 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   get pageSizeInfo() {
     return pageSizeInfo
+  }
+
+  ZeroTank(repData: AdminReportMonthlyReport) {
+
+    return repData.total === 0 ? true : false;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

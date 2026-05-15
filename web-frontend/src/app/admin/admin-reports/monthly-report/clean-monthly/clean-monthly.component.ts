@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -157,7 +158,8 @@ export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-
+WARNING: 'COMMON-FORM.WARNING',
+NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
 
 
 
@@ -490,10 +492,20 @@ export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
+  ZeroTank(repData: AdminReportMonthlyReport)
+  {
+    
+    return repData.total===0?true:false;
+  }
   ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
 
 
-
+    if(this.ZeroTank(repData))
+    {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return ;
+    }
     if (repData) {
       if (report_type == 1) {
         this.onExportChart_r1(repData, date, customerName);
@@ -660,4 +672,24 @@ export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   get pageSizeInfo() {
     return pageSizeInfo
   }
+
+   ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 }
