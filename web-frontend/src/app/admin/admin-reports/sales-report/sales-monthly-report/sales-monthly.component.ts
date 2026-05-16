@@ -30,7 +30,7 @@ import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { AdminReportMonthlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
+import { AdminReportMonthlyReport, AdminReportMonthlySalesReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
 import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -45,9 +45,10 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
-import { ManagementReportDS,ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
+import { ManagementReportDS, ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
 import { A } from '@angular/cdk/keycodes';
 import { MonthlySalesReportDetailsExcelComponent } from 'app/document-template/excel/admin-reports/sales/monthly/monthly-details-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-sales-monthly',
@@ -160,7 +161,10 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-    TYPE: 'COMMON-FORM.TYPE'
+    TYPE: 'COMMON-FORM.TYPE',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE'
+
   }
 
   invForm?: UntypedFormGroup;
@@ -178,7 +182,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
 
   //reportDS:ManagementReportDS; //ReportDS;
-  reportDS:ReportDS;
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -216,10 +220,10 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  invTypesAll: string[] = ["ALL","IN_OUT" ,"STEAMING", "CLEANING",  "REPAIR", "LOLO", "RESIDUE", "PREINSPECTION"];
+  invTypesAll: string[] = ["ALL", "IN_OUT", "STEAMING", "CLEANING", "REPAIR", "LOLO", "RESIDUE", "PREINSPECTION"];
   //invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
   //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
-  invTypes: string[] =  ["ALL","IN_OUT",  "PREINSPECTION","LOLO", "STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
+  invTypes: string[] = ["ALL", "IN_OUT", "PREINSPECTION", "LOLO", "STEAMING", "RESIDUE", "CLEANING", "REPAIR"]
 
   constructor(
     public httpClient: HttpClient,
@@ -306,10 +310,9 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
-      if(this.modulePackageService.isStarterPackage())
-      {
-        data = data.filter(c=>c.code_val != "RESIDUE" && c.code_val != "STEAMING")
-        this.invTypes =this.invTypes.filter(c=>c != "RESIDUE" && c != "STEAMING");
+      if (this.modulePackageService.isStarterPackage()) {
+        data = data.filter(c => c.code_val != "RESIDUE" && c.code_val != "STEAMING")
+        this.invTypes = this.invTypes.filter(c => c != "RESIDUE" && c != "STEAMING");
       }
       this.costTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
       this.costTypeCvList = Utility.SortCodeValues(this.costTypeCvList, this.invTypes);
@@ -380,7 +383,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   }
 
   search(report_type: number) {
-    var repName :string="";
+    var repName: string = "";
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
     // var cond_counter = 0;
@@ -388,7 +391,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     // const where: any = {};
     //let processType=this.processType;
 
-this.isGeneratingReport = true;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -398,12 +401,12 @@ this.isGeneratingReport = true;
 
     var customerName: string = "";
     var invTypes = this.invTypesAll.filter(v => v !== "ALL");
-   // where.revenue_type = invTypes;
+    // where.revenue_type = invTypes;
     where.report_type = invTypes;
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
       where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
       invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
-      repName=this.searchForm?.get('cost_type')?.value.description;
+      repName = this.searchForm?.get('cost_type')?.value.description;
     }
 
     if (this.searchForm?.get('customer_code')?.value) {
@@ -434,74 +437,27 @@ this.isGeneratingReport = true;
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, invTypes,repName);
+    this.performSearch(report_type, date, customerName, invTypes, repName);
 
-    // where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
-    // if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
-    //   where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
-    // }
-
-    // var customerName = "";
-    // if (this.searchForm?.get('customer_code')?.value) {
-    //   // if(!where.storing_order_tank) where.storing_order_tank={};
-    //   where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
-    //   customerName = `${this.searchForm!.get('customer_code')?.value.name}`;
-    //   cond_counter++;
-    // }
-
-    // var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
-    // // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-    // if (this.searchForm?.get('month')?.value) {
-    //   var month = this.searchForm?.get('month')?.value;
-    //   const monthIndex = this.monthList.findIndex(m => month === m);
-    //   where.month = (monthIndex + 1);
-    // }
-
-    // if (this.searchForm?.get('year')?.value) {
-    //   where.year = Number(this.searchForm?.get('year')?.value);
-    // }
-
-    // cond_counter++;
-    // //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-
-
-    // this.lastSearchCriteria = where;
-    // this.performSearch(report_type, date, customerName);
+    
   }
 
- performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[],reportName:string='') {
+  performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[], reportName: string = '') {
 
-   var reportDS:any= this.reportDS;
+    var reportDS: any = this.reportDS;
     // if(queryType==1)
     // {
-   // this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
-   this.subs.sink = reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
-      .subscribe((data:any) => {
-        this.repData = data;
-        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!,reportName);
-      });
-
-  }
-
-
-  performSearch1(reportType?: number, date?: string, customerName?: string) {
-
-    var reportDS:any= this.reportDS;
-    // if(queryType==1)
-    // {
+    // this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
     this.subs.sink = reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         this.repData = data;
-        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!);
-        // this.endCursor = this.stmDS.pageInfo?.endCursor;
-        // this.startCursor = this.stmDS.pageInfo?.startCursor;
-        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        // this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!,tnxType!);
+        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!, reportName);
       });
-    // this.pageSize = pageSize;
-    // this.pageIndex = pageIndex;
+
   }
+
+
+  
 
   displayCostTypeFn(cs: CodeValuesItem): string {
     return cs.description || '';
@@ -585,38 +541,42 @@ this.isGeneratingReport = true;
 
   }
 
-  ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[],reportName?:string) {
+  ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[], reportName?: string) {
 
-    if (report_type == 5)
-    {
-        this.onExportDetailExcel(repData, date, customerName,invTypes,reportName);
+    if(this.ZeroTransaction(repData)){
+      this.isGeneratingReport = false;
+      this.ShowWarningMessage();
+      return;
     }
-    else
-    {
-        this.onExportDetail(repData, date, customerName,invTypes,reportName);
-    }
- return;
-    
-    if (!this.ZeroTransaction(repData)) {
 
-      //this.onExportDetail(repData, date, customerName, report_type, invTypes);
-       this.onExportDetail(repData, date, customerName,invTypes,reportName);
-
+    if (report_type == 5) {
+      this.onExportDetailExcel(repData, date, customerName, invTypes, reportName);
     }
     else {
-      this.repData = [];
-      this.isGeneratingReport = false;
+      this.onExportDetail(repData, date, customerName, invTypes, reportName);
     }
-    
+    return;
 
-   
+    // if (!this.ZeroTransaction(repData)) {
+
+    //   //this.onExportDetail(repData, date, customerName, report_type, invTypes);
+    //   this.onExportDetail(repData, date, customerName, invTypes, reportName);
+
+    // }
+    // else {
+    //   this.repData = [];
+    //   this.isGeneratingReport = false;
+    // }
+
+
+
 
   }
 
-   export_excel() {
-      this.search(5);
-    }
-  onExportDetailExcel(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[],reportName?:string) {
+  export_excel() {
+    this.search(5);
+  }
+  onExportDetailExcel(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[], reportName?: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -638,7 +598,7 @@ this.isGeneratingReport = true;
         repType: this.processType,
         customer: customerName,
         inventory_type: invTypes,
-        report_name:reportName
+        report_name: reportName
 
       },
 
@@ -656,7 +616,7 @@ this.isGeneratingReport = true;
     });
   }
 
-  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[],reportName?:string) {
+  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[], reportName?: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -678,7 +638,7 @@ this.isGeneratingReport = true;
         repType: this.processType,
         customer: customerName,
         inventory_type: invTypes,
-        report_name:reportName
+        report_name: reportName
 
       },
 
@@ -796,18 +756,37 @@ this.isGeneratingReport = true;
     this.resetForm();
   }
 
-   ZeroTransaction(data: ManagementReportMonthlyRevenueItem): boolean {
-        var retval: boolean = true;
-        if (data) {
-          retval = ((data.cleaning_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.gate_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.lolo_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.preinspection_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.repair_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.residue_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.steam_monthly_revenue?.average_cost||0) == 0) &&
-            ((data.storage_monthly_revenue?.average_cost||0) == 0)
-        }
-        return retval;
-      }
+  ZeroTransaction(data: AdminReportMonthlySalesReport): boolean {
+    var retval: boolean = true;
+    if (data) {
+      retval = ((data.cleaning_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.gate_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.lolo_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.preinspection_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.repair_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.residue_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.steaming_monthly_sales?.average_cost || 0) == 0) &&
+        ((data.storage_monthly_sales?.average_cost || 0) == 0)
+    }
+    return retval;
+  }
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
 }

@@ -218,7 +218,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   isGeneratingReport = false;
-  reportFmt:number=1;
+  reportFmt: number = 1;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -432,9 +432,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.customerCodeControl.setErrors({ 'required': false });
     this.customerCodeControl.markAsUntouched();
 
-    if(repType==3)this.reportFmt=2;
-    else this.reportFmt=1;
-   
+    if (repType == 3) this.reportFmt = 2;
+    else this.reportFmt = 1;
+
     // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
 
     // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
@@ -442,8 +442,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     //    queryType=2;
     // }
 
-    var all_tank_status_list=["CLEANING","STEAM","REPAIR","RESIDUE","STORAGE","RELEASED","RO_GENERATED"];
-    where.tank_status_cv = {in:all_tank_status_list}
+    var all_tank_status_list = ["CLEANING", "STEAM", "REPAIR", "RESIDUE", "STORAGE", "RELEASED", "RO_GENERATED"];
+    where.tank_status_cv = { in: all_tank_status_list }
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
       cond_counter++;
@@ -590,7 +590,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
-   
+
 
     if (this.searchForm!.get('last_cargo')?.value) {
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
@@ -600,26 +600,26 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
       this.isGeneratingReport = false;
-      
+
       // return;
     }
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    if ([1,3].includes(repType)) {
-      var bRetval =false;
+    if ([1, 3].includes(repType)) {
+      var bRetval = false;
       if (!this.customerCodeControl.value) {
         this.isGeneratingReport = false;
         this.customerCodeControl.setErrors({ 'required': true });
         this.customerCodeControl.markAsTouched(); // <-- Add this line
-        bRetval=true ;
+        bRetval = true;
       }
       if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
         this.isGeneratingReport = false;
         this.searchForm!.get('eir_dt_start')?.setErrors({ 'required': true });
         this.searchForm!.get('eir_dt_start')?.markAsTouched(); // <-- Add this line
-          bRetval=true ;
+        bRetval = true;
       }
 
-      if(bRetval) return;
+      if (bRetval) return;
       this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, customerNm);
     } else {
       if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
@@ -851,9 +851,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
       if (s) {
         // if((s.cleaning?.length||0)>0) s.cleaning = s.cleaning?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
-        if((s.repair?.length||0)>0) s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
-        if((s.residue?.length||0)>0) s.residue = s.residue?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!) && r.create_by?.toLocaleLowerCase()!="system");
-        if((s.steaming?.length||0)>0) s.steaming = s.steaming?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!)&& r.create_by?.toLocaleLowerCase()!="system");
+        if ((s.repair?.length || 0) > 0) s.repair = s.repair?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!));
+        if ((s.residue?.length || 0) > 0) s.residue = s.residue?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!) && r.create_by?.toLocaleLowerCase() != "system");
+        if ((s.steaming?.length || 0) > 0) s.steaming = s.steaming?.filter(r => !["NO_ACTION", "CANCEL"].includes(r.status_cv!) && r.create_by?.toLocaleLowerCase() != "system");
 
         var repCust: report_customer_tank_activity = report_customer_tank_acts.find(r => r.code === s.storing_order?.customer_company?.code) || new report_customer_tank_activity();
         let newCust = false;
@@ -887,12 +887,26 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       }
     });
 
-    if (this.reportFmt===1)
-    {
-    this.onExportDetail(report_customer_tank_acts, report_type, customerNm);
+
+    // sort repair estimate no after customer grouping
+    report_customer_tank_acts.forEach(cust => {
+
+      cust.storing_order_tank?.forEach(tank => {
+
+        if ((tank.repair?.length || 0) > 0) {
+          tank.repair = tank.repair?.sort((a, b) =>
+            (a.estimate_no || '').localeCompare(b.estimate_no || '')
+          );
+        }
+
+      });
+
+    });
+
+    if (this.reportFmt === 1) {
+      this.onExportDetail(report_customer_tank_acts, report_type, customerNm);
     }
-    else
-    {
+    else {
       this.exportExcelReport(report_customer_tank_acts, report_type, customerNm);
     }
 
@@ -1135,68 +1149,62 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
     this.subs.sink = this.reportDS.searchDailyInventorySummaryReport(dailyInvReq)
       .subscribe(data => {
-        // if (data.length > 0) {
-        //   var dailySumList = data;
-        //   this.onExportSummary(dailySumList, invType!, date!, queryType!, tnxType!);
-        // }
-        // else {
-        //   this.isGeneratingReport = false;
-        // }
-        var dailySumList = data;
+        const dailySumList = data.sort((a, b) => a.code!.localeCompare(b.code!));
+        // var dailySumList = data;
         this.onExportSummary(dailySumList, invType!, date!, queryType!, tnxType!);
       });
 
   }
-   export_excel(data:any[],repType:string,customerName:string){ 
+  export_excel(data: any[], repType: string, customerName: string) {
     this.isGeneratingReport = true;
-   
-  
-      this.exportExcelReport(data,repType,customerName);
-      this.isGeneratingReport = false;
-   
+
+
+    this.exportExcelReport(data, repType, customerName);
+    this.isGeneratingReport = false;
+
   }
 
-  exportExcelReport(repData:any[],repType:string,customerName:string) {
-  
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(TankActivityReportExcelComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-        maxHeight: reportPreviewWindowDimension.report_maxHeight,
-  
-        data: {
-          report_customer_tank_activity: repData,
-          repType: repType,
-          customerName: customerName
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-  
-      dialogRef.updatePosition({
-        top: '-90vh',  // Move far above the screen
-        left: '0px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport = false;
-      });
-  
+  exportExcelReport(repData: any[], repType: string, customerName: string) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
 
-  
-      
+    const dialogRef = this.dialog.open(TankActivityReportExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        report_customer_tank_activity: repData,
+        repType: repType,
+        customerName: customerName
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+
+
 
 
 }

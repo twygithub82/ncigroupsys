@@ -11,14 +11,14 @@
               <mat-icon>view_week</mat-icon>
             </button>
           </div>
-           @if (modulePackageService.AllowPdfReport()) {
+          @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
             <button mat-mini-fab class="primary-light" (click)="search(1)" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
               <mat-icon>assignment</mat-icon>
             </button>
           </div>
-        }
+          }
           @if (modulePackageService.AllowExcelReport()) {
           <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
             <button mat-mini-fab class="light-green-button" (click)="search(3)" (click)="$event.stopPropagation()"
@@ -37,7 +37,7 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
@@ -48,7 +48,7 @@
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">
             </mat-form-field>
-          </div>
+          </div> -->
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill" class="example-full-width custom-fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
@@ -68,7 +68,7 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0" hidden>
+          <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
               <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -86,27 +86,27 @@
               </mat-error>
               }
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="eir_picker" [max]="getMaxDate()">
                 <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
-                <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                <input matEndDate placeholder="End date" formControlName="eir_dt_end" class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #eir_picker></mat-date-range-picker>
               @if (searchForm?.get('eir_dt_start')?.hasError('required')) {
-               <mat-error>
+              <mat-error>
                 <!-- {{this.translatedLangText.EIR_DATE}} {{this.translatedLangText.SO_REQUIRED}} -->
-              </mat-error> 
+              </mat-error>
               }
               <!-- <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker> -->
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
               <mat-select formControlName="tank_status_cv">
@@ -119,8 +119,8 @@
                 }
               </mat-select>
             </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          </div> -->
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.AV_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="av_picker">
@@ -129,9 +129,6 @@
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="av_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #av_picker></mat-date-range-picker>
-              <!-- <input matInput [matDatepicker]="av_picker" placeholder="Select date" formControlName="av_dt">
-                  <mat-datepicker-toggle matSuffix [for]="av_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #av_picker></mat-datepicker> -->
             </mat-form-field>
           </div>
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
@@ -143,12 +140,8 @@
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #clean_picker></mat-date-range-picker>
-
-              <!-- <input matInput [matDatepicker]="clean_picker" placeholder="Select date" formControlName="clean_dt">
-                  <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #clean_picker></mat-datepicker> -->
             </mat-form-field>
-          </div>
+          </div> -->
           <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.REPAIR_COMPLETED_DATE}}</mat-label>
@@ -157,7 +150,7 @@
                   <mat-datepicker #repair_completed_picker></mat-datepicker>
                 </mat-form-field>
               </div> -->
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
               <input matInput formControlName="capacity">
@@ -179,8 +172,8 @@
               <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #release_picker></mat-date-range-picker>
             </mat-form-field>
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+          </div> -->
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.YARD_STATUS}}</mat-label>
               <mat-select formControlName="depot_status_cv">

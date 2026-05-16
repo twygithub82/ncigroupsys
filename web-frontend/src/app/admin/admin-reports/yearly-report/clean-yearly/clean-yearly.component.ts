@@ -30,7 +30,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { AdminReportMonthlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
+import { AdminReportMonthlyReport, AdminReportYearlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
 import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -45,6 +45,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { YearlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/yearly/summary/yearly-summary-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-clean-yearly',
@@ -159,6 +160,8 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     MONTH: 'COMMON-FORM.MONTH',
     MONTH_START: 'COMMON-FORM.MONTH-START',
     MONTH_END: 'COMMON-FORM.MONTH-END',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE'
   }
 
   invForm?: UntypedFormGroup;
@@ -499,9 +502,14 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
 
+  ProcessYearlyReport(repData: AdminReportYearlyReport, date: string, report_type: number, customerName: string) {
 
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
 
     if (repData) {
       if (report_type == 1) {
@@ -526,7 +534,7 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     this.search(5);
   }
 
-  onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+  onExportSummaryExcel(repData: AdminReportYearlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -565,7 +573,7 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+  onExportSummary(repData: AdminReportYearlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -603,7 +611,7 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+  onExportChart_r1(repData: AdminReportYearlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -675,5 +683,30 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  ZeroTank(repData: AdminReportYearlyReport) {
+
+    return repData.total === 0 ? true : false;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }
