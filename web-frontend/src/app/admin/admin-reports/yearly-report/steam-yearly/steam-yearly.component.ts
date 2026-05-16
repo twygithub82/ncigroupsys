@@ -30,7 +30,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { AdminReportMonthlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
+import { AdminReportMonthlyReport, AdminReportYearlyReport, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
 import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -45,6 +45,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { YearlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/yearly/summary/yearly-summary-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 // import { YearlySummaryExcelComponent } from 'app/document-template/excel/admin-reports/yearly/details/yearly-details-excel.component';
 
 @Component({
@@ -159,7 +160,8 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     YEAR: 'COMMON-FORM.YEAR',
     MONTH_START: 'COMMON-FORM.MONTH-START',
     MONTH_END: 'COMMON-FORM.MONTH-END',
-
+    WARNING : 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE : 'COMMON-FORM.NO-REPORT-AVAILABLE',
 
 
 
@@ -225,7 +227,7 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-     public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -369,10 +371,10 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
-    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
+    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value) {
       date = `${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
     }
-  
+
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
     if (this.searchForm?.get('month_start')?.value) {
       var month = this.searchForm?.get('month_start')?.value;
@@ -500,9 +502,13 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
+  ProcessYearlyReport(repData: AdminReportYearlyReport, date: string, report_type: number, customerName: string) {
 
-
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
 
     if (repData) {
       if (report_type == 1) {
@@ -511,7 +517,7 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
-       else if (report_type == 5) {
+      else if (report_type == 5) {
         this.onExportSummaryExcel(repData, date, customerName);
       }
 
@@ -524,52 +530,52 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   export_excel() {
-      this.search(5);
+  export_excel() {
+    this.search(5);
+  }
+
+  onExportSummaryExcel(repData: AdminReportYearlyReport, date: string, customerName: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-  
-    onExportSummaryExcel(repData: AdminReportMonthlyReport, date: string, customerName: string) {
-      //this.preventDefault(event);
-      let cut_off_dt = new Date();
-  
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(YearlySummaryExcelComponent, {
-        width: reportPreviewWindowDimension.portrait_width_rate,
-        maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-        maxHeight: reportPreviewWindowDimension.report_maxHeight,
-        data: {
-          repData: repData,
-          date: date,
-          repType: this.processType,
-          customer: customerName,
-  
-        },
-  
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-  
-      dialogRef.updatePosition({
-        top: '-90vh',  // Move far above the screen
-        left: '0px'  // Move far to the left of the screen
-      });
-  
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isGeneratingReport = false;
-      });
-    }
-  
+
+    const dialogRef = this.dialog.open(YearlySummaryExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        repType: this.processType,
+        customer: customerName,
+
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
 
 
 
-  onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+
+  onExportSummary(repData: AdminReportYearlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -607,7 +613,7 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  onExportChart_r1(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+  onExportChart_r1(repData: AdminReportYearlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -679,5 +685,30 @@ export class SteamYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  ZeroTank(repData: AdminReportYearlyReport) {
+
+    return repData.total === 0 ? true : false;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

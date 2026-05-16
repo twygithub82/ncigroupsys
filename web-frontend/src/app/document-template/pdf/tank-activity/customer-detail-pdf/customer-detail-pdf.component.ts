@@ -774,45 +774,45 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
-          if (itm.residue) {
-            if (itm.residue?.length || 0 > 1) {
-              for (let r = 0; r < itm.residue!.length; r++) {
-                var rs = itm.residue?.[r]!;
-                data.push([
+          // if (itm.residue) {
+          //   if (itm.residue?.length || 0 > 1) {
+          //     for (let r = 0; r < itm.residue!.length; r++) {
+          //       var rs = itm.residue?.[r]!;
+          //       data.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                  // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
-                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
+          //         //Maintenance details
+          //         // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+          //         "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-          }
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
 
-           if (itm.steaming) {
-            if (itm.steaming?.length || 0 > 1) {
-              for (let r = 0; r < itm.steaming!.length; r++) {
-                var st = itm.steaming?.[r]!;
-                data.push([
+          //  if (itm.steaming) {
+          //   if (itm.steaming?.length || 0 > 1) {
+          //     for (let r = 0; r < itm.steaming!.length; r++) {
+          //       var st = itm.steaming?.[r]!;
+          //       data.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                  // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
-                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
+          //         //Maintenance details
+          //         // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+          //          "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-          }
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
 
         }
         pdf.setDrawColor(0, 0, 0); // red line color
@@ -924,45 +924,45 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
         
-           if (itm.residue) {
-            if (itm.residue?.length || 0 > 1) {
-              for (let r = 0; r < itm.residue!.length; r++) {
-                var rs = itm.residue?.[r]!;
-                data.push([
+          //  if (itm.residue) {
+          //   if (itm.residue?.length || 0 > 1) {
+          //     for (let r = 0; r < itm.residue!.length; r++) {
+          //       var rs = itm.residue?.[r]!;
+          //       data.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                  // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
-                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
+          //         //Maintenance details
+          //         // "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs), this.DisplayProcessAVDate(rs) || "",
+          //         "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-          }
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
 
-           if (itm.steaming) {
-            if (itm.steaming?.length || 0 > 1) {
-              for (let r = 0; r < itm.steaming!.length; r++) {
-                var st = itm.steaming?.[r]!;
-                data.push([
+          //  if (itm.steaming) {
+          //   if (itm.steaming?.length || 0 > 1) {
+          //     for (let r = 0; r < itm.steaming!.length; r++) {
+          //       var st = itm.steaming?.[r]!;
+          //       data.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                  // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
-                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), "",
+          //         //Maintenance details
+          //         // "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), this.DisplayProcessAVDate(st) || "",
+          //          "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-          }
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
           startY = lastTableFinalY; // Start table 20mm below the customer name
 
 

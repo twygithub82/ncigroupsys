@@ -280,9 +280,7 @@
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>
-                                    <!-- {{
-                                      this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'
-                                      }} -->
+                                 
                                     {{
                                     this.pcForm.get('status_cv')?.value === 'KIV'
                                     ? '-'
@@ -292,7 +290,39 @@
                                   <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
+                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label ">
+                                  <span></span><span>
+                                    {{
+                                    selectedItem?.status_cv === 'APPROVED'
+                                    ? '-'
+                                    : this.selectedItem?.job_order?.update_dt
+                                    ?selectedItem.job_order?.update_by:"-"
+                                    
+                                    }}
+                                  </span>
+                                </div>
+                              </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label">
+                                  <span></span><span>
+                                    {{
+                                    this.selectedItem?.status_cv === 'APPROVED'
+                                    ? '-'
+                                    : this.selectedItem?.job_order?.complete_dt
+                                    ? this.selectedItem.job_order.update_by
+                                    : '-'
+                                    }}
+                                    <!-- {{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}} -->
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label ">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                              <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.create_by?this.selectedItem?.job_order?.create_by:"-"}}</span>
                                 </div>
@@ -306,7 +336,7 @@
                                 <div class="table-label">
                                   <span></span><span>-</span>
                                 </div>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>
@@ -334,7 +364,38 @@
                                   </span>
                                 </div>
                               </div>
+                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label ">
+                                  <span></span><span>
+                                    {{
+                                    this.selectedItem?.status_cv === 'APPROVED'
+                                    ? '-'
+                                    : this.selectedItem?.job_order?.update_dt
+                                    ? this.displayDate(this.selectedItem.job_order.update_dt)
+                                    : '-'
+                                    }}
+                                  </span>
+                                </div>
+                              </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label ">
+                                  <span></span><span>
+                                    {{
+                                    this.selectedItem?.status_cv === 'APPROVED'
+                                    ? '-'
+                                    : this.selectedItem?.job_order?.complete_dt
+                                    ? this.displayDate(this.selectedItem.job_order.complete_dt)
+                                    : '-'
+                                    }}
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                                <div class="table-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div> 
+                               <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   <span></span><span>{{this.selectedItem?.job_order?.create_dt?this.displayDate(this.selectedItem?.job_order?.create_dt):"-"}}</span>
                                 </div>
@@ -348,7 +409,7 @@
                                 <div class="table-label">
                                   <span></span><span>-</span>
                                 </div>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>

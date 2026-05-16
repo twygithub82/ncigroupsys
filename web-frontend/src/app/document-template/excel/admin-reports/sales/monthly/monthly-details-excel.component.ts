@@ -264,7 +264,7 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     STEAM: 'COMMON-FORM.STEAM',
     REPAIR: 'COMMON-FORM.REPAIR',
-    CLEANING: 'COMMON-FORM.CLEANING',
+    CLEANING: 'COMMON-FORM.CLEAN',
     STORAGE: 'COMMON-FORM.STORAGE',
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
@@ -288,7 +288,7 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
     YEARLY_SALES_REPORT: 'COMMON-FORM.YEARLY-SALES-REPORT',
     YEARLY_REVENUE_REPORT: 'COMMON-FORM.YEARLY-REVENUE-REPORT',
     GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
-    LOLO: 'COMMON-FORM.LOLO',
+    LOLO: 'COMMON-FORM.LOLO-ON-OFF',
     PREINSPECTION: 'COMMON-FORM.PREINSPECTION',
     ON_DEPOT: 'COMMON-FORM.ON-DEPOT',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
@@ -673,8 +673,8 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
   if (showLoloSurcharge) pushHeader(this.translatedLangText.LOLO);
   if (showStorageSurcharge) pushHeader(this.translatedLangText.STORAGE);
   if (showSteamSurcharge) pushHeader(this.translatedLangText.STEAM);
-  if (showResidueSurcharge) pushHeader(this.translatedLangText.RESIDUE);
   if (showCleanSurcharge) pushHeader(this.translatedLangText.CLEANING);
+  if (showResidueSurcharge) pushHeader(this.translatedLangText.RESIDUE);
   if (showRepairSurcharge) pushHeader(this.translatedLangText.REPAIR);
 
   sheetData.push(headerRow1);
@@ -704,8 +704,8 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
     if (showLoloSurcharge) pushData(entry.lolo);
     if (showStorageSurcharge) pushData(entry.storage);
     if (showSteamSurcharge) pushData(entry.steaming);
-    if (showResidueSurcharge) pushData(entry.residue);
     if (showCleanSurcharge) pushData(entry.cleaning);
+    if (showResidueSurcharge) pushData(entry.residue);
     if (showRepairSurcharge) pushData(entry.repair);
 
     sheetData.push(row);
@@ -726,8 +726,8 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
   if (showLoloSurcharge) pushTotal(this.repData?.lolo_monthly_sales);
   if (showStorageSurcharge) pushTotal(this.repData?.storage_monthly_sales);
   if (showSteamSurcharge) pushTotal(this.repData?.steaming_monthly_sales);
-  if (showResidueSurcharge) pushTotal(this.repData?.residue_monthly_sales);
   if (showCleanSurcharge) pushTotal(this.repData?.cleaning_monthly_sales);
+  if (showResidueSurcharge) pushTotal(this.repData?.residue_monthly_sales);
   if (showRepairSurcharge) pushTotal(this.repData?.repair_monthly_sales);
 
   sheetData.push(totalRow);
@@ -747,8 +747,8 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
   if (showLoloSurcharge) pushAvg(this.repData?.lolo_monthly_sales);
   if (showStorageSurcharge) pushAvg(this.repData?.storage_monthly_sales);
   if (showSteamSurcharge) pushAvg(this.repData?.steaming_monthly_sales);
-  if (showResidueSurcharge) pushAvg(this.repData?.residue_monthly_sales);
   if (showCleanSurcharge) pushAvg(this.repData?.cleaning_monthly_sales);
+  if (showResidueSurcharge) pushAvg(this.repData?.residue_monthly_sales);
   if (showRepairSurcharge) pushAvg(this.repData?.repair_monthly_sales);
 
   sheetData.push(avgRow);
@@ -797,8 +797,8 @@ export class MonthlySalesReportDetailsExcelComponent extends UnsubscribeOnDestro
   if (showLoloSurcharge) addMerge();
   if (showStorageSurcharge) addMerge();
   if (showSteamSurcharge) addMerge();
-  if (showResidueSurcharge) addMerge();
   if (showCleanSurcharge) addMerge();
+  if (showResidueSurcharge) addMerge();
   if (showRepairSurcharge) addMerge();
 
   ws['!merges'] = merges;
