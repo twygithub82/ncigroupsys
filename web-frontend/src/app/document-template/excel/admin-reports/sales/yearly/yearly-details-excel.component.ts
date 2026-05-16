@@ -289,7 +289,7 @@ export class YearlySalesReportDetailsExcelComponent extends UnsubscribeOnDestroy
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     STEAM: 'COMMON-FORM.STEAM',
     REPAIR: 'COMMON-FORM.REPAIR',
-    CLEANING: 'COMMON-FORM.CLEANING',
+    CLEANING: 'COMMON-FORM.CLEAN',
     STORAGE: 'COMMON-FORM.STORAGE',
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
@@ -303,7 +303,7 @@ export class YearlySalesReportDetailsExcelComponent extends UnsubscribeOnDestroy
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
-    LOLO:'COMMON-FORM.LOLO',
+    LOLO:'COMMON-FORM.LOLO-ON-OFF',
     TANK:'COMMON-FORM.TANK',
     COST:'COMMON-FORM.COST',
     S_N:'COMMON-FORM.S_N',
@@ -757,8 +757,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (showLoloSurcharge) pushHeader(this.translatedLangText.LOLO);
       if (showStorageSurcharge) pushHeader(this.translatedLangText.STORAGE);
       if (showSteamSurcharge) pushHeader(this.translatedLangText.STEAM);
-      if (showResidueSurcharge) pushHeader(this.translatedLangText.RESIDUE);
       if (showCleanSurcharge) pushHeader(this.translatedLangText.CLEANING);
+      if (showResidueSurcharge) pushHeader(this.translatedLangText.RESIDUE);
       if (showRepairSurcharge) pushHeader(this.translatedLangText.REPAIR);
     
       sheetData.push(headerRow1);
@@ -787,8 +787,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
         if (showLoloSurcharge) pushData(entry.lolo);
         if (showStorageSurcharge) pushData(entry.storage);
         if (showSteamSurcharge) pushData(entry.steaming);
-        if (showResidueSurcharge) pushData(entry.residue);
         if (showCleanSurcharge) pushData(entry.cleaning);
+        if (showResidueSurcharge) pushData(entry.residue);
         if (showRepairSurcharge) pushData(entry.repair);
     
         sheetData.push(row);
@@ -809,8 +809,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (showLoloSurcharge) pushTotal(this.repData?.lolo_yearly_sales);
       if (showStorageSurcharge) pushTotal(this.repData?.storage_yearly_sales);
       if (showSteamSurcharge) pushTotal(this.repData?.steaming_yearly_sales);
-      if (showResidueSurcharge) pushTotal(this.repData?.residue_yearly_sales);
       if (showCleanSurcharge) pushTotal(this.repData?.cleaning_yearly_sales);
+      if (showResidueSurcharge) pushTotal(this.repData?.residue_yearly_sales);
       if (showRepairSurcharge) pushTotal(this.repData?.repair_yearly_sales);
     
       sheetData.push(totalRow);
@@ -830,8 +830,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (showLoloSurcharge) pushAvg(this.repData?.lolo_yearly_sales);
       if (showStorageSurcharge) pushAvg(this.repData?.storage_yearly_sales);
       if (showSteamSurcharge) pushAvg(this.repData?.steaming_yearly_sales);
-      if (showResidueSurcharge) pushAvg(this.repData?.residue_yearly_sales);
       if (showCleanSurcharge) pushAvg(this.repData?.cleaning_yearly_sales);
+      if (showResidueSurcharge) pushAvg(this.repData?.residue_yearly_sales);
       if (showRepairSurcharge) pushAvg(this.repData?.repair_yearly_sales);
     
       sheetData.push(avgRow);
@@ -866,7 +866,7 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       merges.push({ s: { r: 1, c: 0 }, e: { r: 1, c: totalCols - 1 } });
     
       // Header merges
-      let colIndex = 3;
+      let colIndex = 2;
       const addMerge = () => {
         merges.push({
           s: { r: 3, c: colIndex },
@@ -880,8 +880,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (showLoloSurcharge) addMerge();
       if (showStorageSurcharge) addMerge();
       if (showSteamSurcharge) addMerge();
-      if (showResidueSurcharge) addMerge();
       if (showCleanSurcharge) addMerge();
+      if (showResidueSurcharge) addMerge();
       if (showRepairSurcharge) addMerge();
     
       ws['!merges'] = merges;
@@ -954,356 +954,356 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
        this.dialogRef.close();
 }
 
-   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+//    async exportToPDF_r1(fileName: string = 'document.pdf') {
+//     const pageWidth = 297; // A4 width in mm (landscape)
+//     const pageHeight = 220; // A4 height in mm (landscape)
+//     const leftMargin = 10;
+//     const rightMargin = 10;
+//     const topMargin = 5;
+//     const bottomMargin = 5;
+//     const contentWidth = pageWidth - leftMargin - rightMargin;
+//     const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
+//     this.generatingPdfLoadingSubject.next(true);
+//     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
+//     const pdf = new jsPDF('l', 'mm', 'a4');
+//     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+//     let pageNumber = 1;
 
     
 
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-    let minHeightBodyCell = 5;
-    let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
+//     let reportTitleCompanyLogo = 32;
+//     let tableHeaderHeight = 12;
+//     let tableRowHeight = 8.5;
+//     let minHeightBodyCell = 5;
+//     let minHeightHeaderCol = 3;
+//     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+//     let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+//     const pagePositions: { page: number; x: number; y: number }[] = [];
+//     // const progressValue = 100 / cardElements.length;
 
-    let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
-    let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
-    let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
-    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
-    const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
-    const reportTitle = this.GetReportTitle();
-    const vAlign ="bottom"
-    const headers = [[
-      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      ...(showGateSurcharge? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
-    //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+//     let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
+//     let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
+//     let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
+//     let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
+//     let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
+//     let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
+//     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
+//     let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+//     const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
+//     const reportTitle = this.GetReportTitle();
+//     const vAlign ="bottom"
+//     const headers = [[
+//       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+//       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+//       ...(showGateSurcharge? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+//       ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+//       ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+//       ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+//       ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
+//       ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
+//       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
+//       ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
+//     //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
 
-    ],
-    [
-      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showPreinspectSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
-      ...(showLoloSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
-      ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
-      ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
-      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
-      ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
-     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
-    ]];
+//     ],
+//     [
+//       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+//       ...(showPreinspectSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
+//       ...(showLoloSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
+//       ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
+//       ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
+//       ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
+//       ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
+//       ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
+//       ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
+//      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+//     ]];
 
    
 
-    const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-    };
+//     const comStyles: any = {
+//       // Set columns 0 to 16 to be center aligned
+//       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+//       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+//       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//       18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+//     };
 
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz_hdr,
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
+//     // Define headStyles with valid fontStyle
+//     const headStyles: Partial<Styles> = {
+//       fillColor: [211, 211, 211], // Background color
+//       textColor: 0, // Text color (white)
+//       fontStyle: "bold", // Valid fontStyle value
+//       fontSize: fontSz_hdr,
+//       halign: 'center', // Centering header text
+//       valign: 'middle',
+//       lineColor: 201,
+//       lineWidth: 0.1
+//     };
 
-    let currentY = topMargin;
-    let scale = 2.5;
-    let imgQuality = 0.7;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+//     let currentY = topMargin;
+//     let scale = 2.5;
+//     let imgQuality = 0.7;
+//     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+//     // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+//     // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
+//     // Variable to store the final Y position of the last table
+//     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
+//     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+//     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, PDFUtility.CenterSubTitleFontSize());
-    var subtitlePos =1;
-    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin,this.translate,reportTitle,repGeneratedDate,subtitlePos);
-    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+//     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+//     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, PDFUtility.CenterSubTitleFontSize());
+//     var subtitlePos =1;
+//     startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+//     rightMargin,this.translate,reportTitle,repGeneratedDate,subtitlePos);
+//     startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
-    if(this.customer)
-    {
-      //const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
-      startY += PDFUtility.GapBetweenLeftTitleAndTable();
-      //Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    }
-    var idx = 0;
+//     if(this.customer)
+//     {
+//       //const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
+//       const customer=`${this.customer}`;
+//       Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+//       startY += PDFUtility.GapBetweenLeftTitleAndTable();
+//       //Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+//     }
+//     var idx = 0;
 
-    var repdata=this.repData!;
-    var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(this.repData!);
+//     var repdata=this.repData!;
+//     var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(this.repData!);
    
 
-    var series:SeriesItem[]=[];
-    var index:number=1;
-    var prcss:string[]=[
-      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
-      ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
-      ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
-      ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
-      ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
-      ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
-      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
-    ]
-    var prcsValues:number[]=[]
-    var total_all_cost:number=0;
-    var average_counter=0;
-    var total_tank_In_out=0,total_tank_lolo=0,total_tank_storage=0,total_tank_steam=0,total_tank_residue=0,total_tank_clean=0,total_tank_repair=0,total_tank_preinspect=0;
-    var average_tank_In_out=0,average_tank_lolo=0,average_tank_storage=0,average_tank_steam=0,average_tank_residue=0,average_tank_clean=0,average_tank_repair=0,average_tank_preinspect=0;
-    for (const monthData of grpData.monthlyData) {
-      var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
-      +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
-      total_all_cost+=total;
-      average_counter++;
-      total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
-      total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
-      total_tank_repair+=monthData.repair?.count||0;total_tank_preinspect+=monthData.preinspection?.count||0;
+//     var series:SeriesItem[]=[];
+//     var index:number=1;
+//     var prcss:string[]=[
+//       ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
+//       ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
+//       ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
+//       ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
+//       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
+//       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
+//       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
+//       ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
+//     ]
+//     var prcsValues:number[]=[]
+//     var total_all_cost:number=0;
+//     var average_counter=0;
+//     var total_tank_In_out=0,total_tank_lolo=0,total_tank_storage=0,total_tank_steam=0,total_tank_residue=0,total_tank_clean=0,total_tank_repair=0,total_tank_preinspect=0;
+//     var average_tank_In_out=0,average_tank_lolo=0,average_tank_storage=0,average_tank_steam=0,average_tank_residue=0,average_tank_clean=0,average_tank_repair=0,average_tank_preinspect=0;
+//     for (const monthData of grpData.monthlyData) {
+//       var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
+//       +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
+//       total_all_cost+=total;
+//       average_counter++;
+//       total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
+//       total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
+//       total_tank_repair+=monthData.repair?.count||0;total_tank_preinspect+=monthData.preinspection?.count||0;
 
-      average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
-      average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
-      average_tank_repair+=(monthData.repair?.count||0>0?1:0);average_tank_preinspect+=(monthData.preinspection?.count||0>0?1:0);
-      data.push([
-        (++idx).toString(),monthData.key,
-        ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
-        ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
-        ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
-        ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-        ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
-        ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
-        ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
-        ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.cost)]:[]),
-        Utility.formatNumberDisplay(total)
-      ]);
+//       average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
+//       average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
+//       average_tank_repair+=(monthData.repair?.count||0>0?1:0);average_tank_preinspect+=(monthData.preinspection?.count||0>0?1:0);
+//       data.push([
+//         (++idx).toString(),monthData.key,
+//         ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
+//         ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
+//         ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
+//         ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
+//         ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
+//         ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
+//         ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
+//         ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.cost)]:[]),
+//         Utility.formatNumberDisplay(total)
+//       ]);
 
-      prcss.forEach(p=>{
-        var s = series.find(s=>s.name==p);
-        var bInsert=false;
-        if(!s)
-        {
-          s={
-            name: p,
-            data: [] // initialize with an empty array or default values
-          };
-          bInsert=true;
-        }
-        switch (p)
-        {
-          case this.translatedLangText.GATE_SURCHARGE:
-            if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
-          break;
-          case this.translatedLangText.PREINSPECTION:
-           if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
-          break;
-          case this.translatedLangText.LOLO:
-            if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
-          break;
-          case this.translatedLangText.STORAGE:
-            if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
-          break;
-          case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(monthData.steaming?.cost||0);
-          break;
-          case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(monthData.cleaning?.cost||0);
-          break;
-          case this.translatedLangText.REPAIR:
-            if(showRepairSurcharge)  s.data.push(monthData.repair?.cost||0);
-          break;
-          case this.translatedLangText.RESIDUE:
-            if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          break;
+//       prcss.forEach(p=>{
+//         var s = series.find(s=>s.name==p);
+//         var bInsert=false;
+//         if(!s)
+//         {
+//           s={
+//             name: p,
+//             data: [] // initialize with an empty array or default values
+//           };
+//           bInsert=true;
+//         }
+//         switch (p)
+//         {
+//           case this.translatedLangText.GATE_SURCHARGE:
+//             if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
+//           break;
+//           case this.translatedLangText.PREINSPECTION:
+//            if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
+//           break;
+//           case this.translatedLangText.LOLO:
+//             if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
+//           break;
+//           case this.translatedLangText.STORAGE:
+//             if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
+//           break;
+//           case this.translatedLangText.STEAM:
+//             if(showSteamSurcharge) s.data.push(monthData.steaming?.cost||0);
+//           break;
+//           case this.translatedLangText.CLEANING:
+//             if(showCleanSurcharge) s.data.push(monthData.cleaning?.cost||0);
+//           break;
+//           case this.translatedLangText.REPAIR:
+//             if(showRepairSurcharge)  s.data.push(monthData.repair?.cost||0);
+//           break;
+//           case this.translatedLangText.RESIDUE:
+//             if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
+//           break;
         
-        }
-        if(bInsert)
-        {
-          series.push(s);
-        }
-      });
-    }
+//         }
+//         if(bInsert)
+//         {
+//           series.push(s);
+//         }
+//       });
+//     }
 
-      data.push([
-      this.translatedLangText.TOTAL,"",
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.total_cost)]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
-     // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
-      Utility.formatNumberDisplay(total_all_cost)
-    ]);
+//       data.push([
+//       this.translatedLangText.TOTAL,"",
+//       ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.total_cost)]:[]),
+//       ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)]:[]),
+//       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
+//      // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
+//       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
+//       ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
+//       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
+//       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
+//       Utility.formatNumberDisplay(total_all_cost)
+//     ]);
 
-    data.push([
-      this.translatedLangText.AVERAGE,"",
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.average_cost||'')]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost||'')]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
-      //...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
-      Utility.formatNumberDisplay((total_all_cost/average_counter))
-    ]);
+//     data.push([
+//       this.translatedLangText.AVERAGE,"",
+//       ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.average_cost||'')]:[]),
+//       ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost||'')]:[]),
+//       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
+//       //...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
+//       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
+//       ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
+//       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
+//       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
+//       Utility.formatNumberDisplay((total_all_cost/average_counter))
+//     ]);
     
     
     
-    prcsValues=[
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_cost||0)]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_cost||0)]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_cost||0)]:[]),
-      // ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_cost||0)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_cost||0)]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_cost||0)]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_cost||0)]:[]) ];
+//     prcsValues=[
+//       ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_cost||0)]:[]),
+//       ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_cost||0)]:[]),
+//       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_cost||0)]:[]),
+//       // ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),
+//       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_cost||0)]:[]),
+//       ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_cost||0)]:[]),
+//       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_cost||0)]:[]),
+//       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_cost||0)]:[]) ];
 
-    pdf.setDrawColor(0, 0, 0); // red line color
+//     pdf.setDrawColor(0, 0, 0); // red line color
 
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-     // startY: startY, // Start table at the current startY value
-      margin: { top: startY,left: leftMargin }, // top margin for all pages
-      theme: 'grid',
-      tableWidth: pageWidth - leftMargin - rightMargin,
-      styles: {
-        fontSize: fontSz_body,
-        minCellHeight: minHeightHeaderCol
+//     pdf.setLineWidth(0.1);
+//     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+//     // Add table using autoTable plugin
+//     autoTable(pdf, {
+//       head: headers,
+//       body: data,
+//      // startY: startY, // Start table at the current startY value
+//       margin: { top: startY,left: leftMargin }, // top margin for all pages
+//       theme: 'grid',
+//       tableWidth: pageWidth - leftMargin - rightMargin,
+//       styles: {
+//         fontSize: fontSz_body,
+//         minCellHeight: minHeightHeaderCol
 
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let colSpan=2;
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        let lastColumnIndex = data.table.columns.length-1;
-        // let depotCell=[6,7];
-        // if(!showGateSurcharge) depotCell=[];
+//       },
+//       columnStyles: comStyles,
+//       headStyles: headStyles, // Custom header styles
+//       bodyStyles: {
+//         fillColor: [255, 255, 255],
+//         //halign: 'left', // Left-align content for body by default
+//         //valign: 'middle', // Vertically align content
+//       },
+//       didParseCell: (data: any) => {
+//         let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+//         let colSpan=2;
+//         let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+//         let lastColumnIndex = data.table.columns.length-1;
+//         // let depotCell=[6,7];
+//         // if(!showGateSurcharge) depotCell=[];
 
-        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          data.cell.fontSize = 8;
-          colSpan = 1;
-          //if (data.column.index>0 && data.row.index==averageRowIndex)  colSpan=2;
-          if (data.column.index == 0) colSpan = 2
-          if (((data.column.index % 2 == 0 && data.column.index != 0) || data.column.index == 0)) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
+//         if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
+//           data.cell.styles.fontStyle = 'bold';
+//           data.cell.styles.fillColor = [231, 231, 231];
+//           data.cell.styles.valign = 'middle'; // Center text vertically
+//           data.cell.fontSize = 8;
+//           colSpan = 1;
+//           //if (data.column.index>0 && data.row.index==averageRowIndex)  colSpan=2;
+//           if (data.column.index == 0) colSpan = 2
+//           if (((data.column.index % 2 == 0 && data.column.index != 0) || data.column.index == 0)) {
+//             data.cell.colSpan = colSpan;  // Merge 4 columns into one
             
-            if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-          }
+//             if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+//           }
 
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
+//         }
+//       },
+//       didDrawPage: (d: any) => {
+//         const pageCount = pdf.getNumberOfPages();
 
-        lastTableFinalY = d.cursor.y;
+//         lastTableFinalY = d.cursor.y;
 
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
-             PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-          }
-        }
+//         var pg = pagePositions.find(p => p.page == pageCount);
+//         if (!pg) {
+//           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+//           if (pageCount > 1) {
+//             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
+//              PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+//             PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+//           }
+//         }
 
-      },
-    });
+//       },
+//     });
 
    
 
 
- setTimeout(async()=>{
+//  setTimeout(async()=>{
 
-     // Add footer
-    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin,  this.translate, pagePositions);
+//      // Add footer
+//     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+//        rightMargin,  this.translate, pagePositions);
 
  
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
+//     this.generatingPdfLoadingSubject.next(false);
+//     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+//     this.dialogRef.close();
 
-  },100);
+//   },100);
 
-   // this.dialogRef.close();
-  }
+//    // this.dialogRef.close();
+//   }
 
 
 //  async exportToPDF_r11(fileName: string = 'document.pdf') {

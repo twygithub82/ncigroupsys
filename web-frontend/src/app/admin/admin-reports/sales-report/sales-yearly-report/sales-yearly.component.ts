@@ -47,6 +47,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ManagementReportDS, ManagementReportYearlyRevenueItem } from 'app/data-sources/reports-management';
 import { YearlySalesReportDetailsExcelComponent } from 'app/document-template/excel/admin-reports/sales/yearly/yearly-details-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 @Component({
   selector: 'app-sales-yearly',
   standalone: true,
@@ -161,6 +162,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     TYPE: 'COMMON-FORM.TYPE',
     MONTH_START: 'COMMON-FORM.MONTH-START',
     MONTH_END: 'COMMON-FORM.MONTH-END',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    WARNING: 'COMMON-FORM.WARNING',
   }
 
   invForm?: UntypedFormGroup;
@@ -508,23 +511,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  performSearch1(reportType?: number, date?: string, customerName?: string) {
-    var reportDS:any = this.reportDS;
-    // if(queryType==1)
-    // {
-    this.subs.sink = reportDS.searchAdminReportYearlySales(this.lastSearchCriteria)
-      .subscribe((data :any) => {
-        this.repData = data;
-      //  this.ProcessYearlySalesReport(this.repData, date!, reportType!, customerName!);
-        // this.endCursor = this.stmDS.pageInfo?.endCursor;
-        // this.startCursor = this.stmDS.pageInfo?.startCursor;
-        // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
-        // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        // this.ProcessReportCustomerInventory(invType!, date!, report_type!, queryType!,tnxType!);
-      });
-    // this.pageSize = pageSize;
-    // this.pageIndex = pageIndex;
-  }
+
 
   displayCostTypeFn(cs: CodeValuesItem): string {
     return cs.description || '';
@@ -881,6 +868,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     else {
       this.repData = [];
       this.isGeneratingReport = false;
+      this.ShowWarningMessage();
     }
 
 
@@ -925,5 +913,25 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
         this.isGeneratingReport = false;
       });
     }
+
+     ShowWarningMessage() {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ErrorDialogComponent, {
+          disableClose: true,
+          data: {
+            headerText: this.translatedLangText.WARNING,
+            messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+            act: "warn"
+          },
+          direction: tempDirection
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      }
     
 }

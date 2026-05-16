@@ -274,7 +274,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
     STEAM: 'COMMON-FORM.STEAM',
     REPAIR: 'COMMON-FORM.REPAIR',
-    CLEANING: 'COMMON-FORM.CLEANING',
+    CLEANING: 'COMMON-FORM.CLEAN',
     STORAGE: 'COMMON-FORM.STORAGE',
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
@@ -288,12 +288,13 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
-    LOLO:'COMMON-FORM.LOLO',
+    LOLO:'COMMON-FORM.LOLO-ON-OFF',
     TANK:'COMMON-FORM.TANK',
     COST:'COMMON-FORM.COST',
     S_N:'COMMON-FORM.S_N',
     MASTER:'COMMON-FORM.MASTER',
     GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+    
    
     
   }
@@ -750,8 +751,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
+      ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
     //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
 
@@ -763,8 +764,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
       ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
       ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
-      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
       ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
+      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
       ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
@@ -850,8 +851,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
       ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
-      ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
+      ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
     ]
     var prcsValues:number[]=[]
@@ -878,8 +879,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
         ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
         ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
-        ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
         ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
+        ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
         ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.cost)]:[]),
         Utility.formatNumberDisplay(total)
       ]);
@@ -937,8 +938,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
      // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
+      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
       Utility.formatNumberDisplay(total_all_cost)
     ]);
@@ -950,37 +951,13 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
       //...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
+      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
       Utility.formatNumberDisplay((total_all_cost/average_counter))
     ]);
     
-    // data.push([
-    //   this.translatedLangText.TOTAL,"",
-    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.total_cost),'']:[]),
-    //   Utility.formatNumberDisplay(total_all_cost)
-    // ]);
-
-    // data.push([
-    //   this.translatedLangText.AVERAGE,"",
-    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.average_cost||''),'']:[]),  
-    //   Utility.formatNumberDisplay((total_all_cost/average_counter))
-    // ]);
+    
     
     prcsValues=[
       ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_cost||0)]:[]),
@@ -988,8 +965,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_cost||0)]:[]),
       // ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),
       ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_cost||0)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_cost||0)]:[]),
       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_cost||0)]:[]),
+      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_cost||0)]:[]),
       ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_cost||0)]:[]) ];
 
     pdf.setDrawColor(0, 0, 0); // red line color
@@ -1154,7 +1131,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     var cats=[];
     var indx=0;
     if(showPreinspectSurcharge){
-      var lbl="Pre-Inspection";
+      var lbl=`${this.translatedLangText.PREINSPECTION}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1172,7 +1149,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     
     }
     if(showLoloSurcharge){
-      var lbl="LOLO";
+      var lbl=`${this.translatedLangText.LOLO}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1191,7 +1168,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     }
 
     if(showStorageSurcharge){
-      var lbl="Storage";
+      var lbl=`${this.translatedLangText.STORAGE}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1227,7 +1204,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       
       }
     if(showSteamSurcharge){
-      var lbl="Steam";
+      var lbl=`${this.translatedLangText.STEAM}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1245,7 +1222,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       
       }
     if(showResidueSurcharge){
-      var lbl="Residue";
+      var lbl=`${this.translatedLangText.RESIDUE}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1263,7 +1240,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       
       }
       if(showCleanSurcharge){
-        var lbl="Cleaning";
+        var lbl=`${this.translatedLangText.CLEANING}`;
         var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
         ds.push({
           label:lbl,
@@ -1281,7 +1258,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         
         }
         if(showRepairSurcharge){
-          var lbl="Repair";
+          var lbl=`${this.translatedLangText.REPAIR}`;
           var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
           ds.push({
             label:lbl,
