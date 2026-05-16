@@ -231,7 +231,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in QueryPeriodicTestDueSummary");   
+                _logger.LogError(ex, "Error in QueryPeriodicTestDueSummary");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
@@ -252,25 +252,42 @@ namespace IDMS.Billing.GqlTypes
                 //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
                 string surveryorCodeValType = "TEST_CLASS";
                 string tankStatusCV = "ACCEPTED";
+                string jointInspec = "JOINT_INSPECT";
 
                 long sDate = dailyTankSurveyRequest.start_date;
                 long eDate = dailyTankSurveyRequest.end_date;
 
-                IQueryable<DailyTankSurveySummary> query = from sot in context.storing_order_tank
+                //IQueryable<DailyTankSurveySummary> query = from sot in context.storing_order_tank
+                //                                           join so in context.storing_order on sot.so_guid equals so.guid
+                //                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                //                                           join sd in context.survey_detail on sot.guid equals sd.sot_guid
+                //                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val
+                //                                           join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
+                //                                           from cl in clGroup.DefaultIfEmpty()
+                //                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+                //                                           from i in iGroup.DefaultIfEmpty()
+                //                                           where sot.status_cv == tankStatusCV
+                //                                               && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv)
+                //                                               && sd.survey_dt >= sDate
+                //                                               && sd.survey_dt <= eDate
+                //                                               && (i.delete_dt == null)
+                //                                               && sd.delete_dt == null
+                //                                               && (cv.code_val_type == surveryorCodeValType
+                //                                               || sd.survey_type_cv == jointInspec)
+
+                IQueryable<DailyTankSurveySummary> query = from sd in context.survey_detail
+                                                           join sot in context.storing_order_tank on sd.sot_guid equals sot.guid
                                                            join so in context.storing_order on sot.so_guid equals so.guid
                                                            join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                                                           join sd in context.survey_detail on sot.guid equals sd.sot_guid
-                                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val
+                                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val into cvGroup
+                                                           from cv in cvGroup.DefaultIfEmpty()
                                                            join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
                                                            from cl in clGroup.DefaultIfEmpty()
                                                            join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
                                                            from i in iGroup.DefaultIfEmpty()
-                                                           where sot.status_cv == tankStatusCV
-                                                               && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv)
-                                                               && sd.survey_dt >= sDate
+                                                           where sd.survey_dt >= sDate
                                                                && sd.survey_dt <= eDate
-                                                               && (i.delete_dt == null)
-                                                               && cv.code_val_type == surveryorCodeValType
+                                                               && sd.delete_dt == null
 
                                                            group new { sot, cc, sd, cl, i, cv } by new
                                                            {
@@ -281,7 +298,7 @@ namespace IDMS.Billing.GqlTypes
                                                                i.eir_no,
                                                                sd.survey_type_cv,
                                                                sd.survey_dt,
-                                                               cv.description,
+                                                               description = cv.description ?? "",
                                                                clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
                                                            } into g
 
@@ -550,7 +567,7 @@ namespace IDMS.Billing.GqlTypes
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in QueryDailyInventorySummary");    
+                _logger.LogError(ex, "Error in QueryDailyInventorySummary");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
@@ -708,7 +725,7 @@ namespace IDMS.Billing.GqlTypes
 
         private List<OpeningBalance> EnsureAllYardsExist(List<OpeningBalance> balances)
         {
-           
+
             foreach (var yard in AvailableYard.YardList)
             {
                 // Check if the yard exists in the balances list

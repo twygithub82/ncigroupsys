@@ -80,7 +80,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+          <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
               <input matInput formControlName="tank_no">
@@ -91,14 +91,14 @@
               <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
               <input matInput formControlName="eir_no">
             </mat-form-field>
-          </div>
+          </div> -->
          
           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="release_picker" [max]="maxManuDOMDt">
                 <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
-                <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                <input matEndDate placeholder="End date" formControlName="eir_dt_end" class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #release_picker></mat-date-range-picker>
