@@ -68,7 +68,7 @@
               <mat-label>{{translatedLangText.SURVEY_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="svy_picker" [max]="getMaxDate()" required>
                 <input matStartDate placeholder="Start date" formControlName="svy_dt_start" required>
-                <input matEndDate placeholder="End date" formControlName="svy_dt_end" required>
+                <input matEndDate placeholder="End date" formControlName="svy_dt_end" class="ms-4" required>
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="svy_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #svy_picker></mat-date-range-picker>
