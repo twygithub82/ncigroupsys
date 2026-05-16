@@ -27,8 +27,8 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
-import { ManagementReportYearlyRevenueItem, MonthlyProcessData, ManagementReportYearlyInventory  } from 'app/data-sources/reports-management';
-import {AdminReportYearlySalesReport, InventoryAnalyzer} from 'app/data-sources/reports';
+import { ManagementReportYearlyRevenueItem, MonthlyProcessData, ManagementReportYearlyInventory } from 'app/data-sources/reports-management';
+import { AdminReportYearlySalesReport, InventoryAnalyzer } from 'app/data-sources/reports';
 // import { fileSave } from 'browser-fs-access';
 
 import {
@@ -53,8 +53,8 @@ import {
 import { E } from '@angular/cdk/keycodes';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
-import { report_status_yard} from 'app/data-sources/reports';
-import {PDFUtility} from 'app/utilities/pdf-utility';
+import { report_status_yard } from 'app/data-sources/reports';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 interface SeriesItem {
   name: string;
@@ -64,11 +64,11 @@ interface SeriesItem {
 
 export interface DialogData {
   repData: AdminReportYearlySalesReport,
-  date:string,
-  repType:string,
-  customer:string,
-  inventory_type:string[],
-  report_name:string
+  date: string,
+  repType: string,
+  customer: string,
+  inventory_type: string[],
+  report_name: string
 }
 
 @Component({
@@ -279,24 +279,24 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_YEARLY_DETAILS_REPORT:'COMMON-FORM.STEAM-YEARLY-DETAILS-REPORT',
-    RESIDUE_YEARLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
-    REPAIR_YEARLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
-    CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
-    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
-    LOLO:'COMMON-FORM.LOLO-ON-OFF',
-    TANK:'COMMON-FORM.TANK',
-    COST:'COMMON-FORM.COST',
-    S_N:'COMMON-FORM.S_N',
-    MASTER:'COMMON-FORM.MASTER',
+    STEAM_YEARLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-YEARLY-DETAILS-REPORT',
+    RESIDUE_YEARLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
+    REPAIR_YEARLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
+    CLEAN_YEARLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
+    YEARLY_SALES_REPORT: 'COMMON-FORM.YEARLY-SALES-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    PREINSPECTION: 'COMMON-FORM.PREINSPECTION',
+    LOLO: 'COMMON-FORM.LOLO-ON-OFF',
+    TANK: 'COMMON-FORM.TANK',
+    COST: 'COMMON-FORM.COST',
+    S_N: 'COMMON-FORM.S_N',
+    MASTER: 'COMMON-FORM.MASTER',
     GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
-    
-   
-    
+
+
+
   }
 
   type?: string | null;
@@ -345,96 +345,96 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   // repData?: ManagementReportYearlyRevenueItem;
-  repData?:AdminReportYearlySalesReport;
-  date?:string;
-  repType?:string;
+  repData?: AdminReportYearlySalesReport;
+  date?: string;
+  repType?: string;
   index: number = 0;
-  customer?:string;
-  invTypes?:string[]=[];
-  repName?:string;
+  customer?: string;
+  invTypes?: string[] = [];
+  repName?: string;
   // date:string='';
   // invType:string='';
- //public barChartOptions!: Partial<ChartOptions>;
+  //public barChartOptions!: Partial<ChartOptions>;
 
- lineChartData: ChartConfiguration['data'] = {
-      datasets: [
-        {
-          label: 'Foods',
-          data: [0, 30, 10, 120, 50, 63, 10],
-          backgroundColor: 'transparent',
-          borderColor: '#9f78ff',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: '#222222',
-        },
-        {
-          label: 'Electronics',
-          data: [0, 50, 40, 80, 40, 79, 120],
-          backgroundColor: 'transparent',
-          borderColor: '#f96332',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: '#f96332',
-        },
-      ],
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    };
-  
-    lineChartOpts: ChartConfiguration['options'] = {
-      responsive: true,
-      animation: false, // 👈 disables all animations
-      elements: {
-        line: {
-          tension: 0.5,
-        },
+  lineChartData: ChartConfiguration['data'] = {
+    datasets: [
+      {
+        label: 'Foods',
+        data: [0, 30, 10, 120, 50, 63, 10],
+        backgroundColor: 'transparent',
+        borderColor: '#9f78ff',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#222222',
       },
-      scales: {
-        y: {
-          title: {
-            display: true,
-            text: '', // <- your label here
-            color: '#9aa0ac',
-            font: {
-              size: 14,
-            },
-          },
-          position: 'left',
-          ticks: {
-            color: '#9aa0ac', // Font Color
-          },
-        },
-        x: {
-          ticks: {
-            color: '#9aa0ac', // Font Color
-          },
-        },
+      {
+        label: 'Electronics',
+        data: [0, 50, 40, 80, 40, 79, 120],
+        backgroundColor: 'transparent',
+        borderColor: '#f96332',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#f96332',
       },
-  
-      plugins: {
-        legend: {
+    ],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  };
+
+  lineChartOpts: ChartConfiguration['options'] = {
+    responsive: true,
+    animation: false, // 👈 disables all animations
+    elements: {
+      line: {
+        tension: 0.5,
+      },
+    },
+    scales: {
+      y: {
+        title: {
           display: true,
-          // 👇 Customize legend appearance
-          labels: {
-            font: {
-              size: 9, // Font size (default: 10)
-              family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
-            },
-            padding: 9, // Space between legend items (default: 10)
-            boxWidth: 11, // Width of the color box (default: 12)
-            boxHeight: 11, // Height of the color box (default: 12)
-            // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+          text: '', // <- your label here
+          color: '#9aa0ac',
+          font: {
+            size: 14,
           },
         },
+        position: 'left',
+        ticks: {
+          color: '#9aa0ac', // Font Color
+        },
       },
-    };
+      x: {
+        ticks: {
+          color: '#9aa0ac', // Font Color
+        },
+      },
+    },
+
+    plugins: {
+      legend: {
+        display: true,
+        // 👇 Customize legend appearance
+        labels: {
+          font: {
+            size: 9, // Font size (default: 10)
+            family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
+          },
+          padding: 9, // Space between legend items (default: 10)
+          boxWidth: 11, // Width of the color box (default: 12)
+          boxHeight: 11, // Height of the color box (default: 12)
+          // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+        },
+      },
+    },
+  };
 
 
   constructor(
@@ -470,22 +470,22 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.invTypes=this.data.inventory_type;
-    this.repName=this.data.report_name;
-   // this.SetChartValues();
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.invTypes = this.data.inventory_type;
+    this.repName = this.data.report_name;
+    // this.SetChartValues();
     this.onDownloadClick();
 
   }
 
   ngAfterViewInit() {
 
-    
+
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -692,18 +692,18 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-   async exportToPDF_r1(fileName: string = 'document.pdf') {
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 10;
@@ -720,7 +720,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
-    
+
 
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
@@ -728,49 +728,53 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
+    let fontSz_body = PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
-    let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
-    let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
-    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+    if ((this.invTypes?.length || 0) < 2) {
+      this.exportToPDF_r2(fileName);
+      return;
+    }
+    let showPreinspectSurcharge: boolean = this.invTypes?.includes("PREINSPECTION")!;
+    let showLoloSurcharge: boolean = this.invTypes?.includes("LOLO")!;
+    let showStorageSurcharge: boolean = this.invTypes?.includes("STORAGE")!;
+    let showGateSurcharge: boolean = this.invTypes?.includes("IN_OUT")!;
+    let showResidueSurcharge: boolean = this.invTypes?.includes("RESIDUE")!;
+    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
     const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
     const reportTitle = this.GetReportTitle();
-    const vAlign ="bottom"
+    const vAlign = "bottom"
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      ...(showGateSurcharge? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
-    //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      ...(showGateSurcharge ? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      ...(showPreinspectSurcharge ? [{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      ...(showLoloSurcharge ? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      ...(showStorageSurcharge ? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      ...(showSteamSurcharge ? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showCleanSurcharge ? [{ content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showResidueSurcharge ? [{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showRepairSurcharge ? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
+      //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
 
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showPreinspectSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
-      ...(showLoloSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
-      ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
-      ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
-      ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
-      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
-      ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
-     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+      ...(showPreinspectSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for preinspection
+      ...(showLoloSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for LOLO
+      ...(showStorageSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for storage
+      ...(showGateSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for GATE_SURCHARGE
+      ...(showSteamSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for STEAM
+      ...(showCleanSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for RESIDUE
+      ...(showResidueSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for residue
+      ...(showRepairSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for CLEANING
+      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 
-   
+
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -781,9 +785,9 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -821,153 +825,149 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
+
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, PDFUtility.CenterSubTitleFontSize());
-    var subtitlePos =1;
-    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin,this.translate,reportTitle,repGeneratedDate,subtitlePos);
-    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    var subtitlePos = 1;
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, reportTitle, repGeneratedDate, subtitlePos);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
-    if(this.customer)
-    {
+    if (this.customer) {
       //const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      const customer=`${this.customer}`;
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,  rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      const customer = `${this.customer}`;
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
       startY += PDFUtility.GapBetweenLeftTitleAndTable();
       //Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     }
     var idx = 0;
 
-    var repdata=this.repData!;
-    var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(this.repData!);
-   
+    var repdata = this.repData!;
+    var grpData = InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(this.repData!);
 
-    var series:SeriesItem[]=[];
-    var index:number=1;
-    var prcss:string[]=[
-      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
-      ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
-      ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
-      ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
-      ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
-      ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
-      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
+
+    var series: SeriesItem[] = [];
+    var index: number = 1;
+    var prcss: string[] = [
+      ...(showGateSurcharge ? [this.translatedLangText.GATE_SURCHARGE] : []),
+      ...(showPreinspectSurcharge ? [this.translatedLangText.PREINSPECTION] : []),
+      ...(showLoloSurcharge ? [this.translatedLangText.LOLO] : []),
+      ...(showStorageSurcharge ? [this.translatedLangText.STORAGE] : []),
+      ...(showSteamSurcharge ? [this.translatedLangText.STEAM] : []),
+      ...(showCleanSurcharge ? [this.translatedLangText.CLEANING] : []),
+      ...(showResidueSurcharge ? [this.translatedLangText.RESIDUE] : []),
+      ...(showRepairSurcharge ? [this.translatedLangText.REPAIR] : []),
     ]
-    var prcsValues:number[]=[]
-    var total_all_cost:number=0;
-    var average_counter=0;
-    var total_tank_In_out=0,total_tank_lolo=0,total_tank_storage=0,total_tank_steam=0,total_tank_residue=0,total_tank_clean=0,total_tank_repair=0,total_tank_preinspect=0;
-    var average_tank_In_out=0,average_tank_lolo=0,average_tank_storage=0,average_tank_steam=0,average_tank_residue=0,average_tank_clean=0,average_tank_repair=0,average_tank_preinspect=0;
+    var prcsValues: number[] = []
+    var total_all_cost: number = 0;
+    var average_counter = 0;
+    var total_tank_In_out = 0, total_tank_lolo = 0, total_tank_storage = 0, total_tank_steam = 0, total_tank_residue = 0, total_tank_clean = 0, total_tank_repair = 0, total_tank_preinspect = 0;
+    var average_tank_In_out = 0, average_tank_lolo = 0, average_tank_storage = 0, average_tank_steam = 0, average_tank_residue = 0, average_tank_clean = 0, average_tank_repair = 0, average_tank_preinspect = 0;
     for (const monthData of grpData.monthlyData) {
-      var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
-      +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
-      total_all_cost+=total;
+      var total: number = (monthData.in_out?.cost || 0) + (monthData.lolo?.cost || 0) + (monthData.storage?.cost || 0) + (monthData.in_out?.cost || 0)
+        + (monthData.steaming?.cost || 0) + (monthData.residue?.cost || 0) + (monthData.cleaning?.cost || 0) + (monthData.repair?.cost || 0)
+      total_all_cost += total;
       average_counter++;
-      total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
-      total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
-      total_tank_repair+=monthData.repair?.count||0;total_tank_preinspect+=monthData.preinspection?.count||0;
+      total_tank_In_out += monthData.in_out?.count || 0; total_tank_lolo += monthData.lolo?.count || 0; total_tank_storage += monthData.storage?.count || 0;
+      total_tank_steam += monthData.steaming?.count || 0; total_tank_residue += monthData.residue?.count || 0; total_tank_clean += monthData.cleaning?.count || 0;
+      total_tank_repair += monthData.repair?.count || 0; total_tank_preinspect += monthData.preinspection?.count || 0;
 
-      average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
-      average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
-      average_tank_repair+=(monthData.repair?.count||0>0?1:0);average_tank_preinspect+=(monthData.preinspection?.count||0>0?1:0);
+      average_tank_In_out += (monthData.in_out?.count || 0 > 0 ? 1 : 0); average_tank_lolo += (monthData.lolo?.count || 0 > 0 ? 1 : 0); average_tank_storage += (monthData.storage?.count || 0 > 0 ? 1 : 0);
+      average_tank_steam += (monthData.steaming?.count || 0 > 0 ? 1 : 0); average_tank_residue += (monthData.residue?.count || 0 > 0 ? 1 : 0); average_tank_clean += (monthData.cleaning?.count || 0 > 0 ? 1 : 0);
+      average_tank_repair += (monthData.repair?.count || 0 > 0 ? 1 : 0); average_tank_preinspect += (monthData.preinspection?.count || 0 > 0 ? 1 : 0);
       data.push([
-        (++idx).toString(),monthData.key,
-        ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
-        ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
-        ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
-        ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-        ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
-        ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
-        ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
-        ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.cost)]:[]),
+        (++idx).toString(), monthData.key,
+        ...(showGateSurcharge ? [monthData.in_out?.count || '', Utility.formatNumberDisplay(monthData.in_out?.cost)] : []),
+        ...(showPreinspectSurcharge ? [monthData.preinspection?.count || '', Utility.formatNumberDisplay(monthData.preinspection?.cost)] : []),
+        ...(showLoloSurcharge ? [monthData.lolo?.count || '', Utility.formatNumberDisplay(monthData.lolo?.cost)] : []),
+        ...(showStorageSurcharge ? [monthData.storage?.count || '', Utility.formatNumberDisplay(monthData.storage?.cost)] : []),
+        ...(showSteamSurcharge ? [monthData.steaming?.count || '', Utility.formatNumberDisplay(monthData.steaming?.cost)] : []),
+        ...(showCleanSurcharge ? [monthData.cleaning?.count || '', Utility.formatNumberDisplay(monthData.cleaning?.cost)] : []),
+        ...(showResidueSurcharge ? [monthData.residue?.count || '', Utility.formatNumberDisplay(monthData.residue?.cost)] : []),
+        ...(showRepairSurcharge ? [monthData.repair?.count || '', Utility.formatNumberDisplay(monthData.repair?.cost)] : []),
         Utility.formatNumberDisplay(total)
       ]);
 
-      prcss.forEach(p=>{
-        var s = series.find(s=>s.name==p);
-        var bInsert=false;
-        if(!s)
-        {
-          s={
+      prcss.forEach(p => {
+        var s = series.find(s => s.name == p);
+        var bInsert = false;
+        if (!s) {
+          s = {
             name: p,
             data: [] // initialize with an empty array or default values
           };
-          bInsert=true;
+          bInsert = true;
         }
-        switch (p)
-        {
+        switch (p) {
           case this.translatedLangText.GATE_SURCHARGE:
-            if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
-          break;
+            if (showGateSurcharge) s.data.push(monthData.in_out?.cost || 0);
+            break;
           case this.translatedLangText.PREINSPECTION:
-           if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
-          break;
+            if (showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost || 0);
+            break;
           case this.translatedLangText.LOLO:
-            if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
-          break;
+            if (showLoloSurcharge) s.data.push(monthData.lolo?.cost || 0);
+            break;
           case this.translatedLangText.STORAGE:
-            if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
-          break;
+            if (showStorageSurcharge) s.data.push(monthData.storage?.cost || 0);
+            break;
           case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(monthData.steaming?.cost||0);
-          break;
+            if (showSteamSurcharge) s.data.push(monthData.steaming?.cost || 0);
+            break;
           case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(monthData.cleaning?.cost||0);
-          break;
+            if (showCleanSurcharge) s.data.push(monthData.cleaning?.cost || 0);
+            break;
           case this.translatedLangText.REPAIR:
-            if(showRepairSurcharge)  s.data.push(monthData.repair?.cost||0);
-          break;
+            if (showRepairSurcharge) s.data.push(monthData.repair?.cost || 0);
+            break;
           case this.translatedLangText.RESIDUE:
-            if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          break;
-        
+            if (showResidueSurcharge) s.data.push(monthData.residue?.cost || 0);
+            break;
+
         }
-        if(bInsert)
-        {
+        if (bInsert) {
           series.push(s);
         }
       });
     }
 
-      data.push([
-      this.translatedLangText.TOTAL,"",
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.total_cost)]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
-     // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
+    data.push([
+      this.translatedLangText.TOTAL, "",
+      ...(showGateSurcharge ? [(this.repData?.gate_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.total_cost)] : []),
+      ...(showPreinspectSurcharge ? [(this.repData?.preinspection_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)] : []),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)] : []),
+      // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
+      ...(showSteamSurcharge ? [(this.repData?.steaming_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)] : []),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)] : []),
+      ...(showResidueSurcharge ? [(this.repData?.residue_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)] : []),
+      ...(showRepairSurcharge ? [(this.repData?.repair_yearly_sales?.total_count || 0), Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)] : []),
       Utility.formatNumberDisplay(total_all_cost)
     ]);
 
     data.push([
-      this.translatedLangText.AVERAGE,"",
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.average_cost||'')]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost||'')]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
+      this.translatedLangText.AVERAGE, "",
+      ...(showGateSurcharge ? [(this.repData?.gate_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.average_cost || '')] : []),
+      ...(showPreinspectSurcharge ? [(this.repData?.preinspection_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost || '')] : []),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost || '')] : []),
       //...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
-      Utility.formatNumberDisplay((total_all_cost/average_counter))
+      ...(showSteamSurcharge ? [(this.repData?.steaming_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost || '')] : []),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost || '')] : []),
+      ...(showResidueSurcharge ? [(this.repData?.residue_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost || '')] : []),
+      ...(showRepairSurcharge ? [(this.repData?.repair_yearly_sales?.average_count || 0), Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost || '')] : []),
+      Utility.formatNumberDisplay((total_all_cost / average_counter))
     ]);
-    
-    
-    
-    prcsValues=[
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_cost||0)]:[]),
-      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_cost||0)]:[]),
-      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_cost||0)]:[]),
+
+
+
+    prcsValues = [
+      ...(showGateSurcharge ? [(this.repData?.gate_yearly_sales?.total_cost || 0)] : []),
+      ...(showPreinspectSurcharge ? [(this.repData?.preinspection_yearly_sales?.total_cost || 0)] : []),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_yearly_sales?.total_cost || 0)] : []),
       // ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),
-      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_cost||0)]:[]),
-      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_cost||0)]:[]),
-      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_cost||0)]:[]),
-      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_cost||0)]:[]) ];
+      ...(showSteamSurcharge ? [(this.repData?.steaming_yearly_sales?.total_cost || 0)] : []),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_yearly_sales?.total_cost || 0)] : []),
+      ...(showResidueSurcharge ? [(this.repData?.residue_yearly_sales?.total_cost || 0)] : []),
+      ...(showRepairSurcharge ? [(this.repData?.repair_yearly_sales?.total_cost || 0)] : [])];
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -977,8 +977,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     autoTable(pdf, {
       head: headers,
       body: data,
-     // startY: startY, // Start table at the current startY value
-      margin: { top: startY,left: leftMargin }, // top margin for all pages
+      // startY: startY, // Start table at the current startY value
+      margin: { top: startY, left: leftMargin }, // top margin for all pages
       theme: 'grid',
       tableWidth: pageWidth - leftMargin - rightMargin,
       styles: {
@@ -995,53 +995,50 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       },
       didParseCell: (data: any) => {
         let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let colSpan=2;
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        let lastColumnIndex = data.table.columns.length-1;
+        let colSpan = 2;
+        let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        let lastColumnIndex = data.table.columns.length - 1;
         // let depotCell=[6,7];
         // if(!showGateSurcharge) depotCell=[];
-        if(data.section=="body" && ((data.column.index%2)==0) &&(lastColumnIndex!=data.column.index))
-        {
-           var key = `${data.row.raw[1]}`;
-          
-           var matched=0;
-           var prop="";
-           switch (data.column.index)
-           {
-             case 2:
-              if(showGateSurcharge) prop="in_out";
-              else if(showPreinspectSurcharge) prop="preinspection";
-              else if(showSteamSurcharge) prop="steaming";
-              else if(showCleanSurcharge) prop="cleaning";
-              else if(showRepairSurcharge) prop="repair";
-              else if(showResidueSurcharge) prop="residue";
-              else if(showLoloSurcharge) prop="lolo";
-              else if(showStorageSurcharge) prop="storage";
-               break;
-             case 4:
-              if(showLoloSurcharge) prop="preinspection";
+        if (data.section == "body" && ((data.column.index % 2) == 0) && (lastColumnIndex != data.column.index)) {
+          var key = `${data.row.raw[1]}`;
+
+          var matched = 0;
+          var prop = "";
+          switch (data.column.index) {
+            case 2:
+              if (showGateSurcharge) prop = "in_out";
+              else if (showPreinspectSurcharge) prop = "preinspection";
+              else if (showSteamSurcharge) prop = "steaming";
+              else if (showCleanSurcharge) prop = "cleaning";
+              else if (showRepairSurcharge) prop = "repair";
+              else if (showResidueSurcharge) prop = "residue";
+              else if (showLoloSurcharge) prop = "lolo";
+              else if (showStorageSurcharge) prop = "storage";
               break;
-             case 6:
-              if(showStorageSurcharge) prop="lolo"; //storage";
+            case 4:
+              if (showLoloSurcharge) prop = "preinspection";
+              break;
+            case 6:
+              if (showStorageSurcharge) prop = "lolo"; //storage";
               break;
             case 8:
-              if(showGateSurcharge)prop="storage";
-               break;
+              if (showGateSurcharge) prop = "storage";
+              break;
             case 10:
-              if(showSteamSurcharge)prop="steaming";
+              if (showSteamSurcharge) prop = "steaming";
               break;
             case 12:
-                if(showResidueSurcharge)prop="residue";
-                break;
-            case 14:
-                if(showCleanSurcharge)prop="cleaning";
-                break;
-            case 16:
-              if(showRepairSurcharge)prop="repair";
+              if (showResidueSurcharge) prop = "residue";
               break;
-           }
-           if(prop)
-           {
+            case 14:
+              if (showCleanSurcharge) prop = "cleaning";
+              break;
+            case 16:
+              if (showRepairSurcharge) prop = "repair";
+              break;
+          }
+          if (prop) {
             //  var textColor="";
             // if(grpData.processExtremes[prop].highest?.key==key)
             //   {
@@ -1065,13 +1062,13 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         //   if (data.column.index %2==0 &&(lastColumnIndex!=data.column.index)) {
         //     data.cell.colSpan = colSpan;  // Merge 4 columns into one
         //     if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-            
-        //   }
-        
-        // }
-       
 
-        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
+        //   }
+
+        // }
+
+
+        if (((data.row.index == totalRowIndex) || (data.row.index == averageRowIndex))) {
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
@@ -1081,7 +1078,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
           if (data.column.index == 0) colSpan = 2
           if (((data.column.index % 2 == 0 && data.column.index != 0) || data.column.index == 0)) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            
+
             if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
           }
 
@@ -1097,15 +1094,15 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
-             PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, subtitlePos);
           }
         }
 
       },
     });
 
-    var catgries=grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[]
+    var catgries = grpData.monthlyData.map((mData: { key?: string }) => mData.key || "") as string[]
     // var x
     // this.lineChartOptions.xaxis={
     //   categories: catgries,
@@ -1115,27 +1112,27 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     // this.lineChartOptions.series=series;
 
-    
-    
-      
 
-     
-    
 
-    var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
+
+
+
+
+
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
       "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
-    this.lineChartData.datasets=[];
-    this.lineChartData.labels=[];
-    var ds=[];
-    var cats=[];
-    var indx=0;
-    if(showPreinspectSurcharge){
-      var lbl=`${this.translatedLangText.PREINSPECTION}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+    this.lineChartData.datasets = [];
+    this.lineChartData.labels = [];
+    var ds = [];
+    var cats = [];
+    var indx = 0;
+    if (showPreinspectSurcharge) {
+      var lbl = `${this.translatedLangText.PREINSPECTION}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1146,14 +1143,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-    
+
     }
-    if(showLoloSurcharge){
-      var lbl=`${this.translatedLangText.LOLO}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+    if (showLoloSurcharge) {
+      var lbl = `${this.translatedLangText.LOLO}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1164,15 +1161,15 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-      
+
     }
 
-    if(showStorageSurcharge){
-      var lbl=`${this.translatedLangText.STORAGE}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+    if (showStorageSurcharge) {
+      var lbl = `${this.translatedLangText.STORAGE}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1183,14 +1180,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-      
-      }
-    if(showGateSurcharge){
-      var lbl=`${this.translatedLangText.GATE_SURCHARGE}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+
+    }
+    if (showGateSurcharge) {
+      var lbl = `${this.translatedLangText.GATE_SURCHARGE}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1201,14 +1198,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-      
-      }
-    if(showSteamSurcharge){
-      var lbl=`${this.translatedLangText.STEAM}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+
+    }
+    if (showSteamSurcharge) {
+      var lbl = `${this.translatedLangText.STEAM}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1219,14 +1216,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-      
-      }
-    if(showResidueSurcharge){
-      var lbl=`${this.translatedLangText.RESIDUE}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+
+    }
+    if (showResidueSurcharge) {
+      var lbl = `${this.translatedLangText.RESIDUE}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1237,48 +1234,48 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-      
-      }
-      if(showCleanSurcharge){
-        var lbl=`${this.translatedLangText.CLEANING}`;
-        var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-        ds.push({
-          label:lbl,
-          data:s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
-        
-        }
-        if(showRepairSurcharge){
-          var lbl=`${this.translatedLangText.REPAIR}`;
-          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-          ds.push({
-            label:lbl,
-            data:s[0].data,
-            backgroundColor: 'transparent',
-            borderColor: colors[indx],
-            borderWidth: 2,
-            fill: false,
-            tension: 0.5,
-            pointStyle: 'circle',
-            pointRadius: 3,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: colors[indx++],
-          });
-          
-          }
-      this.lineChartData.datasets=ds;
-      this.lineChartData.labels=catgries;
-      this.chart?.data!=this.lineChartData;
-      this.chart?.update();
+
+    }
+    if (showCleanSurcharge) {
+      var lbl = `${this.translatedLangText.CLEANING}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      ds.push({
+        label: lbl,
+        data: s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+
+    }
+    if (showRepairSurcharge) {
+      var lbl = `${this.translatedLangText.REPAIR}`;
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+      ds.push({
+        label: lbl,
+        data: s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+
+    }
+    this.lineChartData.datasets = ds;
+    this.lineChartData.labels = catgries;
+    this.chart?.data != this.lineChartData;
+    this.chart?.update();
 
     // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
     // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
@@ -1289,934 +1286,301 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     // if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
     // if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
 
-    
+
     // this.pieChartOptions.labels=prcss;
     // this.pieChartOptions.series2=prcsValues;
     //this.pieChartOptions.colors=this.colors;
 
 
- setTimeout(async()=>{
+    setTimeout(async () => {
 
-     // Add footer
-    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin,  this.translate, pagePositions);
+      // Add footer
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+        rightMargin, this.translate, pagePositions);
 
-  // startY=lastTableFinalY+10;
-  // let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  // for (var i = 0; i < cardElements.length; i++) {
-  //   if (i >= 0) {
-  //     pdf.addPage();
-  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-  //     startY=topMargin+20;
-  //   }
-  //   const card1 = cardElements[i];
-  //   const canvas1 = await html2canvas(card1, { scale: scale });
-  //   Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
-   
-  // }
+      
 
-    // const totalPages = pdf.getNumberOfPages();
+      //  this.generatingPdfProgress = 100;
+      //pdf.save(fileName);
+      //  this.generatingPdfProgress = 0;
+      this.generatingPdfLoadingSubject.next(false);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      this.dialogRef.close();
 
-    // let lineOffset = 0;
-    // for (const { page, x, y } of pagePositions) {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
+    }, 100);
 
-    //   const lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-    //   if (page > 1) {
-    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    //   }
-    // }
-
-  //  this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-  //  this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
-
-  },100);
-
-   // this.dialogRef.close();
+    // this.dialogRef.close();
   }
 
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
 
- async exportToPDF_r11(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 10;
-    const rightMargin = 10;
+    // =========================
+    // PORTRAIT SETTINGS
+    // =========================
+    const pageWidth = 210;   // A4 portrait
+    const pageHeight = 297;
+
+    const leftMargin = 8;
+    const rightMargin = 8;
     const topMargin = 5;
     const bottomMargin = 5;
+
     const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
     let pageNumber = 1;
 
-    
-
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 7;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
 
-    let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
-    let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
-    let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
-    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait() - 1;
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait() - 1;
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+
+    // =========================
+    // FLAGS
+    // =========================
+    let showPreinspectSurcharge = this.invTypes?.includes("PREINSPECTION")!;
+    let showLoloSurcharge = this.invTypes?.includes("LOLO")!;
+    let showStorageSurcharge = this.invTypes?.includes("STORAGE")!;
+    let showGateSurcharge = this.invTypes?.includes("IN_OUT")!;
+    let showResidueSurcharge = this.invTypes?.includes("RESIDUE")!;
+    let showSteamSurcharge = this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge = this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge = this.invTypes?.includes("REPAIR")!;
+
     const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
     const reportTitle = this.GetReportTitle();
-    const vAlign ="bottom"
+    const vAlign = "bottom";
+
+    // =========================
+    // HEADER
+    // =========================
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      ...(showGateSurcharge? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
-    //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
 
+      ...(showGateSurcharge ? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showPreinspectSurcharge ? [{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showLoloSurcharge ? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showStorageSurcharge ? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showSteamSurcharge ? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showCleanSurcharge ? [{ content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showResidueSurcharge ? [{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }] : []),
+      ...(showRepairSurcharge ? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center' } }] : []),
     ],
     [
-      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showPreinspectSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
-      ...(showLoloSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
-      ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
-      ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
-      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
-      ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
-     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+      ...(showGateSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showPreinspectSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showLoloSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showStorageSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showSteamSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showCleanSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showResidueSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
+      ...(showRepairSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []),
     ]];
 
-   
-
+    // =========================
+    // COLUMN STYLES
+    // =========================
     const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', minCellHeight: minHeightBodyCell },
     };
 
-    // Define headStyles with valid fontStyle
+    let colIdx = 2;
+
+    const addPairCols = () => {
+      comStyles[colIdx++] = { halign: 'center', minCellHeight: minHeightBodyCell };
+      comStyles[colIdx++] = { halign: 'center', minCellHeight: minHeightBodyCell };
+    };
+
+    if (showGateSurcharge) addPairCols();
+    if (showPreinspectSurcharge) addPairCols();
+    if (showLoloSurcharge) addPairCols();
+    if (showStorageSurcharge) addPairCols();
+    if (showSteamSurcharge) addPairCols();
+    if (showCleanSurcharge) addPairCols();
+    if (showResidueSurcharge) addPairCols();
+    if (showRepairSurcharge) addPairCols();
+
     const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      halign: 'center', // Centering header text
+      fillColor: [211, 211, 211],
+      textColor: 0,
+      fontStyle: "bold",
+      fontSize: fontSz_hdr,
+      halign: 'center',
       valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
     };
 
-    let repData :any= this.repData;
-    let currentY = topMargin;
-    let scale = 2.5;
-    let imgQuality = 0.7;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    let startY = 25;
 
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(
+      pdf,
+      pageWidth,
+      topMargin,
+      bottomMargin,
+      leftMargin,
+      rightMargin,
+      this.translate,
+      reportTitle,
+      `${this.date}`,
+      1
+    );
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    startY += 6;
 
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
+    const grpData = InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(this.repData!);
 
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, 11);
+    const data: any[][] = [];
 
-    if(this.customer)
-    {
-      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    }
-    var idx = 0;
+    let idx = 0;
+    let total_all_cost = 0;
+    let avgCounter = 0;
 
-    var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes_Sales(repData!);
-   
-
-    var series:SeriesItem[]=[];
-    var index:number=1;
-    var prcss:string[]=[
-      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
-      ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
-      ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
-      ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
-      ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
-      ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
-      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
-    ]
-    var prcsValues:number[]=[]
-    var total_all_cost:number=0;
-    var average_counter=0;
-    var total_tank_In_out=0,total_tank_lolo=0,total_tank_storage=0,total_tank_steam=0,total_tank_residue=0,total_tank_clean=0,total_tank_repair=0,total_tank_preinspect=0;
-    var average_tank_In_out=0,average_tank_lolo=0,average_tank_storage=0,average_tank_steam=0,average_tank_residue=0,average_tank_clean=0,average_tank_repair=0,average_tank_preinspect=0;
     for (const monthData of grpData.monthlyData) {
-      var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
-      +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
-      total_all_cost+=total;
-      average_counter++;
-      total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
-      total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
-      total_tank_repair+=monthData.repair?.count||0;total_tank_preinspect+=monthData.preinspection?.count||0;
 
-      average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
-      average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
-      average_tank_repair+=(monthData.repair?.count||0>0?1:0);average_tank_preinspect+=(monthData.preinspection?.count||0>0?1:0);
+      let rowTotal =
+        (monthData.in_out?.cost || 0) +
+        (monthData.lolo?.cost || 0) +
+        (monthData.storage?.cost || 0) +
+        (monthData.steaming?.cost || 0) +
+        (monthData.cleaning?.cost || 0) +
+        (monthData.residue?.cost || 0) +
+        (monthData.repair?.cost || 0);
+
+      total_all_cost += rowTotal;
+      avgCounter++;
+
       data.push([
-        (++idx).toString(),monthData.key,
-        ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
-        ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
-        ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
-        ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-        ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
-        ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
-        ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
-        ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.cost)]:[]),
-        Utility.formatNumberDisplay(total)
+        (++idx).toString(),
+        monthData.key,
+
+        ...(showGateSurcharge ? [monthData.in_out?.count || '', Utility.formatNumberDisplay((monthData.in_out?.cost || 0))] : []),
+        ...(showPreinspectSurcharge ? [monthData.preinspection?.count || '', Utility.formatNumberDisplay((monthData.preinspection?.cost || 0))] : []),
+        ...(showLoloSurcharge ? [monthData.lolo?.count || '', Utility.formatNumberDisplay((monthData.lolo?.cost || 0))] : []),
+        ...(showStorageSurcharge ? [monthData.storage?.count || '', Utility.formatNumberDisplay((monthData.storage?.cost || 0))] : []),
+        ...(showSteamSurcharge ? [monthData.steaming?.count || '', Utility.formatNumberDisplay((monthData.steaming?.cost || 0))] : []),
+        ...(showCleanSurcharge ? [monthData.cleaning?.count || '', Utility.formatNumberDisplay((monthData.cleaning?.cost || 0))] : []),
+        ...(showResidueSurcharge ? [monthData.residue?.count || '', Utility.formatNumberDisplay((monthData.residue?.cost || 0))] : []),
+        ...(showRepairSurcharge ? [monthData.repair?.count || '', Utility.formatNumberDisplay((monthData.repair?.cost || 0))] : []),
+
+        rowTotal
       ]);
-
-      prcss.forEach(p=>{
-        var s = series.find(s=>s.name==p);
-        var bInsert=false;
-        if(!s)
-        {
-          s={
-            name: p,
-            data: [] // initialize with an empty array or default values
-          };
-          bInsert=true;
-        }
-        switch (p)
-        {
-          case this.translatedLangText.GATE_SURCHARGE:
-            if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
-          break;
-          case this.translatedLangText.PREINSPECTION:
-           if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
-          break;
-          case this.translatedLangText.LOLO:
-            if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
-          break;
-          case this.translatedLangText.STORAGE:
-            if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
-          break;
-          case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(monthData.steaming?.cost||0);
-          break;
-          case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(monthData.cleaning?.cost||0);
-          break;
-          case this.translatedLangText.REPAIR:
-            if(showRepairSurcharge)  s.data.push(monthData.repair?.cost||0);
-          break;
-          case this.translatedLangText.RESIDUE:
-            if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          break;
-        
-        }
-        if(bInsert)
-        {
-          series.push(s);
-        }
-      });
     }
 
-      data.push([
-      this.translatedLangText.TOTAL,"",
-      ...(showGateSurcharge?[total_tank_In_out,Utility.formatNumberDisplay(repData?.gate_yearly_revenue?.total_cost)]:[]),
-      ...(showPreinspectSurcharge?[total_tank_preinspect,Utility.formatNumberDisplay(repData?.preinspection_yearly_revenue?.total_cost)]:[]),
-      ...(showLoloSurcharge?[total_tank_lolo,Utility.formatNumberDisplay(repData?.lolo_yearly_revenue?.total_cost)]:[]),
-      ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(repData?.storage_yearly_revenue?.total_cost)]:[]),
-      ...(showSteamSurcharge?[total_tank_steam,Utility.formatNumberDisplay(repData?.steam_yearly_revenue?.total_cost)]:[]),
-      ...(showResidueSurcharge?[total_tank_residue,Utility.formatNumberDisplay(repData?.residue_yearly_revenue?.total_cost)]:[]),
-      ...(showCleanSurcharge?[total_tank_clean,Utility.formatNumberDisplay(repData?.cleaning_yearly_revenue?.total_cost)]:[]),
-      ...(showRepairSurcharge?[total_tank_repair,Utility.formatNumberDisplay(repData?.repair_yearly_revenue?.total_cost)]:[]),
-      Utility.formatNumberDisplay(total_all_cost)
-    ]);
-
+    // =========================
+    // TOTAL ROW
+    // =========================
     data.push([
-      this.translatedLangText.AVERAGE,"",
-      ...(showGateSurcharge?[average_tank_In_out,Utility.formatNumberDisplay(repData?.gate_yearly_revenue?.average_cost||'')]:[]),
-      ...(showPreinspectSurcharge?[average_tank_preinspect,Utility.formatNumberDisplay(repData?.preinspection_yearly_revenue?.average_cost||'')]:[]),
-      ...(showLoloSurcharge?[average_tank_lolo,Utility.formatNumberDisplay(repData?.lolo_yearly_revenue?.average_cost||'')]:[]),
-      ...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(repData?.storage_yearly_revenue?.average_cost||'')]:[]),
-      ...(showSteamSurcharge?[average_tank_steam,Utility.formatNumberDisplay(repData?.steam_yearly_revenue?.average_cost||'')]:[]),
-      ...(showResidueSurcharge?[average_tank_residue,Utility.formatNumberDisplay(repData?.residue_yearly_revenue?.average_cost||'')]:[]),
-      ...(showCleanSurcharge?[average_tank_clean,Utility.formatNumberDisplay(repData?.cleaning_yearly_revenue?.average_cost||'')]:[]),
-      ...(showRepairSurcharge?[average_tank_repair,Utility.formatNumberDisplay(repData?.repair_yearly_revenue?.average_cost||'')]:[]),  
-      Utility.formatNumberDisplay((total_all_cost/average_counter))
+     this.translatedLangText.TOTAL,
+      "",
+
+      ...(showGateSurcharge ? [(this.repData?.gate_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.gate_yearly_sales?.total_cost || 0))] : []),
+      ...(showPreinspectSurcharge ? [(this.repData?.preinspection_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.preinspection_yearly_sales?.total_cost || 0))] : []),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.lolo_yearly_sales?.total_cost || 0))] : []),
+      ...(showStorageSurcharge ? [(this.repData?.storage_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.storage_yearly_sales?.total_cost || 0))] : []),
+      ...(showSteamSurcharge ? [(this.repData?.steaming_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.steaming_yearly_sales?.total_cost || 0))] : []),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.cleaning_yearly_sales?.total_cost || 0))] : []),
+      ...(showResidueSurcharge ? [(this.repData?.residue_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.residue_yearly_sales?.total_cost || 0))] : []),
+      ...(showRepairSurcharge ? [(this.repData?.repair_yearly_sales?.total_count || 0), Utility.formatNumberDisplay((this.repData?.repair_yearly_sales?.total_cost || 0))] : []),
+
+      total_all_cost
     ]);
-    
-    // data.push([
-    //   this.translatedLangText.TOTAL,"",
-    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost),'']:[]),
-    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.total_cost),'']:[]),
-    //   Utility.formatNumberDisplay(total_all_cost)
-    // ]);
 
-    // data.push([
-    //   this.translatedLangText.AVERAGE,"",
-    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||''),'']:[]),
-    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.average_cost||''),'']:[]),  
-    //   Utility.formatNumberDisplay((total_all_cost/average_counter))
-    // ]);
-    
-    prcsValues=[
-      ...(showGateSurcharge?[(repData?.gate_yearly_revenue?.total_cost||0)]:[]),
-      ...(showPreinspectSurcharge?[(repData?.preinspection_yearly_revenue?.total_cost||0)]:[]),
-      ...(showLoloSurcharge?[(repData?.lolo_yearly_revenue?.total_cost||0)]:[]),
-      ...(showStorageSurcharge?[(repData?.storage_yearly_revenue?.total_cost||0)]:[]),
-      ...(showSteamSurcharge?[(repData?.steam_yearly_revenue?.total_cost||0)]:[]),
-      ...(showResidueSurcharge?[(repData?.residue_yearly_revenue?.total_cost||0)]:[]),
-      ...(showCleanSurcharge?[(repData?.cleaning_yearly_revenue?.total_cost||0)]:[]),
-      ...(showRepairSurcharge?[(repData?.repair_yearly_revenue?.total_cost||0)]:[]) ];
+    // =========================
+    // AVERAGE ROW
+    // =========================
+    data.push([
+      this.translatedLangText.AVERAGE,
+      "",
 
-    pdf.setDrawColor(0, 0, 0); // red line color
+      ...(showGateSurcharge ? [(this.repData?.gate_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.gate_yearly_sales?.average_cost || 0))] : []),
+      ...(showPreinspectSurcharge ? [(this.repData?.preinspection_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.preinspection_yearly_sales?.average_cost || 0))] : []),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.lolo_yearly_sales?.average_cost || 0))] : []),
+      ...(showStorageSurcharge ? [(this.repData?.storage_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.storage_yearly_sales?.average_cost || 0))] : []),
+      ...(showSteamSurcharge ? [(this.repData?.steaming_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.steaming_yearly_sales?.average_cost || 0))] : []),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.cleaning_yearly_sales?.average_cost || 0))] : []),
+      ...(showResidueSurcharge ? [(this.repData?.residue_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.residue_yearly_sales?.average_cost || 0))] : []),
+      ...(showRepairSurcharge ? [(this.repData?.repair_yearly_sales?.average_count || 0), Utility.formatNumberDisplay((this.repData?.repair_yearly_sales?.average_cost || 0))] : []),
 
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
+      total_all_cost / avgCounter
+    ]);
+
+    // =========================
+    // TABLE
+    // =========================
     autoTable(pdf, {
       head: headers,
       body: data,
-     // startY: startY, // Start table at the current startY value
-      margin: { top: 55,left: leftMargin }, // top margin for all pages
+      startY,
       theme: 'grid',
-      tableWidth: pageWidth - leftMargin - rightMargin,
+      margin: { left: leftMargin, right: rightMargin },
+
       styles: {
-        fontSize: fontSz,
-        minCellHeight: minHeightHeaderCol
-
+        fontSize: fontSz_body,
+        minCellHeight: minHeightBodyCell
       },
+
       columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let colSpan=2;
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        let lastColumnIndex = data.table.columns.length-1;
-        // let depotCell=[6,7];
-        // if(!showGateSurcharge) depotCell=[];
-        if(data.section=="body" && ((data.column.index%2)==0) &&(lastColumnIndex!=data.column.index))
-        {
-           var key = `${data.row.raw[1]}`;
-          
-           var matched=0;
-           var prop="";
-           switch (data.column.index)
-           {
-             case 2:
-              if(showGateSurcharge) prop="in_out";
-              else if(showPreinspectSurcharge) prop="preinspection";
-              else if(showSteamSurcharge) prop="steaming";
-              else if(showCleanSurcharge) prop="cleaning";
-              else if(showRepairSurcharge) prop="repair";
-              else if(showResidueSurcharge) prop="residue";
-              else if(showLoloSurcharge) prop="lolo";
-              else if(showStorageSurcharge) prop="storage";
-               break;
-             case 4:
-              if(showLoloSurcharge) prop="preinspection";
-              break;
-             case 6:
-              if(showStorageSurcharge) prop="lolo"; //storage";
-              break;
-            case 8:
-              if(showGateSurcharge)prop="storage";
-               break;
-            case 10:
-              if(showSteamSurcharge)prop="steaming";
-              break;
-            case 12:
-                if(showResidueSurcharge)prop="residue";
-                break;
-            case 14:
-                if(showCleanSurcharge)prop="cleaning";
-                break;
-            case 16:
-              if(showRepairSurcharge)prop="repair";
-              break;
-           }
-          //  if(prop)
-          //  {
-          //    var textColor="";
-          //   if(grpData.processExtremes[prop].highest?.key==key)
-          //     {
-          //      // textColor="#009F00";
-          //     }
-          //     else if(grpData.processExtremes[prop].lowest?.key==key)
-          //     {
-          //      // textColor="#EF0000";
-          //     }
-          //     if(textColor)
-          //     {
-          //       data.cell.styles.textColor=textColor;
-          //     }
-          // }
-        }
-       
+      headStyles,
 
-        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
-           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          data.cell.fontSize = 8;
-          colSpan = 1;
-          //if (data.column.index>0 && data.row.index==averageRowIndex)  colSpan=2;
-          if (data.column.index == 0) colSpan = 2
-          if (((data.column.index % 2 == 0 && data.column.index != 0) || data.column.index == 0)) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            
-            if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-          }
+      didParseCell: (hook: any) => {
 
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
+        const totalRow = data.length - 2;
+        const avgRow = data.length - 1;
 
-        lastTableFinalY = d.cursor.y;
+        if (hook.section === "body") {
 
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
+          const isSummary = hook.row.index === totalRow || hook.row.index === avgRow;
+
+          if (isSummary) {
+
+            hook.cell.styles.fontStyle = "bold";
+            hook.cell.styles.fillColor = [230, 230, 230];
+            hook.cell.styles.valign = "middle";
+
+            // MERGE LABEL CELL (colSpan)
+            if (hook.column.index === 0) {
+              hook.cell.colSpan = 2;
+              hook.cell.styles.halign = "right";
+            }
+
+            // APPLY CENTER ALIGN TO VALUE COLUMNS
+            if (hook.column.index > 0) {
+              hook.cell.styles.halign = "center";
+            }
           }
         }
-
-      },
+      }
     });
 
-    var catgries=grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[]
-    
-    var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
-      "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
-
-    this.lineChartData.datasets=[];
-    this.lineChartData.labels=[];
-    var ds=[];
-    var cats=[];
-    var indx=0;
-    if(showPreinspectSurcharge){
-      var lbl="Pre-Inspection";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-    
-    }
-    if(showLoloSurcharge){
-      var lbl="LOLO";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-      
-    }
-
-    if(showStorageSurcharge){
-      var lbl="Storage";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-      
-      }
-    if(showGateSurcharge){
-      var lbl=`${this.translatedLangText.GATE_SURCHARGE}`;
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-      
-      }
-    if(showSteamSurcharge){
-      var lbl="Steam";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-      
-      }
-    if(showResidueSurcharge){
-      var lbl="Residue";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-      
-      }
-      if(showCleanSurcharge){
-        var lbl="Cleaning";
-        var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-        ds.push({
-          label:lbl,
-          data:s[0].data,
-          backgroundColor: 'transparent',
-          borderColor: colors[indx],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.5,
-          pointStyle: 'circle',
-          pointRadius: 3,
-          pointBorderColor: 'transparent',
-          pointBackgroundColor: colors[indx++],
-        });
-        
-        }
-        if(showRepairSurcharge){
-          var lbl="Repair";
-          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-          ds.push({
-            label:lbl,
-            data:s[0].data,
-            backgroundColor: 'transparent',
-            borderColor: colors[indx],
-            borderWidth: 2,
-            fill: false,
-            tension: 0.5,
-            pointStyle: 'circle',
-            pointRadius: 3,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: colors[indx++],
-          });
-          
-          }
-      this.lineChartData.datasets=ds;
-      this.lineChartData.labels=catgries;
-      this.chart?.data!=this.lineChartData;
-      this.chart?.update();
-
-   
-
-
- setTimeout(async()=>{
-
- 
-
-    const totalPages = pdf.getNumberOfPages();
-
-    let lineOffset = 0;
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }
-
-  //  this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-  //  this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
 
-  },100);
-
-   // this.dialogRef.close();
-  }
-
-  async exportToPDF_r1_old(fileName: string = 'document.pdf') {
-    var repData:any= this.repData;
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-    let minHeightBodyCell = 5;
-    let minHeightHeaderCol = 3;
-    let fontSz = 6;
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
-
-    var vAlign='bottom';
-    const reportTitle = this.GetReportTitle();
-    const headers =   [[
-      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
-      { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
-      { content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } }
-    ],
-    [
-      // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-    ]];
-
-    const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      
-    };
-
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
-
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
-
-    if(this.customer)
-    {
-      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    }
-
-    var idx = 0;
-    let itmValid=this.getValidItem();
-    if(itmValid)
-    {
-    for (let n = 0; n < (itmValid?.result_per_month?.length||0); n++) {
-
-     
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = itmValid?.result_per_month?.[n];
-
-    
-        data.push([
-          (n+1).toString(),itm?.month || "",  
-          Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.result_per_month?.[n]?.count ), Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.result_per_month?.[n]?.count ),          Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.result_per_month?.[n]?.count ),      Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          Utility.formatNumberDisplay(repData?.residue_yearly_sales?.result_per_month?.[n]?.count),       Utility.formatNumberDisplay(repData?.residue_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.result_per_month?.[n]?.count),      Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.result_per_month?.[n]?.cost || 0),
-          Utility.formatNumberDisplay(repData?.repair_yearly_sales?.result_per_month?.[n]?.count ),        Utility.formatNumberDisplay(repData?.repair_yearly_sales?.result_per_month?.[n]?.cost ||0)
-        ]);
-       }
-   }
-
-    data.push([this.translatedLangText.TOTAL,"",
-      Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.total_count), Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.total_cost),
-      Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.total_count),          Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.total_cost),
-      Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.total_count),      Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.total_cost),
-      Utility.formatNumberDisplay(repData?.residue_yearly_sales?.total_count),       Utility.formatNumberDisplay(repData?.residue_yearly_sales?.total_cost),
-      Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.total_count),      Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.total_cost),
-      Utility.formatNumberDisplay(repData?.repair_yearly_sales?.total_count),        Utility.formatNumberDisplay(repData?.repair_yearly_sales?.total_cost),
-    ])
-
-    data.push([this.translatedLangText.AVERAGE,"",
-      Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.average_count), Utility.formatNumberDisplay(repData?.preinspection_yearly_sales?.average_cost),
-      Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.average_count),          Utility.formatNumberDisplay(repData?.lolo_yearly_sales?.average_cost),
-      Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.average_count),      Utility.formatNumberDisplay(repData?.steaming_yearly_sales?.average_cost),
-      Utility.formatNumberDisplay(repData?.residue_yearly_sales?.average_count),       Utility.formatNumberDisplay(repData?.residue_yearly_sales?.average_cost),
-      Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.average_count),      Utility.formatNumberDisplay(repData?.cleaning_yearly_sales?.average_cost),
-      Utility.formatNumberDisplay(repData?.repair_yearly_sales?.average_count),        Utility.formatNumberDisplay(repData?.repair_yearly_sales?.average_cost),
-    ])
-
-    pdf.setDrawColor(0, 0, 0); // red line color
-
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      startY: startY, // Start table at the current startY value
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
-            data.cell.colSpan = 2;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
-          }
-        }
-        if ((data.row.index==totalRowIndex || data.row.index==averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
-
-        lastTableFinalY = d.cursor.y;
-
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-          }
-        }
-
-      },
-    });
-
-
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-
-    let chartContentWidth = pageWidth - leftMargin - rightMargin-10;
-    startY=lastTableFinalY+10;
-    for (var i = 0; i < cardElements.length; i++) {
-      if (i > 0) {
-        pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
-        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      }
-      const card1 = cardElements[i];
-      const canvas1 = await html2canvas(card1, { scale: scale });
-      const imgData1 = await PDFUtility.captureFullCardImage(card1);
-     // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-      // Calculate aspect ratio
-      const aspectRatio = canvas1.width / canvas1.height;
-
-      // Calculate scaled height based on available width
-      let imgHeight1 = chartContentWidth / aspectRatio;
-
-      // Check if the scaled height exceeds the available page height
-      const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-      if (imgHeight1 > maxPageHeight) {
-        // Adjust height to fit within the page
-        imgHeight1 = maxPageHeight;
-        // Recalculate width to maintain aspect ratio
-        chartContentWidth = imgHeight1 * aspectRatio;
-      }
-
-      // Add the image to the PDF
-      pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-    }
-
-
-    const totalPages = pdf.getNumberOfPages();
-
-
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin + 2, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin) -2, pdf.internal.pageSize.height - lineBuffer);
-    });
-
-    this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
 
- 
-  getValidItem():any
-  {
-    var repData:any = this.repData;
 
-    if(repData?.cleaning_yearly_sales) return repData.cleaning_yearly_sales;
-    if(repData?.lolo_yearly_sales) return repData.lolo_yearly_sales;
-    if(repData?.preinspection_yearly_sales) return repData.preinspection_yearly_sales;
-    if(repData?.repair_yearly_sales) return repData.repair_yearly_sales;
-    if(repData?.residue_yearly_sales) return repData.residue_yearly_sales;
-    if(repData?.steaming_yearly_sales) return repData.steaming_yearly_sales;
+  
+
+  
+
+
+  getValidItem(): any {
+    var repData: any = this.repData;
+
+    if (repData?.cleaning_yearly_sales) return repData.cleaning_yearly_sales;
+    if (repData?.lolo_yearly_sales) return repData.lolo_yearly_sales;
+    if (repData?.preinspection_yearly_sales) return repData.preinspection_yearly_sales;
+    if (repData?.repair_yearly_sales) return repData.repair_yearly_sales;
+    if (repData?.residue_yearly_sales) return repData.residue_yearly_sales;
+    if (repData?.steaming_yearly_sales) return repData.steaming_yearly_sales;
 
   }
 
@@ -2323,7 +1687,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
+    var title: string = '';
     title = `${this.translatedLangText.YEARLY_SALES_REPORT}`;
     // if(this.repName)
     //  {
@@ -2332,7 +1696,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //  {
     //    title += `: ${this.translatedLangText.MASTER}`;
     //  }
-    
+
     return title;
 
     // switch(this.repType)
@@ -2399,7 +1763,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
   }
 
-  SetChartValues(){
+  SetChartValues() {
 
     // var categories: any = [];
 
@@ -2439,14 +1803,14 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     //     categories.push(itmValid?.result_per_month?.[n].month);
     //   }
     //  }
-      
+
     //   this.barChartOptions.series=series;
 
     // this.barChartOptions.xaxis = {
     //     type: 'category',
     //     categories: categories,
     //     labels: {
-          
+
     //       style: {
     //         colors: '#9aa0ac',
     //       },
@@ -2477,105 +1841,104 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
   }
 
-  getYAxisLabel()
- {
+  getYAxisLabel() {
     return `${this.translatedLangText.QTY}`;
-   //return ' ';
- }
+    //return ' ';
+  }
 
   InitialDefaultData() {
-  //   this.barChartOptions = {
-  //     legend:{
-  //       fontSize:'14px',
-  //       position: "bottom",
-  //       horizontalAlign: "center",
-  //       itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
-  //       labels: {
-  //         colors: "#333", // Set label text color
-  //         useSeriesColors: false, // Use the color of the series for labels
-  //     //    padding: 10, // Adjust space between marker and label
-  //       },
-      
-  //     },
-  //     series: [
-  //       {
-  //         name: 'Net Profit',
-  //         data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-  //       },
-  //       {
-  //         name: 'Revenue',
-  //         data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-  //       },
-  //       {
-  //         name: 'Free Cash Flow',
-  //         data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-  //       },
-  //     ],
-  //     chart: {
-  //       type: 'bar',
-  //       height: 350,
-  //       foreColor: '#9aa0ac',
-  //       toolbar: {
-  //         show: false,
-         
-  //       },
-  //     },
-  //     plotOptions: {
-  //       bar: {
-  //         horizontal: false,
-  //         columnWidth: '30%',
-  //         borderRadius: 5,
-  //       },
-  //     },
-  //     dataLabels: {
-  //       enabled: false,
-  //     },
-  //     stroke: {
-  //       show: true,
-  //       width: 2,
-  //       colors: ['transparent'],
-  //     },
-  //     xaxis: {
-  //       categories: [
-  //         'Feb',
-  //         'Mar',
-  //         'Apr',
-  //         'May',
-  //         'Jun',
-  //         'Jul',
-  //         'Aug',
-  //         'Sep',
-  //         'Oct',
-  //       ],
-  //       labels: {
-  //         style: {
-  //           colors: '#9aa0ac',
-  //         },
-  //       },
-  //     },
-  //     yaxis: {
-  //       title: {
-  //         text: '$ (thousands)',
-  //       },
-  //     },
-  //     grid: {
-  //       show: true,
-  //       borderColor: '#9aa0ac',
-  //       strokeDashArray: 1,
-  //     },
-  //     fill: {
-  //       opacity: 1,
-  //     },
-  //     tooltip: {
-  //       theme: 'dark',
-  //       marker: {
-  //         show: true,
-  //       },
-  //       x: {
-  //         show: true,
-  //       },
-  //     },
-  //   };
-   }
+    //   this.barChartOptions = {
+    //     legend:{
+    //       fontSize:'14px',
+    //       position: "bottom",
+    //       horizontalAlign: "center",
+    //       itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
+    //       labels: {
+    //         colors: "#333", // Set label text color
+    //         useSeriesColors: false, // Use the color of the series for labels
+    //     //    padding: 10, // Adjust space between marker and label
+    //       },
+
+    //     },
+    //     series: [
+    //       {
+    //         name: 'Net Profit',
+    //         data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+    //       },
+    //       {
+    //         name: 'Revenue',
+    //         data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+    //       },
+    //       {
+    //         name: 'Free Cash Flow',
+    //         data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+    //       },
+    //     ],
+    //     chart: {
+    //       type: 'bar',
+    //       height: 350,
+    //       foreColor: '#9aa0ac',
+    //       toolbar: {
+    //         show: false,
+
+    //       },
+    //     },
+    //     plotOptions: {
+    //       bar: {
+    //         horizontal: false,
+    //         columnWidth: '30%',
+    //         borderRadius: 5,
+    //       },
+    //     },
+    //     dataLabels: {
+    //       enabled: false,
+    //     },
+    //     stroke: {
+    //       show: true,
+    //       width: 2,
+    //       colors: ['transparent'],
+    //     },
+    //     xaxis: {
+    //       categories: [
+    //         'Feb',
+    //         'Mar',
+    //         'Apr',
+    //         'May',
+    //         'Jun',
+    //         'Jul',
+    //         'Aug',
+    //         'Sep',
+    //         'Oct',
+    //       ],
+    //       labels: {
+    //         style: {
+    //           colors: '#9aa0ac',
+    //         },
+    //       },
+    //     },
+    //     yaxis: {
+    //       title: {
+    //         text: '$ (thousands)',
+    //       },
+    //     },
+    //     grid: {
+    //       show: true,
+    //       borderColor: '#9aa0ac',
+    //       strokeDashArray: 1,
+    //     },
+    //     fill: {
+    //       opacity: 1,
+    //     },
+    //     tooltip: {
+    //       theme: 'dark',
+    //       marker: {
+    //         show: true,
+    //       },
+    //       x: {
+    //         show: true,
+    //       },
+    //     },
+    //   };
+  }
 
 }

@@ -763,6 +763,7 @@ export class YardDetailInventoryExcelComponent extends UnsubscribeOnDestroyAdapt
   this.generatingPdfProgress = 100;
   this.generatingPdfProgress = 0;
   this.generatingPdfLoadingSubject.next(false);
+  this.dialogRef.close()
 }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
