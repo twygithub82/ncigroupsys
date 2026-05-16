@@ -1013,6 +1013,17 @@ async  export_report(reportType: number) {
         repCustomers = repCustomers.filter(c => c.guid === this.searchForm!.get('customer_code')?.value.guid);
       }
 
+      repCustomers.forEach(r => {
+      r.items?.sort((a, b) =>
+        (a.in_date || '').localeCompare(b.in_date || '')
+      );
+    });
+      
+        // Sort report_records by customer_code
+    repCustomers.sort((a, b) =>
+      (a.customer || '').localeCompare(b.customer || '')
+    );
+
       if (reportType === 1) {
         this.onExportSummary(repCustomers);
       }

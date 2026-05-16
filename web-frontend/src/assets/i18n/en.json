@@ -1426,7 +1426,8 @@
     "RECORD-EXISTS": "Record Already Exists",
     "PLAIN-TEMPLATE": "Plain Template",
     "REVERT": "Revert",
-    "JOB": "Job"
+    "JOB": "Job",
+    "LOLO-ON-OFF": "LOLO On/Off"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
