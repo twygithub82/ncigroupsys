@@ -28,3 +28,40 @@
 .custom-fill .mat-form-field-appearance-fill.mat-focused .mat-form-field-underline {
   background-color: #3f51b5; /* focus underline color (example: indigo) */
 }
+
+:root {
+  --warning-color: #b8860b;
+}
+
+/* Error text */
+.mat-mdc-form-field-error {
+  color: var(--warning-color) !important;
+}
+
+/* Floating label */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: var(--warning-color) !important;
+}
+
+/* Outline border (IMPORTANT: correct selector) */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: var(--warning-color) !important;
+}
+
+/* Focus/active outline */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__outline {
+  border-color: var(--warning-color) !important;
+}
+
+/* Underline (legacy support) */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-line-ripple::before,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-line-ripple::after {
+  border-bottom-color: var(--warning-color) !important;
+}
+
+/* Datepicker icon */
+.mat-mdc-form-field.mat-form-field-invalid .mat-datepicker-toggle {
+  color: var(--warning-color) !important;
+}

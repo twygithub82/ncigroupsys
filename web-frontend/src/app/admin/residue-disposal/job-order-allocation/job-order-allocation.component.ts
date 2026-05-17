@@ -986,37 +986,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
 
-  onCancel(event: Event) {
-    this.preventDefault(event);
-    console.log(this.sotItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.residueItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
-        console.log(reList);
-        this.residueDS.cancelResidue(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelResidue)
-        });
-      }
-    });
-  }
-
   onRollback(event: Event) {
     this.preventDefault(event);
     console.log(this.sotItem)

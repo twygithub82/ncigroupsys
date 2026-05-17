@@ -46,6 +46,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { DailyDetailSummaryPdfComponent } from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { TankActivityReportExcelComponent } from 'app/document-template/excel/reports/tank-activity/activity-report-excel/activity-report-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 @Component({
   selector: 'app-customer-report',
   standalone: true,
@@ -153,7 +154,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     DAILY_INVENTORY_SUMMARY: 'COMMON-FORM.DAILY-INVENTORY-SUMMARY',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     ACTIVITY_REPORT: 'COMMON-FORM.ACTIVITY-REPORT',
-    INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE'
+    INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    WARNING: 'COMMON-FORM.WARNING',
   }
 
   availableProcessStatus: string[] =
@@ -429,7 +432,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-    this.customerCodeControl.setErrors({ 'required': false });
+    this.customerCodeControl.setErrors({ 'either': false });
+     this.searchForm!.get('eir_dt_start')?.setErrors({ 'either': false });
     this.customerCodeControl.markAsUntouched();
 
     if (repType == 3) this.reportFmt = 2;
@@ -590,6 +594,14 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
+    else
+    {
+      var startdt = new Date(2020, 1, 1);
+      var enddt = new Date();
+      var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date());
+      var end_dt: any = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
+      var cond: any = { eir_dt: { gte: start_dt, lte: end_dt } };
+    }
 
 
     if (this.searchForm!.get('last_cargo')?.value) {
@@ -600,26 +612,31 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
       this.isGeneratingReport = false;
-
-      // return;
+      this.searchForm!.get('eir_dt_start')?.setErrors({ 'either': true });
+      this.customerCodeControl.setErrors({ 'either': true });
+        this.searchForm!.get('eir_dt_start')?.markAsTouched();
+      this.customerCodeControl.markAsTouched();
+       return;
     }
+    this.customerCodeControl.markAsUntouched();
+     this.searchForm!.get('eir_dt_start')?.markAsUntouched();
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     if ([1, 3].includes(repType)) {
-      var bRetval = false;
-      if (!this.customerCodeControl.value) {
-        this.isGeneratingReport = false;
-        this.customerCodeControl.setErrors({ 'required': true });
-        this.customerCodeControl.markAsTouched(); // <-- Add this line
-        bRetval = true;
-      }
-      if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
-        this.isGeneratingReport = false;
-        this.searchForm!.get('eir_dt_start')?.setErrors({ 'required': true });
-        this.searchForm!.get('eir_dt_start')?.markAsTouched(); // <-- Add this line
-        bRetval = true;
-      }
+      // // var bRetval = false;
+      // // if (!this.customerCodeControl.value) {
+      // //   this.isGeneratingReport = false;
+      // //   this.customerCodeControl.setErrors({ 'required': true });
+      // //   this.customerCodeControl.markAsTouched(); // <-- Add this line
+      // //   bRetval = true;
+      // // }
+      // // if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
+      // //   this.isGeneratingReport = false;
+      // //   this.searchForm!.get('eir_dt_start')?.setErrors({ 'required': true });
+      // //   this.searchForm!.get('eir_dt_start')?.markAsTouched(); // <-- Add this line
+      // //   bRetval = true;
+      // // }
 
-      if (bRetval) return;
+      // if (bRetval) return;
       this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, customerNm);
     } else {
       if (!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
@@ -842,6 +859,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   ProcessReportCustomerTankActivity(report_type: string, customerNm: string) {
     if (this.sotList.length === 0) {
       this.isGeneratingReport = false;
+      this.ShowWarningMessage();
       return;
     }
 
@@ -1202,6 +1220,26 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
 
   }
+
+  ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 
 
 

@@ -412,7 +412,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         where.tank_status_cv = { contains: statusValue };
       }
 
-      if (this.availableProcessStatus.includes('STORAGE')) {
+      if (this.availableProcessStatus.includes('STORAGE') && (statusValue === 'ALL' || statusValue === 'STORAGE')) {
         const currentIn = where.tank_status_cv.in || [statusValue];
         where.tank_status_cv = { in: [...currentIn, 'RO_GENERATED'] };
       }

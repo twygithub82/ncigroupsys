@@ -328,7 +328,7 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
   }
 
   isEdit(): boolean {
-    return this.action === 'edit';
+    return this.inspection?.guid ? true : false;
   }
 
   getLocationDescription(codeValType: string | undefined): string | undefined {

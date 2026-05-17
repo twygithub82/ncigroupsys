@@ -1871,19 +1871,22 @@ export class Utility {
 
   static displayTankPurpose_InShort(sot: any): string {
     let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push("S");
-    }
+   
+   
     if (sot?.purpose_cleaning) {
       purposes.push("C");
+    }
+     if (sot?.purpose_repair_cv) {
+      purposes.push("R");
     }
     if (sot?.purpose_steam) {
       purposes.push("SE");
     }
-    if (sot?.purpose_repair_cv) {
-      purposes.push("R");
+    if (sot?.purpose_storage) {
+      purposes.push("S");
     }
-
+   
+   
     return purposes.join('; ');
   }
 
@@ -1900,17 +1903,17 @@ export class Utility {
 
   static getTankStatusLegend(): string {
     let purposes: any[] = [];
-    purposes.push("SO: SO Generated");
-    purposes.push("IG: In Gate");
-    purposes.push("IS: In Survey");
+    // purposes.push("SO: SO Generated");
+    // purposes.push("IG: In Gate");
+    // purposes.push("IS: In Survey");
     purposes.push("SE: Steam");
-    purposes.push("RE: Residue");
+    // purposes.push("RE: Residue");
     purposes.push("C: Cleaning");
     purposes.push("R|I: Repair");
     purposes.push("S: Storage");
-    purposes.push("RO: RO Generated");
-    purposes.push("OG: Out Gate");
-    purposes.push("OS: Out Survey");
+    // purposes.push("RO: RO Generated");
+    // purposes.push("OG: Out Gate");
+    // purposes.push("OS: Out Survey");
     return purposes.join(' / ');
   }
   static displayTankStatus_InShort(status_codevalue: string): string {
@@ -1942,10 +1945,10 @@ export class Utility {
         sRetval = "S";
         break;
       case 'RO_GENERATED':
-        sRetval = "RO";
+        sRetval = "S";
         break;
       case 'OUT_GATE':
-        sRetval = "OG";
+        sRetval = "RL";
         break;
       case 'OUT_SURVEY':
         sRetval = "OS";
