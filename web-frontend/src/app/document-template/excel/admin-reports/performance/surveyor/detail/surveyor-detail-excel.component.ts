@@ -29,7 +29,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
- import * as XLSX from 'xlsx-js-style';
+import * as XLSX from 'xlsx-js-style';
 import { saveAs } from 'file-saver';
 // import { fileSave } from 'browser-fs-access';
 
@@ -267,9 +267,9 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
     ESTIMATE_AMOUNT: 'COMMON-FORM.ESTIMATE-AMOUNT',
     ESTIMATE_APPROVAL: 'COMMON-FORM.ESTIMATE-APPROVAL',
     SURVEY_PERIOD: 'COMMON-FORM.SURVEY-PERIOD',
-    TOTAL_ESTIMATE_AMOUNT: "COMMON-FORM.TOTAL-ESTIMATE-AMOUNT",
-    TOTAL_APPROVED_AMOUNT: "COMMON-FORM.TOTAL-APPROVED-AMOUNT",
-    
+    TOTAL_ESTIMATE_AMOUNT: "COMMON-FORM.ESTIMATE-AMOUNT",
+    TOTAL_APPROVED_AMOUNT: "COMMON-FORM.APPROVED-AMOUNT",
+
   }
 
 
@@ -470,233 +470,297 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
 
   exportToExcel_r1(fileName: string = 'report.xlsx') {
 
-  const wb = XLSX.utils.book_new();
-  let wsData: any[][] = [];
+    const wb = XLSX.utils.book_new();
+    let wsData: any[][] = [];
 
-  const reportTitle = this.GetReportTitle();
-  const invDate = PDFUtility.FormatColon(
-    this.translatedLangText.SURVEY_PERIOD,
-    this.date
-  );
+    const reportTitle = this.GetReportTitle();
+    const invDate = PDFUtility.FormatColon(
+      this.translatedLangText.SURVEY_PERIOD,
+      this.date
+    );
 
-  // =========================
-  // HEADER
-  // =========================
-  wsData.push([reportTitle]);
-  wsData.push([invDate]);
-  wsData.push([]);
+    // =========================
+    // HEADER
+    // =========================
+    wsData.push([reportTitle]);
+    wsData.push([invDate]);
+    wsData.push([]);
 
-  // =========================
-  // SUMMARY TABLE
-  // =========================
-  wsData.push([
-    this.translatedLangText.S_N,
-    this.translatedLangText.SURVEYOR,
-    this.translatedLangText.TOTAL_ESTIMATE_AMOUNT,
-    this.translatedLangText.TOTAL_APPROVED_AMOUNT
-  ]);
-
-  this.repData.forEach((srv: any, i: number) => {
-    wsData.push([
-      i + 1,
-      srv.surveyor,
-      srv.total_est_cost || 0,
-      srv.total_appv_cost || 0
-    ]);
-  });
-
-  wsData.push([]);
-
-  // =========================
-  // MERGE ARRAY
-  // =========================
-  const merges: any[] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // title
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }  // subtitle
-  ];
-
-  // =========================
-  // SURVEYOR DETAILS
-  // =========================
-  this.repData.forEach((sur: any) => {
-
-    if (!(sur.surveyor_details?.length > 0)) return;
-
-    // Surveyor title
-    const surveyorRowIndex = wsData.length;
-    wsData.push([`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`]);
-
-    merges.push({
-      s: { r: surveyorRowIndex, c: 0 },
-      e: { r: surveyorRowIndex, c: 8 }
-    });
-
-    // HEADER ROW 1
-    const headerRow1Index = wsData.length;
+    // =========================
+    // SUMMARY TABLE
+    // =========================
     wsData.push([
       this.translatedLangText.S_N,
-      this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_DATE,
-      this.translatedLangText.ESTIMATE_TYPE,
-      this.translatedLangText.ESTIMATE_NO,
-      this.translatedLangText.ESTIMATE_AMOUNT, "",
-      this.translatedLangText.ESTIMATE_APPROVAL, ""
+      this.translatedLangText.SURVEYOR,
+      this.translatedLangText.TOTAL_ESTIMATE_AMOUNT,
+      this.translatedLangText.TOTAL_APPROVED_AMOUNT
     ]);
 
-    // HEADER ROW 2
-    const headerRow2Index = wsData.length;
-    wsData.push([
-      "", "", "", "", "",
-      this.translatedLangText.DATE,
-      this.translatedLangText.COST,
-      this.translatedLangText.DATE,
-      this.translatedLangText.COST
-    ]);
-
-    // =========================
-    // MERGE HEADERS
-    // =========================
-
-    // RowSpan for first 5 columns
-    for (let i = 0; i <= 4; i++) {
-      merges.push({
-        s: { r: headerRow1Index, c: i },
-        e: { r: headerRow2Index, c: i }
-      });
-    }
-
-    // ESTIMATE AMOUNT
-    merges.push({
-      s: { r: headerRow1Index, c: 5 },
-      e: { r: headerRow1Index, c: 6 }
-    });
-
-    // ESTIMATE APPROVAL
-    merges.push({
-      s: { r: headerRow1Index, c: 7 },
-      e: { r: headerRow1Index, c: 8 }
-    });
-
-    // =========================
-    // DATA
-    // =========================
-    sur.surveyor_details.forEach((itm: any, i: number) => {
+    this.repData.forEach((srv: any, i: number) => {
       wsData.push([
         i + 1,
-        itm.tank_no || "",
-        this.displayDate(itm.eir_date) || "",
-        this.getRepairTypeDescription(itm.est_type) || "",
-        itm.est_no || "",
-        this.displayDate(itm.est_date) || "",
-        itm.est_cost || 0,
-        this.displayDate(itm.appv_date) || "",
-        itm.appv_cost || 0
+        srv.surveyor,
+        srv.total_est_cost || 0,
+        srv.total_appv_cost || 0
       ]);
     });
 
-    // =========================
-    // TOTAL ROW
-    // =========================
-    const totalRowIndex = wsData.length;
+    wsData.push([]);
 
-    wsData.push([
-      this.translatedLangText.TOTAL,
-      "", "", "", "",
-      "",
-      sur.total_est_cost,
-      "",
-      sur.total_appv_cost
-    ]);
+    // =========================
+    // MERGE ARRAY
+    // =========================
+    const merges: any[] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } }
+    ];
 
-    // Merge TOTAL label
-    merges.push({
-      s: { r: totalRowIndex, c: 0 },
-      e: { r: totalRowIndex, c: 4 }
+    // Store special rows
+    const surveyorRows: number[] = [];
+    const totalRows: number[] = [];
+
+    // =========================
+    // SURVEYOR DETAILS
+    // =========================
+    this.repData.forEach((sur: any) => {
+
+      if (!(sur.surveyor_details?.length > 0)) return;
+
+      // Surveyor title
+      const surveyorRowIndex = wsData.length;
+
+      surveyorRows.push(surveyorRowIndex);
+
+      wsData.push([
+        `${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`
+      ]);
+
+      merges.push({
+        s: { r: surveyorRowIndex, c: 0 },
+        e: { r: surveyorRowIndex, c: 8 }
+      });
+
+      // HEADER ROW 1
+      const headerRow1Index = wsData.length;
+
+      wsData.push([
+        this.translatedLangText.S_N,
+        this.translatedLangText.TANK_NO,
+        this.translatedLangText.ESTIMATE_TYPE,
+        this.translatedLangText.ESTIMATE_NO,
+        this.translatedLangText.ESTIMATE_AMOUNT,
+        "",
+        this.translatedLangText.ESTIMATE_APPROVAL,
+        ""
+      ]);
+
+      // HEADER ROW 2
+      const headerRow2Index = wsData.length;
+
+      wsData.push([
+        "",
+        "",
+        "",
+        "",
+        this.translatedLangText.DATE,
+        this.translatedLangText.COST,
+        this.translatedLangText.DATE,
+        this.translatedLangText.COST
+      ]);
+
+      // =========================
+      // MERGE HEADERS
+      // =========================
+      for (let i = 0; i <= 3; i++) {
+        merges.push({
+          s: { r: headerRow1Index, c: i },
+          e: { r: headerRow2Index, c: i }
+        });
+      }
+
+      merges.push({
+        s: { r: headerRow1Index, c: 4 },
+        e: { r: headerRow1Index, c: 5 }
+      });
+
+      merges.push({
+        s: { r: headerRow1Index, c: 6 },
+        e: { r: headerRow1Index, c: 7 }
+      });
+
+      // =========================
+      // DATA
+      // =========================
+      sur.surveyor_details.forEach((itm: any, i: number) => {
+
+        wsData.push([
+          i + 1,
+          itm.tank_no || "",
+          this.getRepairTypeDescription(itm.est_type) || "",
+          itm.est_no || "",
+          this.displayDate(itm.est_date) || "",
+          itm.est_cost || 0,
+          this.displayDate(itm.appv_date) || "",
+          itm.appv_cost || 0
+        ]);
+
+      });
+
+      // =========================
+      // TOTAL ROW
+      // =========================
+      const totalRowIndex = wsData.length;
+
+      totalRows.push(totalRowIndex);
+
+      wsData.push([
+        this.translatedLangText.TOTAL,
+        "",
+        "",
+        "",
+        "",
+        sur.total_est_cost,
+        "",
+        sur.total_appv_cost
+      ]);
+
+      merges.push({
+        s: { r: totalRowIndex, c: 0 },
+        e: { r: totalRowIndex, c: 3 }
+      });
+
+      wsData.push([]);
     });
 
-    wsData.push([]);
-  });
+    // =========================
+    // CREATE SHEET
+    // =========================
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-  // =========================
-  // CREATE SHEET
-  // =========================
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!merges'] = merges;
 
-  ws['!merges'] = merges;
+    // =========================
+    // STYLING
+    // =========================
+    const range = XLSX.utils.decode_range(ws['!ref']!);
 
-  // =========================
-  // STYLING
-  // =========================
-  const range = XLSX.utils.decode_range(ws['!ref']!);
+    for (let R = 0; R <= range.e.r; ++R) {
 
-  for (let R = 0; R <= range.e.r; ++R) {
-  for (let C = 0; C <= range.e.c; ++C) {
-    const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-    const cell = ws[cellRef];
-    if (!cell) continue;
+      for (let C = 0; C <= range.e.c; ++C) {
 
-    // Check if this row is a surveyor row
-    if (typeof cell.v === 'string' && cell.v.startsWith(`${this.translatedLangText.SURVEYOR}`)) {
-      cell.s = {
-        ...(cell.s || {}),
-        alignment: { vertical: 'center', horizontal: 'left' }, // left-align
-        border: {
-          // top: { style: 'thin' },
-          // bottom: { style: 'thin' },
-          // left: { style: 'thin' },
-          // right: { style: 'thin' }
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = ws[cellRef];
+
+        if (!cell) continue;
+
+        // Default style
+        cell.s = {
+          ...(cell.s || {}),
+          alignment: {
+            vertical: 'center',
+            horizontal: 'center'
+          },
+          border: {}
+        };
+
+        // =========================
+        // SURVEYOR ROW
+        // =========================
+        if (surveyorRows.includes(R)) {
+
+          cell.s = {
+            ...(cell.s || {}),
+            font: {
+              bold: true
+            },
+            alignment: {
+              vertical: 'center',
+              horizontal: 'left'
+            }
+          };
         }
-      };
-    } else {
-      // Default table cell styling
-      cell.s = {
-        ...(cell.s || {}),
-        alignment: { vertical: 'center', horizontal: 'center' },
-        border: {
-          // top: { style: 'thin' },
-          // bottom: { style: 'thin' },
-          // left: { style: 'thin' },
-          // right: { style: 'thin' }
+
+        // =========================
+        // TOTAL ROW
+        // =========================
+        if (totalRows.includes(R)) {
+
+          cell.s = {
+            ...(cell.s || {}),
+            font: {
+              bold: true
+            }
+          };
+
+          // TOTAL label right align
+          if (C === 0) {
+            cell.s.alignment = {
+              vertical: 'center',
+              horizontal: 'right'
+            };
+          }
+        }
+      }
+    }
+
+    // =========================
+    // TITLE STYLE
+    // =========================
+    if (ws['A1']) {
+      ws['A1'].s = {
+        font: {
+          bold: true,
+          sz: 14
+        },
+        alignment: {
+          horizontal: 'center'
         }
       };
     }
-  }
-}
 
-  // Title style
-  if (ws['A1']) {
-    ws['A1'].s = {
-      font: { bold: true, sz: 14 },
-      alignment: { horizontal: 'center' },
-      border: {
-        // top: { style: 'thin' },
-        // bottom: { style: 'thin' },
-        // left: { style: 'thin' },
-        // right: { style: 'thin' }
+    // =========================
+    // SUBTITLE STYLE
+    // =========================
+    if (ws['A2']) {
+      ws['A2'].s = {
+        alignment: {
+          horizontal: 'right'
+        }
+      };
+    }
+
+    // =========================
+    // AUTO WIDTH
+    // =========================
+    ws['!cols'] = Utility.autoFitColumns(wsData) || [];
+
+    // D,E,F,G,H = index 3,4,5,6,7
+    const biggerCols = [3, 4, 5, 6, 7];
+
+    biggerCols.forEach((idx) => {
+
+      if (!ws['!cols']![idx]) {
+        ws['!cols']![idx] = {};
       }
-    };
+
+      const currentWidth =
+        (ws['!cols']![idx].wch as number) || 10;
+
+      ws['!cols']![idx].wch = currentWidth + 5;
+
+    });
+
+    // =========================
+    // EXPORT
+    // =========================
+    XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+    fileName = this.GetReportTitle() + '.xlsx';
+
+    XLSX.writeFile(wb, fileName);
+
+    this.dialogRef.close();
   }
-
-  // Subtitle right align
-  if (ws['A2']) {
-    ws['A2'].s = {
-      alignment: { horizontal: 'right' }
-    };
-  }
-
-  // =========================
-  // AUTO WIDTH
-  // =========================
-  ws['!cols'] = Utility.autoFitColumns(wsData);
-
-  // =========================
-  // EXPORT
-  // =========================
-  XLSX.utils.book_append_sheet(wb, ws, 'Report');
-  fileName=this.GetReportTitle()+'.xlsx';
-  XLSX.writeFile(wb, fileName);
-  this.dialogRef.close();
-}
 
   downloadFile(blob: Blob, fileName: string) {
     const url = URL.createObjectURL(blob);
@@ -734,7 +798,7 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait();
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait();
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
@@ -758,7 +822,7 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
         '', '' // Empty cells for DUE_DAYS and DUE_TYPE (they are spanned by rowSpan: 2)
       ]
     ];
-    
+
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
@@ -773,7 +837,7 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
 
     let currentY = topMargin;
     let scale = this.scale;
-    let sPosY=0;
+    let sPosY = 0;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
@@ -782,34 +846,34 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
-    
+
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10 },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait() },
       // 2: { halign: 'left', valign: 'middle', cellWidth: 22 },
       2: { halign: 'center', valign: 'middle', cellWidth: 25 },
       3: { halign: 'center', valign: 'middle' },
-      4: { halign: 'center', valign: 'middle', cellWidth: 25, overflow: 'ellipsize'},
-      5: { halign: 'center', valign: 'middle' , cellWidth: 20},
-      6: { halign: 'center', valign: 'middle' , cellWidth: 20},
-      7: { halign: 'center', valign: 'middle' , cellWidth: 20},
-      8: { halign: 'center', valign: 'middle' , cellWidth: 20},
+      4: { halign: 'center', valign: 'middle', cellWidth: 25, overflow: 'ellipsize' },
+      5: { halign: 'center', valign: 'middle', cellWidth: 20 },
+      6: { halign: 'center', valign: 'middle', cellWidth: 20 },
+      7: { halign: 'center', valign: 'middle', cellWidth: 20 },
+      8: { halign: 'center', valign: 'middle', cellWidth: 20 },
       //  10: { halign: 'center', valign: 'middle', cellWidth: 15 },
     };
 
     lastTableFinalY += 4;
     // pdf.setFontSize(8);
-    const invDate =  PDFUtility.FormatColon(this.translatedLangText.SURVEY_PERIOD, this.date);
+    const invDate = PDFUtility.FormatColon(this.translatedLangText.SURVEY_PERIOD, this.date);
     // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, PDFUtility.RightSubTitleFontSize());
-    let startPosY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,
+    let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,
       reportTitle, invDate);
-     startPosY+= PDFUtility.GapBetweenSubTitleAndTable_Portrait();  
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
     // startPosY+= PDFUtility.GapBetweenLeftTitleAndTable();
-    lastTableFinalY=startPosY;
-    sPosY=startPosY
-    startPosY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,startPosY,
-      minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
-      startPosY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    lastTableFinalY = startPosY;
+    sPosY = startPosY
+    startPosY = await this.AddSummaryTable(pdf, pageWidth, leftMargin, rightMargin, topMargin, startPosY,
+      minHeightBodyCell, fontSz_body, pagePositions, reportTitle);
+    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
 
     // lastTableFinalY += PDFUtility.TableStartTopBuffer();
@@ -817,19 +881,19 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
     var buffer = 20;
     for (let n = 0; n < this.repData.length; n++) {
       //if (n > 0) lastTableFinalY += 8;
-      if (n > 0) lastTableFinalY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait(); // 2nd table
+      if (n > 0) lastTableFinalY += PDFUtility.GapBetweenSubTitleAndTable_Portrait(); // 2nd table
       else lastTableFinalY = startPosY; // First table of the page
-       // Explicitly define data as a 2D array
+      // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let sur = this.repData[n];
 
-     
+
 
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
       // if ((repPage == CurrentPage) && 
-      if((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
         lastTableFinalY = startPosY;
       }
@@ -840,20 +904,20 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
       //lastTableFinalY+=gap;
       if ((sur.surveyor_details?.length || 0) > 0) {
 
-      var surveyor=`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`;
-      await Utility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait());
+        var surveyor = `${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`;
+        await Utility.AddTextAtLeftCornerPage(pdf, surveyor, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.SubTitleFontSize_Portrait());
 
-      // pdf.setFontSize(PDFUtility.SubTitleFontSize_Portrait());
-      // pdf.setTextColor(0, 0, 0); // Black text
-      // pdf.text(surveyor, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      let startY = 0;
-      const data: any[][] = [];
+        // pdf.setFontSize(PDFUtility.SubTitleFontSize_Portrait());
+        // pdf.setTextColor(0, 0, 0); // Black text
+        // pdf.text(surveyor, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+        let startY = 0;
+        const data: any[][] = [];
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
         //  pdf.setFontSize(8);
         //  var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
         //  pdf.text(subTitle, leftMargin, lastTableFinalY);
         //  lastTableFinalY+=2;            
-        startY = startPosY+PDFUtility.GapBetweenLeftTitleAndTable(); // Start table 20mm below the customer name
+        startY = startPosY + PDFUtility.GapBetweenLeftTitleAndTable(); // Start table 20mm below the customer name
 
         for (let b = 0; b < (sur.surveyor_details?.length || 0); b++) {
           var itm = sur.surveyor_details?.[b]!;
@@ -933,8 +997,8 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
 
     }
 
-   await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf,  pageWidth, topMargin, bottomMargin,
-       leftMargin, rightMargin, this.translate,pagePositions);
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin,
+      leftMargin, rightMargin, this.translate, pagePositions);
     // const totalPages = pdf.getNumberOfPages();
 
     // for (const { page, x, y } of pagePositions) {
@@ -982,75 +1046,73 @@ export class SurveyorDetailPerformanceExcelComponent extends UnsubscribeOnDestro
   }
 
 
-    async AddSummaryTable(pdf: jsPDF,pageWidth:number,  
-      leftMargin:number,rightMargin:number,topMargin:number,
-      lastTableFinalY: number, 
-      minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
-    {
-        //  pdf.addPage();
-  
-        //  lastTableFinalY=45;
-       //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-         const tableWidthTotal = 10 + 60 + 40+40;
-         const columnStyles:any= {
-            // Set columns 0 to 16 to be center aligned
-            0: { halign: 'center', valign: 'middle',cellWidth: 10, minCellHeight: minHeightBodyCell },
-            1: { halign: 'center', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell },
-            2: { halign: 'center', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
-            3: { halign: 'center', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
-            
-          };
-  
-            const headStyles: Partial<Styles> = {
-              fillColor: [211, 211, 211], // Background color
-              textColor: 0, // Text color (white)
-              fontStyle: "bold", // Valid fontStyle value
-              halign: 'center', // Centering header text
-              valign: 'middle',
-              lineColor: 201,
-              lineWidth: 0.1
-            };
-  
-  
-          const headers = [[this.translatedLangText.S_N,this.translatedLangText.SURVEYOR,this.translatedLangText.TOTAL_ESTIMATE_AMOUNT,this.translatedLangText.TOTAL_APPROVED_AMOUNT]];
-          // var summaryData = InventoryAnalyzer.convertToCleanerSummary(this.repData || []);
-          var data:any[]=[];
-           for (let n = 0; n < this.repData.length; n++)
-           {
-            var srv =this.repData[n];
-             data.push([n+1,srv.surveyor,Utility.formatNumberDisplay(srv.total_est_cost || 0),Utility.formatNumberDisplay(srv.total_appv_cost || 0)]); 
-          }
-          autoTable(pdf, {
-            head: headers,
-            body: data,
-            startY: lastTableFinalY, // Start table at the current startY value
-            theme: 'grid',
-            margin: { left: (pageWidth-tableWidthTotal)/2 },
-            columnStyles: columnStyles,
-            styles: {
-              fontSize: fontsz,
-              minCellHeight: minHeightBodyCell
-            },
-            bodyStyles: {
-              fillColor: [255, 255, 255],
-              halign: 'left', // Left-align content for body by default
-              valign: 'middle', // Vertically align content
-            },
-            headStyles: headStyles, // Custom header styles
-             didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
-  
-            if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-            // Capture the final Y position of the table
-            lastTableFinalY = data.cursor.y;
-            var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
-            if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          },
-          })
-  
-          return lastTableFinalY;
+  async AddSummaryTable(pdf: jsPDF, pageWidth: number,
+    leftMargin: number, rightMargin: number, topMargin: number,
+    lastTableFinalY: number,
+    minHeightBodyCell: any, fontsz: number, pagePositions: any, reportTitle: string) {
+    //  pdf.addPage();
+
+    //  lastTableFinalY=45;
+    //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+    const tableWidthTotal = 10 + 60 + 40 + 40;
+    const columnStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 60, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+
+    };
+
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+
+    const headers = [[this.translatedLangText.S_N, this.translatedLangText.SURVEYOR, this.translatedLangText.TOTAL_ESTIMATE_AMOUNT, this.translatedLangText.TOTAL_APPROVED_AMOUNT]];
+    // var summaryData = InventoryAnalyzer.convertToCleanerSummary(this.repData || []);
+    var data: any[] = [];
+    for (let n = 0; n < this.repData.length; n++) {
+      var srv = this.repData[n];
+      data.push([n + 1, srv.surveyor, Utility.formatNumberDisplay(srv.total_est_cost || 0), Utility.formatNumberDisplay(srv.total_appv_cost || 0)]);
     }
-  
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: lastTableFinalY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: (pageWidth - tableWidthTotal) / 2 },
+      columnStyles: columnStyles,
+      styles: {
+        fontSize: fontsz,
+        minCellHeight: minHeightBodyCell
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      headStyles: headStyles, // Custom header styles
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    })
+
+    return lastTableFinalY;
+  }
+
 
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)

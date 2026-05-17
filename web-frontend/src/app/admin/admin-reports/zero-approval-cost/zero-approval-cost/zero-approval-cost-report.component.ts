@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -152,7 +153,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
     COST_TYPE: 'COMMON-FORM.COST-TYPE',
-    TYPE: 'COMMON-FORM.TYPE'
+    TYPE: 'COMMON-FORM.TYPE',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
 
   }
 
@@ -490,6 +493,14 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+
+        if(data.length===0)
+        {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
+        
         if(repType==5)
          { 
           this.onExportDetailExcel(data, report_type!, date!, customer!, code!);
@@ -717,4 +728,25 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       this.isGeneratingReport = false;
     });
   }
+
+  ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
+  
 }

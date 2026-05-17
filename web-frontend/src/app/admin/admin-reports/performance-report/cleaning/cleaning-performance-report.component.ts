@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -173,6 +174,8 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     CARGO: "COMMON-FORM.CARGO",
     CLEANER: "COMMON-FORM.CLEANER",
     CLEANING_BAY: "COMMON-FORM.BAY",
+     WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   invForm?: UntypedFormGroup;
@@ -558,13 +561,11 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // {
     this.subs.sink = this.reportDS.searchAdminReportCleanerPerformance(this.lastSearchCriteria)
       .subscribe(data => {
-        // if (data.length > 0) {
-        //   this.repData = data;
-        //   this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
-        // }
-        // else {
-        //   this.isGeneratingReport = false
-        // }
+        if (data.length === 0) {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
         this.repData = data;
         if (report_type == 5) {
           this.onExportAdminReportCleanerPerformanceDetailExcelReport(this.repData, date!, team!);
@@ -806,4 +807,25 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       this.isGeneratingReport = false;
     });
   }
+
+   ShowWarningMessage() {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ErrorDialogComponent, {
+          disableClose: true,
+          data: {
+            headerText: this.translatedLangText.WARNING,
+            messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+            act: "warn"
+          },
+          direction: tempDirection
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      }
+  
 }

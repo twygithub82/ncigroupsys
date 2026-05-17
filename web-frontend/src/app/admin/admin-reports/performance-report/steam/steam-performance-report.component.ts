@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -169,7 +170,9 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
     CARGO: 'COMMON-FORM.CARGO',
     YARD: 'COMMON-FORM.YARD',
-    STEAM_DATE: 'COMMON-FORM.STEAM-DATE'
+    STEAM_DATE: 'COMMON-FORM.STEAM-DATE',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   invForm?: UntypedFormGroup;
@@ -235,7 +238,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-     public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -499,12 +502,17 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.reportDS.searchAdminReportSteamPerformance(this.lastSearchCriteria)
       .subscribe(data => {
 
+        if (data.length === 0) {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
+
         this.repData = data;
-        if(report_type==5 )
-        {
+        if (report_type == 5) {
           this.onExportSteamPerformanceExcelReport(this.repData, date!, team!);
         }
-        else{
+        else {
           this.onExportSteamPerformanceReport(this.repData, date!, team!);
         }
         this.isGeneratingReport = false;
@@ -741,13 +749,12 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     return pageSizeInfo
   }
 
-   export_excel()
-    {
-      this.search(5);
-    }
-  
+  export_excel() {
+    this.search(5);
+  }
 
-onExportSteamPerformanceExcelReport(repData: SteamPerformance[], date: string, team: string) {
+
+  onExportSteamPerformanceExcelReport(repData: SteamPerformance[], date: string, team: string) {
 
     let cut_off_dt = new Date();
 
@@ -783,6 +790,26 @@ onExportSteamPerformanceExcelReport(repData: SteamPerformance[], date: string, t
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;
+    });
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
     });
   }
 }
