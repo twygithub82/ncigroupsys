@@ -265,8 +265,8 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     ESTIMATE_AMOUNT: 'COMMON-FORM.ESTIMATE-AMOUNT',
     ESTIMATE_APPROVAL: 'COMMON-FORM.ESTIMATE-APPROVAL',
     SURVEY_PERIOD: 'COMMON-FORM.SURVEY-PERIOD',
-    TOTAL_ESTIMATE_AMOUNT: "COMMON-FORM.TOTAL-ESTIMATE-AMOUNT",
-    TOTAL_APPROVED_AMOUNT: "COMMON-FORM.TOTAL-APPROVED-AMOUNT",
+    TOTAL_ESTIMATE_AMOUNT: "COMMON-FORM.ESTIMATE-AMOUNT",
+    TOTAL_APPROVED_AMOUNT: "COMMON-FORM.APPROVED-AMOUNT",
     
   }
 
@@ -512,7 +512,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
         { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         // { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        // { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATE_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATE_AMOUNT, colSpan: 2, styles: { halign: 'center' } },
@@ -554,14 +554,13 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10 },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait() },
-      // 2: { halign: 'left', valign: 'middle', cellWidth: 22 },
-      2: { halign: 'center', valign: 'middle', cellWidth: 25 },
-      3: { halign: 'center', valign: 'middle' },
-      4: { halign: 'center', valign: 'middle', cellWidth: 25, overflow: 'ellipsize'},
+      // 2: { halign: 'center', valign: 'middle', cellWidth: 25 },
+      2: { halign: 'center', valign: 'middle' },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, overflow: 'ellipsize'},
+      4: { halign: 'center', valign: 'middle' , cellWidth: 20},
       5: { halign: 'center', valign: 'middle' , cellWidth: 20},
       6: { halign: 'center', valign: 'middle' , cellWidth: 20},
       7: { halign: 'center', valign: 'middle' , cellWidth: 20},
-      8: { halign: 'center', valign: 'middle' , cellWidth: 20},
       //  10: { halign: 'center', valign: 'middle', cellWidth: 15 },
     };
 
@@ -609,7 +608,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
       if ((sur.surveyor_details?.length || 0) > 0) {
 
       var surveyor=`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`;
-      await Utility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait());
+      await Utility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait(),true);
 
       // pdf.setFontSize(PDFUtility.SubTitleFontSize_Portrait());
       // pdf.setTextColor(0, 0, 0); // Black text
@@ -626,12 +625,13 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
         for (let b = 0; b < (sur.surveyor_details?.length || 0); b++) {
           var itm = sur.surveyor_details?.[b]!;
           data.push([
-            (b + 1).toString(), itm.tank_no || "", this.displayDate(itm.eir_date) || "",
+            (b + 1).toString(), itm.tank_no || "", 
+            // this.displayDate(itm.eir_date) || "",
             this.getRepairTypeDescription(itm.est_type) || "", itm.est_no || "", this.displayDate(itm.est_date) || "",
             Utility.formatNumberDisplay(itm.est_cost) || "", this.displayDate(itm.appv_date) || "", Utility.formatNumberDisplay(itm.appv_cost) || ""
           ]);
         }
-        data.push([this.translatedLangText.TOTAL, "", "", "", "", "", Utility.formatNumberDisplay(sur.total_est_cost), "", Utility.formatNumberDisplay(sur.total_appv_cost)])
+        data.push([this.translatedLangText.TOTAL, "", "", "", "",  Utility.formatNumberDisplay(sur.total_est_cost), "", Utility.formatNumberDisplay(sur.total_appv_cost)])
 
         pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -659,7 +659,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
             valign: 'middle', // Vertically align content
           },
           didParseCell: (d: any) => {
-            let colSpan: number = 5;
+            let colSpan: number = 4;
             let totalRowIndex = d.table.body.length - 1; // Ensure the correct last row index
 
 
