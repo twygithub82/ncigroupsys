@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -169,7 +170,9 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     YEAR: 'COMMON-FORM.YEAR',
     SURVEYOR_NAME: "COMMON-FORM.SURVEYOR",
     ESTIMATE_STATUS: "COMMON-FORM.ESTIMATE-STATUS",
-    MONTH_TOTAL: "COMMON-FORM.MONTH-TOTAL"
+    MONTH_TOTAL: "COMMON-FORM.MONTH-TOTAL",
+    WARNING: "COMMON-FORM.WARNING",
+    NO_REPORT_AVAILABLE: "COMMON-FORM.NO-REPORT-AVAILABLE",
   }
 
   invForm?: UntypedFormGroup;
@@ -186,7 +189,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   cvDS: CodeValuesDS;
   userDS: UserDS;
   teamDS: TeamDS;
-  reportDS: ReportDS ;
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -588,7 +591,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.performSearchSurveyorPerformanceSummary(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team);
   }
 
-  searchDetail(repType:number=0) {
+  searchDetail(repType: number = 0) {
 
     var cond_counter = 1;
     let queryType = 1;
@@ -675,7 +678,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     }
 
     this.lastSearchCriteria = where;
-    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team,repType);
+    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team, repType);
   }
 
   performSearchSurveyorPerformanceSummary(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
@@ -685,13 +688,11 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // {
     this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceSummary(this.lastSearchCriteria)
       .subscribe(data => {
-        // if (data) {
-        //   this.repData = [data];
-        //   this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
-        // }
-        // else {
-        //   this.isGeneratingReport = false
-        // }
+        if (!data) {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
         this.repData = [data];
         this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
 
@@ -701,25 +702,28 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   performSearchSurveyorPerformanceDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-    before?: string, queryType?: number, date?: string, team?: string,repType:number=0) {
+    before?: string, queryType?: number, date?: string, team?: string, repType: number = 0) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceDetail(this.lastSearchCriteria)
       .subscribe(data => {
-        // if (data.length > 0) {
-        //   this.repData = data;
-        //   this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
-        // }
-        // else {
-        //   this.isGeneratingReport = false
-        // }
-        this.repData = data;
-        if(repType==5)
-        {
-          this.onExportSurveyorPerformanceDetailExcelReport(this.repData, date!, team!);}
-        else{
-        this.onExportSurveyorPerformanceDetailReport(this.repData, date!, team!);
+        if (data.length === 0) {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
+
+        this.repData = data.sort((a, b) => {
+          // Sort by surveyor alphabetically
+          return (a.surveyor || '').localeCompare(b.surveyor || '');
+        });
+
+        if (repType == 5) {
+          this.onExportSurveyorPerformanceDetailExcelReport(this.repData, date!, team!);
+        }
+        else {
+          this.onExportSurveyorPerformanceDetailReport(this.repData, date!, team!);
         }
       });
   }
@@ -1052,6 +1056,26 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;
+    });
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
     });
   }
 

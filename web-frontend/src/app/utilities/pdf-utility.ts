@@ -315,7 +315,7 @@ export class PDFUtility {
 
   static addReportSubTitle_Portrait(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number, subTitlePos: number = 0): number {
     let startY = 0;
-    var subTitleFontSize = this.SubTitleFontSize_Portrait();
+    var subTitleFontSize = this.SubTitleFontSize_Portrait_enlarge();
     startY = this.SubTitlePositionY_Portrait();
     if (subTitlePos == 0) {
       this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
@@ -617,7 +617,7 @@ export class PDFUtility {
 
   static addReportSubTitle_Landscape(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number, subTitlePos: number = 0): number {
     let startY = 0;
-    var subTitleFontSize = this.SubTitleFontSize_Landscape();
+    var subTitleFontSize = this.SubTitleFontSize_Landscape_enlarge();
     startY = this.SubTitlePositionY_Landscape();
     if (subTitlePos == 0) {
       this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
@@ -1540,8 +1540,13 @@ export class PDFUtility {
   }
 
   static SubTitleFontSize_Portrait(): number {
-    return 10
+    return 8
   }
+
+   static SubTitleFontSize_Portrait_enlarge(): number {
+    return 10;
+  }
+
 
   static TitlePositionY_Landscape(): number {
     return this.TitlePositionY_Portrait();
@@ -1562,8 +1567,13 @@ export class PDFUtility {
   }
 
   static SubTitleFontSize_Landscape(): number {
+    return 8
+  }
+
+  static SubTitleFontSize_Landscape_enlarge(): number {
     return 10
   }
+
 
   static RightSubTitleFontSize(): number {
     const fontSize = 8;
