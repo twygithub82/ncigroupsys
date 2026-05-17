@@ -497,8 +497,8 @@ NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
     
     return repData.total===0?true:false;
   }
+  
   ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
-
 
     if(this.ZeroTank(repData))
     {
