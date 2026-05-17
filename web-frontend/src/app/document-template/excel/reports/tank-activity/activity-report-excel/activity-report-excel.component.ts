@@ -696,6 +696,7 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
     wsData.push([]);
   }
 
+  wsData.push([Utility.getTankStatusLegend()]);
   fileName="Activity Report.xlsx";
   const totalColumns = head[0].length;
   Utility.saveExcel_r1(wsData,4, fileName, totalColumns);

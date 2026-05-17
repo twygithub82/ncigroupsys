@@ -1911,6 +1911,7 @@ export class Utility {
     purposes.push("C: Cleaning");
     purposes.push("R|I: Repair");
     purposes.push("S: Storage");
+    purposes.push("RL: Released");
     // purposes.push("RO: RO Generated");
     // purposes.push("OG: Out Gate");
     // purposes.push("OS: Out Survey");
