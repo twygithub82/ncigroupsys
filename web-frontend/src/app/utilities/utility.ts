@@ -1871,19 +1871,22 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
 
   static displayTankPurpose_InShort(sot: any): string {
     let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push("S");
-    }
+   
+   
     if (sot?.purpose_cleaning) {
       purposes.push("C");
+    }
+     if (sot?.purpose_repair_cv) {
+      purposes.push("R");
     }
     if (sot?.purpose_steam) {
       purposes.push("SE");
     }
-    if (sot?.purpose_repair_cv) {
-      purposes.push("R");
+    if (sot?.purpose_storage) {
+      purposes.push("S");
     }
-
+   
+   
     return purposes.join('; ');
   }
 

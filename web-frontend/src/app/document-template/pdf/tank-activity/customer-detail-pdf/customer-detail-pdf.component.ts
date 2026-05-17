@@ -668,8 +668,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
     let fontSize = 4.5;
-
+    
     lastTableFinalY += 8;
+    
     // pdf.setFontSize(8);
     // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
     // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
@@ -823,8 +824,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         autoTable(pdf, {
           head: headers,
           body: data,
-          //  startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin, top: lastTableFinalY },
+           startY: startPosY, // Start table at the current startY value
+          margin: { left: leftMargin},
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1319,7 +1320,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
           // startY: startPosY, // Start table at the current startY value
           // margin: { left: leftMargin, top: lastTableFinalY },
           startY:lastTableFinalY,
-          margin: { left: leftMargin, top: startPosY },
+          margin: { left: leftMargin, top: startPosY+8 },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1469,7 +1470,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
           theme: 'grid',
           // margin: { left: leftMargin, top: topMargin + 46 },
           startY: startY + 2,
-          margin: { left: leftMargin, top: startPosY },
+          margin: { left: leftMargin, top: startPosY+8 },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
