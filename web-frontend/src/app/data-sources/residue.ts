@@ -758,11 +758,11 @@ export const UPDATE_RESIDUE_STATUS = gql`
   }
 `;
 
-export const CANCEL_RESIDUE_EST = gql`
-  mutation CancelResidue($residue: [residueInput!]!) {
-    cancelResidue(residue: $residue)
-  }
-`
+// export const CANCEL_RESIDUE_EST = gql`
+//   mutation CancelResidue($residue: [residueInput!]!) {
+//     cancelResidue(residue: $residue)
+//   }
+// `
 
 export const ROLLBACK_RESIDUE_EST = gql`
   mutation RollbackResidue($residue: [RollbackResidueRequestInput!]!) {
@@ -962,14 +962,14 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-  cancelResidue(residue: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: CANCEL_RESIDUE_EST,
-      variables: {
-        residue
-      }
-    });
-  }
+  // cancelResidue(residue: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: CANCEL_RESIDUE_EST,
+  //     variables: {
+  //       residue
+  //     }
+  //   });
+  // }
 
   rollbackResidue(residue: any): Observable<any> {
     return this.apollo.mutate({

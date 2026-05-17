@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -169,7 +170,9 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     QC_DATE: "COMMON-FORM.QC-DATE",
     REVENUE: 'COMMON-FORM.REVENUE',
     APPROVAL: 'COMMON-FORM.APPROVAL',
-    QC_DETAIL: 'COMMON-FORM.QC-DETAIL'
+    QC_DETAIL: 'COMMON-FORM.QC-DETAIL',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   invForm?: UntypedFormGroup;
@@ -821,13 +824,14 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   onExportDailyApprovalExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
     //this.preventDefault(event);
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
     let cut_off_dt = new Date();
-
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -855,13 +859,13 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   onExportDailyRevenueExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
     //this.preventDefault(event);
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
     let cut_off_dt = new Date();
-
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -888,14 +892,15 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   onExportDailyQCDetailExcelReport(repData: DailyQCDetail[], date: string, team: string) {
-    //this.preventDefault(event);
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
     let cut_off_dt = new Date();
 
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -921,16 +926,41 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
+  ZeroTank(repData: any | null | undefined): boolean {
+    return !repData || repData.length === 0;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
 
   onExportDailyRevenueReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
     let cut_off_dt = new Date();
 
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -957,15 +987,16 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
 
+
   onExportDailyApprovalReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
     let cut_off_dt = new Date();
-
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -995,11 +1026,12 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
 
-    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1024,6 +1056,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       this.isGeneratingReport = false;
     });
   }
+
 
   isDateRequired(date_type: string): boolean {
     var retval: boolean = true;

@@ -668,8 +668,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
     let fontSize = 4.5;
-
+    
     lastTableFinalY += 8;
+    
     // pdf.setFontSize(8);
     // const invDate =`${this.translatedLangText.INVENTORY_DATE}:${this.date}`;
     // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
@@ -823,8 +824,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         autoTable(pdf, {
           head: headers,
           body: data,
-          //  startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin, top: lastTableFinalY },
+           startY: startPosY, // Start table at the current startY value
+          margin: { left: leftMargin},
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1170,7 +1171,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
     let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
      
-    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    // startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
      lastTableFinalY = startPosY;
     var buffer = 30;
     var CurrentPage = 1;
@@ -1192,16 +1193,16 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
 
 
       if (this.customerName === '') {
-        lastTableFinalY += PDFUtility.SubTitleFontSize_Landscape();
+        // lastTableFinalY += PDFUtility.SubTitleFontSize_Landscape();
         pdf.setFontSize(PDFUtility.RightSubTitleFontSize());
         pdf.setTextColor(0, 0, 0); // Black text
-        pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+        pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY+5); // Add customer name 10mm below the last table
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
 
-        if (n > 0) lastTableFinalY += 5; // 2nd table
-        else lastTableFinalY = startPosY; // First table of the page
+        if (n > 0) lastTableFinalY += 8; // 2nd table
+        else lastTableFinalY = startPosY+8; // First table of the page
 
         var repPage = pdf.getNumberOfPages();
         //if(repPage==1)lastTableFinalY=45;
@@ -1319,7 +1320,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
           // startY: startPosY, // Start table at the current startY value
           // margin: { left: leftMargin, top: lastTableFinalY },
           startY:lastTableFinalY,
-          margin: { left: leftMargin, top: startPosY },
+          margin: { left: leftMargin, top: startPosY+8 },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1469,7 +1470,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
           theme: 'grid',
           // margin: { left: leftMargin, top: topMargin + 46 },
           startY: startY + 2,
-          margin: { left: leftMargin, top: startPosY },
+          margin: { left: leftMargin, top: startPosY+8 },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
