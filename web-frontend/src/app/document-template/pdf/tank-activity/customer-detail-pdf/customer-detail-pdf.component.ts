@@ -1170,7 +1170,7 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
     let startPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, "");
      
-    startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    // startPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
      lastTableFinalY = startPosY;
     var buffer = 30;
     var CurrentPage = 1;
@@ -1192,16 +1192,16 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
 
 
       if (this.customerName === '') {
-        lastTableFinalY += PDFUtility.SubTitleFontSize_Landscape();
+        // lastTableFinalY += PDFUtility.SubTitleFontSize_Landscape();
         pdf.setFontSize(PDFUtility.RightSubTitleFontSize());
         pdf.setTextColor(0, 0, 0); // Black text
-        pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+        pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY+5); // Add customer name 10mm below the last table
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
 
-        if (n > 0) lastTableFinalY += 5; // 2nd table
-        else lastTableFinalY = startPosY; // First table of the page
+        if (n > 0) lastTableFinalY += 8; // 2nd table
+        else lastTableFinalY = startPosY+8; // First table of the page
 
         var repPage = pdf.getNumberOfPages();
         //if(repPage==1)lastTableFinalY=45;

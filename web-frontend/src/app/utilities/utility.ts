@@ -1900,17 +1900,17 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
 
   static getTankStatusLegend(): string {
     let purposes: any[] = [];
-    purposes.push("SO: SO Generated");
-    purposes.push("IG: In Gate");
-    purposes.push("IS: In Survey");
+    // purposes.push("SO: SO Generated");
+    // purposes.push("IG: In Gate");
+    // purposes.push("IS: In Survey");
     purposes.push("SE: Steam");
-    purposes.push("RE: Residue");
+    // purposes.push("RE: Residue");
     purposes.push("C: Cleaning");
     purposes.push("R|I: Repair");
     purposes.push("S: Storage");
-    purposes.push("RO: RO Generated");
-    purposes.push("OG: Out Gate");
-    purposes.push("OS: Out Survey");
+    // purposes.push("RO: RO Generated");
+    // purposes.push("OG: Out Gate");
+    // purposes.push("OS: Out Survey");
     return purposes.join(' / ');
   }
   static displayTankStatus_InShort(status_codevalue: string): string {
@@ -1942,10 +1942,10 @@ private static async downloadPDFBlob(pdf: jsPDF, fileName: string): Promise<void
         sRetval = "S";
         break;
       case 'RO_GENERATED':
-        sRetval = "RO";
+        sRetval = "S";
         break;
       case 'OUT_GATE':
-        sRetval = "OG";
+        sRetval = "RL";
         break;
       case 'OUT_SURVEY':
         sRetval = "OS";

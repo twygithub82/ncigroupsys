@@ -61,8 +61,8 @@
                 </mat-option>
                 }
               </mat-autocomplete>
-              @if (this.customerCodeControl.hasError('required')) {
-              <mat-error>
+              @if (this.customerCodeControl.hasError('either')) {
+              <mat-error class="purple-error">
                 <!-- {{this.translatedLangText.CUSTOMER}} {{this.translatedLangText.SO_REQUIRED}} -->
               </mat-error>
               }
@@ -96,8 +96,8 @@
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #eir_picker></mat-date-range-picker>
-              @if (searchForm?.get('eir_dt_start')?.hasError('required')) {
-              <mat-error>
+              @if (searchForm?.get('eir_dt_start')?.hasError('either')) {
+              <mat-error class="purple-error">
                 <!-- {{this.translatedLangText.EIR_DATE}} {{this.translatedLangText.SO_REQUIRED}} -->
               </mat-error>
               }
