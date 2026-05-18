@@ -84,9 +84,10 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'select',
     'tank_no',
     'customer',
+    'bill_to',
     'eir_no',
     'eir_dt',
-    'last_cargo',
+    // 'last_cargo',
     //'purpose',
     'cost',
     'invoice_no',
@@ -141,7 +142,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     COST: 'COMMON-FORM.COST',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
   }
 
   invForm?: UntypedFormGroup;

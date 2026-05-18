@@ -41,7 +41,7 @@
           </div>
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+              <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
               <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
                 [matAutocomplete]="branchCode">
               <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
@@ -286,7 +286,16 @@
               matTooltip={{row.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
           </mat-cell>
         </ng-container>
-
+         <ng-container matColumnDef="bill_to">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+            {{translatedLangText.BILL_TO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+            <span class="mobile-label">{{translatedLangText.BILL_TO}}:</span><span class="customer-text"
+              matTooltip={{row.customer_company?.name}}>{{row.customer_company?.code}}</span>
+          </mat-cell>
+        </ng-container>
         <ng-container matColumnDef="eir_no">
           <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
             {{translatedLangText.EIR_NO}}
@@ -315,13 +324,13 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="last_cargo">
-          <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">
-            {{translatedLangText.LAST_CARGO}}
+          <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
+            {{translatedLangText.ESTIMATE_NO}}
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3'">
-            <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span> <span class="cargo-text"
-              matTooltip="{{ row.storing_order_tank?.tariff_cleaning?.cargo }}" matTooltipPosition="above">
-              {{ row.storing_order_tank?.tariff_cleaning?.cargo }}</span>
+          <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-2'">
+            <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span> <span class="cargo-text"
+              matTooltip="{{ row.estimate_no||'-' }}" matTooltipPosition="above">
+              {{ row.estimate_no||'-'  }}</span>
           </mat-cell>
         </ng-container>
         <!-- <ng-container matColumnDef="purpose">
