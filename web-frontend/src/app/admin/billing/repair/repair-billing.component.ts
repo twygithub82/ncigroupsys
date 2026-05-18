@@ -176,6 +176,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     DELETE: 'COMMON-FORM.DELETE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
 
   }
 

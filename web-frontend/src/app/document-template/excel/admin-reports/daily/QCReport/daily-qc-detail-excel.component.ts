@@ -35,7 +35,7 @@ import { saveAs } from 'file-saver';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: DailyQCDetail[],
+  repData: Record<string, DailyQCDetail[]>,
   date: string,
   repType: string,
   customer: string,
@@ -264,6 +264,7 @@ export class DailyQCDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     S_N: 'COMMON-FORM.S_N',
+     DAILY_REVENUE: 'COMMON-FORM.DAILY-REVENUE',
   }
 
   type?: string | null;
@@ -312,7 +313,7 @@ export class DailyQCDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: DailyQCDetail[];
+  repData?: Record<string, DailyQCDetail[]>;
   date?: string;
   repType?: string;
   team?: string;
@@ -584,447 +585,298 @@ export class DailyQCDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   exportToExcel_r1(fileName: string = 'report.xlsx') {
+
     this.generatingPdfLoadingSubject.next(true);
 
-    let idx = 0;
-    // let totalRepairCost = 0;
-
     const reportTitle = this.GetReportTitle();
+
     const approvalDt = PDFUtility.FormatColon(
       this.translatedLangText.QC_DATE,
       this.date
     );
 
-    // Table Header
+    // =========================
+    // TABLE HEADER
+    // =========================
     const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
-      this.translatedLangText.TOTAL_COST, this.translatedLangText.QC_BY
+      this.translatedLangText.S_N,
+      this.translatedLangText.TANK_NO,
+      this.translatedLangText.CODE,
+      this.translatedLangText.ESTIMATE_NO,
+      this.translatedLangText.ESTIMATE_DATE,
+      this.translatedLangText.REPAIR_TYPE,
+      this.translatedLangText.MAN_HOUR,
+      this.translatedLangText.MATERIAL_COST,
+      this.translatedLangText.TOTAL_COST,
+      this.translatedLangText.QC_BY
     ]];
 
-    // Table Body
-    const body: any[][] = [];
+    const wsData: any[][] = [];
 
-    // var idx = 0;
-    let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours = 0;
-    let totalMaterialCost = 0;
+    // =========================
+    // REPORT TITLE
+    // =========================
+    wsData.push([reportTitle]);
+    wsData.push([approvalDt]);
+    wsData.push([]);
 
-    for (let n = 0; n < (this.repData?.length || 0); n++) {
-      let itm = this.repData?.[n];
-      const repairCost = itm?.repair_cost || 0;
-      const materialCost = itm?.appv_material_cost || 0;
-      const appHour = itm?.appv_hour || 0;
-      totalRepairCost += repairCost; // Add to the total
-      totalMaterialCost += materialCost; // Add to the total
-      totalHours += appHour;
+    let currentRow = 3;
+    let globalIndex = 0;
 
-      body.push([
-        (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "", this.displayDate(itm?.estimate_date) || '',
-        this.getRepairOption(itm?.repair_type || ""), Utility.formatNumberDisplay(itm?.appv_hour), Utility.formatNumberDisplay(itm?.appv_material_cost),
-        Utility.formatNumberDisplay(itm?.repair_cost), itm?.qc_by
-      ]);
-    }
-
-    body.push([this.translatedLangText.TOTAL, "", "", "", "", "", Utility.formatNumberDisplay(totalHours),
-    Utility.formatNumberDisplay(totalMaterialCost), Utility.formatNumberDisplay(totalRepairCost), ""]);
-
-    // TOTAL row
-    // body.push([
-    //   this.translatedLangText.TOTAL, "", "", "", "",
-    //   totalRepairCost, ""
-    // ]);
-
-    // Combine all rows (Title + Subtitle + Table)
-    const wsData = [
-      [reportTitle],   // Row 1
-      [approvalDt],    // Row 2
-      [],              // Row 3 (gap)
-      ...headers,      // Row 4 (table header)
-      ...body          // Row 5+
+    const merges: XLSX.Range[] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } }
     ];
 
-    // Create worksheet
+    // =========================
+    // LOOP TEAM
+    // =========================
+    Object.entries(this.repData || {}).forEach(([team, items]) => {
+
+      // =========================
+      // TEAM HEADER
+      // =========================
+      wsData.push([`${this.translatedLangText.TEAM} : ${team}`]);
+
+      merges.push({
+        s: { r: currentRow, c: 0 },
+        e: { r: currentRow, c: 9 }
+      });
+
+      currentRow++;
+
+      // =========================
+      // TABLE HEADER
+      // =========================
+      wsData.push(headers[0]);
+
+      const headerRowIndex = currentRow;
+
+      currentRow++;
+
+      let totalRepairCost = 0;
+      let totalHours = 0;
+      let totalMaterialCost = 0;
+
+      // =========================
+      // DETAIL ROWS
+      // =========================
+      items.forEach((itm) => {
+
+        const repairCost = itm?.repair_cost || 0;
+        const materialCost = itm?.appv_material_cost || 0;
+        const appHour = itm?.appv_hour || 0;
+
+        totalRepairCost += repairCost;
+        totalMaterialCost += materialCost;
+        totalHours += appHour;
+
+        wsData.push([
+          (++globalIndex).toString(),
+          itm?.tank_no || "",
+          itm?.code || "",
+          itm?.estimate_no || "",
+          this.displayDate(itm?.estimate_date) || '',
+          this.getRepairOption(itm?.repair_type || ""),
+          Utility.formatNumberDisplay(appHour),
+          Utility.formatNumberDisplay(materialCost),
+          Utility.formatNumberDisplay(repairCost),
+          itm?.qc_by || ""
+        ]);
+
+        currentRow++;
+
+      });
+
+      // =========================
+      // TOTAL ROW
+      // =========================
+      wsData.push([
+        this.translatedLangText.TOTAL,
+        "",
+        "",
+        "",
+        "",
+        "",
+        Utility.formatNumberDisplay(totalHours),
+        Utility.formatNumberDisplay(totalMaterialCost),
+        Utility.formatNumberDisplay(totalRepairCost),
+        ""
+      ]);
+
+      merges.push({
+        s: { r: currentRow, c: 0 },
+        e: { r: currentRow, c: 5 }
+      });
+
+      currentRow++;
+
+      // EMPTY ROW BETWEEN TEAM
+      wsData.push([]);
+      currentRow++;
+
+    });
+
+    // =========================
+    // CREATE WORKSHEET
+    // =========================
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(wsData);
 
-    // Merge cells (Title, Approval, TOTAL)
-    const totalRowIndex = body.length + 3; // offset due to title rows
+    ws['!merges'] = merges;
 
-    ws['!merges'] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }, // Title
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } }, // Approval Date
-      { s: { r: totalRowIndex, c: 0 }, e: { r: totalRowIndex, c: 5 } } // TOTAL merge
-    ];
-
-    // Column widths
+    // =========================
+    // COLUMN WIDTH
+    // =========================
     ws['!cols'] = [
-      { wch: 6 },   // S/N
-      { wch: 18 },  // Tank No
-      { wch: 12 },  // Code
-      { wch: 18 },  // Estimate No
-      { wch: 18 },  // Repair Type
-      { wch: 15 },  // Repair Cost
-      { wch: 15 },  // Status
-      { wch: 15 },  // Status
-      { wch: 15 },  // Status
-      { wch: 15 },  // Status
+      { wch: 6 },
+      { wch: 18 },
+      { wch: 12 },
+      { wch: 18 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 15 },
+      { wch: 18 }
     ];
 
-    // Row heights (optional for better layout)
-    ws['!rows'] = [
-      { hpt: 24 }, // Title
-      { hpt: 18 }, // Approval date
-    ];
-
-    // ✅ Styling (works if your xlsx build supports it)
-    // Title center
+    // =========================
+    // TITLE STYLE
+    // =========================
     if (ws['A1']) {
       ws['A1'].s = {
         font: { bold: true, sz: 14 },
-        alignment: { horizontal: 'center', vertical: 'center' }
+        alignment: {
+          horizontal: 'center',
+          vertical: 'center'
+        }
       };
     }
 
-    // Approval date center
+    // =========================
+    // SUBTITLE STYLE
+    // =========================
     if (ws['A2']) {
       ws['A2'].s = {
-        alignment: { horizontal: 'right' }
+        alignment: {
+          horizontal: 'right'
+        }
       };
     }
 
-    // Header row bold (Row 4 → index = 3)
-    const headerRowIndex = 3;
-    for (let col = 0; col < headers[0].length; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: headerRowIndex, c: col });
-      if (ws[cellRef]) {
-        ws[cellRef].s = {
-          font: { bold: true },
-          alignment: { horizontal: 'center' }
-        };
+    // =========================
+    // STYLE LOOP
+    // =========================
+    for (let row = 0; row < wsData.length; row++) {
+
+      const firstCell = XLSX.utils.encode_cell({ r: row, c: 0 });
+
+      const rowData = wsData[row];
+
+      // TEAM ROW
+      if (
+        rowData?.[0] &&
+        typeof rowData[0] === 'string' &&
+        rowData[0].startsWith(`${this.translatedLangText.TEAM} :`)
+      ) {
+
+        if (ws[firstCell]) {
+
+          ws[firstCell].s = {
+            font: { bold: true, sz: 12 },
+            // fill: {
+            //   // fgColor: { rgb: "D9D9D9" }
+            // },
+            alignment: {
+              horizontal: 'left'
+            }
+          };
+        }
+      }
+
+      // HEADER ROW
+      if (
+        rowData?.[0] === this.translatedLangText.S_N
+      ) {
+
+        for (let col = 0; col < 10; col++) {
+
+          const cellRef = XLSX.utils.encode_cell({
+            r: row,
+            c: col
+          });
+
+          if (ws[cellRef]) {
+
+            ws[cellRef].s = {
+              font: { bold: true },
+              alignment: {
+                horizontal: 'center',
+                vertical: 'center'
+              },
+              // fill: {
+              //   // fgColor: { rgb: "D9D9D9" }
+              // }
+            };
+          }
+        }
+      }
+
+      // TOTAL ROW
+      if (rowData?.[0] === this.translatedLangText.TOTAL) {
+
+        for (let col = 0; col < 10; col++) {
+
+          const cellRef = XLSX.utils.encode_cell({
+            r: row,
+            c: col
+          });
+
+          if (ws[cellRef]) {
+
+            ws[cellRef].s = {
+              font: { bold: true },
+              // fill: {
+              //   fgColor: { rgb: "E7E7E7" }
+              // }
+            };
+          }
+        }
       }
     }
 
-    // TOTAL row bold
-    for (let col = 0; col < 7; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: totalRowIndex, c: col });
-      if (ws[cellRef]) {
-        ws[cellRef].s = {
-          font: { bold: true },
-          alignment: { horizontal: col === 5 ? 'left' : 'left' }
-        };
-      }
-    }
-
-    // Create workbook
+    // =========================
+    // WORKBOOK
+    // =========================
     const wb: XLSX.WorkBook = {
-      Sheets: { 'Report': ws },
+      Sheets: {
+        'Report': ws
+      },
       SheetNames: ['Report']
     };
 
-    // Export
+    // =========================
+    // EXPORT
+    // =========================
     const buffer = XLSX.write(wb, {
       bookType: 'xlsx',
       type: 'array'
     });
 
     const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
 
-    var fname = this.GetReportTitle() + '.xlsx';
-    saveAs(blob, fname);
+    saveAs(blob, `${this.GetReportTitle()}.xlsx`);
 
     this.generatingPdfLoadingSubject.next(false);
+
     this.dialogRef.close();
   }
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-    let minHeightBodyCell = 5;
-    let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body = PDFUtility.ContentFontSize_Portrait()
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
-      this.translatedLangText.TOTAL_COST, this.translatedLangText.QC_BY
-
-    ]];
-
-    const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-
-    };
-
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz_hdr,
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
-    const data: any[][] = []; // Explicitly define data as a 2D array
-    // let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-
-    // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    // await Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-    // var approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
-    // await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-
-    // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    const dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    const approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
-    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-      rightMargin, this.translate, reportTitle, approvalDt);
-    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    //  startY +=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-
-    // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
-    // startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
-
-    // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
-
-    // if(this.customer)
-    // {
-    //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-    //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    // }
-    var idx = 0;
-    let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours = 0;
-    let totalMaterialCost = 0;
-    for (let n = 0; n < (this.repData?.length || 0); n++) {
-
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.repData?.[n];
-      const repairCost = itm?.repair_cost || 0;
-      const materialCost = itm?.appv_material_cost || 0;
-      const appHour = itm?.appv_hour || 0;
-      totalRepairCost += repairCost; // Add to the total
-      totalMaterialCost += materialCost; // Add to the total
-      totalHours += appHour;
-      data.push([
-        (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "", this.displayDate(itm?.estimate_date) || '',
-        this.getRepairOption(itm?.repair_type || ""), Utility.formatNumberDisplay(itm?.appv_hour), Utility.formatNumberDisplay(itm?.appv_material_cost),
-        Utility.formatNumberDisplay(itm?.repair_cost), itm?.qc_by
-      ]);
-    }
-
-
-    data.push([this.translatedLangText.TOTAL, "", "", "", "", "", Utility.formatNumberDisplay(totalHours),
-    Utility.formatNumberDisplay(totalMaterialCost), Utility.formatNumberDisplay(totalRepairCost), ""]);
-
-
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
-
-    pdf.setDrawColor(0, 0, 0); // red line color
-
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      startY: startY,
-      margin: { left: leftMargin, right: rightMargin },
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz_body,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      tableWidth: pageWidth - leftMargin - rightMargin,
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let colSpan: number = 6;
-        let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if (data.row.index == totalRowIndex) {
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
-          }
-        }
-        if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
-
-        // lastTableFinalY = d.cursor.y;
-
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-            PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            let posY = PDFUtility.addReportSubTitle_Portrait(pdf, dtstr, pageWidth, leftMargin, rightMargin);
-            posY += PDFUtility.SubTitleFontSize_Portrait() / 2;
-            Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-          }
-        }
-
-      },
-    });
-
-    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-      rightMargin, this.translate, pagePositions);
-
-    // var gap = 7;
-
-    // if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
-    //   pdf.addPage();
-    //   const pageCount = pdf.getNumberOfPages();
-    //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    // }
-
-    // const totalPages = pdf.getNumberOfPages();
-
-
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
-
-
-    //Sign , verified tables-------------start--------------
-    // var content:string[]=[];
-    // var values:string[]=[];
-    // var maxSpace = 20;
-    // var str='';
-    // str= `${this.translatedLangText.SIGN}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": ");
-    // str= `${this.translatedLangText.REPORTED_BY}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": ");
-    // str= `${this.translatedLangText.QC_DATE}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": "+`${this.date}`);
-    // str= `${this.translatedLangText.TEAM}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": "+`${this.team}`);
-    // var startX=leftMargin;
-
-    // startY = pageHeight-(bottomMargin+10);
-    // var buffer = maxSpace *3;
-
-    // pdf.setPage(pdf.getNumberOfPages());
-    // pdf.setLineWidth(0.01);
-    // pdf.setLineDashPattern([1,1], 1);
-    // pdf.setFontSize(8);
-    // var bufferStartXValue=1.1;
-    // var indx:number=0;
-    // content.forEach(c=>{
-    //   var startXValue=startX+(maxSpace *bufferStartXValue);
-    //   var valueContent = values[indx++];
-    //   pdf.line(startX-1, startY, startX+buffer,startY);
-    //   startY-=2;
-    //   pdf.text(c,startX, startY , { align: 'left' });
-    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
-    //   startY-=gap;
-    // });
-    // startX=pageWidth-rightMargin-(buffer);
-    // startY =  pageHeight-(bottomMargin+10);
-    // content=[];
-    // values=[];
-    // indx=0;
-    // maxSpace = 20;
-    // str= `${this.translatedLangText.SIGN}`;
-    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
-    // values.push(": ");
-    // str= `${this.translatedLangText.VERIFIED_BY}`;
-    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
-    // values.push(": ");
-    // content.forEach(c=>{
-    //   var startXValue=startX+(maxSpace *bufferStartXValue);
-    //   var valueContent = values[indx++];
-    //   pdf.line(startX-1, startY, startX+buffer,startY);
-    //   startY-=2;
-    //   pdf.text(c,startX, startY, { align: 'left' });
-    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
-    //   startY-=gap;
-    // });
-    //Sign , verified tables-------------end--------------
-    this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
-  }
+  
 
 
 
@@ -1132,8 +984,8 @@ export class DailyQCDetailExcelComponent extends UnsubscribeOnDestroyAdapter imp
   }
   GetReportTitle(): string {
     var title: string = '';
-    title = `${this.translatedLangText.DAILY_QC_DETAIL_REPORT}`
-    return `${title}`
+    title = `${this.translatedLangText.DAILY_REVENUE}`
+    return `${title.toUpperCase()}`
   }
 
   displayLocation(yard: report_status_yard): string {

@@ -288,7 +288,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         qc_dt_end: [''],
         rep_type: [''],
         team: [''],
-        report_type: ['1']
+        report_type: ['3']
       },
     );
   }
@@ -581,12 +581,26 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
-        this.repData = data;
+        const groupedByTeam = data.reduce((acc, item) => {
+
+          const team = item.team || '-';
+
+          if (!acc[team]) {
+            acc[team] = [];
+          }
+
+          acc[team].push(item);
+
+          return acc;
+
+        }, {} as Record<string, DailyQCDetail[]>);
+
+       var repData = groupedByTeam;
         if (report_type == 3) {
-          this.onExportDailyQCDetailReport(this.repData, date!, team!);
+          this.onExportDailyQCDetailReport(repData, date!, team!);
         }
         else {
-          this.onExportDailyQCDetailExcelReport(this.repData, date!, team!);
+          this.onExportDailyQCDetailExcelReport(repData, date!, team!);
         }
         if (data.length > 0) {
           this.repData = data;
@@ -617,7 +631,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
         }
         if (data.length > 0) {
           this.repData = data;
-          // this.onExportDailyRevenueReport(this.repData, date!, team!);
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -796,7 +810,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       qc_dt_end: '',
       qc_dt: '',
       team: '',
-      report_type: '1'
+      report_type: '3'
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -891,7 +905,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  onExportDailyQCDetailExcelReport(repData: DailyQCDetail[], date: string, team: string) {
+  onExportDailyQCDetailExcelReport(repData: Record<string, DailyQCDetail[]>, date: string, team: string) {
 
     if (this.ZeroTank(repData)) {
       this.ShowWarningMessage();
@@ -1022,7 +1036,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  onExportDailyQCDetailReport(repData: DailyQCDetail[], date: string, team: string) {
+  onExportDailyQCDetailReport(repData: Record<string, DailyQCDetail[]>, date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
