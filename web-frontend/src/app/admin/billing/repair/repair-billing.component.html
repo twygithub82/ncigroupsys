@@ -318,11 +318,11 @@
                                 *matCellDef="let repairRow">{{repairRow.guid}}{{repairRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="customer">
-                              <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                              <mat-header-cell *matHeaderCellDef>{{translatedLangText.BILL_TO}}</mat-header-cell>
                               <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                                <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span
+                                <span class="mobile-label">{{translatedLangText.BILL_TO}}:</span><span
                                   class="customer-text"
-                                  matTooltip={{repairRow.storing_order_tank?.storing_order?.customer_company?.name}}>{{repairRow.storing_order_tank?.storing_order?.customer_company?.code}}</span>
+                                  matTooltip={{repairRow.customer_billing?.customer_company?.name||repairRow.storing_order_tank?.storing_order?.customer_company?.name}}>{{repairRow.customer_billing?.customer_company?.code||repairRow.storing_order_tank?.storing_order?.customer_company?.code}}</span>
                               </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="customer_type">

@@ -32,7 +32,7 @@ import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  repData: DailyQCDetail[],
+  repData: Record<string, DailyQCDetail[]>,
   date: string,
   repType: string,
   customer: string,
@@ -261,6 +261,8 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     S_N: 'COMMON-FORM.S_N',
+    DAILY_REVENUE: 'COMMON-FORM.DAILY-REVENUE',
+    
   }
 
   type?: string | null;
@@ -309,7 +311,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: DailyQCDetail[];
+  repData?: Record<string, DailyQCDetail[]>;
   date?: string;
   repType?: string;
   team?: string;
@@ -604,7 +606,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -620,7 +622,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(),minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -656,7 +658,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let lastTableFinalY = 40;
     const data: any[][] = []; // Explicitly define data as a 2D array
     // let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-    
+
     // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
     // await Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
     // var approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
@@ -665,11 +667,11 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
     const dtstr = await Utility.GetReportGeneratedDate(this.translate);
     const approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
-    let startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin, this.translate, reportTitle, approvalDt);
-    startY +=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, reportTitle, approvalDt);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
     //  startY +=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    
+
     // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
     // startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
@@ -681,103 +683,126 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
     //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     // }
-    var idx = 0;
-    let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours = 0;
-    let totalMaterialCost = 0;
-    for (let n = 0; n < (this.repData?.length || 0); n++) {
 
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.repData?.[n];
-      const repairCost = itm?.repair_cost || 0;
-      const materialCost = itm?.appv_material_cost || 0;
-      const appHour = itm?.appv_hour || 0;
-      totalRepairCost += repairCost; // Add to the total
-      totalMaterialCost += materialCost; // Add to the total
-      totalHours += appHour;
+    Object.entries(this.repData!).forEach(([team, items]) => {
+
+      const data: any[][] = []; // MOVE HERE
+
+      var itms = items;
+      var idx = 0;
+
+      let totalRepairCost = 0;
+      let totalHours = 0;
+      let totalMaterialCost = 0;
+
+      // =========================
+      // ADD TEAM TITLE
+      // =========================
+    var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, team);
+     Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY,8,true);
+      
+
+      startY += 2;
+
+      for (let n = 0; n < (itms?.length || 0); n++) {
+
+        let itm = itms?.[n];
+
+        const repairCost = itm?.repair_cost || 0;
+        const materialCost = itm?.appv_material_cost || 0;
+        const appHour = itm?.appv_hour || 0;
+
+        totalRepairCost += repairCost;
+        totalMaterialCost += materialCost;
+        totalHours += appHour;
+
+        data.push([
+          (++idx).toString(),
+          itm?.tank_no || "",
+          itm?.code || "",
+          itm?.estimate_no || "",
+          this.displayDate(itm?.estimate_date) || '',
+          this.getRepairOption(itm?.repair_type || ""),
+          Utility.formatNumberDisplay(itm?.appv_hour),
+          Utility.formatNumberDisplay(itm?.appv_material_cost),
+          Utility.formatNumberDisplay(itm?.repair_cost),
+          itm?.qc_by
+        ]);
+      }
+
       data.push([
-        (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "", this.displayDate(itm?.estimate_date) || '',
-        this.getRepairOption(itm?.repair_type || ""), Utility.formatNumberDisplay(itm?.appv_hour), Utility.formatNumberDisplay(itm?.appv_material_cost),
-        Utility.formatNumberDisplay(itm?.repair_cost), itm?.qc_by
+        this.translatedLangText.TOTAL,
+        "",
+        "",
+        "",
+        "",
+        "",
+        Utility.formatNumberDisplay(totalHours),
+        Utility.formatNumberDisplay(totalMaterialCost),
+        Utility.formatNumberDisplay(totalRepairCost),
+        ""
       ]);
-    }
 
+      autoTable(pdf, {
+        head: headers,
+        body: data,
+        startY: startY,
+        margin: { left: leftMargin, right: rightMargin },
+        theme: 'grid',
 
-    data.push([this.translatedLangText.TOTAL, "", "", "", "", "", Utility.formatNumberDisplay(totalHours),
-    Utility.formatNumberDisplay(totalMaterialCost), Utility.formatNumberDisplay(totalRepairCost), ""]);
+        styles: {
+          fontSize: fontSz_body,
+          minCellHeight: minHeightHeaderCol
+        },
 
+        tableWidth: pageWidth - leftMargin - rightMargin,
+        columnStyles: comStyles,
+        headStyles: headStyles,
 
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
+        didParseCell: (data: any) => {
 
-    pdf.setDrawColor(0, 0, 0); // red line color
+          let colSpan: number = 6;
+          let totalRowIndex = data.table.body.length - 1;
 
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      startY: startY,
-      margin: { left: leftMargin, right: rightMargin },
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz_body,
-        minCellHeight: minHeightHeaderCol
+          if (data.row.index == totalRowIndex) {
 
-      },
-      tableWidth: pageWidth - leftMargin - rightMargin,
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let colSpan: number = 6;
-        let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [231, 231, 231];
+            data.cell.styles.valign = 'middle';
 
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if (data.row.index == totalRowIndex) {
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
+            if (data.column.index === 0) {
+              data.cell.colSpan = colSpan;
+              data.cell.styles.halign = 'right';
+            }
+          }
+
+          if (
+            data.row.index == totalRowIndex &&
+            data.column.index > 0 &&
+            data.column.index < colSpan
+          ) {
+            data.cell.text = '';
+            data.cell.colSpan = 0;
           }
         }
-        if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
+      });
 
-        // lastTableFinalY = d.cursor.y;
+      // =========================
+      // MOVE NEXT TABLE DOWN
+      // =========================
+      startY = (pdf as any).lastAutoTable.finalY + 10;
 
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-              PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-             let posY= PDFUtility.addReportSubTitle_Portrait(pdf, dtstr, pageWidth, leftMargin, rightMargin);
-              posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
-              Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
-          }
-        }
+      // OPTIONAL PAGE BREAK
+      if (startY > 250) {
+        pdf.addPage();
 
-      },
+        startY = topMargin + 35;
+      }
+
     });
 
-    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin, this.translate,pagePositions);
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, pagePositions);
 
     // var gap = 7;
 
@@ -975,7 +1000,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
   GetReportTitle(): string {
     var title: string = '';
-    title = `${this.translatedLangText.DAILY_QC_DETAIL_REPORT}`
+    title = `${this.translatedLangText.DAILY_REVENUE}`
     return `${title}`
   }
 

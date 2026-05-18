@@ -1428,7 +1428,8 @@
     "PLAIN-TEMPLATE": "Plain Template",
     "REVERT": "Revert",
     "JOB": "Job",
-    "LOLO-ON-OFF": "LOLO On/Off"
+    "LOLO-ON-OFF": "LOLO On/Off",
+    "DAILY-REVENUE" : "Daily Revenue"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

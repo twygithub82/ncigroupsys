@@ -39,7 +39,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerDetailPdfComponent } from 'app/document-template/pdf/tank-activity/customer-detail-pdf/customer-detail-pdf.component';
-import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
+import { BILLING_TANK_STATUS_IN_YARD, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -446,7 +446,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     //    queryType=2;
     // }
 
-    var all_tank_status_list = ["CLEANING", "STEAM", "REPAIR", "RESIDUE", "STORAGE", "RELEASED", "RO_GENERATED"];
+    //  var all_tank_status_list = ["CLEANING", "STEAM", "REPAIR", "RESIDUE", "STORAGE", "RELEASED", "RO_GENERATED"];
+     var all_tank_status_list =BILLING_TANK_STATUS_IN_YARD;
+     all_tank_status_list.push("RELEASED");
     where.tank_status_cv = { in: all_tank_status_list }
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };

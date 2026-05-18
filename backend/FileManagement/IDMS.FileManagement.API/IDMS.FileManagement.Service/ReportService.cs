@@ -39,7 +39,7 @@ namespace IDMS.FileManagement.Service
                 var customers = await GetValidDailyCustomer();
                 if (customers?.Any() ?? false)
                 {
-                    GenerateTankActivityReportThread(customers);
+                    await GenerateTankActivityReportThread(customers);
                     _logger.LogInformation("Tank Activity Report generation task started.");
                 }
 
@@ -84,27 +84,28 @@ namespace IDMS.FileManagement.Service
                             _logger.LogInformation($"Generated Tank Activity Report for customer: {customerGroup.Customer} with {customerData.Count} records.");
 
                             // Create ZIP archive in memory
-                            using var zipStream = new MemoryStream();
-                            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
-                            {
-                                var zipEntry = archive.CreateEntry(fileName, CompressionLevel.Optimal);
-                                using var entryStream = zipEntry.Open();
-                                entryStream.Write(reportByteArray, 0, reportByteArray.Length);
-                            }
-                            zipStream.Position = 0; // Reset stream position
+                            //--------------------------------------------------
+                            //using var zipStream = new MemoryStream();
+                            //using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+                            //{
+                            //    var zipEntry = archive.CreateEntry(fileName, CompressionLevel.Optimal);
+                            //    using var entryStream = zipEntry.Open();
+                            //    entryStream.Write(reportByteArray, 0, reportByteArray.Length);
+                            //}
+                            //zipStream.Position = 0; // Reset stream position
 
-                            var toEmails = customers?.Where(c => c.code == customerGroup.Customer).Select(c => c.email).ToList();
+                            //var toEmails = customers?.Where(c => c.code == customerGroup.Customer).Select(c => c.email).ToList();
 
-                            if (toEmails?.Any() ?? false)
-                            {
-                                //For testing purpose
-                                //toEmails[0] = "danielwongsh94@gmail.com";
-                                var emailSubject = EirMessage.GetTankActivitySubject("");
-                                var emailBody = EirMessage.GetTankActivityBody();
+                            //if (toEmails?.Any() ?? false)
+                            //{
+                            //    //For testing purpose
+                            //    toEmails[0] = "wymund20@gmail.com";
+                            //    var emailSubject = EirMessage.GetTankActivitySubject("");
+                            //    var emailBody = EirMessage.GetTankActivityBody();
 
-                                _emailService?.SendEmailWithZipAttachmentAsync(toEmails, null, null, emailSubject, emailBody, zipStream.ToArray(), fileName);
-                                _logger.LogInformation($"Sent Tank Activity Report email to customer: {customerGroup.Customer} at {string.Join(", ", toEmails)}");
-                            }
+                            //    //_emailService?.SendEmailWithZipAttachmentAsync(toEmails, null, null, emailSubject, emailBody, zipStream.ToArray(), fileName);
+                            //    _logger.LogInformation($"Sent Tank Activity Report email to customer: {customerGroup.Customer} at {string.Join(", ", toEmails)}");
+                            //}
                         }
                     }
                 }
@@ -161,7 +162,7 @@ namespace IDMS.FileManagement.Service
                 // Extract only the customer codes for filtering
                 var codes = batch.Select(b => b.code).ToList();
 
-                // 3️⃣ Retrieve all results for this batch of customers
+                // Retrieve all results for this batch of customers
                 var results = await _context.daily_tank_activity_result
                     .Where(t => codes.Contains(t.customer))
                     .ToListAsync();

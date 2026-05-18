@@ -85,6 +85,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'select',
     'tank_no',
     'customer',
+    'bill_to',
     'eir_no',
     'eir_dt',
     'last_cargo',
@@ -142,7 +143,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
     COST: 'COMMON-FORM.COST',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
   }
 
   invForm?: UntypedFormGroup;
