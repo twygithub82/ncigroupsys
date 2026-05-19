@@ -136,11 +136,12 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CONFIRM_REMOVE_INVOICES: 'COMMON-FORM.CONFIRM-REMOVE-INVOICES',
-    BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
+    BILLING_CURRENCY: 'COMMON-FORM.CURRENCY',
     IS_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     EDIT: 'COMMON-FORM.EDIT',
     DELETE: 'COMMON-FORM.DELETE',
     EXPORT: 'COMMON-FORM.EXPORT',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE'
   }
 
@@ -324,7 +325,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.cvDS.connectAlias('invoiceTypeCv').subscribe(data => {
       this.invoiceTypeCvList = addDefaultSelectOption(data, 'All');
     });
-    this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
+    this.curDS.search({}, { currency_code: 'ASC' }, 100).subscribe(data => {
       this.currencyList = data;
     });
     // this.search();
