@@ -46,6 +46,7 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { WeeklyPerformanceReportDetailsExcelComponent } from 'app/document-template/excel/management/performance/weekly/performance-weekly-details-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-performance-weekly',
@@ -160,7 +161,8 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     MONTH: 'COMMON-FORM.MONTH',
     MONTH_START: 'COMMON-FORM.MONTH-START',
     MONTH_END: 'COMMON-FORM.MONTH-END',
-
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    WARNING: 'COMMON-FORM.WARNING',
 
 
   }
@@ -535,6 +537,7 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
     else {
       this.repData = [];
       this.isGeneratingReport = false;
+      this.ShowWarningMessage();
     }
 
 
@@ -673,5 +676,25 @@ export class PerformanceWeeklyManagementReportComponent extends UnsubscribeOnDes
 
     return bAllow;
   }
+
+    ShowWarningMessage() {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        disableClose: true,
+        data: {
+          headerText: this.translatedLangText.WARNING,
+          messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+          act: "warn"
+        },
+        direction: tempDirection
+      });
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
 
 }

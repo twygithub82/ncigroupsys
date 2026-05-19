@@ -85,9 +85,9 @@
         "GROUP": "Group",
         "GROUP-NEW": "New Group",
         "GROUP-EDIT": "Edit Group",
-        "MONTHLY-REPORTS": "Monthly Reports",
-        "YEARLY-REPORTS": "Yearly Reports",
-        "PERFORMANCE-REPORTS": "Performance Reports",
+        "MONTHLY-REPORTS": "Monthly",
+        "YEARLY-REPORTS": "Yearly",
+        "PERFORMANCE-REPORTS": "Depot Performance",
         "ORDER-TRACK-REPORTS": "Order Track Reports"
       }
     },
@@ -1430,6 +1430,7 @@
     "JOB": "Job",
     "LOLO-ON-OFF": "LOLO On/Off",
     "DAILY-REVENUE" : "Daily Revenue"
+   
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
