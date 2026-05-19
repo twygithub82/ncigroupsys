@@ -269,8 +269,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
-                                <input matInput formControlName="capacity" type="number"
-                                  (wheel)="preventDefault($event)" min="0" required>
+                                <input matInput formControlName="capacity" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false" required>
                                 <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.LITERS}}
                                 </h6>
                                 <!-- @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
@@ -283,8 +282,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
-                                <input matInput formControlName="tare_weight" type="number"
-                                  (wheel)="preventDefault($event)" min="0" required>
+                                <input matInput formControlName="tare_weight" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false" required>
                                 <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.KG}}</h6>
                                 <!-- @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
                                 <mat-error>
@@ -1382,8 +1380,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.THERMOMETER}}</mat-label>
-                                    <input matInput formControlName="thermometer" type="number"
-                                      (wheel)="preventDefault($event)">
+                                    <input matInput formControlName="thermometer" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>
                                       {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</h6>
                                     <!-- @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
@@ -1754,8 +1751,7 @@
                                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_pts" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="manlid_cover_pts" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PTS}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
@@ -1867,8 +1863,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.BUFFER_PLATE}}</mat-label>
-                                    <input matInput formControlName="buffer_plate" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="buffer_plate" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
@@ -1883,8 +1878,7 @@
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
-                                    <input matInput formControlName="residue" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input matInput formControlName="residue" type="text" appNumericText min="0" [allowDecimal]="false" [allowNegative]="false">
                                     <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.KG}}
                                     </h6>
                                     <!-- @if (getManlidFormGroup().get('residue')?.hasError('required')) {
