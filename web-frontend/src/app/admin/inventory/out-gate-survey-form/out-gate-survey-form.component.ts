@@ -1524,8 +1524,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       ogs.manufacturer_cv = this.surveyForm.get('tank_details.manufacturer_cv')?.value;
       ogs.dom_dt = Utility.convertDate(this.surveyForm.get('tank_details.dom_dt')?.value);
       ogs.cladding_cv = this.surveyForm.get('tank_details.cladding_cv')?.value;
-      ogs.capacity = this.surveyForm.get('tank_details.capacity')?.value;
-      ogs.tare_weight = this.surveyForm.get('tank_details.tare_weight')?.value;
+      ogs.capacity = Utility.convertNumber(this.surveyForm.get('tank_details.capacity')?.value);
+      ogs.tare_weight = Utility.convertNumber(this.surveyForm.get('tank_details.tare_weight')?.value);
       ogs.max_weight_cv = this.surveyForm.get('tank_details.max_weight_cv')?.value;
       ogs.height_cv = this.surveyForm.get('tank_details.height_cv')?.value;
       ogs.walkway_cv = this.surveyForm.get('tank_details.walkway_cv')?.value;
@@ -1541,7 +1541,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       ogs.foot_valve_cv = bottomFormGroup.get('foot_valve_cv')?.value?.[0];
       ogs.foot_valve_oth = bottomFormGroup.get('foot_valve_oth')?.value;
       // ogs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value?.[0];
-      ogs.thermometer = bottomFormGroup.get('thermometer')?.value;
+      ogs.thermometer = Utility.convertNumber(bottomFormGroup.get('thermometer')?.value);
       ogs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value?.[0];
       ogs.ladder = bottomFormGroup.get('ladder')?.value;
       ogs.data_csc_transportplate = bottomFormGroup.get('data_csc_transportplate')?.value;
@@ -1555,8 +1555,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       // ogs.top_valve_brand_cv = topFormGroup.get('top_valve_brand_cv')?.value;
       ogs.airline_valve_cv = topFormGroup.get('airline_valve_cv')?.value?.[0];
       ogs.airline_valve_oth = topFormGroup.get('airline_valve_oth')?.value;
-      ogs.airline_valve_pcs = topFormGroup.get('airline_valve_pcs')?.value;
-      ogs.airline_valve_dim = topFormGroup.get('airline_valve_dim')?.value;
+      ogs.airline_valve_pcs = Utility.convertNumber(topFormGroup.get('airline_valve_pcs')?.value);
+      ogs.airline_valve_dim = Utility.convertNumber(topFormGroup.get('airline_valve_dim')?.value, 2);
       ogs.airline_valve_conn_cv = topFormGroup.get('airline_valve_conn_cv')?.value?.[0];
       ogs.airline_valve_conn_oth = topFormGroup.get('airline_valve_conn_oth')?.value;
       ogs.airline_valve_conn_spec_cv = topFormGroup.get('airline_valve_conn_spec_cv')?.value?.[0];
@@ -1566,16 +1566,16 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       ogs.manlid_comp_cv = manlidFormGroup.get('manlid_comp_cv')?.value?.[0];
       ogs.manlid_cover_cv = manlidFormGroup.get('manlid_cover_cv')?.value?.[0];
       ogs.manlid_cover_oth = manlidFormGroup.get('manlid_cover_oth')?.value;
-      ogs.manlid_cover_pcs = manlidFormGroup.get('manlid_cover_pcs')?.value;
-      ogs.manlid_cover_pts = manlidFormGroup.get('manlid_cover_pts')?.value;
+      ogs.manlid_cover_pcs = Utility.convertNumber(manlidFormGroup.get('manlid_cover_pcs')?.value);
+      ogs.manlid_cover_pts = Utility.convertNumber(manlidFormGroup.get('manlid_cover_pts')?.value);
       ogs.manlid_seal_cv = manlidFormGroup.get('manlid_seal_cv')?.value?.[0];
       ogs.pv_type_cv = manlidFormGroup.get('pv_type_cv')?.value?.[0];
-      ogs.pv_type_pcs = manlidFormGroup.get('pv_type_pcs')?.value;
+      ogs.pv_type_pcs = Utility.convertNumber(manlidFormGroup.get('pv_type_pcs')?.value);
       ogs.pv_spec_cv = manlidFormGroup.get('pv_spec_cv')?.value?.[0];
-      ogs.pv_spec_pcs = manlidFormGroup.get('pv_spec_pcs')?.value;
+      ogs.pv_spec_pcs = Utility.convertNumber(manlidFormGroup.get('pv_spec_pcs')?.value);
       ogs.safety_handrail = manlidFormGroup.get('safety_handrail')?.value;
-      ogs.buffer_plate = manlidFormGroup.get('buffer_plate')?.value;
-      ogs.residue = manlidFormGroup.get('residue')?.value;
+      ogs.buffer_plate = Utility.convertNumber(manlidFormGroup.get('buffer_plate')?.value);
+      ogs.residue = Utility.convertNumber(manlidFormGroup.get('residue')?.value);
       ogs.dipstick = manlidFormGroup.get('dipstick')?.value;
 
       ogs.left_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsLeft));
