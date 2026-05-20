@@ -113,6 +113,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -230,7 +231,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_dt: ['']
     })
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    //this.invoiceDateControl.setValue(today);
     // this.invoiceTypeControl.setValue(this.processType);
 
   }
@@ -718,7 +719,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
         action: 'delete',
       },
       direction: tempDirection
