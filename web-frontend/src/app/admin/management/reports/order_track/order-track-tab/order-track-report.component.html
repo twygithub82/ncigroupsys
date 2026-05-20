@@ -14,16 +14,16 @@
                   <mat-icon>assignment</mat-icon>
                 </button>
               </div>
-            }
-            @if (modulePackageService.AllowExcelReport()) {
-              <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}} - Excel">
+              }
+              @if (modulePackageService.AllowExcelReport()) {
+              <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
                 <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
                   [disabled]="isGeneratingReport">
-                  <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}"
+                  <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.DETAIL_REPORT}}"
                     class="fab-icon">
                 </button>
               </div>
-            }
+              }
               <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
                 <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
                   [disabled]="((repDS.loading$ | async) || isGeneratingReport)">
@@ -55,12 +55,12 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                   <input matInput formControlName="job_no">
                 </mat-form-field>
-              </div>
+              </div> -->
 
               <!-- <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -89,6 +89,34 @@
                 </mat-form-field>
               </div>
 
+
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
+                  <mat-select formControlName="purpose" multiple>
+                    @for (codeValue of tankStatusCvList; track codeValue) {
+                    @if (availablePurpose.includes(codeValue.code_val ?? '')) {
+                    <mat-option [value]="codeValue.code_val">
+                      {{codeValue.description}}
+                    </mat-option>
+                    }
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                  <mat-select formControlName="status_cv">
+                    @for (codeValue of statusCvList; track codeValue) {
+                    <mat-option [value]="codeValue.code_val">
+                      {{codeValue.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.DATE}}</mat-label>
@@ -103,22 +131,7 @@
                   <mat-datepicker #eir_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
-
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                  <mat-select formControlName="purpose">
-                    @for (codeValue of tankStatusCvList; track codeValue) {
-                    @if (availablePurpose.includes(codeValue.code_val ?? '')) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
-                    }
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-
+             
               <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   @if((searchForm?.get('order_type')?.value||1)==='1')
@@ -160,9 +173,8 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div> -->
-            </div>
-            <div row>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 ">
+            
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 bottom-align">
                 <div class="radio-group">
                   <input type="radio" id="option-one" name="order_type" formControlName="order_type" value="1"
                     checked><label for="option-one">{{translatedLangText.STORING_ORDER}}</label>

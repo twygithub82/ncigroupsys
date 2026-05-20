@@ -247,7 +247,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       invoice_type: this.invoiceTypeControl
     })
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
     this.invoiceTypeControl.setValue(this.processType);
   }
   initSearchForm() {
@@ -415,11 +415,24 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     where.storing_order_tank = {};
     where.guid = { neq: null };
+    
     if (this.searchForm!.get('tank_no')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
-      where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      var queryValue=this.searchForm!.get('tank_no')?.value;
+      where.storing_order_tank = {or:[ 
+        { tank_no:{ contains: queryValue }},
+        {in_gate:{some:{eir_no:{contains:queryValue}}}},
+
+      ]
+    };
     }
+
+    //  if (this.searchForm!.get('tank_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
+    // }
+
 
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
     if (this.searchForm!.get('depot_status_cv')?.value) {
@@ -464,11 +477,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
         }
       };
     }
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
-    }
-
+   
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.and) where.and = [];
       var orCond = [];
@@ -989,7 +998,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.processType = "GATE_IN";
     this.invoiceNoControl.reset('');
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
     this.invoiceTypeControl.setValue(this.processType);
     this.pageIndex = 0;
 
@@ -1264,7 +1273,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
   // DisplayCost(billing_type: string, row: any) 
   DisplayCost(row: any) {
-    return this.displayNumber(row.gate_in_cost + row.gate_out_cost);
+    return `${this.displayNumber(row.gate_in_cost)} - ${this.displayNumber(row.gate_out_cost)}` ;
     // if (row.billing_type == "GATE_IN") {
     //   if (row.gin_billing) {
     //     return this.displayNumber(row.gate_in_cost);
@@ -1339,6 +1348,12 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     var bretval: boolean = false;
     bretval = row.gin_billing === null ? false : true;
+    // if(bretval){
+    //   var val=this.processType;
+    //   if(val==="GATE_OUT"){
+    //     bretval=false;
+    //   }
+    // }
     return bretval;
   }
 
@@ -1347,7 +1362,12 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     var bretval: boolean = false;
     bretval = row.gout_billing === null ? false : true;
-
+    //  if(bretval){
+    //   var val=this.processType;
+    //   if(val!=="GATE_OUT"){
+    //     bretval=false;
+    //   }
+    // }
     return bretval;
   }
 
@@ -1400,9 +1420,15 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     for (const row of this.selection.selected) {
-      if (!this.isGateInInvoice(row) && !this.isGateOutInvoice(row)) {
+      if ((!this.isGateInInvoice(row) && !this.isGateOutInvoice(row)) ){
         return false; // if empty, null, or undefined → false
       }
+      else if((!this.isGateInInvoice(row) && this.processType==="GATE_IN")||
+      (!this.isGateOutInvoice(row) && this.processType==="GATE_OUT"))
+      {
+         return false;
+      }
+     
     }
 
     return true;

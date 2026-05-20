@@ -1272,7 +1272,12 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     var bRetval: boolean = false;
 
     bRetval = row.lon_billing === null ? false : true;
-
+    //  if(bRetval){
+    //   var val=this.processType;
+    //   if(val!=="LIFT_ON"){
+    //     bRetval=false;
+    //   }
+    // }
     return bRetval;
 
   }
@@ -1280,7 +1285,12 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   isLiftOffInvoice(row: BillingSOTItem) {
     var bRetval: boolean = false;
     bRetval = row.loff_billing === null ? false : true;
-
+    // if(bRetval){
+    //   var val=this.processType;
+    //   if(val==="LIFT_ON"){
+    //     bRetval=false;
+    //   }
+    // }
     return bRetval;
   }
 
@@ -1301,6 +1311,11 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     for (const row of this.selection.selected) {
       if (!this.isLiftOffInvoice(row) && !this.isLiftOnInvoice(row)) {
         return false; // if empty, null, or undefined → false
+      }
+      else if((!this.isLiftOffInvoice(row) && this.processType==="LIFT_OFF")||
+      (!this.isLiftOnInvoice(row) && this.processType==="LIFT_ON"))
+      {
+         return false;
       }
     }
     return true;
