@@ -1,0 +1,1 @@
+UPDATE `idms`.`code_values` SET `description` = 'Monthly' WHERE (`guid` = '606');

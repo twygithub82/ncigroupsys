@@ -36,7 +36,7 @@
 
 
                     @if(modulePackageService.AllowPdfReport()) {
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
                       <button mat-mini-fab [class.orange-button]="hasSearchResult()" (click)="export_report()"
                         (click)="$event.stopPropagation()"
                         [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
@@ -47,10 +47,10 @@
                     @if(modulePackageService.AllowExcelReport()) {
 
 
-                    <div class="m-l-5" matTooltip="{{translatedLangText.EXPORT}} - Excel">
+                    <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
                       <button mat-mini-fab class="light-green-button" (click)="export_report(5)"
                         (click)="$event.stopPropagation()"  [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
-                        <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}"
+                        <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }}"
                           class="fab-icon">
                       </button>
                     </div>
@@ -138,7 +138,7 @@
                       <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt" required>
                         <input matStartDate placeholder="Start date" formControlName="inv_dt_start" required>
-                        <input matEndDate placeholder="End date" formControlName="inv_dt_end" required>
+                        <input matEndDate placeholder="End date" formControlName="inv_dt_end" required class="ms-4">
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #inv_picker></mat-date-range-picker>

@@ -7,7 +7,7 @@
         <mat-panel-description>
           @if(modulePackageService.AllowPdfReport())
           {
-          <div class="m-l-" [matTooltip]="translatedLangText.GENERATE_REPORT">
+          <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
               <mat-icon>assignment</mat-icon>
@@ -16,10 +16,10 @@
         }
         @if(modulePackageService.AllowExcelReport())
         {
-          <div class="m-l-5" matTooltip="{{translatedLangText.GENERATE_REPORT}} - Excel">
+          <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
             <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport || !AllowToSearch()">
-              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}"
+              <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }}"
                 class="fab-icon">
             </button>
           </div>
@@ -48,7 +48,7 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
               <mat-select formControlName="inventory_type">
@@ -63,43 +63,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.MONTH_START}}</mat-label>
-              <mat-select formControlName="month_start">
-                @for (month of monthList; track month) {
-                <mat-option [value]="month">
-                  {{month}}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.MONTH_END}}</mat-label>
-              <mat-select formControlName="month_end">
-                @for (month of monthList; track month) {
-                <mat-option [value]="month">
-                  {{month}}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.YEAR}}</mat-label>
-              <mat-select formControlName="year">
-                @for (year of yearList; track year) {
-                <mat-option [value]="year">
-                  {{year}}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.REPORT_TYPE}}</mat-label>
               <mat-select formControlName="report_type">
@@ -114,6 +78,43 @@
               </mat-select>
             </mat-form-field>
           </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.MONTH_START}}</mat-label>
+              <mat-select formControlName="month_start">
+                @for (month of monthList; track month) {
+                <mat-option [value]="month">
+                  {{month}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.MONTH_END}}</mat-label>
+              <mat-select formControlName="month_end">
+                @for (month of monthList; track month) {
+                <mat-option [value]="month">
+                  {{month}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.YEAR}}</mat-label>
+              <mat-select formControlName="year">
+                @for (year of yearList; track year) {
+                <mat-option [value]="year">
+                  {{year}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+         
           <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search_overview_summary()"

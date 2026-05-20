@@ -45,6 +45,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { InventoryYearlySalesReportDetailsExcelComponent } from 'app/document-template/excel/management/yearly/inventory/inventory-sales-details-excel.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-inventory-yearly',
@@ -160,7 +161,10 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     MONTH_END: 'COMMON-FORM.MONTH-END',
     GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
     REPORT_TYPE: 'COMMON-FORM.REPORT-TYPE',
-    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+
   }
 
   invForm?: UntypedFormGroup;
@@ -216,7 +220,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   yearList: string[] = [];
   monthList: string[] = [];
   // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR", "STEAMING", "RESIDUE"];
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "RESIDUE", "REPAIR"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -307,7 +311,10 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');;
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
+      this.inventoryTypeCvList = this.inventoryTypeCvList.sort((a: any, b: any) => {
+        return this.invTypes.indexOf(a.code_val) - this.invTypes.indexOf(b.code_val);
+      });
     });
     this.cvDS.connectAlias('reportTypeCv').subscribe(data => {
       this.reportTypeCvList = data;
@@ -456,7 +463,7 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
         this.repData = data;
 
-      this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!, reportType!);
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!, reportType!);
 
       });
 
@@ -553,9 +560,9 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[], reportType: number) {
 
-    //if (!this.ZeroTransaction(this.repData)) {
-    if (true) {
-      if (reportType == 5) { 
+    
+    if (!this.ZeroTransaction(this.repData)) {
+      if (reportType == 5) {
         this.onExportChartExcel_r1(repData, date, customerName, report_type, invTypes);
       }
       else {
@@ -565,10 +572,11 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
     else {
       this.repData = [];
       this.isGeneratingReport = false;
+      this.ShowWarningMessage();
     }
   }
 
-   onExportChartExcel_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
+  onExportChartExcel_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -679,5 +687,25 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

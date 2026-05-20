@@ -1543,8 +1543,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.manufacturer_cv = this.surveyForm.get('tank_details.manufacturer_cv')?.value;
       igs.dom_dt = Utility.convertDate(this.surveyForm.get('tank_details.dom_dt')?.value);
       igs.cladding_cv = this.surveyForm.get('tank_details.cladding_cv')?.value;
-      igs.capacity = this.surveyForm.get('tank_details.capacity')?.value;
-      igs.tare_weight = this.surveyForm.get('tank_details.tare_weight')?.value;
+      igs.capacity = Utility.convertNumber(this.surveyForm.get('tank_details.capacity')?.value);
+      igs.tare_weight = Utility.convertNumber(this.surveyForm.get('tank_details.tare_weight')?.value);
       igs.max_weight_cv = this.surveyForm.get('tank_details.max_weight_cv')?.value;
       igs.height_cv = this.surveyForm.get('tank_details.height_cv')?.value;
       igs.walkway_cv = this.surveyForm.get('tank_details.walkway_cv')?.value;
@@ -1560,7 +1560,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.foot_valve_cv = bottomFormGroup.get('foot_valve_cv')?.value?.[0];
       igs.foot_valve_oth = bottomFormGroup.get('foot_valve_oth')?.value;
       // igs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value?.[0];
-      igs.thermometer = bottomFormGroup.get('thermometer')?.value;
+      igs.thermometer = Utility.convertNumber(bottomFormGroup.get('thermometer')?.value);
       igs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value?.[0];
       igs.ladder = bottomFormGroup.get('ladder')?.value;
       igs.data_csc_transportplate = bottomFormGroup.get('data_csc_transportplate')?.value;
@@ -1574,8 +1574,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       // igs.top_valve_brand_cv = topFormGroup.get('top_valve_brand_cv')?.value;
       igs.airline_valve_cv = topFormGroup.get('airline_valve_cv')?.value?.[0];
       igs.airline_valve_oth = topFormGroup.get('airline_valve_oth')?.value;
-      igs.airline_valve_pcs = topFormGroup.get('airline_valve_pcs')?.value;
-      igs.airline_valve_dim = topFormGroup.get('airline_valve_dim')?.value;
+      igs.airline_valve_pcs = Utility.convertNumber(topFormGroup.get('airline_valve_pcs')?.value);
+      igs.airline_valve_dim = Utility.convertNumber(topFormGroup.get('airline_valve_dim')?.value, 2);
       igs.airline_valve_conn_cv = topFormGroup.get('airline_valve_conn_cv')?.value?.[0];
       igs.airline_valve_conn_oth = topFormGroup.get('airline_valve_conn_oth')?.value;
       igs.airline_valve_conn_spec_cv = topFormGroup.get('airline_valve_conn_spec_cv')?.value?.[0];
@@ -1585,15 +1585,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.manlid_comp_cv = manlidFormGroup.get('manlid_comp_cv')?.value?.[0];
       igs.manlid_cover_cv = manlidFormGroup.get('manlid_cover_cv')?.value?.[0];
       igs.manlid_cover_oth = manlidFormGroup.get('manlid_cover_oth')?.value;
-      igs.manlid_cover_pcs = manlidFormGroup.get('manlid_cover_pcs')?.value;
-      igs.manlid_cover_pts = manlidFormGroup.get('manlid_cover_pts')?.value;
+      igs.manlid_cover_pcs = Utility.convertNumber(manlidFormGroup.get('manlid_cover_pcs')?.value);
+      igs.manlid_cover_pts = Utility.convertNumber(manlidFormGroup.get('manlid_cover_pts')?.value);
       igs.manlid_seal_cv = manlidFormGroup.get('manlid_seal_cv')?.value?.[0];
       igs.pv_type_cv = manlidFormGroup.get('pv_type_cv')?.value?.[0];
-      igs.pv_type_pcs = manlidFormGroup.get('pv_type_pcs')?.value;
+      igs.pv_type_pcs = Utility.convertNumber(manlidFormGroup.get('pv_type_pcs')?.value);
       igs.pv_spec_cv = manlidFormGroup.get('pv_spec_cv')?.value?.[0];
-      igs.pv_spec_pcs = manlidFormGroup.get('pv_spec_pcs')?.value;
+      igs.pv_spec_pcs = Utility.convertNumber(manlidFormGroup.get('pv_spec_pcs')?.value);
       igs.safety_handrail = manlidFormGroup.get('safety_handrail')?.value;
-      igs.buffer_plate = manlidFormGroup.get('buffer_plate')?.value;
+      igs.buffer_plate = Utility.convertNumber(manlidFormGroup.get('buffer_plate')?.value);
       igs.residue = Utility.convertNumber(manlidFormGroup.get('residue')?.value);
       igs.dipstick = manlidFormGroup.get('dipstick')?.value;
 
@@ -2492,10 +2492,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   blockDecimal(event: KeyboardEvent) {
-  if (event.key === '.' || event.key === ',' || event.key === 'e') {
-    event.preventDefault();
+    if (event.key === '.' || event.key === ',' || event.key === 'e') {
+      event.preventDefault();
+    }
   }
-}
 
   private showBackButtonWarning() {
     // Custom implementation - show modal, toast, etc.
