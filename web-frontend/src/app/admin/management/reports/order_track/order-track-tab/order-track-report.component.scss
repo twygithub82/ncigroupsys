@@ -63,5 +63,10 @@ display: inline-block;
 margin: 5px;
 border-radius: 5px;
 overflow: hidden;
+  margin-top: auto;
+}
+.bottom-align {
+  display: flex;
+  align-items: flex-end;
 }
 

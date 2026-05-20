@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -156,7 +157,9 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     STORING_ORDER_NO: 'COMMON-FORM.STORING-ORDER-NO',
     ORDER_NO_LABEL: 'COMMON-FORM.STORING-ORDER-NO',
     RELEASE_ORDER_NO: 'COMMON-FORM.RELEASE-ORDER-NO',
-    DATE: "COMMON-FORM.DATE"
+    DATE: "COMMON-FORM.DATE",
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    WARNING: 'COMMON-FORM.WARNING'
   }
 
   availablePurpose: string[] =
@@ -345,11 +348,13 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'soStatusCv', codeValType: 'SO_TANK_STATUS' },
+      // { alias: 'soStatusCv', codeValType: 'SO_TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
+
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.statusCvList = addDefaultSelectOption(data, 'All');
     });
@@ -361,7 +366,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvListDisplay = data;
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+      this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
@@ -415,7 +420,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  search(repType:number=1) {
+  search(repType: number = 1) {
     if (this.searchForm?.invalid) {
       this.searchForm.markAllAsTouched();
       return;
@@ -430,7 +435,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.selection.clear();
 
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no =  this.searchForm!.get('tank_no')?.value ;
+      where.tank_no = this.searchForm!.get('tank_no')?.value;
       cond_counter++;
     }
 
@@ -443,7 +448,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-      where.customer_code =  `${this.searchForm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
@@ -457,15 +462,16 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       cond_counter++;
     }
 
-   
+
     if (this.searchForm!.get('last_cargo')?.value) {
       where.last_cargo = `${this.searchForm!.get('last_cargo')?.value.cargo}`;
       cond_counter++;
     }
 
-     where.purpose =[];
-     if (this.searchForm!.get('purpose')?.value) {
-      where.purpose = [`${this.searchForm!.get('purpose')?.value}`];
+    where.purpose = [];
+    if (this.searchForm!.get('purpose')?.value) {
+      // where.purpose = [`${this.searchForm!.get('purpose')?.value}`];
+      where.purpose = this.searchForm!.get('purpose')?.value;
       cond_counter++;
     }
 
@@ -492,11 +498,11 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       return;
     }
     this.lastSearchCriteria = where;
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,repType);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, repType);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,repType:number=1) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, repType: number = 1) {
 
     this.subs.sink = this.repDS.searchManagementReportOrderTrackingReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
@@ -506,7 +512,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         // report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        this.ProcessReport(this.repData, report_type!,repType);
+        this.ProcessReport(this.repData, report_type!, repType);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -656,15 +662,19 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  ProcessReport(repData: OrderTrackingItem[], report_type: string,repType:number=1) {
+  ProcessReport(repData: OrderTrackingItem[], report_type: string, repType: number = 1) {
 
-    if(repType==5)
-    {
+    if(repData.length == 0) 
+      {
+        this.isGeneratingReport=false;
+        this.ShowWarningMessage();
+        return;
+      }
+    if (repType == 5) {
       this.onExportDetailExcel(repData, report_type);
     }
-    else
-    {
-        this.onExportDetail(repData, report_type);
+    else {
+      this.onExportDetail(repData, report_type);
     }
   }
 
@@ -726,7 +736,25 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       this.isGeneratingReport = false;
     });
   }
-
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
 
 
 }
