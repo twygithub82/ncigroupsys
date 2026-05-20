@@ -163,7 +163,9 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     MONTH_END: 'COMMON-FORM.MONTH-END',
     GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
     REPORT_TYPE: 'COMMON-FORM.REPORT-TYPE',
-    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    
 
   }
 
@@ -221,7 +223,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   monthList: string[] = [];
   //invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
   invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR", "STEAMING", "RESIDUE"];
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "RESIDUE", "REPAIR"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -311,13 +313,18 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');;
+
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
+      this.inventoryTypeCvList = this.inventoryTypeCvList.sort((a: any, b: any) => {
+    return this.invTypes.indexOf(a.code_val) - this.invTypes.indexOf(b.code_val);
+  });
+
     });
     this.cvDS.connectAlias('reportTypeCv').subscribe(data => {
       this.reportTypeCvList = data;
       this.initSearchForm();
       this.initializeValueChanges();
-      this.yearList=[];
+      this.yearList = [];
       var thisYear = new Date().getFullYear();
       var startYear = thisYear - 5;
       for (var i = startYear; i <= thisYear; i++) {
@@ -442,7 +449,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.subs.sink = this.reportDS.searchManagementReportRevenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!,reportType!);
+        this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!, reportType!);
       });
   }
 
@@ -564,24 +571,22 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   }
 
   ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string,
-     report_type: string, invTypes: string[],reportType:number) {
+    report_type: string, invTypes: string[], reportType: number) {
 
-    if(reportType==5)
-    {
-      this.onExportChartExcel_r1(repData, date, customerName, report_type, invTypes);
+    if (!this.ZeroTransaction(repData)) {
+      if (reportType == 5) {
+        this.onExportChartExcel_r1(repData, date, customerName, report_type, invTypes);
+      }
+      else {
+        this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+      }
     }
-    else
-    {
-      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+    else {
+      this.repData = [];
+      this.isGeneratingReport = false;
+      this.ShowWarningMessage();
     }
-    // if (!this.ZeroTransaction(repData)) {
-    //   this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
-    // }
-    // else {
-    //   this.repData = [];
-    //   this.isGeneratingReport = false;
-    //   this.ShowWarningMessage();
-    // }
+
   }
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
@@ -753,7 +758,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       disableClose: true,
       data: {
         headerText: this.translatedLangText.WARNING,
-        messageText: [this.translatedLangText.NO_RESULT],
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
         act: "warn"
       },
       direction: tempDirection
@@ -761,4 +766,6 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     dialogRef.afterClosed().subscribe(result => {
     });
   }
+
+
 }

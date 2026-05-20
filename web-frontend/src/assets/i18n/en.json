@@ -85,9 +85,9 @@
         "GROUP": "Group",
         "GROUP-NEW": "New Group",
         "GROUP-EDIT": "Edit Group",
-        "MONTHLY-REPORTS": "Monthly Reports",
-        "YEARLY-REPORTS": "Yearly Reports",
-        "PERFORMANCE-REPORTS": "Performance Reports",
+        "MONTHLY-REPORTS": "Monthly",
+        "YEARLY-REPORTS": "Yearly",
+        "PERFORMANCE-REPORTS": "Depot Performance",
         "ORDER-TRACK-REPORTS": "Order Track Reports"
       }
     },
@@ -590,12 +590,12 @@
     "ARE-YOU-SURE": "Are you sure?",
     "PACKAGE-LABOUR": "Package Labour",
     "CONFIRM-RESET": "Confirm Reset?",
-    "CONFIRM-UPDATE-INVOICE": "Update Existing Invoice?",
+    "CONFIRM-UPDATE-INVOICE": "Invoice number already exists. Proceed with update?",
     "CONFIRM-REMOVE-ESITMATE": "Remove Selected Estimate(s)?",
     "CONFIRM-REMOVE-ITEMS": "Remove Selected Item(s)?",
     "CONFIRM-REMOVE-INVOICES": "Remove Selected Invoice(s)?",
     "CONFIRM-INVALID-ESTIMATE": "Duplicate invoice number detected across customers",
-    "CONFIRM-INVALID-INVOICE": "Failed to update the invoice number because the new invoice number is duplicated.",
+    "CONFIRM-INVALID-INVOICE": "Unable to proceed. Duplicate invoice number detected.",
     "CONFIRM-TEAM-UNASSIGN": "Unassign?",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
@@ -904,7 +904,7 @@
     "APPROVED-COST": "Approved Cost",
     "ESTIMATE-COST": "Estimate Cost",
     "FOR": "For",
-    "IN-GATE-OUT-GATE": "In-Gate / Out-Gate",
+    "IN-GATE-OUT-GATE": "Gate In/Out",
     "PAGE": "Page",
     "OF": "Of",
     "CURRENT-LOCATION": "Current Location",
@@ -1430,6 +1430,7 @@
     "JOB": "Job",
     "LOLO-ON-OFF": "LOLO On/Off",
     "DAILY-REVENUE" : "Daily Revenue"
+   
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

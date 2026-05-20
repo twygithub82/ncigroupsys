@@ -168,13 +168,13 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     COST: 'COMMON-FORM.COST',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     ESTIMATE_STATUS: 'COMMON-FORM.ESTIMATE-STATUS',
-    NET_COST: 'COMMON-FORM.NET-COST',
+    NET_COST: 'COMMON-FORM.COST',
     REMARKS: 'COMMON-FORM.REMARKS',
     CUSTOMER_TYPE: 'COMMON-FORM.CUSTOMER-TYPE',
     LESSEE: 'COMMON-FORM.LESSEE',
     OWNER: 'COMMON-FORM.OWNER',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
-    DELETE: 'COMMON-FORM.DELETE',
+    DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     BILL_TO: 'COMMON-FORM.BILL-TO',
 
@@ -277,7 +277,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       inv_dt: ['']
     })
      const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    //this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -1193,7 +1193,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -1281,7 +1281,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.DELETE,
         action: 'delete',
       },
       direction: tempDirection

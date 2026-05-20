@@ -101,7 +101,7 @@
                           <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                           <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt">
                             <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
-                            <input matEndDate placeholder="End date" formControlName="inv_dt_end">
+                            <input matEndDate placeholder="End date" formControlName="inv_dt_end" class="ms-4">
                           </mat-date-range-input>
                           <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
                           <mat-date-range-picker #inv_picker></mat-date-range-picker>
@@ -172,7 +172,7 @@
                       } -->
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                           <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
@@ -186,27 +186,27 @@
                       } -->
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
                           <input matInput [formControl]="invoiceTotalCostControl" readonly>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                        <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                        <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="action-btn m-r-5"
                           (click)="save($event)">
                           <mat-icon>
                             save
                           </mat-icon>
                           {{translatedLangText.SAVE}}
                         </button>
-                        <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)">
+                        <button mat-flat-button color="accent" class="action-btn m-r-5" (click)="onCancel($event)" hidden="true">
                           <mat-icon>
                             close
                           </mat-icon>
                           {{translatedLangText.CLEAR}}
                         </button>
-                        <button mat-flat-button color="warn" [disabled]="!AllowToDelete()" class="m-r-5"
+                        <button mat-flat-button color="warn" [disabled]="!AllowToDelete()" class="action-btn m-r-5"
                           (click)="delete($event)">
                           <mat-icon>
                             delete_forever
@@ -245,13 +245,13 @@
                             <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                             {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
                           </div>
-                          <div class="w-xl-16 w-lg-50">
-                            <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                            {{getTankStatusDescription(sotRow.tank_status_cv)}}
-                          </div>
                           <div class="w-xl-17 w-lg-50">
                             <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
                             {{getRepairOptionDescription(sotRow.purpose_repair_cv)}}
+                          </div>
+                          <div class="w-xl-16 w-lg-50">
+                            <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                            {{getTankStatusDescription(sotRow.tank_status_cv)}}
                           </div>
                           <!-- <div class="w-40">
                       <span class="font-bold me-1">{{translatedLangText.TANK_NO}}:</span>
