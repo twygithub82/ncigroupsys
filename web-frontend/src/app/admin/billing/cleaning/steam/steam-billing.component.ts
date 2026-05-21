@@ -238,7 +238,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_no: [''],
       inv_dt: ['']
     })
-     const today = new Date().toISOString().substring(0, 10);
+    const today = new Date().toISOString().substring(0, 10);
     //this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
@@ -402,7 +402,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     // where.status_cv = { in: ['COMPLETED'] }; 
 
     where.and = [
-      {status_cv: { in: BILLING_ESTIMATE_STATUS }}
+      { status_cv: { in: BILLING_ESTIMATE_STATUS } }
       // {
       //   and: [
       //     { create_by: { neq: "system" } },
@@ -442,7 +442,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       where.storing_order_tank.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        { in_gate: { some: { eir_no: { contains: tankNo } } } },
+        { out_gate: { some: { eir_no: { contains: tankNo } } } }
       ];
     }
 
@@ -495,14 +497,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       });
     }
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
-      where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
+    //   where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+    // }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.customer_billing) where.customer_billing = {};
@@ -546,9 +547,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.subs.sink = this.stmDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.stmEstList = data;
-         if (this.searchForm!.get('customer_code')?.value) {
-            this.stmEstList  = this.stmEstList.filter(item => item.customer_company?.code === this.searchForm!.get('customer_code')?.value.code);
-         }
+        if (this.searchForm!.get('customer_code')?.value) {
+          this.stmEstList = this.stmEstList.filter(item => item.customer_company?.code === this.searchForm!.get('customer_code')?.value.code);
+        }
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -857,7 +858,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
-        billingEstReq.existing_billing_guid=cln.customer_billing?.guid||'';
+        billingEstReq.existing_billing_guid = cln.customer_billing?.guid || '';
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -891,7 +892,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
-       billingEstReq.existing_billing_guid=c.customer_billing?.guid||'';
+      billingEstReq.existing_billing_guid = c.customer_billing?.guid || '';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {

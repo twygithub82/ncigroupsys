@@ -392,7 +392,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.calculateTotalCost();
 
     // where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
-    where.status_cv = { in:BILLING_ESTIMATE_STATUS };
+    where.status_cv = { in: BILLING_ESTIMATE_STATUS };
     where.bill_to_guid = { neq: null };
     if (!where.storing_order_tank) where.storing_order_tank = {};
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
@@ -421,7 +421,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       where.storing_order_tank.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        { in_gate: { some: { eir_no: { contains: tankNo } } } },
+        { out_gate: { some: { eir_no: { contains: tankNo } } } }
       ];
     }
 
@@ -465,14 +467,13 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       });
     }
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
-      where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
+    //   where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+    // }
 
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {

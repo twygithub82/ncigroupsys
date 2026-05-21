@@ -91,7 +91,7 @@
               <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
               <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt">
                 <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
-                <input matEndDate placeholder="End date" formControlName="inv_dt_end">
+                <input matEndDate placeholder="End date" formControlName="inv_dt_end" class="ms-4">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
               <mat-date-range-picker #inv_picker></mat-date-range-picker>
@@ -159,19 +159,19 @@
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-            <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
+            <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="action-btn m-r-5" (click)="save($event)">
               <mat-icon>
                 save
               </mat-icon>
               {{translatedLangText.SAVE}}
             </button>
-            <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)" hidden>
+            <button mat-flat-button color="accent" class="action-btn m-r-5" (click)="onCancel($event)" hidden>
               <mat-icon>
                 close
               </mat-icon>
               {{translatedLangText.CLEAR}}
             </button>
-            <button mat-flat-button color="warn" [disabled]="!AllowToDelete()" class="m-r-5" (click)="delete($event)">
+            <button mat-flat-button color="warn" [disabled]="!AllowToDelete()" class="action-btn m-r-5" (click)="delete($event)">
               <mat-icon>
                 delete_forever
               </mat-icon>
