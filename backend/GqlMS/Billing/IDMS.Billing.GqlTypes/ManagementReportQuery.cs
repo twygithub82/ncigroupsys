@@ -924,6 +924,7 @@ namespace IDMS.Billing.GqlTypes
                 int year = depotPerformanceRequest.year;
                 int month = depotPerformanceRequest.month;
                 string completedStatus = "COMPLETED";
+                string steamType = "steaming";
                 string cleanType = "cleaning";
                 string repairType = "repair";
                 string inGateType = "ingate";
@@ -968,6 +969,24 @@ namespace IDMS.Billing.GqlTypes
 
                 var resRepair = cleaningQuery.Where(s => s.type.Equals(repairType)).OrderBy(s => s.date).ToList();
                 var resultRepair = GetResultInNoOfWeek(resRepair,startOfMonth, endOfMonth);
+
+
+                var steamQuery = await (from s in context.steaming
+                                  join sot in context.storing_order_tank on s.sot_guid equals sot.guid
+                                  join so in context.storing_order on sot.so_guid equals so.guid
+                                  join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                                  where s.complete_dt >= startEpoch && s.complete_dt <= endEpoch && s.status_cv.Equals(completedStatus) && s.delete_dt == null
+                                  && (string.IsNullOrEmpty(depotPerformanceRequest.customer_code) || cc.code.Contains(depotPerformanceRequest.customer_code))
+                                  select new TempWeeklyData
+                                  {
+                                      guid = s.sot_guid,
+                                      date = s.complete_dt,
+                                      type = steamType
+                                  }).ToListAsync();  //AsQueryable();
+
+
+                var resSteam = steamQuery.Where(s => s.type.Equals(steamType)).OrderBy(s => s.date).ToList();
+                var resultSteaming = GetResultInNoOfWeek(resSteam, startOfMonth, endOfMonth);
 
                 //gate in gate out
                 var gateQuery = await (from s in context.in_gate
@@ -1022,6 +1041,7 @@ namespace IDMS.Billing.GqlTypes
                 var resultDepot = GetResultInNoOfWeek(resDepot, startOfMonth, endOfMonth);
 
                 var allWeeks = resultCleaning
+                        .Concat(resultSteaming)
                         .Concat(resultRepair)
                         .Concat(resultInGate)
                         .Concat(resultOutGate)
@@ -1040,11 +1060,13 @@ namespace IDMS.Billing.GqlTypes
                     in_count = resultInGate.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
                     out_count = resultOutGate.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
                     depot_count = resultDepot.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0,
+                    s_count = resultSteaming.FirstOrDefault(g => g.Week_Of_year == week)?.count ?? 0
                 }).Select(item => new DepotPerformanceResult
                 {
                     week_of_year = item.weekOfYear,
                     cleaning_count = item.c_count,
                     repair_count = item.r_count,
+                    steaming_count = item.s_count,
                     gate_in_count = item.in_count,
                     gate_out_count = item.out_count,
                     depot_count = item.depot_count,
