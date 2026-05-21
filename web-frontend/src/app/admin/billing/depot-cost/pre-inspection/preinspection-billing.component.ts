@@ -389,16 +389,28 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
 
     where.storing_order_tank = {};
     where.preinspection = { eq: true };
-    if (this.searchForm!.get('tank_no')?.value) {
+     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
       if (!where.storing_order_tank) where.storing_order_tank = {};
-      // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
-      // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      where.storing_order_tank.or = [
-        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-      ];
+      if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+      where.storing_order_tank = {or:[ 
+        { tank_no:{ contains: tankNo }},
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        {in_gate:{some:{eir_no:{contains:tankNo}}}},
+
+      ]
+    };
     }
+    // if (this.searchForm!.get('tank_no')?.value) {
+    //   const tankNo = this.searchForm!.get('tank_no')?.value;
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+    //   // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+    //   where.storing_order_tank.or = [
+    //     { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+    //     { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+    //   ];
+    // }
 
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
@@ -440,10 +452,10 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
         }
       };
     }
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
+    // }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.preinsp_billing) where.preinsp_billing = {};

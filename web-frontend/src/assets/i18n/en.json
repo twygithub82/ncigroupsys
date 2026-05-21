@@ -1175,10 +1175,10 @@
     "APPROVED-HOUR": "Approved Hour",
     "GATE": "Gate",
     "DIFFERENCE": "Difference",
-    "NO-OF-CLEAN": "No. of Cleaning",
-    "NO-OF-REPAIR-ORDER": "No. of Repair Order",
-    "NO-OF-GATE-IN": "No. of Gate-In",
-    "NO-OF-GATE-OUT": "No. of Gate-Out",
+    "NO-OF-CLEAN": "Tanks For Cleaning",
+    "NO-OF-REPAIR-ORDER": "Estimate For Repair",
+    "NO-OF-GATE-IN": "Tanks Gate In",
+    "NO-OF-GATE-OUT": "Tanks Gate Out",
     "TOTAL-IN-OUT": "Total In and Out",
     "AVERAGE-IN-OUT": "Average In and Out",
     "ARE-YOU-SURE-TO-PUBLISH": "Publish?",
@@ -1429,7 +1429,8 @@
     "REVERT": "Revert",
     "JOB": "Job",
     "LOLO-ON-OFF": "LOLO On/Off",
-    "DAILY-REVENUE" : "Daily Revenue"
+    "DAILY-REVENUE" : "Daily Revenue",
+    "NO-OF": "Number of"
    
   },
   "CLEAN-PROCEDURES": {

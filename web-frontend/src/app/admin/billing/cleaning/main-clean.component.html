@@ -11,7 +11,7 @@
           <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
             @for (tab of allowedTabs; track tab.label) {
             @if (tab.component == 'app-clean-billing') {
-            <mat-tab [label]="translatedLangText.CLEANING_BILLING">
+            <mat-tab [label]="translatedLangText.CLEANING">
               <app-clean-billing #cleanBilling></app-clean-billing>
             </mat-tab>
             }

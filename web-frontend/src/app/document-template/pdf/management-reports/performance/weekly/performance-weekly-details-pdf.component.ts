@@ -290,7 +290,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     NO_OF_GATE_OUT: 'COMMON-FORM.NO-OF-GATE-OUT',
     TOTAL_IN_OUT: 'COMMON-FORM.TOTAL-IN-OUT',
     AVERAGE_IN_OUT: 'COMMON-FORM.AVERAGE-IN-OUT',
-    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
+    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY',
+    NO_OF: 'COMMON-FORM.NO-OF',
 
 
   }
@@ -673,7 +674,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -732,25 +733,25 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     // const data: any[][] = []; // Explicitly define data as a 2D array
 
-    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.MONTH, this.date); // Replace with your actual cutoff date
+    // const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.MONTH, this.date); // Replace with your actual cutoff date
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, PDFUtility.RightSubTitleFontSize());
     // Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
-
-     startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin, this.translate, reportTitle, repGeneratedDate);
-    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    const repGeneratedDate = this.date||"-";
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, reportTitle, repGeneratedDate,1);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     if (this.customer) {
-        const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-     // Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
-      startY+=PDFUtility.GapBetweenLeftTitleAndTable();
+      const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+      // Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
+      startY += PDFUtility.GapBetweenLeftTitleAndTable();
       // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       // Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
     }
 
     var idx = 0;
-    var hdr: string[][] = [['']];
+    var hdr: string[][] = [[`${this.translatedLangText.NO_OF}`]];
     var data: string[][] = [
       [`${this.translatedLangText.NO_OF_CLEAN}`],
       [`${this.translatedLangText.NO_OF_REPAIR_ORDER}`],
@@ -799,7 +800,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       head: hdr,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top:startY },
+      margin: { left: leftMargin, right: rightMargin, top: startY },
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,
@@ -911,8 +912,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
           if (pageCount > 1) {
             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 50, 9);
-             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-             PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
           }
         }
 
@@ -957,8 +958,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
 
     setTimeout(async () => {
 
-       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin, this.translate,pagePositions);
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+        rightMargin, this.translate, pagePositions);
 
       // startY=lastTableFinalY+10;
       // let chartContentWidth = pageWidth - leftMargin - rightMargin;

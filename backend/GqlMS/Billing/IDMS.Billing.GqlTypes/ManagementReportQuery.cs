@@ -964,10 +964,10 @@ namespace IDMS.Billing.GqlTypes
                                      }).ToListAsync();  //AsQueryable();
 
                 var resClean = cleaningQuery.Where(s => s.type.Equals(cleanType)).OrderBy(s => s.date).ToList();
-                var resultCleaning = GetResultInNoOfWeek(resClean);
+                var resultCleaning = GetResultInNoOfWeek(resClean, startOfMonth, endOfMonth);
 
                 var resRepair = cleaningQuery.Where(s => s.type.Equals(repairType)).OrderBy(s => s.date).ToList();
-                var resultRepair = GetResultInNoOfWeek(resRepair);
+                var resultRepair = GetResultInNoOfWeek(resRepair,startOfMonth, endOfMonth);
 
                 //gate in gate out
                 var gateQuery = await (from s in context.in_gate
@@ -998,10 +998,10 @@ namespace IDMS.Billing.GqlTypes
                                }).ToListAsync();  //AsQueryable();
 
                 var resInGate = gateQuery.Where(s => s.type.Equals(inGateType)).OrderBy(s => s.date).ToList();
-                var resultInGate = GetResultInNoOfWeek(resInGate);
+                var resultInGate = GetResultInNoOfWeek(resInGate, startOfMonth, endOfMonth);
 
                 var resOutGate = gateQuery.Where(s => s.type.Equals(outGateType)).OrderBy(s => s.date).ToList();
-                var resultOutGate = GetResultInNoOfWeek(resOutGate);
+                var resultOutGate = GetResultInNoOfWeek(resOutGate, startOfMonth, endOfMonth);
 
 
                 var depotQuery = await (from s in context.in_gate
@@ -1019,7 +1019,7 @@ namespace IDMS.Billing.GqlTypes
                                         }).ToArrayAsync();
 
                 var resDepot = depotQuery.OrderBy(s => s.date).ToList();
-                var resultDepot = GetResultInNoOfWeek(resDepot);
+                var resultDepot = GetResultInNoOfWeek(resDepot, startOfMonth, endOfMonth);
 
                 var allWeeks = resultCleaning
                         .Concat(resultRepair)
@@ -1063,17 +1063,66 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
-        private List<ResultPerWeek?> GetResultInNoOfWeek(List<TempWeeklyData> resultList)
+        private List<ResultPerWeek?> GetResultInNoOfWeek(List<TempWeeklyData> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
-            var result = (from s in resultList
-                          let dateTime = DateTimeOffset.FromUnixTimeSeconds((long)s.date).ToLocalTime().DateTime
-                          let weekOfYear = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)
-                          group s by weekOfYear into g
-                          select new ResultPerWeek
-                          {
-                              Week_Of_year = g.Key,
-                              count = g.Count()
-                          }).ToList();
+            //var result = (from s in resultList
+            //              let dateTime = DateTimeOffset.FromUnixTimeSeconds((long)s.date).ToLocalTime().DateTime
+            //              let weekOfYear = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)
+            //              group s by weekOfYear into g
+            //              select new ResultPerWeek
+            //              {
+            //                  Week_Of_year = g.Key,
+            //                  count = g.Count()
+            //              }).ToList();
+
+
+
+            var calendar = CultureInfo.CurrentCulture.Calendar;
+            var startDate = startOfMonth; //new DateTime(2026, 4, 1);
+            var endDate = endOfMonth; //new DateTime(2026, 4, 30);
+
+            // Get all Mondays inside April
+            var expectedWeeks = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                .Select(d => startDate.AddDays(d))
+                .Where(d => d.DayOfWeek == DayOfWeek.Monday)
+                .Select(d => calendar.GetWeekOfYear(
+                    d,
+                    CalendarWeekRule.FirstFourDayWeek,
+                    DayOfWeek.Monday))
+                .Distinct()
+                .OrderBy(w => w)
+                .ToList();
+
+            // Group actual data
+            var groupedData = resultList
+                .Select(s =>
+                {
+                    var dt = DateTimeOffset
+                        .FromUnixTimeSeconds((long)s.date)
+                        .ToLocalTime()
+                        .DateTime;
+
+                    return new
+                    {
+                        Week = calendar.GetWeekOfYear(
+                            dt,
+                            CalendarWeekRule.FirstFourDayWeek,
+                            DayOfWeek.Monday)
+                    };
+                })
+                .GroupBy(x => x.Week)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // Final result
+            var result = expectedWeeks
+                .Select(w => new ResultPerWeek
+                {
+                    Week_Of_year = w,
+                    count = groupedData.ContainsKey(w)
+                        ? groupedData[w]
+                        : 0
+                })
+                .ToList();
 
             return result;
         }

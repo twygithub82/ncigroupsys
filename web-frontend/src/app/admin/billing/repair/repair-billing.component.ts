@@ -618,6 +618,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
           return d;
         });
 
+
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;

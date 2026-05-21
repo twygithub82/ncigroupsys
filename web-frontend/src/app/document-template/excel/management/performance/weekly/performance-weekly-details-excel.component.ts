@@ -290,7 +290,8 @@ export class WeeklyPerformanceReportDetailsExcelComponent extends UnsubscribeOnD
     NO_OF_GATE_OUT: 'COMMON-FORM.NO-OF-GATE-OUT',
     TOTAL_IN_OUT: 'COMMON-FORM.TOTAL-IN-OUT',
     AVERAGE_IN_OUT: 'COMMON-FORM.AVERAGE-IN-OUT',
-    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
+    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY',
+    NO_OF: 'COMMON-FORM.NO-OF',
 
 
   }
@@ -655,11 +656,11 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
   const wsData: any[][] = [];
 
   const reportTitle = this.GetReportTitle();
-  const repGeneratedDate = PDFUtility.FormatColon(
-    this.translatedLangText.MONTH,
-    this.date
-  );
-
+  // const repGeneratedDate = PDFUtility.FormatColon(
+  //   this.translatedLangText.MONTH,
+  //   this.date
+  // );
+const repGeneratedDate = this.date;
   // =========================
   // TITLE
   // =========================
@@ -675,7 +676,7 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
   // =========================
   // HEADER (WEEK BASED)
   // =========================
-  const hdr: string[] = [''];
+  const hdr: string[] = [this.translatedLangText.NO_OF];
 
   const data: any[][] = [
     [this.translatedLangText.NO_OF_CLEAN],
@@ -781,7 +782,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (R === 1) ws[addr].s = subTitleStyle;
 
       // Header row
-      if (R === headerRowIndex) ws[addr].s = headerStyle;
+      if (R === headerRowIndex && C > 0 ) ws[addr].s = headerStyle;
+      else if (R === headerRowIndex && C ===0 ) ws[addr].s = rowHeaderStyle;
 
       // First column (labels)
       if (C === 0 && R > headerRowIndex) {
