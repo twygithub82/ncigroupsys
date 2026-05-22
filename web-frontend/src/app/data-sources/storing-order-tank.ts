@@ -1466,6 +1466,12 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
             name
           }
         }
+        customer_company {
+          code
+          guid
+          name
+          delete_dt
+        }
         in_gate(where: { delete_dt: { eq: null } }) {
           eir_no
           eir_dt
@@ -1697,6 +1703,12 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
             code
             name
           }
+        }
+        customer_company {
+          code
+          guid
+          name
+          delete_dt
         }
         in_gate(where: { delete_dt: { eq: null } }) {
           eir_no
