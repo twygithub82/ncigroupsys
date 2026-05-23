@@ -1176,6 +1176,7 @@
     "GATE": "Gate",
     "DIFFERENCE": "Difference",
     "NO-OF-CLEAN": "Tanks For Cleaning",
+    "NO-OF-STEAM": "Tanks For Steaming",
     "NO-OF-REPAIR-ORDER": "Estimate For Repair",
     "NO-OF-GATE-IN": "Tanks Gate In",
     "NO-OF-GATE-OUT": "Tanks Gate Out",
@@ -1430,8 +1431,8 @@
     "JOB": "Job",
     "LOLO-ON-OFF": "LOLO On/Off",
     "DAILY-REVENUE" : "Daily Revenue",
-    "NO-OF": "Number of"
-   
+    "NO-OF": "Number of",
+    "BILLABLE-DAYS": "Billable Days"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

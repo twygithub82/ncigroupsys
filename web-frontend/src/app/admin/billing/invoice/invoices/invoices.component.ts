@@ -89,11 +89,14 @@ import { CustomerInvoicesExcelComponent } from 'app/document-template/excel/bill
 export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
-    'invoice_dt',
-    'invoice_no',
-    'invoice_type',
     'customer',
     'currency',
+    'invoice_type',
+    'invoice_dt',
+    'invoice_no',
+
+
+
     // 'last_cargo',
     // 'purpose',
     // 'tank_status_cv'
@@ -142,7 +145,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     DELETE: 'COMMON-FORM.DELETE',
     EXPORT: 'COMMON-FORM.EXPORT',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
-    MULTIPLE: 'COMMON-FORM.MULTIPLE'
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
   }
 
   distinctCustomerCodes: any;
@@ -182,7 +186,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { invoice_dt: "DESC" };
+  lastOrderBy: any = { invoice_dt: "ASC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -1033,11 +1037,18 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.billList.forEach((row) =>
-        this.selection.select(row)
-      );
+    if (this.isAllSelected()) {
+      this.selectedEstimateItem = undefined;
+      this.selection.clear();
+    } else {
+      this.selection.clear();
+
+      if (this.selectedEstimateItem) {
+        this.billList.forEach((row) => {
+          this.selection.select(row);
+        });
+      }
+    }
     //this.calculateTotalCost();
   }
 
@@ -1066,14 +1077,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   MasterCheckBoxDisable() {
-    if (this.distinctCustomerCodes?.length) {
-      return this.distinctCustomerCodes.length > 1;
-    }
 
-    return false;
+
+    return !(this.selectedEstimateItem?.customer_company);
   }
 
   isItemSelected(row: BillingItem) {
+
     return this.selection.selected.some(s => s.guid === row.guid);
   }
 
@@ -1262,7 +1272,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
 
-  export_report(repType:number=1) {
+  export_report(repType: number = 1) {
 
     // if (!this.billList.length) this.search();
 
@@ -1305,8 +1315,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       });
 
     });
-    if(repType==5){ this.onExportExcel(repCustomers);}
-    else  { this.onExport(repCustomers);}
+    if (repType == 5) { this.onExportExcel(repCustomers); }
+    else { this.onExport(repCustomers); }
 
   }
 
@@ -1638,7 +1648,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     event.preventDefault();
   }
 
-   onExportExcel(repCustomers: report_billing_customer[]) {
+  onExportExcel(repCustomers: report_billing_customer[]) {
     //this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1693,7 +1703,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   AutoSearch() {
     if (Utility.IsAllowAutoSearch()) {
-        this.search();
+      this.search();
     }
   }
+
+
 }

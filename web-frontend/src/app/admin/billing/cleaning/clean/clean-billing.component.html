@@ -274,64 +274,64 @@
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="customer">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+            [ngClass]="''">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
               matTooltip={{row.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="bill_to">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.BILL_TO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.BILL_TO}}:</span><span class="customer-text"
-              matTooltip={{row.customer_company?.name}}>{{row.customer_company?.code}}</span>
+              matTooltip={{getCustomerName(row)}}>{{getCustomerCode(row)}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_status_cv">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.STATUS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="last_cargo">
-          <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
+          <mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.ESTIMATE_NO}}
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-2'">
+          <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span> <span class="cargo-text"
               matTooltip="{{ row.estimate_no||'-' }}" matTooltipPosition="above">
               {{ row.estimate_no||'-' }}</span>
@@ -347,18 +347,18 @@
               </mat-cell>
             </ng-container> -->
         <ng-container matColumnDef="cost">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.COST}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.total_cost)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.INVOICE_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             @if(row.invoiced)
             {
             <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>
@@ -372,10 +372,10 @@
         </ng-container>
 
         <ng-container matColumnDef="invoice_date">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.INVOICE_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             @if(row.invoiced)
             {
             <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
