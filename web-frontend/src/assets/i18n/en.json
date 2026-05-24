@@ -221,7 +221,7 @@
         "SALES-REPORTS": "Sales",
         "DAILY-TEAM-REPORT": "Daily Team Reports",
         "PERFORMANCE-REPORTS": "Performance Reports",
-        "ZERO-APPROVAL-COST-REPORT": "Zero Approval Cost Report"
+        "ZERO-APPROVAL-COST-REPORT": "Zero Cost Report"
       }
     },
     "ACCOUNT": {
@@ -1432,7 +1432,8 @@
     "LOLO-ON-OFF": "LOLO On/Off",
     "DAILY-REVENUE" : "Daily Revenue",
     "NO-OF": "Number of",
-    "BILLABLE-DAYS": "Billable Days"
+    "BILLABLE-DAYS": "Billable Days",
+    "DAILY": "Daily"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

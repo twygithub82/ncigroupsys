@@ -86,16 +86,45 @@
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                      <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                       <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
                         [matAutocomplete]="branchCode">
                       <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                        @for (cc of branch_companyList; track cc) {
+                        @for (cc of bill_to_companyList; track cc) {
                         <mat-option [value]="cc">
                           {{ccDS.displayName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill" required>
+                      <mat-label>{{translatedLangText.CURRENCY }}</mat-label>
+                      <mat-select formControlName="currency" (selectionChange)="AutoSearch()">
+                        <mat-option *ngFor="let cc of currencyList" [value]="cc">
+                          <ng-container *ngIf="cc !== null">
+                            {{cc.currency_code }}
+                          </ng-container>
+                        </mat-option>
+                      </mat-select>
+                      @if (searchForm?.get('currency')?.hasError('required') ) {
+                      <!-- <mat-error>
+                        {{translatedLangText.BILLING_CURRENCY }} {{translatedLangText.IS_REQUIRED}}
+                      </mat-error> -->
+                      }
+                    </mat-form-field>
+                  </div>
+                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+                      <mat-select formControlName="depot_status_cv" (selectionChange)="AutoSearch()">
+                        @for (codeValue of depotCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
@@ -174,35 +203,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                      <mat-select formControlName="depot_status_cv" (selectionChange)="AutoSearch()">
-                        @for (codeValue of depotCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill" required>
-                      <mat-label>{{translatedLangText.BILLING_CURRENCY }}</mat-label>
-                      <mat-select formControlName="currency" (selectionChange)="AutoSearch()">
-                        <mat-option *ngFor="let cc of currencyList" [value]="cc">
-                          <ng-container *ngIf="cc !== null">
-                            {{cc.currency_code }}
-                          </ng-container>
-                        </mat-option>
-                      </mat-select>
-                      @if (searchForm?.get('currency')?.hasError('required') ) {
-                      <!-- <mat-error>
-                        {{translatedLangText.BILLING_CURRENCY }} {{translatedLangText.IS_REQUIRED}}
-                      </mat-error> -->
-                      }
-                    </mat-form-field>
-                  </div>
+                 
 
                   <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
@@ -262,6 +263,16 @@
                 </ng-container>
 
                 <ng-container matColumnDef="customer">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+                    {{translatedLangText.CUSTOMER}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
+                      matTooltip={{getCustomerName(row)}}>{{getCustomerCode(row)}}</span>
+                  </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="bill_to">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                     {{translatedLangText.BILL_TO}}
                   </mat-header-cell>

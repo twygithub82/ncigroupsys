@@ -1123,7 +1123,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        visible: true,
+        visible: false,
         modulePackage: ['growth', 'customized'],
         expectedFunctions: ['ADMIN_REPORTS_DAILY_TEAM_REPORTS_VIEW'],
         submenu: [],

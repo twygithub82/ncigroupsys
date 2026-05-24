@@ -90,6 +90,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   displayedColumns = [
     'select',
     'customer',
+    'bill_to',
     'currency',
     'invoice_type',
     'invoice_dt',
@@ -173,6 +174,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
+  bill_to_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -254,13 +256,41 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     this.branch_companyList = [];
+    //     this.branchCodeControl.reset('');
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.customer_companyList = data
+    //       this.updateValidators(this.customerCodeControl, this.customer_companyList);
+    //       if (!this.customerCodeControl.invalid) {
+    //         if (this.customerCodeControl.value?.guid) {
+    //           let mainCustomerGuid = this.customerCodeControl.value.guid;
+    //           this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+    //             this.branch_companyList = data;
+    //             this.updateValidators(this.branchCodeControl, this.branch_companyList);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
+
+       this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
+        // this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -269,19 +299,50 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // this.bill_to_companyList = data;
+          // this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
+     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+      //  this.branch_companyList = [];
+      //  this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          // this.customer_companyList = data
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          this.bill_to_companyList = data;
+          this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
+        });
+      })
+    ).subscribe();
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -514,18 +575,18 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      const itm: any = { or: [] };
-      itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ residue: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ steaming: { some: { sbill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ gin_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ gout_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ lon_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ loff_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ preinsp_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ storage_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      const itm: any = { customer_company : { code: {eq: this.searchForm!.get('branch_code')?.value.code} }};
+      // itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ residue: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ steaming: { some: { sbill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ gin_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ gout_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ lon_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ loff_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ preinsp_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ storage_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       where.and.push(itm);
     }
 
@@ -1707,5 +1768,22 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
-
+ getCustomerCode(item:any)
+  {
+    var itm =item?.customer_company;
+    if(itm)
+    {
+      return itm.code;
+    }
+    return "-";
+  }
+    getCustomerName(item:any)
+  {
+    var itm =item?.customer_company;
+    if(itm)
+    {
+      return itm.name;
+    }
+    return "-";
+  }
 }
