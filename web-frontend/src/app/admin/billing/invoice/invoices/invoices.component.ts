@@ -193,7 +193,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  isMobile : boolean = false;
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -285,7 +285,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     //   })
     // ).subscribe();
 
-       this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -315,13 +315,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       })
     ).subscribe();
 
-     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+    this.searchForm!.get('branch_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-      //  this.branch_companyList = [];
-      //  this.branchCodeControl.reset('');
+        //  this.branch_companyList = [];
+        //  this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -576,7 +576,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      const itm: any = { customer_company : { code: {eq: this.searchForm!.get('branch_code')?.value.code} }};
+      const itm: any = { customer_company: { code: { eq: this.searchForm!.get('branch_code')?.value.code } } };
       // itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       // itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       // itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
@@ -1768,28 +1768,26 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       this.search();
     }
   }
-   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
   }
 
- getCustomerCode(item:any)
-  {
-    var itm =item?.customer_company;
-    if(itm)
-    {
-      return itm.code;
-    }
-    return "-";
+
+getCustomerCode(item: any)
+{
+  var itm = item?.customer_company;
+  if (itm) {
+    return itm.code;
   }
-    getCustomerName(item:any)
-  {
-    var itm =item?.customer_company;
-    if(itm)
-    {
-      return itm.name;
-    }
-    return "-";
+  return "-";
+}
+getCustomerName(item: any)
+{
+  var itm = item?.customer_company;
+  if (itm) {
+    return itm.name;
   }
+  return "-";
+}
 }
