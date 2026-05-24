@@ -86,12 +86,14 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
     // 'img',
+    'cust_name',
+    'curcy',
+    'inv_type',
     'inv_dt',
     'inv_no',
-    'inv_type',
+    
     //'cust_code',
-    'cust_name',
-    'curcy'
+    
   ];
 
   action: string;
@@ -214,7 +216,8 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CONVERSION_CURRENCY: 'COMMON-FORM.CONVERSION-CURRENCY',
     CONFIRM_INVALID_INVOICE: 'COMMON-FORM.CONFIRM-INVALID-INVOICE',
-    BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY'
+    BILLING_CURRENCY: 'COMMON-FORM.BILLING-CURRENCY',
+    BILL_TO:'COMMON-FORM.BILL-TO',
 
   };
 

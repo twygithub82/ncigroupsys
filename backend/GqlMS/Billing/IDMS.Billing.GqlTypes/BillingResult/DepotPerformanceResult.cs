@@ -14,6 +14,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public int week_of_year { get; set; }
         public int cleaning_count {  get; set; }
         public int repair_count { get; set; }
+        public int steaming_count { get; set; }
         public int gate_in_count { get; set; }
         public int gate_out_count { get; set; }
         public int depot_count { get; set; }

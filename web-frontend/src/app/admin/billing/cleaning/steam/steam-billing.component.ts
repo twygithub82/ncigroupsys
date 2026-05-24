@@ -115,6 +115,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -174,6 +175,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
+  bill_to_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -238,8 +240,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_no: [''],
       inv_dt: ['']
     })
-     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    const today = new Date().toISOString().substring(0, 10);
+    //this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -270,13 +272,41 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     this.branch_companyList = [];
+    //     this.branchCodeControl.reset('');
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.customer_companyList = data
+    //       this.updateValidators(this.customerCodeControl, this.customer_companyList);
+    //       if (!this.customerCodeControl.invalid) {
+    //         if (this.customerCodeControl.value?.guid) {
+    //           let mainCustomerGuid = this.customerCodeControl.value.guid;
+    //           this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+    //             this.branch_companyList = data;
+    //             this.updateValidators(this.branchCodeControl, this.branch_companyList);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
+
+     this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
+        // this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -285,15 +315,47 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // this.bill_to_companyList = data;
+          // this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
+        });
+      })
+    ).subscribe();
+
+     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+      //  this.branch_companyList = [];
+      //  this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          // this.customer_companyList = data
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          this.bill_to_companyList = data;
+          this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
@@ -402,7 +464,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     // where.status_cv = { in: ['COMPLETED'] }; 
 
     where.and = [
-      {status_cv: { in: BILLING_ESTIMATE_STATUS }}
+      { status_cv: { in: BILLING_ESTIMATE_STATUS } }
       // {
       //   and: [
       //     { create_by: { neq: "system" } },
@@ -442,7 +504,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       where.storing_order_tank.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        { in_gate: { some: { eir_no: { contains: tankNo } } } },
+        { out_gate: { some: { eir_no: { contains: tankNo } } } }
       ];
     }
 
@@ -495,14 +559,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       });
     }
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
-      where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
+    //   where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+    // }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.customer_billing) where.customer_billing = {};
@@ -546,9 +609,9 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.subs.sink = this.stmDS.searchWithBilling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.stmEstList = data;
-         if (this.searchForm!.get('customer_code')?.value) {
-            this.stmEstList  = this.stmEstList.filter(item => item.customer_company?.code === this.searchForm!.get('customer_code')?.value.code);
-         }
+        if (this.searchForm!.get('customer_code')?.value) {
+          this.stmEstList = this.stmEstList.filter(item => item.customer_company?.code === this.searchForm!.get('customer_code')?.value.code);
+        }
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
@@ -726,6 +789,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
+    where.delete_dt={eq:null};
     this.billDS.searchSteamingBilling(where).subscribe(b => {
       if (b.length) {
         if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
@@ -753,7 +817,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -857,7 +921,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
-        billingEstReq.existing_billing_guid=cln.customer_billing?.guid||'';
+        billingEstReq.existing_billing_guid = cln.customer_billing?.guid || '';
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -891,7 +955,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
-       billingEstReq.existing_billing_guid=c.customer_billing?.guid||'';
+      billingEstReq.existing_billing_guid = c.customer_billing?.guid || '';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
@@ -995,7 +1059,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         var cost: number = data[0].cost;
         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
         if (isAutoApproveSteaming) {
-          row.total_cost = (row.rate || 0);
+          var stmPart = row.steaming_part[0];
+          row.total_cost=0;
+          if(stmPart){
+
+            row.total_cost = this.IsApproved(row) ? (stmPart.approve_cost || 0) : (stmPart.cost || 0) ;
+          }
+          
           if (!row.flat_rate) {
             row.total_cost = row.total_hour * row.rate;
           }
@@ -1154,6 +1224,25 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     if (Utility.IsAllowAutoSearch()) {
       this.search();
     }
+  }
+
+   getCustomerCode(item:any)
+  {
+    var itm =item?.storing_order_tank?.storing_order?.customer_company;
+    if(itm)
+    {
+      return itm.code;
+    }
+    return "-";
+  }
+    getCustomerName(item:any)
+  {
+    var itm =item?.storing_order_tank?.storing_order?.customer_company;
+    if(itm)
+    {
+      return itm.name;
+    }
+    return "-";
   }
 
    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {

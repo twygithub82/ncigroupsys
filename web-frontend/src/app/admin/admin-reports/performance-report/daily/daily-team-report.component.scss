@@ -7,16 +7,22 @@
     white-space: normal; /* Allows text wrapping */
     max-width: 100%; /* Adjust width as needed */
   }
+  .number-range-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .range-separator {
+    font-weight: bold;
+  }
+  
+  input[matInput] {
+    flex: 1;
+    min-width: 0;
+  }
 
-  .customer-text {
-    max-width: 6ch; /* Limit text width to 6 characters */
-    overflow: hidden;
-    white-space: nowrap; /* Prevents wrapping */
-    text-overflow: ellipsis; /* Adds "..." if text is too long */
-}
-
-
-$bg: #007bff;
+$bg: #007bff; //#4b2e83; 
 $fg: lighten($bg,10%);
 $borderWidth: 1px;
 
@@ -32,6 +38,7 @@ input[type=radio] {
 }
 
 label {
+  
   color: lighten($bg, 20%);
   display: inline-block;
   cursor: pointer;
@@ -50,6 +57,7 @@ input[type=radio]:checked + label{
 label + input[type=radio] + label {
   border-left: solid $borderWidth $fg;
 }
+
 .radio-group {
   border: solid $borderWidth $fg;
   display: inline-block;
@@ -58,21 +66,9 @@ label + input[type=radio] + label {
   overflow: hidden;
 }
 
-.card-aligned{
-  padding-left: 0.8%;
-  padding-right: 0.8%;
+.radio-group label {
+  font-size: 18px; /* Bigger text */
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.bigger-dash {
-  font-size: 1.3em;
-}
-
-.mat-mdc-card-content
- {
-    display: block;
-    padding: 12px 12px 0px 12px;
-}
-
-.action-btn {
-  width: 120px;
-}

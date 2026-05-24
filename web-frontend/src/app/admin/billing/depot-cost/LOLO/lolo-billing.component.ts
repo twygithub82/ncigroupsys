@@ -240,7 +240,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       inv_dt: ['']
     })
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -395,15 +395,28 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     where.and = [];
     where.and.push({ or: [{ lift_on: { eq: true } }, { lift_off: { eq: true } }] });
     //where.and=[{lift_on:{eq:true}},{lift_off:{eq:true}}];
-    if (this.searchForm!.get('tank_no')?.value) {
+    // if (this.searchForm!.get('tank_no')?.value) {
+    //   const tankNo = this.searchForm!.get('tank_no')?.value;
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+    //   // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+    //   where.storing_order_tank.or = [
+    //     { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+    //     { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+    //   ];
+    // }
+
+     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
       if (!where.storing_order_tank) where.storing_order_tank = {};
-      // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
-      // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      where.storing_order_tank.or = [
-        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-      ];
+      if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+      where.storing_order_tank = {or:[ 
+        { tank_no:{ contains: tankNo }},
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        {in_gate:{some:{eir_no:{contains:tankNo}}}},
+
+      ]
+    };
     }
 
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
@@ -452,10 +465,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
         }
       };
     }
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
+    // }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.and) where.and = [];
@@ -688,6 +701,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
+    where.delete_dt={eq:null};
     this.billDS.searchResidueBilling(where).subscribe(b => {
       if (b.length) {
         if (b[0].bill_to_guid === this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid) {
@@ -900,7 +914,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.invoiceNoControl.reset('');
 
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
     this.invoiceTypeControl.setValue(this.processType);
   }
 

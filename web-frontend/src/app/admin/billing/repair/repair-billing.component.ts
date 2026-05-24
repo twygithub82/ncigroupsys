@@ -87,7 +87,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   displayedColumns = [
 
     'select',
-    'customer',
+    // 'customer',
+    'bill_to',
     // 'customer_type',
     'estimate_no',
     'job_no',
@@ -207,6 +208,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   //sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
+  bill_to_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
@@ -276,7 +278,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       inv_no: [''],
       inv_dt: ['']
     })
-     const today = new Date().toISOString().substring(0, 10);
+    const today = new Date().toISOString().substring(0, 10);
     //this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
@@ -308,13 +310,41 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   initializeValueChanges() {
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     this.branch_companyList = [];
+    //     this.branchCodeControl.reset('');
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.customer_companyList = data
+    //       this.updateValidators(this.customerCodeControl, this.customer_companyList);
+    //       if (!this.customerCodeControl.invalid) {
+    //         if (this.customerCodeControl.value?.guid) {
+    //           let mainCustomerGuid = this.customerCodeControl.value.guid;
+    //           this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+    //             this.branch_companyList = data;
+    //             this.updateValidators(this.branchCodeControl, this.branch_companyList);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
+
     this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
+        // this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -323,19 +353,50 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // this.bill_to_companyList = data;
+          // this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
+    this.searchForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        //  this.branch_companyList = [];
+        //  this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          // this.customer_companyList = data
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          this.bill_to_companyList = data;
+          this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
+        });
+      })
+    ).subscribe();
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -449,9 +510,9 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
 
     if (this.searchForm!.get('invoiced')?.value) {
-      if(!where.and)where.and=[];
+      if (!where.and) where.and = [];
       where.and.push(
-        {or: [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }]}
+        { or: [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }] }
       );
       //where.or = [{ repair: { some: { customer_billing_guid: { neq: null } } } }, { repair: { some: { owner_billing_guid: { neq: null } } } }];
     }
@@ -503,11 +564,13 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     // where.bill_to_guid={neq:null};
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
-      if(!where.and)where.and=[];
-      where.and.push({or : [
-         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-         { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-       ]});
+      if (!where.and) where.and = [];
+      where.and.push({
+        or: [
+          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        ]
+      });
       // where.or = [
       //   { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
       //   { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
@@ -517,16 +580,18 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.searchForm!.get('customer_code')?.value) {
 
       // if (!where.or) where.or = [];
-      if(!where.and)where.and=[];
-      where.and.push({or: [
-        { storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } },
-        {
-          and: [
-            { owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } },
-            { repair: { some: { owner_enable: { eq: true } } } }
-          ]
-        }
-      ]});
+      if (!where.and) where.and = [];
+      where.and.push({
+        or: [
+          { storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } },
+          {
+            and: [
+              { owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } },
+              { repair: { some: { owner_enable: { eq: true } } } }
+            ]
+          }
+        ]
+      });
       // where.or.push({ storing_order: { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } } });
       // where.or.push(
       //   {
@@ -541,9 +606,14 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      //where.repair={some:{bill_to_guid:{eq:this.searchForm!.get('branch_code')?.value.guid}}};
-      where.repair.some.and.push({ bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } });
-      //where.customer_company={code:{eq: this.searchForm!.get('branch_code')?.value.code }}
+      var billingGuid =this.searchForm!.get('branch_code')?.value.guid;
+      // where.repair.some.and.push({ bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } });
+         where.repair.some.and.push({
+        or: [
+          { customer_billing: { bill_to_guid: { eq: billingGuid } }},
+          { owner_billing: { bill_to_guid: { eq: billingGuid } }}
+        ]
+      });
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {
@@ -609,14 +679,19 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepairBiling(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         const allowedStatuses = (this.searchForm!.get('estimate_status_cv')?.value.length) ? this.searchForm!.get('estimate_status_cv')?.value :
-         BILLING_ESTIMATE_STATUS;
+          BILLING_ESTIMATE_STATUS;
         this.sotRepList = data.map(d => {
           d.repair = d.repair?.filter(r => allowedStatuses.includes(r.status_cv!))
           if (this.searchForm!.get('invoiced')?.value) {
             d.repair = d.repair?.filter(d => d.customer_billing_guid !== null || d.owner_billing_guid !== null);
           }
+          if(this.searchForm!.get('branch_code')?.value){
+            var billGuid = this.searchForm!.get('branch_code')?.value.guid;
+            d.repair = d.repair?.filter(d => d.customer_billing?.bill_to_guid === billGuid || d.owner_billing?.bill_to_guid === billGuid);
+          }
           return d;
         });
+
 
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -775,6 +850,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       invoiced: null
     });
 
+    this.branchCodeControl.reset
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
@@ -860,6 +936,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
+    where.delete_dt = { eq: null };
     this.billDS.searchRepairBilling(where).subscribe(b => {
       if (b.length) {
         if (b[0].bill_to_guid === this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid) {
@@ -959,7 +1036,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
-        billingEstReq.existing_billing_guid=cln.customer_billing?.guid||'';
+        billingEstReq.existing_billing_guid = cln.customer_billing?.guid || '';
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -993,7 +1070,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       billingEstReq.billing_party = c.type === 1 ? "CUSTOMER" : "OWNER"; //this.billingParty;
       billingEstReq.process_guid = c.guid.replace("_1", "");
       billingEstReq.process_type = this.processType;
-      billingEstReq.existing_billing_guid=c.customer_billing?.guid||'';
+      billingEstReq.existing_billing_guid = c.customer_billing?.guid || '';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
@@ -1302,7 +1379,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = g;
       billingEstReq.process_type = this.processType;
-      
+
       billingEstimateRequests.push(billingEstReq);
     });
 
@@ -1436,4 +1513,38 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       this.search();
     }
   }
+  getCustomerCode(item: any) {
+    var itm = item?.storing_order_tank?.storing_order?.customer_company;
+    if (itm) {
+      return itm.code;
+    }
+    return "-";
+  }
+  getCustomerName(item: any) {
+    var itm = item?.storing_order_tank?.storing_order?.customer_company;
+    if (itm) {
+      return itm.name;
+    }
+    return "-";
+  }
+
+  getBillToCustomerCode(item: any) {
+    var itm = item?.customer_billing ||item?.owner_billing;
+    if (itm) {
+      return itm.customer_company?.code;
+    }
+  
+    return "-";
+  }
+
+   getBillToCustomerName(item: any) {
+    var itm = item?.customer_billing ||item?.owner_billing;
+    if (itm) {
+      return itm.customer_company?.name;
+    }
+    return "-";
+  }
+
+
+
 }

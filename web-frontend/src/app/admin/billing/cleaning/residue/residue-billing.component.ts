@@ -114,6 +114,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -173,6 +174,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
+  bill_to_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -236,7 +238,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       inv_dt: ['']
     })
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    //this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -267,13 +269,41 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     this.branch_companyList = [];
+    //     this.branchCodeControl.reset('');
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.customer_companyList = data
+    //       this.updateValidators(this.customerCodeControl, this.customer_companyList);
+    //       if (!this.customerCodeControl.invalid) {
+    //         if (this.customerCodeControl.value?.guid) {
+    //           let mainCustomerGuid = this.customerCodeControl.value.guid;
+    //           this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+    //             this.branch_companyList = data;
+    //             this.updateValidators(this.branchCodeControl, this.branch_companyList);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
+
+     this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
+        // this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -282,19 +312,50 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // this.bill_to_companyList = data;
+          // this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
+     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+      //  this.branch_companyList = [];
+      //  this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          // this.customer_companyList = data
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          this.bill_to_companyList = data;
+          this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
+        });
+      })
+    ).subscribe();
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -393,7 +454,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.calculateTotalCost();
 
     // where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
-    where.status_cv = { in:BILLING_ESTIMATE_STATUS };
+    where.status_cv = { in: BILLING_ESTIMATE_STATUS };
     where.bill_to_guid = { neq: null };
     if (!where.storing_order_tank) where.storing_order_tank = {};
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
@@ -422,7 +483,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       where.storing_order_tank.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        { in_gate: { some: { eir_no: { contains: tankNo } } } },
+        { out_gate: { some: { eir_no: { contains: tankNo } } } }
       ];
     }
 
@@ -466,14 +529,13 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       });
     }
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
-      where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
-      //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   if (!where.storing_order_tank.or) where.storing_order_tank.or = [];
+    //   where.storing_order_tank.or.push({ in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   where.storing_order_tank.or.push({ out_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } });
+    //   //where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
+    // }
 
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
@@ -693,6 +755,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
+    where.delete_dt={eq:null};
     this.billDS.searchResidueBilling(where).subscribe(b => {
       if (b.length) {
         if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
@@ -723,7 +786,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -1040,4 +1103,23 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       const centerClass = isCenter ? 'justify-content-center' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
+
+  getCustomerCode(item:any)
+  {
+    var itm =item?.storing_order_tank?.storing_order?.customer_company;
+    if(itm)
+    {
+      return itm.code;
+    }
+    return "-";
+  }
+    getCustomerName(item:any)
+  {
+    var itm =item?.storing_order_tank?.storing_order?.customer_company;
+    if(itm)
+    {
+      return itm.name;
+    }
+    return "-";
+  }
 }

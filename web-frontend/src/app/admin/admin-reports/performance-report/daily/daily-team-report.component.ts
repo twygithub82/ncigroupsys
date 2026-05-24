@@ -30,21 +30,22 @@ import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-p
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { CleanerPerformance, ReportDS } from 'app/data-sources/reports';
+import { DailyQCDetail, DailyTeamRevenue, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { UserDS } from 'app/data-sources/user';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { CleanerPerformanceDetailExcelComponent } from 'app/document-template/excel/admin-reports/performance/cleaner/cleaner-detail-excel.component';
-import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
+import { DailyApprovalExcelComponent } from 'app/document-template/excel/admin-reports/daily/ApprovalReport/daily-approval-excel.component';
+import { DailyQCDetailExcelComponent } from 'app/document-template/excel/admin-reports/daily/QCReport/daily-qc-detail-excel.component';
+import { DailyRevenueExcelComponent } from 'app/document-template/excel/admin-reports/daily/RevenueReport/daily-revenue-excel.component';
+import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
+import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
+import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -52,10 +53,10 @@ import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-cleaning-performance-report',
+  selector: 'app-daily-team-report',
   standalone: true,
-  templateUrl: './cleaning-performance-report.component.html',
-  styleUrl: './cleaning-performance-report.component.scss',
+  templateUrl: './daily-team-report.component.html',
+  styleUrl: './daily-team-report.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -85,14 +86,14 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
-export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
-    'customer',
-    'last_cargo',
     'tank_no',
+    'customer',
     'eir_no',
     'eir_dt',
+    'last_cargo',
     'purpose',
     'tank_status_cv',
     'cost',
@@ -170,11 +171,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     REVENUE: 'COMMON-FORM.REVENUE',
     APPROVAL: 'COMMON-FORM.APPROVAL',
     QC_DETAIL: 'COMMON-FORM.QC-DETAIL',
-    CLEANING_PROCESS: 'COMMON-FORM.PROCESS',
-    CARGO: "COMMON-FORM.CARGO",
-    CLEANER: "COMMON-FORM.CLEANER",
-    CLEANING_BAY: "COMMON-FORM.BAY",
-     WARNING: 'COMMON-FORM.WARNING',
+    WARNING: 'COMMON-FORM.WARNING',
     NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
@@ -183,7 +180,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  maxManuDOMDt: Date = new Date();
+
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -191,18 +188,16 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
-  clnPrcsDS: CleaningMethodDS;
   stmDS: SteamDS;
   plDS: PackageLabourDS;
   billDS: BillingDS;
   teamDS: TeamDS;
   reportDS: ReportDS;
-  userDS: UserDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
-  cleanTeamList: TeamItem[] = [];
+  repairTeamList: TeamItem[] = [];
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
@@ -213,10 +208,6 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   repairTypeCvList: CodeValuesItem[] = [];
-
-  cleanProcessList: CleaningMethodItem[] = [];
-  cargoList: TariffCleaningItem[] = [];
-  cleanerList: string[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -261,8 +252,6 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.reportDS = new ReportDS(this.apollo);
-    this.clnPrcsDS = new CleaningMethodDS(this.apollo);
-    this.userDS = new UserDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -272,11 +261,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
-    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-
-    // var autoSearch:boolean=true;
-    // if(autoSearch) this.search_detail();
   }
 
   initInvoiceForm() {
@@ -291,13 +276,19 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         customer_code: this.customerCodeControl,
         eir_no: [''],
         tank_no: [''],
-        clean_process: [''],
-        cargo: [''],
-        cln_dt_start: [''],
-        cln_dt_end: [''],
-        cleaner: [''],
-        clean_bay: [''],
-        team: ''
+        all_dt_start: [''],
+        all_dt_end: [''],
+        app_dt: [''],
+        app_dt_start: [''],
+        app_dt_end: [''],
+        est_dt_start: [''],
+        est_dt_end: [''],
+        qc_dt: [''],
+        qc_dt_start: [''],
+        qc_dt_end: [''],
+        rep_type: [''],
+        team: [''],
+        report_type: ['3']
       },
     );
   }
@@ -323,61 +314,34 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')?.valueChanges.pipe(
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'object') {
-          searchCriteria = value?.code || '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
         } else {
-          searchCriteria = value || '';
+          searchCriteria = value.code;
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
-    this.searchForm!.get('cargo')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
-        if (typeof value === 'object') {
-          searchCriteria = value?.cargo || '';
-        } else {
-          searchCriteria = value || '';
-        }
-        this.subs.sink = this.tcDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { cargo: 'ASC' }).subscribe(data => {
-          this.cargoList = data
-        });
-      })
-    ).subscribe();
-
-    this.searchForm!.get('cleaner')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        }
-
-        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_CLEANING' } } } } }] },
-          { userName: 'ASC' }).subscribe(data => {
-            this.cleanerList = data
-              .map(u => u.userName)
-              .filter((name): name is string => name !== undefined);
-
-          });
-      })
-    ).subscribe();
   }
 
   public loadData() {
@@ -393,7 +357,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     const where: any = {
       and: [
         {
-          department_cv: { eq: 'CLEANING' }
+          department_cv: { eq: 'REPAIR' }
         },
         {
           or: [
@@ -404,30 +368,21 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       ]
     };
 
-    // this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
-    //   this.cleanTeamList = data;
-    // });
-
     this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
-      this.cleanTeamList = data.sort((a, b) => {
-        const numA = parseInt((a.description ?? '').replace(/\D/g, ''), 10) || 0;
-        const numB = parseInt((b.description ?? '').replace(/\D/g, ''), 10) || 0;
-
-        return numA - numB;
-      });
+      this.repairTeamList = data;
     });
 
-    const whereCln: any = {
-      or: [
-        { delete_dt: { eq: null } },
-        { delete_dt: { eq: 0 } }
-      ]
-    };
-
-    this.clnPrcsDS.loadItems(whereCln, { name: "ASC" }, 100).subscribe(data => {
-      this.cleanProcessList = data;
-    })
-
+    // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
+    //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
+    // });
+    // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+    //   this.tankStatusCvListDisplay = data;
+    //   this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+    // });
+    // this.cvDS.connectAlias('yardCv').subscribe(data => {
+    //   this.yardCvList = addDefaultSelectOption(data, 'All');
+    // });
+    // this.search();
   }
   showNotification(
     colorName: string,
@@ -491,8 +446,16 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //   cond_counter++;
     // }
     if (this.searchForm?.invalid) {
-      if (!(this.searchForm!.get('cln_dt_start')?.value) || !(this.searchForm!.get('cln_dt_end')?.value)) {
-        const startDateControl = this.searchForm!.get('cln_dt_start');
+      if (!(this.searchForm!.get('app_dt')?.value) && this.isDateRequired("APPROVED")) {
+        const startDateControl = this.searchForm!.get('app_dt');
+        if (startDateControl) {
+          startDateControl.setErrors({ required: true });
+          startDateControl.markAsTouched();
+        }
+      }
+
+      if (!(this.searchForm!.get('qc_dt')?.value) && this.isDateRequired("QC")) {
+        const startDateControl = this.searchForm!.get('qc_dt');
         if (startDateControl) {
           startDateControl.setErrors({ required: true });
           startDateControl.markAsTouched();
@@ -509,7 +472,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value?.code}`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
@@ -519,28 +482,79 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       cond_counter++;
     }
 
-    if ((this.searchForm!.get('cln_dt_start')?.value) && (this.searchForm!.get('cln_dt_end')?.value)) {
-      var start_dt = new Date(this.searchForm!.value['cln_dt_start']);
-      var end_dt = new Date(this.searchForm!.value['cln_dt_end']);
-      where.start_date = Utility.convertDate(start_dt);
-      where.end_date = Utility.convertDate(end_dt, true);
-      date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`;
+    if ((this.searchForm!.get('all_dt_start')?.value) && (this.searchForm!.get('all_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['all_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['all_dt_end']);
+      where.allocation_start_date = Utility.convertDate(start_dt);
+      where.allocation_end_date = Utility.convertDate(end_dt, true);
+      cond_counter++;
+    }
+
+    if ((this.searchForm!.get('app_dt')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['app_dt']);
+      var end_dt = new Date(this.searchForm!.value['app_dt']);
+      where.approved_start_date = Utility.convertDate(start_dt);
+      where.approved_end_date = Utility.convertDate(end_dt, true);
+      date = Utility.convertDateToStr(start_dt);
+      cond_counter++;
+    }
+
+    if ((this.searchForm!.get('app_dt_start')?.value) && (this.searchForm!.get('app_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['app_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['app_dt_end']);
+      where.approved_start_date = Utility.convertDate(start_dt);
+      where.approved_end_date = Utility.convertDate(end_dt, true);
       cond_counter++;
     }
 
 
-    if ((this.searchForm!.get('cargo')?.value)) {
-      where.last_cargo = `${this.searchForm!.get('cargo')?.value?.cargo || ''}`
+
+    if ((this.searchForm!.get('est_dt_start')?.value) && (this.searchForm!.get('est_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['est_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['est_dt_end']);
+      where.estimate_start_date = Utility.convertDate(start_dt);
+      where.estimate_end_date = Utility.convertDate(end_dt, true);
       cond_counter++;
     }
 
-    if ((this.searchForm!.get('clean_process')?.value)) {
+    if ([1, 3, 4, 6].includes(report_type)) {
+      if ((this.searchForm!.get('qc_dt')?.value)) {
+        var start_dt = new Date(this.searchForm!.value['qc_dt']);
+        var end_dt = new Date(this.searchForm!.value['qc_dt']);
+        where.qc_start_date = Utility.convertDate(start_dt);
+        where.qc_end_date = Utility.convertDate(end_dt, true);
+        if ([1, 3, 4, 6].includes(report_type)) date = Utility.convertDateToStr(start_dt);
+        cond_counter++;
+      }
+    }
 
-      where.method_name = `${this.searchForm!.get('clean_process')?.value?.name || ''}`
-
+    if ((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value)) {
+      var start_dt = new Date(this.searchForm!.value['qc_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['qc_dt_end']);
+      where.qc_start_date = Utility.convertDate(start_dt);
+      where.qc_end_date = Utility.convertDate(end_dt, true);
       cond_counter++;
     }
 
+    if (this.searchForm!.get('team')?.value) {
+      const teamValue = this.searchForm!.get('team')?.value;
+      if (Array.isArray(teamValue)) {
+        const teams: string[] = teamValue.map(t => t);
+        where.team = teams;
+        team = teams.join(", ");
+      }
+    }
+    else {
+      team = this.repairTeamList.map(t => t.description).join(", ");
+    }
+
+    if (this.searchForm!.get('repair_type')?.value) {
+      const repTypes = this.searchForm!.get('repair_type')?.value;
+      if (Array.isArray(repTypes)) {
+        const repairTypes: string[] = repTypes.map(t => t.code_val);
+        where.repair_type = repairTypes;
+      }
+    }
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
@@ -549,33 +563,133 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     }
 
     this.lastSearchCriteria = where;
-
-    this.performSearchDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
-
+    if (report_type == 2 || report_type == 5) {
+      this.performSearchApproval(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
+    }
+    else if (report_type == 1 || report_type == 4) {
+      this.performSearchRevenue(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
+    }
+    else {
+      this.performSearchQCDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, date, team);
+    }
   }
 
-  performSearchDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+  performSearchQCDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
     before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportCleanerPerformance(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
-        if (data.length === 0) {
-          this.isGeneratingReport = false;
-          this.ShowWarningMessage();
-          return;
-        }
-        this.repData = data;
-        this.repData?.sort((a, b) => (a?.cleaner_name || '').localeCompare(b?.cleaner_name || ''));
-        if (report_type == 5) {
-          this.onExportAdminReportCleanerPerformanceDetailExcelReport(this.repData, date!, team!);
+        const groupedByTeam = data.reduce((acc, item) => {
+
+          const team = item.team || '-';
+
+          if (!acc[team]) {
+            acc[team] = [];
+          }
+
+          acc[team].push(item);
+
+          return acc;
+
+        }, {} as Record<string, DailyQCDetail[]>);
+
+       var repData = groupedByTeam;
+        if (report_type == 3) {
+          this.onExportDailyQCDetailReport(repData, date!, team!);
         }
         else {
-          this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
+          this.onExportDailyQCDetailExcelReport(repData, date!, team!);
         }
+        if (data.length > 0) {
+          this.repData = data;
+          // this.onExportDailyQCDetailReport(this.repData, date!, team!);
+        }
+        else {
+          this.isGeneratingReport = false
+        }
+
       });
+
+
   }
+
+  performSearchRevenue(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
+
+    // if(queryType==1)
+    // {
+    this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
+      .subscribe(data => {
+        this.repData = data;
+        if (report_type == 1) {
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
+        }
+        else {
+          this.onExportDailyRevenueExcelReport(this.repData, date!, team!);
+        }
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
+        }
+        else {
+          this.isGeneratingReport = false
+        }
+
+      });
+
+
+  }
+
+  performSearchApproval(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
+    before?: string, report_type?: number, queryType?: number, date?: string, team?: string) {
+
+
+    this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
+      .subscribe(data => {
+        //this.repData = data;
+
+        this.repData = data.sort((a, b) => {
+          // Sort by customer code alphabetically
+          const customerCompare = (a.code || '')
+            .localeCompare(b.code || '');
+
+          // If same customer code, sort by estimate no ascending
+          if (customerCompare !== 0) {
+            return customerCompare;
+          }
+
+          // 2. estimate_no ascending
+          return (a.estimate_no || '').localeCompare(
+            (b.estimate_no || ''),
+            undefined,
+            { numeric: true, sensitivity: 'base' }
+          );
+        });
+
+        if (report_type == 2) {
+          this.onExportDailyApprovalReport(this.repData, date!, team!);
+        }
+        else {
+          this.onExportDailyApprovalExcelReport(this.repData, date!, team!);
+        }
+        if (data.length > 0) {
+          this.repData = data;
+          //  this.onExportDailyApprovalReport(this.repData, date!, team!);
+        }
+        else {
+          this.isGeneratingReport = false
+        }
+        //
+        //  this.onExportDetail(this.sotList);
+
+      });
+
+
+  }
+
+
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -652,6 +766,10 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     return Utility.convertEpochToDateStr(input);
   }
 
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -680,13 +798,19 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.searchForm?.patchValue({
       eir_no: '',
       tank_no: '',
-      clean_process: '',
-      cln_dt_start: '',
-      cln_dt_end: '',
-      cln_bay: '',
-      cargo: '',
-      cleaner: '',
+      rep_type: '',
+      all_dt_start: '',
+      all_dt_end: '',
+      app_dt_start: '',
+      app_dt_end: '',
+      app_dt: '',
+      est_dt_start: '',
+      est_dt_end: '',
+      qc_dt_start: '',
+      qc_dt_end: '',
+      qc_dt: '',
       team: '',
+      report_type: '3'
     });
     this.customerCodeControl.reset('');
     this.noCond = false;
@@ -712,14 +836,16 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
 
-  onExportAdminReportCleanerPerformanceDetailReport(repData: CleanerPerformance[], date: string, team: string) {
+  onExportDailyApprovalExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
     //this.preventDefault(event);
-    let cut_off_dt = new Date();
 
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-    // }
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let cut_off_dt = new Date();
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -727,7 +853,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(CleanerPerformanceDetailPdfComponent, {
+    const dialogRef = this.dialog.open(DailyApprovalExcelComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
       maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
@@ -744,6 +870,207 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       this.isGeneratingReport = false;
     });
   }
+
+  onExportDailyRevenueExcelReport(repData: DailyTeamRevenue[], date: string, team: string) {
+    //this.preventDefault(event);
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let cut_off_dt = new Date();
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyRevenueExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportDailyQCDetailExcelReport(repData: Record<string, DailyQCDetail[]>, date: string, team: string) {
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let cut_off_dt = new Date();
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyQCDetailExcelComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  ZeroTank(repData: any | null | undefined): boolean {
+    return !repData || repData.length === 0;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
+
+  onExportDailyRevenueReport(repData: DailyQCDetail[], date: string, team: string) {
+    //this.preventDefault(event);
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let cut_off_dt = new Date();
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyRevenuePdfComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+
+
+  onExportDailyApprovalReport(repData: DailyQCDetail[], date: string, team: string) {
+    //this.preventDefault(event);
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let cut_off_dt = new Date();
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyApprovalPdfComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
+  onExportDailyQCDetailReport(repData: Record<string, DailyQCDetail[]>, date: string, team: string) {
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+    if (this.ZeroTank(repData)) {
+      this.ShowWarningMessage();
+      this.isGeneratingReport = false;
+      return;
+    }
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(DailyQCDetailPdfComponent, {
+      width: reportPreviewWindowDimension.landscape_width_rate,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      data: {
+        repData: repData,
+        date: date,
+        team: team
+
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+  }
+
 
   isDateRequired(date_type: string): boolean {
     var retval: boolean = true;
@@ -752,81 +1079,45 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       return [2].includes(repType);
     }
     else if (date_type == "QC") {
-
       return [1, 3].includes(repType);
+      //return [3].includes(repType);
     }
-
     return retval;
-
   }
 
-  displayCargoFn(row: TariffCleaningItem) {
-    return `${row.cargo || ''}`;
-  }
-
-  onTabFocused() {
-    this.resetForm();
+  onReportTypeChange(event: Event) {
+    var startDateControl = this.searchForm?.get('qc_dt')!;
+    startDateControl?.markAsUntouched();
+    // startDateControl.setErrors(null);
+    // if(this.isDateRequired('QC'))
+    //   {
+    //   startDateControl.setValidators([Validators.required]); // Reapply required validator
+    //   startDateControl.updateValueAndValidity(); // Refresh validation state
+    //   }
+    startDateControl = this.searchForm?.get('app_dt')!;
+    startDateControl?.markAsUntouched();
+    // startDateControl.setErrors(null);
+    // if(this.isDateRequired('APPROVED'))
+    // {
+    //   startDateControl.setValidators([Validators.required]); // Reapply required validator
+    //   startDateControl.updateValueAndValidity(); // Refresh validation state
+    // }
   }
 
   get pageSizeInfo() {
     return pageSizeInfo
   }
 
+  getMaxDate() {
+    return new Date();
+  }
+
   export_excel() {
-    this.search(5);
+    var repType: number = Number(this.searchForm?.get("report_type")?.value);
+    repType += 3;
+    this.search(repType);
   }
-
-  onExportAdminReportCleanerPerformanceDetailExcelReport(repData: CleanerPerformance[], date: string, team: string) {
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
-    // if (repData?.length <= 0) {
-    //   this.isGeneratingReport = false;
-    //   return;
-    // }
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(CleanerPerformanceDetailExcelComponent, {
-      width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-      data: {
-        repData: repData,
-        date: date,
-        team: team
-
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport = false;
-    });
+  onTabFocused() {
+    this.resetForm();
   }
-
-   ShowWarningMessage() {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ErrorDialogComponent, {
-          disableClose: true,
-          data: {
-            headerText: this.translatedLangText.WARNING,
-            messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
-            act: "warn"
-          },
-          direction: tempDirection
-        });
-        dialogRef.afterClosed().subscribe(result => {
-        });
-      }
-  
 }

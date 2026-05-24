@@ -584,13 +584,6 @@ export class CleanerPerformanceDetailExcelComponent extends UnsubscribeOnDestroy
   }
 
 
-
-
-
-
-
-
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
@@ -624,7 +617,9 @@ export class CleanerPerformanceDetailExcelComponent extends UnsubscribeOnDestroy
 
   const summaryData = InventoryAnalyzer.convertToCleanerSummary(this.repData || []);
 
+  var total_cost=0;
   summaryData.forEach((cln: any, index: number) => {
+    total_cost += cln.total_cost || 0;
     wsData.push([
       "","",
       index + 1,
@@ -633,6 +628,12 @@ export class CleanerPerformanceDetailExcelComponent extends UnsubscribeOnDestroy
     ]);
   });
 
+    wsData.push([
+      "","", "",
+     this.translatedLangText.TOTAL,
+      total_cost
+      
+    ]);
   wsData.push([]); // spacing
 
   // =========================

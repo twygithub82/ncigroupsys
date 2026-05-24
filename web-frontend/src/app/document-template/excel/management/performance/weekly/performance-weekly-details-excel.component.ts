@@ -285,12 +285,14 @@ export class WeeklyPerformanceReportDetailsExcelComponent extends UnsubscribeOnD
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     NO_OF_CLEAN: 'COMMON-FORM.NO-OF-CLEAN',
+    NO_OF_STEAM:'COMMON-FORM.NO-OF-STEAM',
     NO_OF_REPAIR_ORDER: 'COMMON-FORM.NO-OF-REPAIR-ORDER',
     NO_OF_GATE_IN: 'COMMON-FORM.NO-OF-GATE-IN',
     NO_OF_GATE_OUT: 'COMMON-FORM.NO-OF-GATE-OUT',
     TOTAL_IN_OUT: 'COMMON-FORM.TOTAL-IN-OUT',
     AVERAGE_IN_OUT: 'COMMON-FORM.AVERAGE-IN-OUT',
-    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
+    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY',
+    NO_OF: 'COMMON-FORM.NO-OF',
 
 
   }
@@ -655,11 +657,11 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
   const wsData: any[][] = [];
 
   const reportTitle = this.GetReportTitle();
-  const repGeneratedDate = PDFUtility.FormatColon(
-    this.translatedLangText.MONTH,
-    this.date
-  );
-
+  // const repGeneratedDate = PDFUtility.FormatColon(
+  //   this.translatedLangText.MONTH,
+  //   this.date
+  // );
+const repGeneratedDate = this.date;
   // =========================
   // TITLE
   // =========================
@@ -675,10 +677,11 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
   // =========================
   // HEADER (WEEK BASED)
   // =========================
-  const hdr: string[] = [''];
+  const hdr: string[] = [this.translatedLangText.NO_OF];
 
   const data: any[][] = [
     [this.translatedLangText.NO_OF_CLEAN],
+    [this.translatedLangText.NO_OF_STEAM],
     [this.translatedLangText.NO_OF_REPAIR_ORDER],
     [this.translatedLangText.NO_OF_GATE_IN],
     [this.translatedLangText.NO_OF_GATE_OUT],
@@ -697,12 +700,13 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
     hdr.push(wk);
 
     data[0].push(itm.cleaning_count || "");
-    data[1].push(itm.repair_count || "");
-    data[2].push(itm.gate_in_count || "");
-    data[3].push(itm.gate_out_count || "");
-    data[4].push(itm.total_gate_count || "");
-    data[5].push(itm.average_gate_count || "");
-    data[6].push(itm.depot_count || "");
+    data[1].push(itm.steaming_count || "");
+    data[2].push(itm.repair_count || "");
+    data[3].push(itm.gate_in_count || "");
+    data[4].push(itm.gate_out_count || "");
+    data[5].push(itm.total_gate_count || "");
+    data[6].push(itm.average_gate_count || "");
+    data[7].push(itm.depot_count || "");
   });
 
   wsData.push(hdr);
@@ -781,7 +785,8 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
       if (R === 1) ws[addr].s = subTitleStyle;
 
       // Header row
-      if (R === headerRowIndex) ws[addr].s = headerStyle;
+      if (R === headerRowIndex && C > 0 ) ws[addr].s = headerStyle;
+      else if (R === headerRowIndex && C ===0 ) ws[addr].s = rowHeaderStyle;
 
       // First column (labels)
       if (C === 0 && R > headerRowIndex) {
@@ -802,492 +807,10 @@ async exportToExcel_r1(fileName: string = 'document.xlsx') {
   this.dialogRef.close();
 }
 
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
 
 
-
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-    let minHeightBodyCell = 5;
-    let minHeightHeaderCol = 3;
-    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
-
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
-
-    let showGateSurcharge: boolean = this.invTypes?.includes("IN_OUT")!;
-    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
-    const reportTitle = this.GetReportTitle();
-    const headers = [[]];
-
-
-    const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-    };
-
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz_hdr,
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-
-    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
-
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-    // const data: any[][] = []; // Explicitly define data as a 2D array
-
-    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.MONTH, this.date); // Replace with your actual cutoff date
-    //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, PDFUtility.RightSubTitleFontSize());
-    // Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
-
-     startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin, this.translate, reportTitle, repGeneratedDate);
-    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-
-    if (this.customer) {
-        const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-     // Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
-      startY+=PDFUtility.GapBetweenLeftTitleAndTable();
-      // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      // Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
-    }
-
-    var idx = 0;
-    var hdr: string[][] = [['']];
-    var data: string[][] = [
-      [`${this.translatedLangText.NO_OF_CLEAN}`],
-      [`${this.translatedLangText.NO_OF_REPAIR_ORDER}`],
-      [`${this.translatedLangText.NO_OF_GATE_IN}`],
-      [`${this.translatedLangText.NO_OF_GATE_OUT}`],
-      [`${this.translatedLangText.TOTAL_IN_OUT}`],
-      [`${this.translatedLangText.AVERAGE_IN_OUT}`],
-      [`${this.translatedLangText.ON_DEPOT}`]
-    ];
-    // var cleaning:string[][]=[[`${this.translatedLangText.NO_OF_CLEANING}`]];
-    // var repair:string[]=[`${this.translatedLangText.NO_OF_REPAIR_ORDER}`];
-    // var gateIn:string[]=[`${this.translatedLangText.NO_OF_GATE_IN}`];
-    // var gateOut:string[]=[`${this.translatedLangText.NO_OF_GATE_OUT}`];
-    // var totalInOut:string[]=[`${this.translatedLangText.TOTAL_IN_OUT}`];
-    // var averageInOut:string[]=[`${this.translatedLangText.AVERAGE_IN_OUT}`];
-    var year: number = Utility.extractYearFromMonthYear(this.date!) || (new Date()).getFullYear();
-    this.repData?.forEach(itm => {
-      var isoWkRange = `WK-${String(itm.week_of_year!).padStart(2, '0')} (${Utility.getISOWeekRange(year, itm.week_of_year!)})`;
-      hdr[0].push(isoWkRange!);
-      data[0].push(`${itm.cleaning_count || ''}`);
-      data[1].push(`${itm.repair_count || ''}`);
-      data[2].push(`${itm.gate_in_count || ''}`);
-      data[3].push(`${itm.gate_out_count || ''}`);
-      data[4].push(`${itm.total_gate_count || ''}`);
-      data[5].push(`${itm.average_gate_count || ''}`);
-      data[6].push(`${itm.depot_count || ''}`);
-    });
-    //var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
-
-
-    // var series:SeriesItem[]=[];
-    // var index:number=1;
-    // var prcss:string[]=[
-    //   ...(showGateSurcharge?[this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE]:[]),
-    //   ...(showSteamSurcharge?[this.translatedLangText.STEAM]:[]),
-    //   ...(showCleanSurcharge?[this.translatedLangText.CLEANING]:[]),
-    //   ...(showRepairSurcharge?[this.translatedLangText.REPAIR]:[])
-    // ]
-    var prcsValues: number[] = []
-    pdf.setDrawColor(0, 0, 0); // red line color
-
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    // Add table using autoTable plugin
-    autoTable(pdf, {
-      head: hdr,
-      body: data,
-      // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top:startY },
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz_body,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      //   didParseCell: (data: any) => {
-      //     let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-      //     let colSpan=2;
-      //     let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-      //     let depotCell=[6,7];
-      //     if(!showGateSurcharge) depotCell=[];
-      //     if(data.section=="body" && ((data.column.index%2)==0))
-      //     {
-      //        var key = `${data.row.raw[1]}`;
-
-      //        var matched=0;
-      //        var prop="";
-      //        switch (data.column.index)
-      //        {
-      //          case 2:
-      //           if(showGateSurcharge) prop="gateIn";
-      //           else if(showSteamSurcharge) prop="steaming";
-      //           else if(showCleanSurcharge) prop="cleaning";
-      //           else if(showRepairSurcharge) prop="repair";
-      //            break;
-      //          case 4:
-      //           if(showGateSurcharge) prop="gateOut";
-      //           break;
-      //          case 8:
-      //           if(showSteamSurcharge) prop="steaming";
-      //           break;
-      //         case 10:
-      //           if(showCleanSurcharge)prop="cleaning";
-      //            break;
-      //         case 12:
-      //           if(showRepairSurcharge)var prop="repair";
-      //           break;
-      //        }
-      //        if(prop)
-      //        {
-      //          var textColor="";
-      //         if(grpData.processExtremes[prop].highest?.key==key)
-      //           {
-      //             textColor="#009F00";
-      //           }
-      //           else if(grpData.processExtremes[prop].lowest?.key==key)
-      //           {
-      //             textColor="#EF0000";
-      //           }
-      //           if(textColor)
-      //           {
-      //             data.cell.styles.textColor=textColor;
-      //           }
-      //       }
-      //     }
-      //     if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
-      //       data.cell.styles.fontStyle = 'bold';
-      //       data.cell.styles.fillColor=[231, 231, 231];
-      //       data.cell.styles.valign = 'middle'; // Center text vertically
-      //       if (data.column.index %2==0) {
-      //         data.cell.colSpan = colSpan;  // Merge 4 columns into one
-      //         data.cell.fontSize=8;
-      //         if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-
-      //       }
-
-      //     }
-      //     else if (depotCell.includes(data.column.index))
-      //     {
-      //       var dpWidth=10
-      //       data.cell.colSpan = colSpan;
-      //       data.column.width = `${dpWidth}px`;  // Add unit
-
-      // // Alternative approach if above doesn't work
-      // // setTimeout(() => {
-      // //     data.column.width = `${dpWidth}px`;
-      // //     // If your framework has a refresh/update method, call it here
-      // //     // e.g., gridApi.refreshHeader() for AG-Grid
-      // // }, 0);
-
-      // // Or try setting minWidth and maxWidth as well
-      // data.column.minWidth = dpWidth;
-      // data.column.maxWidth = dpWidth;
-      //     }
-
-      //     if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
-      //       && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
-      //     ) {
-      //       data.cell.text = ''; // Remove text from hidden columns
-      //       data.cell.colSpan = 0; // Hide these columns
-      //     }
-      //   },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
-
-        lastTableFinalY = d.cursor.y;
-
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 50, 9);
-             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-             PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
-          }
-        }
-
-      },
-    });
-
-    // var x
-    // this.lineChartOptions.xaxis={
-    //   categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
-    // };
-
-
-    //this.lineChartOptions.series=series;
-
-    // if(!showGateSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
-    // if(!showSteamSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steaming"].includes(s.name));}
-    // if(!showCleanSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
-    // if(!showRepairSurcharge) 
-    //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-
-    // this.pieChartOptions.labels=prcss;
-    // this.pieChartOptions.series2=prcsValues;
-
-    // var lineChartValues={
-    //   xaxis:{
-    //     categories: grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[],
-    //     title: {
-    //       text: 'Month',
-    //     },
-    //     labels: {
-    //       style: {
-    //         colors: '#9aa0ac',
-    //       },
-    //     },
-    //   },
-    //   series:series
-    // };
-
-
-    setTimeout(async () => {
-
-       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin, this.translate,pagePositions);
-
-      // startY=lastTableFinalY+10;
-      // let chartContentWidth = pageWidth - leftMargin - rightMargin;
-      // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-      // for (var i = 0; i < cardElements.length; i++) {
-      //   if (i > 0) {
-      //     pdf.addPage();
-      //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      //     startY=topMargin+20;
-      //   }
-      //   const card1 = cardElements[i];
-      //   const canvas1 = await html2canvas(card1, { scale: scale });
-      //   const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-      //   // Calculate aspect ratio
-      //   const aspectRatio = canvas1.width / canvas1.height;
-
-      //   // Calculate scaled height based on available width
-      //   let imgHeight1 = chartContentWidth / aspectRatio;
-
-      //   // Check if the scaled height exceeds the available page height
-      //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-      //   if (imgHeight1 > maxPageHeight) {
-      //     // Adjust height to fit within the page
-      //     imgHeight1 = maxPageHeight;
-      //     // Recalculate width to maintain aspect ratio
-      //     chartContentWidth = imgHeight1 * aspectRatio;
-      //   }
-
-      //   // Add the image to the PDF
-      //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-      // }
-
-      // const totalPages = pdf.getNumberOfPages();
-
-
-      // for (const { page, x, y } of pagePositions) {
-      //   pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      //   pdf.setFontSize(8);
-      //   pdf.setPage(page);
-
-      //   const lineBuffer = 13;
-      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      //   if (page > 1) {
-      //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      //   }
-      // }// Add Second Page, Add For Loop
-
-      // pagePositions.forEach(({ page, x, y }) => {
-      //   pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      //   pdf.setFontSize(8);
-      //   pdf.setPage(page);
-      //   var lineBuffer = 13;
-      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-      // });
-
-      //  this.generatingPdfProgress = 100;
-      //pdf.save(fileName);
-      //  this.generatingPdfProgress = 0;
-      this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-      this.dialogRef.close();
-
-    }, 50);
-
-    // this.dialogRef.close();
-  }
-
-
-
-  async exportToPDF(fileName: string = 'document.pdf') {
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const leftMargin = 10; // Left margin
-    const rightMargin = 10; // Right margin
-    const contentWidth = 210 - leftMargin - rightMargin; // 190mm usable width
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-    let totalPages = 0;
-
-    // Store page positions for later text update
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();  // Set your report title here
-
-    // Set font for the title
-    pdf.setFontSize(14); // Title font size
-
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
-
-      // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-
-      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
-
-      // Add the report title at the top of every page, centered
-      const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
-
-      const pos = 15;
-      // pdf.text(reportTitle, titleX, pos); // Position it at the top
-
-      // // Draw underline for the title
-      // pdf.setLineWidth(0.5); // Set line width for underline
-      // pdf.line(titleX, pos+2, titleX + titleWidth, pos+2); // Draw the line under the title
-
-      // If card height exceeds A4 page height, split across multiple pages
-      if (imgHeight > 277) { // 297mm (A4 height) - 20mm (top & bottom margins)
-        let yPosition = 0;
-        while (yPosition < canvas.height) {
-          const sectionCanvas = document.createElement('canvas');
-          sectionCanvas.width = canvas.width;
-          sectionCanvas.height = Math.min(1122, canvas.height - yPosition); // A4 height in pixels
-
-          const sectionCtx = sectionCanvas.getContext('2d');
-          sectionCtx?.drawImage(canvas, 0, -yPosition);
-
-          const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
-
-          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
-
-          // Store page position for page numbering
-          pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-
-          yPosition += sectionCanvas.height;
-          if (yPosition < canvas.height) {
-            pdf.addPage();
-            pageNumber++;
-            pdf.text(reportTitle, titleX, 10); // Add title on new page
-            pdf.setLineWidth(0.5); // Set line width for underline
-            pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-          }
-        }
-      } else {
-        if (i > 0) pdf.addPage(); // New page for each card
-        pdf.addImage(imgData, 'JPEG', leftMargin, 20, contentWidth, imgHeight); // Adjust y position to leave space for the title
-        pdf.text(reportTitle, titleX, pos); // Position it at the top
-
-        // Draw underline for the title
-        pdf.setLineWidth(0.5); // Set line width for underline
-        pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
-
-        // Store page position for page numbering
-        pagePositions.push({ page: pageNumber, x: 200, y: 287 });
-      }
-      pageNumber++;
-      this.generatingPdfProgress += progressValue;
-    }
-
-    totalPages = pageNumber - 1;
-
-    // Add page numbers in a second pass
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
 
 
   GeneratedDate(): string {

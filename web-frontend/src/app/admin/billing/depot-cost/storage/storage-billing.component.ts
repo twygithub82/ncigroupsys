@@ -89,11 +89,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     "customer",
     'eir_no',
     'eir_dt',
+    'release-date',
     'days',
     "cost",
-    "cutoff_dt",
-    "invoice_dt",
     "invoice_no",
+    "invoice_dt",
+    "cutoff_dt",
+    
     //"action"
 
     // 'tank_no',
@@ -160,8 +162,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
     STORAGE: 'COMMON-FORM.STORAGE',
     DAYS: 'COMMON-FORM.DAYS',
+    BILLABLE_DAYS: 'COMMON-FORM.BILLABLE-DAYS',
     STORAGE_DAY: 'COMMON-FORM.STORAGE-DAY',
     START_DATE: 'COMMON-FORM.START-DATE',
+    
     
   }
 
@@ -256,7 +260,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       inv_dt: ['']
     })
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -407,15 +411,27 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.storing_order_tank = {};
     where.guid = { neq: null };
-    if (this.searchForm!.get('tank_no')?.value) {
+    // if (this.searchForm!.get('tank_no')?.value) {
+    //   const tankNo = this.searchForm!.get('tank_no')?.value;
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+    //   // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+    //   where.storing_order_tank.or = [
+    //     { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+    //     { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+    //   ];
+    // }
+     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
       if (!where.storing_order_tank) where.storing_order_tank = {};
-      // if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
-      // where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      where.storing_order_tank.or = [
-        { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-      ];
+      if (!where.storing_order_tank.tank_no) where.storing_order_tank.tank_no = {};
+      where.storing_order_tank = {or:[ 
+        { tank_no:{ contains: tankNo }},
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        {in_gate:{some:{eir_no:{contains:tankNo}}}},
+
+      ]
+    };
     }
 
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
@@ -433,15 +449,6 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('invoiced')?.value) {
-
-
-
-
-
-
-      // where.storing_order_tank= {  storage_detail: {
-      //     some: { guid: { neq: null } }// this means "where there is at least one storage_detail"
-      //         } };
 
       where.and = [
         { storing_order_tank: { storage_detail: { any: true } } },
@@ -475,10 +482,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         }
       };
     }
-    if (this.searchForm!.get('eir_no')?.value) {
-      if (!where.storing_order_tank) where.storing_order_tank = {};
-      where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
-    }
+    // if (this.searchForm!.get('eir_no')?.value) {
+    //   if (!where.storing_order_tank) where.storing_order_tank = {};
+    //   where.storing_order_tank.in_gate = { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } };
+    // }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.and) where.and = [];
@@ -546,8 +553,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     // this.selection.clear();
     this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.performanceStorageDetailSort(data)
-        this.billSotList = (data);//this.filterSotBilling(data);
+        this.performanceStorageDetailSort(data);
+       
+         this.billSotList =  data.filter(item => ((item.storage_cost||0> 0) && (this.getStorageDays(item)>0)));//(data);//this.filterSotBilling(data);
+        //  this.billSotList =  data.filter(item => item.storage_cost||0> 0);
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
         this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
@@ -742,6 +751,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
+    where.delete_dt={eq:null};
     this.billDS.searchStorageBilling(where).subscribe(b => {
       if (b.length) {
         if (b[0].bill_to_guid === this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid) {
@@ -1034,7 +1044,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     event.stopPropagation();
     this.invoiceNoControl.reset('');
     const today = new Date().toISOString().substring(0, 10);
-    this.invoiceDateControl.setValue(today);
+    // this.invoiceDateControl.setValue(today);
   }
 
   calculateTotalCost() {
@@ -1077,10 +1087,12 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       } else {
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
         packDepotItm.storage_cal_cv = itm.storage_cal_cv;
-        let cutOffDt: Date = new Date(this.invoiceDateControl.value!);
+        let today= new Date().getTime();
+        let cutOffDt: Date = new Date(this.invoiceDateControl.value||today);
         cutOffDt.setHours(23);
         cutOffDt.setMinutes(59);
         cutOffDt.setSeconds(59);
+        
 
         let startDt = this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm?.storage_cal_cv);
         let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0, (cutOffDt.getTime() / 1000)));
@@ -1092,7 +1104,12 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
         var state = "BILLING"
         if (itm.storing_order_tank?.tank_status_cv == "RELEASED") {
-          if (itm.storing_order_tank?.storage_detail.length > 0) state = "END";
+          if (itm.storing_order_tank?.storage_detail.length > 0) 
+          {
+            state = "END";
+            var maxCutOff =itm.storing_order_tank?.out_gate[0].eir_dt*1000;
+            cutOffDt =cutOffDt.getTime() <= maxCutOff ? cutOffDt : new Date(maxCutOff);
+          }
           else state = "START_END";
 
         }
@@ -1433,7 +1450,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         cutOffDt.setHours(23);
         cutOffDt.setMinutes(59);
         cutOffDt.setSeconds(59);
-        var nextCutoffDt = new Date(this.invoiceDateControl.value!);
+        var today = new Date().getTime();
+        var nextCutoffDt = new Date(this.invoiceDateControl.value||today);
         nextCutoffDt.setHours(23);
         nextCutoffDt.setMinutes(59);
         nextCutoffDt.setSeconds(59);
@@ -1534,10 +1552,27 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     var retval:String ="-";
       let packDepotItm: PackageDepotItem = new PackageDepotItem();
       packDepotItm.storage_cal_cv = row.storage_cal_cv;
-      let daysDifference: number = Number(this.pdDS.getStorageDays(row.storing_order_tank!, packDepotItm));
+      var storageDetail=row.storing_order_tank?.storage_detail?.[0];
+      let daysDifference: number = Number(this.pdDS.getStorageDays(row.storing_order_tank!,
+         packDepotItm,storageDetail?.remaining_free_storage));
 
 
     return  daysDifference; //Utility.formatNumberDisplay(daysDifference) ;
+  }
+
+   getReleaseDate(row:any)
+  {
+    var sotItem=row.storing_order_tank!;
+     sotItem.out_gate = sotItem.out_gate?.filter((outGate :any) => outGate.delete_dt == 0 || outGate.delete_dt == null);
+     var outGate = sotItem.out_gate?.[0];
+      
+      
+    var retval:String ="-";
+    if(outGate)
+    {
+      retval = this.displayDate(outGate.out_gate_survey?.create_dt)||"-"
+    }
+    return  retval; //Utility.formatNumberDisplay(daysDifference) ;
   }
 
    getFreeStorageDays(row:any)
@@ -1552,4 +1587,15 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       const centerClass = isCenter ? 'justify-content-center' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
+
+  getEndDt(row:any)
+  {
+    var today = new Date().getTime();
+    var retval:number = Number(this.invoiceDateControl.value)||today;
+    retval=retval/1000;
+    var endDt=row?.storing_order_tank?.out_gate?.[0]?.eir_dt||0;
+    if(endDt<retval) retval=endDt;
+    
+    return retval;
+  }
 }
