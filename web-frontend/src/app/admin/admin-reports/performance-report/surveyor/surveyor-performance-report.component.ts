@@ -294,16 +294,16 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   initSearchFormSummary() {
-    var thisYear = new Date().getFullYear();
-    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
+    // var thisYear = new Date().getFullYear();
+    // var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchFormSummary = this.fb.group(
       {
         customer_code: this.customerCodeControlSummary,
         repair_type: [''],
         surveyor: [''],
-        month_start: [`${thisMonth}`],
-        month_end: [`${thisMonth}`],
-        year: [`${thisYear}`],
+        month_start: [''],
+        month_end: [''],
+        year: [''],
         est_dt_start: [''],
         est_dt_end: [''],
         est_status: [''],
@@ -504,20 +504,22 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     var team: string = '';
     this.repData = [];
 
-    //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-
-    // where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
-    // if (this.searchForm!.get('tank_no')?.value) {
-    //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-    //   cond_counter++;
-    // }
+   
     var searchFrm = this.searchFormSummary;
+     var requiredControl = searchFrm!.get('est_dt_start');
+     requiredControl!.setErrors({ required: false });
+     requiredControl!.markAsUntouched();
+     requiredControl = searchFrm!.get('est_dt_end');
+     requiredControl!.setErrors({ required: false });
+     requiredControl!.markAsUntouched();
     if (searchFrm?.invalid) {
+      var errorNo=0;
       if (!(searchFrm!.get('month_start')?.value)) {
         const requiredControl = searchFrm!.get('month_start');
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
           requiredControl.markAsTouched();
+          errorNo++;
         }
       }
 
@@ -526,6 +528,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
           requiredControl.markAsTouched();
+           errorNo++;
         }
 
       }
@@ -535,9 +538,12 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
           requiredControl.markAsTouched();
+           errorNo++;
         }
 
       }
+
+      if(errorNo>0) return;
     }
 
     this.isGeneratingReport = true;
@@ -611,16 +617,36 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    var searchFrm = this.searchFormSummary;
+     var searchFrm = this.searchFormSummary!;
+     var requiredControl = searchFrm!.get('month_start');
+     requiredControl!.setErrors({ required: false });
+     requiredControl!.markAsUntouched();
+      requiredControl = searchFrm!.get('month_end');
+     requiredControl!.setErrors({ required: false });
+     requiredControl!.markAsUntouched();
     if (searchFrm?.invalid) {
-      if (!(searchFrm!.get('est_dt_start')?.value) || !(searchFrm!.get('est_dt_end')?.value)) {
+      var errorNo=0;
+      if (!(searchFrm!.get('est_dt_start')?.value)) {
         const requiredControl = searchFrm!.get('est_dt_start');
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
           requiredControl.markAsTouched();
+          errorNo++;
         }
       }
-      return;
+
+      if (!(searchFrm!.get('est_dt_end')?.value)) {
+        const requiredControl = searchFrm!.get('est_dt_end');
+        if (requiredControl) {
+          requiredControl.setErrors({ required: true });
+          requiredControl.markAsTouched();
+          errorNo++;
+        }
+
+      }
+
+     
+      if(errorNo>0) return;
     }
 
     this.isGeneratingReport = true;
@@ -835,8 +861,8 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
 
   resetFormSummary() {
-    var thisYear = new Date().getFullYear().toString();
-    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
+    var thisYear = '';//new Date().getFullYear().toString();
+    var thisMonth =''; //new Date().toLocaleString("en-US", { month: "long" });
     this.searchFormSummary?.patchValue({
       repair_type: '',
       month_start: thisMonth,
@@ -851,6 +877,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
     this.customerCodeControlSummary.reset('');
     this.noCond = false;
+    this.searchFormSummary?.markAsUntouched();
   }
 
   resetFormDetail() {
@@ -868,6 +895,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
     this.customerCodeControlDetail.reset('');
     this.noCond = false;
+    this.searchFormDetail?.markAsUntouched();
   }
 
 
@@ -1079,4 +1107,35 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
   }
 
+  setReportMode(mode: 'summary' | 'detail') {
+    // this.reportMode = mode;
+
+    var form = this.searchFormSummary!;
+    
+    if (mode === 'summary') {
+      // Summary required
+      form.get('month_start')?.setValidators([Validators.required]);
+      form.get('month_end')?.setValidators([Validators.required]);
+      form.get('year')?.setValidators([Validators.required]);
+
+      // Detail not required
+      form.get('est_dt_start')?.clearValidators();
+      form.get('est_dt_end')?.clearValidators();
+    }
+
+    if (mode === 'detail') {
+      // Detail required
+      form.get('est_dt_start')?.setValidators([Validators.required]);
+      form.get('est_dt_end')?.setValidators([Validators.required]);
+
+      // Summary not required
+      form.get('month_start')?.clearValidators();
+      form.get('month_end')?.clearValidators();
+      form.get('year')?.clearValidators();
+    }
+
+    Object.keys(form.controls).forEach(key => {
+      form.get(key)?.updateValueAndValidity();
+    });
+  }
 }

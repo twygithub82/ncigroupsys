@@ -706,6 +706,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
                   net_cost: this.calculateNetCost(res)
                 };
               })
+              .sort((a, b) => (a.estimate_no || '').localeCompare(b.estimate_no || ''))
           }));
 
           // ================= MOBILE PAGINATION =================

@@ -510,7 +510,8 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
           open_on_gate_cv
           cargo
         }
-        release_order_sot {
+        release_order_sot (where: { status_cv: { in: ["WAITING"] } }) {
+          status_cv
           release_order {
             ro_no
             ro_notes
@@ -519,6 +520,7 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
               guid
               name
             }
+            status_cv
           }
         }
         out_gate {
