@@ -674,8 +674,8 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
 `;
 
 export const GET_STEAM_FOR_MOVEMENT = gql`
-  query querySteaming($where: steamingFilterInput) {
-    resultList: querySteaming(where: $where) {
+  query querySteaming($where: steamingFilterInput, $order: [steamingSortInput!]) {
+    resultList: querySteaming(where: $where, order: $order) {
       nodes {
         allocate_by
         allocate_dt
@@ -1101,10 +1101,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   getSteamForMovement(sot_guid: string | undefined): Observable<SteamItem[]> {
     this.loadingSubject.next(true);
     const where: any = { sot_guid: { eq: sot_guid } }
+    const order: any = [{ estimate_no: 'ASC' }];
     return this.apollo
       .query<any>({
         query: GET_STEAM_FOR_MOVEMENT,
-        variables: { where },
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

@@ -699,6 +699,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
               ?.map(rep => {
                 return { ...rep, net_cost: this.calculateNetCost(rep) }
               })
+              ?.sort((a, b) => (a.estimate_no || '').localeCompare(b.estimate_no || ''))
             return sot;
           });
 

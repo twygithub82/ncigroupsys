@@ -539,8 +539,8 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
 `;
 
 export const GET_RESIDUE_FOR_MOVEMENT = gql`
-  query queryResidue($where: residueFilterInput) {
-    resultList: queryResidue(where: $where) {
+  query queryResidue($where: residueFilterInput, $order: [residueSortInput!]) {
+    resultList: queryResidue(where: $where, order: $order) {
       nodes {
         allocate_by
         allocate_dt
@@ -894,10 +894,11 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   getResidueForMovement(sot_guid: string | undefined): Observable<ResidueItem[]> {
     this.loadingSubject.next(true);
     const where: any = { sot_guid: { eq: sot_guid } }
+    const order: any = [{ estimate_no: 'ASC' }];
     return this.apollo
       .query<any>({
         query: GET_RESIDUE_FOR_MOVEMENT,
-        variables: { where },
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

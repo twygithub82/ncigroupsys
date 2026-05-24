@@ -1802,6 +1802,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      // this.subs.sink = this.emailApiService
+      //   .email(this.in_gate?.tank?.tank_no!, residue_guid!, this.getEmails(), 'IN_GATE')
+      //   .subscribe({
+      //     next: (res) => {
+      //       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      //     },
+      //     error: (error) => {
+      //       console.log(error)
+      //       // this.errorDialog();
+      //     },
+      //   });
     });
   }
 

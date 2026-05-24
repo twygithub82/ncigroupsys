@@ -71,7 +71,7 @@
           <div class="col-xl-4 col-lg-4  col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TEAM}}</mat-label>
-              <mat-select formControlName="team" multiple>
+              <mat-select formControlName="team" multiple [disabled]="teamDisable">
                 @for (t of repairTeamList; track t) {
                 <mat-option [value]="t.description">
                   {{t.description}}
@@ -101,37 +101,6 @@
               <mat-datepicker #approved_picker></mat-datepicker>
             </mat-form-field>
           </div>
-          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="approved_picker" required>
-                    <input matStartDate placeholder="Start date" formControlName="app_dt_start" required>
-                    <input matEndDate placeholder="End date" formControlName="app_dt_end" required>
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #approved_picker></mat-date-range-picker>
-                </mat-form-field>
-                @if (
-                  (searchForm?.get('app_dt_start')?.hasError('required') && searchForm?.get('app_dt_start')?.touched) ||
-                  (searchForm?.get('app_dt_end')?.hasError('required') && searchForm?.get('app_dt_end')?.touched)
-                ) {
-                  <mat-error>
-                    {{ translatedLangText.APPROVED_DATE }} {{ translatedLangText.SO_REQUIRED }}
-                  </mat-error>
-                }
-
-              </div> -->
-          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.ALLOCATION_DATE}}</mat-label>
-              <mat-date-range-input [rangePicker]="allocation_picker" [max]="getMaxDate()">
-                <input matStartDate placeholder="Start date" formControlName="all_dt_start">
-                <input matEndDate placeholder="End date" formControlName="all_dt_end">
-              </mat-date-range-input>
-              <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
-              <mat-date-range-picker #allocation_picker></mat-date-range-picker>
-            </mat-form-field>
-          </div> -->
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{ translatedLangText.QC_DATE }}</mat-label>
@@ -141,17 +110,6 @@
               <mat-datepicker #qc_picker></mat-datepicker>
             </mat-form-field>
           </div>
-          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.QC_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="qc_picker">
-                    <input matStartDate placeholder="Start date" formControlName="qc_dt_start">
-                    <input matEndDate placeholder="End date" formControlName="qc_dt_end">
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #qc_picker></mat-date-range-picker>
-                </mat-form-field>
-              </div> -->
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <div class="radio-group" (change)="onReportTypeChange($event)">
               <input type="radio" id="option-one" name="report_type" formControlName="report_type" value="3"
@@ -162,18 +120,6 @@
                 for="option-three">{{translatedLangText.QC_DETAIL}}</label> -->
             </div>
           </div>
-          <!-- <div
-                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
-                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.DETAIL_REPORT}}>
-                  <mat-icon>assignment</mat-icon>
-                </button>
-                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)"
-                  [disabled]="((sotDS.loading$ | async) || isGeneratingReport)"
-                  matTooltip={{translatedLangText.CLEAR_ALL}}>
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div> -->
         </div>
       </form>
     </mat-expansion-panel>
