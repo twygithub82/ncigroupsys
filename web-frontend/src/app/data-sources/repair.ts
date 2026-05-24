@@ -1127,8 +1127,8 @@ const GET_REPAIR_FOR_QC = gql`
 `
 
 const GET_REPAIR_FOR_MOVEMENT = gql`
-  query QueryRepair($where: repairFilterInput) {
-    resultList: queryRepair(where: $where) {
+  query QueryRepair($where: repairFilterInput, $order: [repairSortInput!]) {
+    resultList: queryRepair(where: $where, order: $order) {
       nodes {
         aspnetusers_guid
         create_by
@@ -1824,10 +1824,11 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   getRepairForMovement(sot_guid: any): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { sot_guid: { eq: sot_guid }, status_cv: { nin: ["CANCELED"] } }
+    const order: any = [{ estimate_no: 'ASC' }];
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_MOVEMENT,
-        variables: { where },
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
