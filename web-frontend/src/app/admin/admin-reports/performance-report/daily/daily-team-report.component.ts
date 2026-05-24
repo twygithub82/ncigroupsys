@@ -228,6 +228,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   noCond: boolean = false;
   isGeneratingReport = false;
   repData: any[] = [];
+  teamDisable=false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -1102,6 +1103,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     //   startDateControl.setValidators([Validators.required]); // Reapply required validator
     //   startDateControl.updateValueAndValidity(); // Refresh validation state
     // }
+     var repType: number = Number(this.searchForm?.get("report_type")?.value);
+     this.teamDisable=(repType===2);
+     if(this.teamDisable)    this.searchForm?.get("team")?.setValue('');
+     
   }
 
   get pageSizeInfo() {
