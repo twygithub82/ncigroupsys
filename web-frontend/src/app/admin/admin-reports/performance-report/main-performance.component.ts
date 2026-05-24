@@ -34,6 +34,7 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleaningPerformanceReportComponent } from './cleaning/cleaning-performance-report.component';
 import { SteamPerformanceReportComponent } from './steam/steam-performance-report.component';
 import { SurveyorPerformanceReportComponent } from './surveyor/surveyor-performance-report.component';
+import { DailyTeamReportComponent } from './daily/daily-team-report.component';
 
 @Component({
   selector: 'app-performance-team',
@@ -67,7 +68,8 @@ import { SurveyorPerformanceReportComponent } from './surveyor/surveyor-performa
     MatTabsModule,
     SteamPerformanceReportComponent,
     SurveyorPerformanceReportComponent,
-    CleaningPerformanceReportComponent
+    CleaningPerformanceReportComponent,
+    DailyTeamReportComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -128,6 +130,7 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     SURVEYOR_PERFORMANCE_REPORT: "COMMON-FORM.SURVEYOR-PERFORMANCE-REPORT",
     CLEANING_PERFORMANCE_REPORT: "COMMON-FORM.CLEANING-PERFORMANCE-REPORT",
     STEAMING_PERFORMANCE_REPORT: "COMMON-FORM.STEAMING-PERFORMANCE-REPORT",
+    DAILY: "COMMON-FORM.DAILY",
 
   }
 
@@ -189,15 +192,18 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
   @ViewChild('cleanPerformRep') cleanPerformRep!: CleaningPerformanceReportComponent;
   @ViewChild('steamPerformRep') steamPerformRep!: SteamPerformanceReportComponent;
   @ViewChild('surveyorPerformRep') surveyorPerformRep!: SurveyorPerformanceReportComponent;
+   @ViewChild('dailyPerformRep') dailyPerformRep!: DailyTeamReportComponent;
 
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     switch (event.index) {
       case 0:
-        this.cleanPerformRep?.onTabFocused(); break;
+        this.dailyPerformRep?.onTabFocused(); break;
       case 1:
-        this.steamPerformRep?.onTabFocused(); break;
+        this.cleanPerformRep?.onTabFocused(); break;
       case 2:
+        this.steamPerformRep?.onTabFocused(); break;
+      case 3:
         this.surveyorPerformRep?.onTabFocused(); break;
     }
   }

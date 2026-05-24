@@ -2198,14 +2198,14 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       return undefined;
     }
 
-    const earliestApproveDt = repair.reduce((latest, item) => {
+    const latestCompleteDt = repair.reduce((latest, item) => {
       if (item.complete_dt !== null && item.complete_dt !== undefined) {
         return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
       }
       return latest;
     }, undefined as number | undefined);
 
-    return earliestApproveDt;
+    return latestCompleteDt;
   }
 
   getRepairProcessingDays(repair: RepairItem[] | undefined) {

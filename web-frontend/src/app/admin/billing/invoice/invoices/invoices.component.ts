@@ -89,11 +89,15 @@ import { CustomerInvoicesExcelComponent } from 'app/document-template/excel/bill
 export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
+    'customer',
+    'bill_to',
+    'currency',
+    'invoice_type',
     'invoice_dt',
     'invoice_no',
-    'invoice_type',
-    'customer',
-    'currency',
+
+
+
     // 'last_cargo',
     // 'purpose',
     // 'tank_status_cv'
@@ -142,7 +146,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     DELETE: 'COMMON-FORM.DELETE',
     EXPORT: 'COMMON-FORM.EXPORT',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
-    MULTIPLE: 'COMMON-FORM.MULTIPLE'
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
   }
 
   distinctCustomerCodes: any;
@@ -169,6 +174,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
+  bill_to_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
@@ -182,7 +188,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { invoice_dt: "DESC" };
+  lastOrderBy: any = { invoice_dt: "ASC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -251,13 +257,41 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     this.branch_companyList = [];
+    //     this.branchCodeControl.reset('');
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.customer_companyList = data
+    //       this.updateValidators(this.customerCodeControl, this.customer_companyList);
+    //       if (!this.customerCodeControl.invalid) {
+    //         if (this.customerCodeControl.value?.guid) {
+    //           let mainCustomerGuid = this.customerCodeControl.value.guid;
+    //           this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+    //             this.branch_companyList = data;
+    //             this.updateValidators(this.branchCodeControl, this.branch_companyList);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
+
+       this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        this.branch_companyList = [];
-        this.branchCodeControl.reset('');
+        // this.branch_companyList = [];
+        // this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -266,19 +300,50 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
           this.updateValidators(this.customerCodeControl, this.customer_companyList);
-          if (!this.customerCodeControl.invalid) {
-            if (this.customerCodeControl.value?.guid) {
-              let mainCustomerGuid = this.customerCodeControl.value.guid;
-              this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
-                this.branch_companyList = data;
-                this.updateValidators(this.branchCodeControl, this.branch_companyList);
-              });
-            }
-          }
+          // this.bill_to_companyList = data;
+          // this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
         });
       })
     ).subscribe();
 
+     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+      //  this.branch_companyList = [];
+      //  this.branchCodeControl.reset('');
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          // this.customer_companyList = data
+          // this.updateValidators(this.customerCodeControl, this.customer_companyList);
+          this.bill_to_companyList = data;
+          this.updateValidators(this.branchCodeControl, this.bill_to_companyList);
+          // if (!this.customerCodeControl.invalid) {
+          //   if (this.customerCodeControl.value?.guid) {
+          //     let mainCustomerGuid = this.customerCodeControl.value.guid;
+          //     this.ccDS.loadItems({ main_customer_guid: { eq: mainCustomerGuid } }).subscribe(data => {
+          //       this.branch_companyList = data;
+          //       this.updateValidators(this.branchCodeControl, this.branch_companyList);
+          //     });
+          //   }
+          // }
+        });
+      })
+    ).subscribe();
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -511,18 +576,18 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      const itm: any = { or: [] };
-      itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ residue: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ steaming: { some: { sbill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ gin_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ gout_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ lon_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ loff_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ preinsp_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
-      itm.or.push({ storage_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      const itm: any = { customer_company : { code: {eq: this.searchForm!.get('branch_code')?.value.code} }};
+      // itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ residue: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ steaming: { some: { sbill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ gin_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ gout_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ lon_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ loff_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ preinsp_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
+      // itm.or.push({ storage_billing_sot: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       where.and.push(itm);
     }
 
@@ -1034,11 +1099,18 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.billList.forEach((row) =>
-        this.selection.select(row)
-      );
+    if (this.isAllSelected()) {
+      this.selectedEstimateItem = undefined;
+      this.selection.clear();
+    } else {
+      this.selection.clear();
+
+      if (this.selectedEstimateItem) {
+        this.billList.forEach((row) => {
+          this.selection.select(row);
+        });
+      }
+    }
     //this.calculateTotalCost();
   }
 
@@ -1067,14 +1139,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   MasterCheckBoxDisable() {
-    if (this.distinctCustomerCodes?.length) {
-      return this.distinctCustomerCodes.length > 1;
-    }
 
-    return false;
+
+    return !(this.selectedEstimateItem?.customer_company);
   }
 
   isItemSelected(row: BillingItem) {
+
     return this.selection.selected.some(s => s.guid === row.guid);
   }
 
@@ -1263,7 +1334,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
 
-  export_report(repType:number=1) {
+  export_report(repType: number = 1) {
 
     // if (!this.billList.length) this.search();
 
@@ -1306,8 +1377,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       });
 
     });
-    if(repType==5){ this.onExportExcel(repCustomers);}
-    else  { this.onExport(repCustomers);}
+    if (repType == 5) { this.onExportExcel(repCustomers); }
+    else { this.onExport(repCustomers); }
 
   }
 
@@ -1639,7 +1710,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     event.preventDefault();
   }
 
-   onExportExcel(repCustomers: report_billing_customer[]) {
+  onExportExcel(repCustomers: report_billing_customer[]) {
     //this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1694,11 +1765,31 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   AutoSearch() {
     if (Utility.IsAllowAutoSearch()) {
-        this.search();
+      this.search();
     }
   }
    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
       const centerClass = isCenter ? 'justify-content-center' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
+  }
+
+ getCustomerCode(item:any)
+  {
+    var itm =item?.customer_company;
+    if(itm)
+    {
+      return itm.code;
+    }
+    return "-";
+  }
+    getCustomerName(item:any)
+  {
+    var itm =item?.customer_company;
+    if(itm)
+    {
+      return itm.name;
+    }
+    return "-";
+  }
 }

@@ -23,13 +23,13 @@
             <span class="font-bold">
               {{(this.selectedItem.free_storage)}}</span>
           </div> -->
-          <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-11 mb-1">
+          <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-11 mb-1" hidden>
 
             {{translatedLangText.EIR_NO }}
             <span class="font-bold">
               {{DisplayEirNo(this.selectedItem)}}</span>
           </div>
-          <div [ngClass]="getColumnClasses_Right('col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1',!isMobile)">
+          <div [ngClass]="getColumnClasses_Right('col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1',!isMobile)" hidden>
             {{translatedLangText.EIR_DATE }}
             <span class="font-bold">
               {{DisplayEirDate(this.selectedItem)}}</span>
@@ -92,22 +92,22 @@
                     </ng-container>
                     <ng-container matColumnDef="storageday">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.STORAGE_DAY}}
+                        [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.BILLABLE_DAYS}}
                       </mat-header-cell>
                       <mat-cell
                         [ngClass]="getColumnClasses_Center('pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile  ) "
                         *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.STORAGE_DAY}}:</span>{{row.storage_days }}</mat-cell>
+                        <span class="mobile-label">{{translatedLangText.BILLABLE_DAYS}}:</span>{{row.storage_days }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.TOTAL_COST
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.COST
                         }} </mat-header-cell>
                       <mat-cell
                         [ngClass]="getColumnClasses_Center('pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)"
                         *matCellDef="let row">
                         <span
-                          class="mobile-label">{{translatedLangText.TOTAL_COST}}:
+                          class="mobile-label">{{translatedLangText.COST}}:
                         </span>{{DisplayCost(row)}}
                       </mat-cell>
                     </ng-container>

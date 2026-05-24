@@ -616,7 +616,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
-    let fontSz_body= PDFUtility.ContentFontSize_Portrait();
+    let fontSz_body = PDFUtility.ContentFontSize_Portrait();
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -624,7 +624,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.CARGO,
-      this.translatedLangText.DURATION ,
+      this.translatedLangText.DURATION,
       this.translatedLangText.PROCESS,
       this.translatedLangText.COST,
       // this.translatedLangText.EIR_NO,
@@ -666,7 +666,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    
+
 
 
     // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
@@ -674,7 +674,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
-    let sPosY=0;
+    let sPosY = 0;
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
@@ -683,15 +683,15 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
     //var dtstr = await Utility.GetReportGeneratedDate(this.translate);
     // await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-    
-    startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
-       rightMargin, this.translate, reportTitle, repGeneratedDate);
+
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+      rightMargin, this.translate, reportTitle, repGeneratedDate);
 
     startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
-    sPosY=startY;
-    startY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,startY,
-      minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
-      startY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+    sPosY = startY;
+    startY = await this.AddSummaryTable(pdf, pageWidth, leftMargin, rightMargin, topMargin, startY,
+      minHeightBodyCell, fontSz_body, pagePositions, reportTitle);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
 
     // if(this.customer)
@@ -701,6 +701,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     // }
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
+    
     for (let n = 0; n < (this.repData?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -752,7 +753,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
         //halign: 'left', // Left-align content for body by default
         //valign: 'middle', // Vertically align content
       },
-     
+
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
@@ -764,17 +765,17 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
           if (pageCount > 1) {
             startY = 50;
             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            PDFUtility.addReportSubTitle_Portrait(pdf,repGeneratedDate, pageWidth, leftMargin, rightMargin);
-          
+            PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+
           }
         }
 
       },
     });
 
-   await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, 
-    leftMargin, rightMargin, this.translate,pagePositions);
-   
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin,
+      leftMargin, rightMargin, this.translate, pagePositions);
+
     // //Sign , verified tables-------------end--------------
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -785,72 +786,83 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
 
-  async AddSummaryTable(pdf: jsPDF,pageWidth:number,  
-    leftMargin:number,rightMargin:number,topMargin:number,
-    lastTableFinalY: number, 
-    minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
-  {
-      //  pdf.addPage();
+  async AddSummaryTable(pdf: jsPDF, pageWidth: number,
+    leftMargin: number, rightMargin: number, topMargin: number,
+    lastTableFinalY: number,
+    minHeightBodyCell: any, fontsz: number, pagePositions: any, reportTitle: string) {
+    //  pdf.addPage();
 
-      //  lastTableFinalY=45;
-     //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-       const tableWidthTotal = 10 + 60 + 40;
-       const columnStyles:any= {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center', valign: 'middle',cellWidth: 10, minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell },
-          2: { halign: 'center', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
-          
-        };
+    //  lastTableFinalY=45;
+    //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+    const tableWidthTotal = 10 + 60 + 40;
+    const columnStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 60, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
 
-          const headStyles: Partial<Styles> = {
-            fillColor: [211, 211, 211], // Background color
-            textColor: 0, // Text color (white)
-            fontStyle: "bold", // Valid fontStyle value
-            halign: 'center', // Centering header text
-            valign: 'middle',
-            lineColor: 201,
-            lineWidth: 0.1
-          };
+    };
+
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
 
 
-        const headers = [[this.translatedLangText.S_N,this.translatedLangText.CLEANER,this.translatedLangText.TOTAL_AMOUNT]];
-        var summaryData = InventoryAnalyzer.convertToCleanerSummary(this.repData || []);
-        var data:any[]=[];
-         for (let n = 0; n < summaryData.length; n++)
-         {
-          var cln =summaryData[n];
-           data.push([n+1,cln.cleaner_name,Utility.formatNumberDisplay(cln.total_cost || 0)]); 
+    const headers = [[this.translatedLangText.S_N, this.translatedLangText.CLEANER, this.translatedLangText.TOTAL_AMOUNT]];
+    var summaryData = InventoryAnalyzer.convertToCleanerSummary(this.repData || []);
+    var data: any[] = [];
+    var grandTotal = 0;
+    for (let n = 0; n < summaryData.length; n++) {
+      var cln = summaryData[n];
+
+      const totalCost = cln.total_cost || 0;
+      grandTotal += totalCost;
+
+      data.push([n + 1, cln.cleaner_name, Utility.formatNumberDisplay(cln.total_cost || 0)]);
+    }
+    data.push(['', this.translatedLangText.TOTAL, Utility.formatNumberDisplay(grandTotal)]);
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: lastTableFinalY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: (pageWidth - tableWidthTotal) / 2 },
+      columnStyles: columnStyles,
+      styles: {
+        fontSize: fontsz,
+        minCellHeight: minHeightBodyCell
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      headStyles: headStyles, // Custom header styles
+      didParseCell: function (hookData) {
+        const lastRowIndex = data.length - 1;
+
+        if (hookData.row.index === lastRowIndex) {
+          hookData.cell.styles.fontStyle = 'bold';
         }
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: lastTableFinalY, // Start table at the current startY value
-          theme: 'grid',
-          margin: { left: (pageWidth-tableWidthTotal)/2 },
-          columnStyles: columnStyles,
-          styles: {
-            fontSize: fontsz,
-            minCellHeight: minHeightBodyCell
-          },
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-          },
-          headStyles: headStyles, // Custom header styles
-           didDrawPage: (data: any) => {
-          const pageCount = pdf.getNumberOfPages();
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
 
-          if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-          // Capture the final Y position of the table
-          lastTableFinalY = data.cursor.y;
-          var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
-          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-        },
-        })
+        if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    })
 
-        return lastTableFinalY;
+    return lastTableFinalY;
   }
 
 

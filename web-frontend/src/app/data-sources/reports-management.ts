@@ -351,6 +351,7 @@ export class OrderTrackingItem {
 export class WeeklyPerformmanceItem {
   average_gate_count?: number;
   cleaning_count?: number;
+  steaming_count?:number;
   depot_count?: number;
   gate_in_count?: number;
   gate_out_count?: number;
@@ -361,6 +362,7 @@ export class WeeklyPerformmanceItem {
   constructor(item: Partial<WeeklyPerformmanceItem> = {}) {
     this.average_gate_count = item.average_gate_count;
     this.cleaning_count = item.cleaning_count;
+    this.steaming_count=item.steaming_count;
     this.depot_count = item.depot_count;
 
     this.gate_in_count = item.gate_in_count;
@@ -1250,6 +1252,7 @@ export const GET_MANAGEMENT_REPORT_WEEKLY_PERFORMANCE_REPORT = gql`
     nodes {
       average_gate_count
       cleaning_count
+      steaming_count
       depot_count
       gate_in_count
       gate_out_count

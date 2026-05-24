@@ -292,6 +292,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     AVERAGE_IN_OUT: 'COMMON-FORM.AVERAGE-IN-OUT',
     DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY',
     NO_OF: 'COMMON-FORM.NO-OF',
+    NO_OF_STEAM: 'COMMON-FORM.NO-OF-STEAM',
 
 
   }
@@ -754,6 +755,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     var hdr: string[][] = [[`${this.translatedLangText.NO_OF}`]];
     var data: string[][] = [
       [`${this.translatedLangText.NO_OF_CLEAN}`],
+      [`${this.translatedLangText.NO_OF_STEAM}`],
       [`${this.translatedLangText.NO_OF_REPAIR_ORDER}`],
       [`${this.translatedLangText.NO_OF_GATE_IN}`],
       [`${this.translatedLangText.NO_OF_GATE_OUT}`],
@@ -772,12 +774,13 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       var isoWkRange = `WK-${String(itm.week_of_year!).padStart(2, '0')} (${Utility.getISOWeekRange(year, itm.week_of_year!)})`;
       hdr[0].push(isoWkRange!);
       data[0].push(`${itm.cleaning_count || ''}`);
-      data[1].push(`${itm.repair_count || ''}`);
-      data[2].push(`${itm.gate_in_count || ''}`);
-      data[3].push(`${itm.gate_out_count || ''}`);
-      data[4].push(`${itm.total_gate_count || ''}`);
-      data[5].push(`${itm.average_gate_count || ''}`);
-      data[6].push(`${itm.depot_count || ''}`);
+      data[1].push(`${itm.steaming_count || ''}`);
+      data[2].push(`${itm.repair_count || ''}`);
+      data[3].push(`${itm.gate_in_count || ''}`);
+      data[4].push(`${itm.gate_out_count || ''}`);
+      data[5].push(`${itm.total_gate_count || ''}`);
+      data[6].push(`${itm.average_gate_count || ''}`);
+      data[7].push(`${itm.depot_count || ''}`);
     });
     //var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
 
