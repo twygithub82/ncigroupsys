@@ -1772,7 +1772,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       const centerClass = isCenter ? 'justify-content-center' : '';
       return `${baseClasses} ${centerClass}`.trim();
     }
-  }
+  
 
  getCustomerCode(item:any)
   {
