@@ -567,6 +567,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           return;
         }
         this.repData = data;
+        this.repData?.sort((a, b) => (a?.cleaner_name || '').localeCompare(b?.cleaner_name || ''));
         if (report_type == 5) {
           this.onExportAdminReportCleanerPerformanceDetailExcelReport(this.repData, date!, team!);
         }

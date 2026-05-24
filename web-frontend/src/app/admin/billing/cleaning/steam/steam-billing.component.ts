@@ -1058,7 +1058,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         var cost: number = data[0].cost;
         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
         if (isAutoApproveSteaming) {
-          row.total_cost = (row.rate || 0);
+          var stmPart = row.steaming_part[0];
+          row.total_cost=0;
+          if(stmPart){
+
+            row.total_cost = this.IsApproved(row) ? (stmPart.approve_cost || 0) : (stmPart.cost || 0) ;
+          }
+          
           if (!row.flat_rate) {
             row.total_cost = row.total_hour * row.rate;
           }
@@ -1237,4 +1243,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
     return "-";
   }
+
+  
 }
