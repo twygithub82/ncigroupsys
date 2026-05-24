@@ -656,6 +656,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
                   // net_cost: this.calculateNetCost_r1(stm)
                 };
               })
+              .sort((a, b) => (a.estimate_no || '').localeCompare(b.estimate_no || ''))
           }));
 
           // ================= MOBILE PAGINATION =================
