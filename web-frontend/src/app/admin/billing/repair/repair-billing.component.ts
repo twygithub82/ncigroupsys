@@ -24,6 +24,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -244,7 +245,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {
     super();
     this.translateLangText();
@@ -606,12 +608,12 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      var billingGuid =this.searchForm!.get('branch_code')?.value.guid;
+      var billingGuid = this.searchForm!.get('branch_code')?.value.guid;
       // where.repair.some.and.push({ bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } });
-         where.repair.some.and.push({
+      where.repair.some.and.push({
         or: [
-          { customer_billing: { bill_to_guid: { eq: billingGuid } }},
-          { owner_billing: { bill_to_guid: { eq: billingGuid } }}
+          { customer_billing: { bill_to_guid: { eq: billingGuid } } },
+          { owner_billing: { bill_to_guid: { eq: billingGuid } } }
         ]
       });
     }
@@ -685,7 +687,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
           if (this.searchForm!.get('invoiced')?.value) {
             d.repair = d.repair?.filter(d => d.customer_billing_guid !== null || d.owner_billing_guid !== null);
           }
-          if(this.searchForm!.get('branch_code')?.value){
+          if (this.searchForm!.get('branch_code')?.value) {
             var billGuid = this.searchForm!.get('branch_code')?.value.guid;
             d.repair = d.repair?.filter(d => d.customer_billing?.bill_to_guid === billGuid || d.owner_billing?.bill_to_guid === billGuid);
           }
@@ -1420,31 +1422,44 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   repairDialog(event: Event, repair: RepairItem) {
+
     this.preventDefault(event);
-    // if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
-    // this.router.navigate(['/admin/repair/estimate/edit', this.sot?.guid, repair.guid], {
-    //   state: { from: this.router.url } // store current route
+
+    // const path = this.router.serializeUrl(
+    //   this.router.createUrlTree([
+    //     '/admin/repair/estimate/edit',
+    //     repair.storing_order_tank?.guid,
+    //     repair.guid?.replace("_1", ""),
+    //   ], {
+    //     queryParams: { from: this.router.url }
+    //   })
+    // );
+
+    // const url = window.location.origin + '/#' + path;
+
+    // window.open(url, '_blank');
+
+    //   this.preventDefault(event);
+      
+    // // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+
+    // const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
+    //   // width: '794px',
+    //   // position: { top: '-9999px', left: '-9999px' },
+    //   data: {
+    //     repair_guid: repair?.guid?.replace("_1", ""),
+    //   },
+    //   // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+    //   direction: tempDirection
     // });
-
-    // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
-      // width: '794px',
-      // position: { top: '-9999px', left: '-9999px' },
-      data: {
-        repair_guid: repair?.guid?.replace("_1", ""),
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    // });
   }
 
   // showEstimateDetail(event: Event, row: RepairItem) {
@@ -1529,16 +1544,16 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   getBillToCustomerCode(item: any) {
-    var itm = item?.customer_billing ||item?.owner_billing;
+    var itm = item?.customer_billing || item?.owner_billing;
     if (itm) {
       return itm.customer_company?.code;
     }
-  
+
     return "-";
   }
 
-   getBillToCustomerName(item: any) {
-    var itm = item?.customer_billing ||item?.owner_billing;
+  getBillToCustomerName(item: any) {
+    var itm = item?.customer_billing || item?.owner_billing;
     if (itm) {
       return itm.customer_company?.name;
     }

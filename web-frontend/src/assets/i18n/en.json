@@ -1433,7 +1433,8 @@
     "DAILY-REVENUE" : "Daily Revenue",
     "NO-OF": "Number of",
     "BILLABLE-DAYS": "Billable Days",
-    "DAILY": "Daily"
+    "DAILY": "Daily",
+    "INVOICE-SUMMARY": "Invoice Summary"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

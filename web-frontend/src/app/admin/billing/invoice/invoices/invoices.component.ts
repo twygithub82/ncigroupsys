@@ -1472,6 +1472,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
           rep_bill_item.gateio_est_no += 1;
           rep_bill_item.gateio_cost = Number(Number(rep_bill_item?.gateio_cost || 0) + (c.gate_in_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
+          rep_bill_item.gate_in_cost = Number(Number(rep_bill_item?.gate_in_cost || 0) + (c.gate_in_cost || 0)).toFixed(2);
+          rep_bill_item.gate_out_cost = Number(Number(rep_bill_item?.gate_out_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
           if (newItem) rep_bill_items.push(rep_bill_item);
 
         });
