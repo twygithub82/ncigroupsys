@@ -44,6 +44,8 @@ export class report_billing_item {
   periodic_test?: string;
   residue_cost?: string;
   gateio_cost?: string;
+  gate_in_cost?: string;
+  gate_out_cost?: string;
   other_cost?: string;
   total?: string;
 
@@ -73,6 +75,7 @@ export class report_billing_item {
     this.steam_est_no = (item.steam_est_no || 0);
     this.residue_est_no = (item.residue_est_no || 0);
     this.gateio_est_no = (item.gateio_est_no || 0);
+    
     this.lolo_est_no = (item.lolo_est_no || 0);
     this.preins_est_no = (item.preins_est_no || 0);
 
@@ -93,6 +96,8 @@ export class report_billing_item {
     this.residue_cost = item.residue_cost;
     this.other_cost = item.other_cost;
     this.gateio_cost = item.gateio_cost;
+    this.gate_in_cost = item.gate_in_cost;
+    this.gate_out_cost = item.gate_out_cost;
     this.total = item.total;
   }
 }

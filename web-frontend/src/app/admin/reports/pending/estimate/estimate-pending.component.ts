@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
@@ -160,7 +161,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
     MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
     MIN_DAYS: 'COMMON-FORM.MIN-DAYS',
-    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS'
+    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    WARNING: 'COMMON-FORM.WARNING',
   }
 
   invForm?: UntypedFormGroup;
@@ -558,7 +561,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReportAll(this.lastSearchCriteria, {}, first)
       .subscribe(data => {
         const filteredList = data.filter(x =>
-          (x.cleaning?.length||0) === 0 ||
+          (x.cleaning?.length || 0) === 0 ||
           x.cleaning?.some(c => c.complete_dt != null)
         );
         this.sotList = filteredList;
@@ -566,6 +569,13 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
+
+        if(this.sotList.length==0)
+        {
+          this.isGeneratingReport = false;
+          this.ShowWarningMessage();
+          return;
+        }
         if (report_type === 5) {
           this.onExportDetailExcel(this.sotList);
         }
@@ -815,5 +825,25 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

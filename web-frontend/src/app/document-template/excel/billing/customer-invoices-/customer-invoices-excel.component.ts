@@ -246,7 +246,10 @@ export class CustomerInvoicesExcelComponent extends UnsubscribeOnDestroyAdapter 
     PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
     STORAGE: 'MENUITEMS.BILLING.LIST.STORAGE',
     GATEIO: 'COMMON-FORM.GATEIO',
-    GATEIO_S: 'COMMON-FORM.GATEIO-S'
+    GATEIO_S: 'COMMON-FORM.GATEIO-S',
+    GATE_IN:'COMMON-FORM.GATE-IN',
+    GATE_OUT:'COMMON-FORM.GATE-OUT',
+    INVOICE_SUMMARY:'COMMON-FORM.INVOICE-SUMMARY',
   }
 
   type?: string | null;
@@ -861,7 +864,7 @@ export class CustomerInvoicesExcelComponent extends UnsubscribeOnDestroyAdapter 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.CUSTOMER_INVOICE} `
+    return `${this.translatedLangText.INVOICE_SUMMARY} `
   }
 
  async exportToExcel_r1(fileName: string = 'document.xlsx') {
@@ -888,7 +891,8 @@ export class CustomerInvoicesExcelComponent extends UnsubscribeOnDestroyAdapter 
     this.translatedLangText.JOB_NO,
     this.translatedLangText.DATE_IN,
     this.translatedLangText.DATE_OUT,
-    this.translatedLangText.GATEIO_S,
+    this.translatedLangText.GATE_IN,
+    this.translatedLangText.GATE_OUT,
     this.translatedLangText.PRE_INSPECTION,
     this.translatedLangText.LOLO,
     this.translatedLangText.DAYS,
@@ -921,7 +925,8 @@ export class CustomerInvoicesExcelComponent extends UnsubscribeOnDestroyAdapter 
           itm.job_no || "",
           itm.in_date || "",
           itm.out_date || "",
-          itm.gateio_cost === "0.00" ? "" : itm.gateio_cost,
+          itm.gate_in_cost === "0.00" ? "" : itm.gate_in_cost,
+          itm.gate_out_cost === "0.00" ? "" : itm.gate_out_cost,
           itm.preins_cost === "0.00" ? "" : itm.preins_cost,
           itm.lolo_cost === "0.00" ? "" : itm.lolo_cost,
           itm.days,

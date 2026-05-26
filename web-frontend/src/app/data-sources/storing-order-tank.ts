@@ -2046,6 +2046,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
             }
           }
           storing_order_tank {
+            guid
             owner_guid
             customer_company {
                 code
