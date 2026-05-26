@@ -609,12 +609,14 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
       // Calculate gate I/O cost and update rep_bill_item
       const gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
-
+      
       //if (gateIOCost > 0) 
       if (item.gate_in || item.gate_out) {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
       }
 
+      rep_bill_item.gate_in_cost=this.displayNumber(item.gate_in ? (item.gate_in_cost || 0) : 0);
+       rep_bill_item.gate_out_cost=this.displayNumber(item.gate_out ? (item.gate_out_cost || 0) : 0);
       rep_bill_item.gateio_cost = this.displayNumber(Number(rep_bill_item.gateio_cost?.toNumber() || 0) + gateIOCost);
 
       // Push the new item if it was not found previously
@@ -656,6 +658,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item.lolo_sot_guid.push(item.sot_guid!);
       }
 
+      rep_bill_item.lift_off_cost=this.displayNumber(item.lift_off ? (item.lift_off_cost || 0) : 0);
+       rep_bill_item.lift_on_cost=this.displayNumber(item.lift_on ? (item.lift_on_cost || 0) : 0);
       rep_bill_item.lolo_cost = this.displayNumber((Number(rep_bill_item?.lolo_cost?.toNumber() || 0) + loloCost));
 
       if (newItem) {
@@ -718,7 +722,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
      // var storageCost=this.calculateStorageCostTotal(sot);
-       var storageCost = this.calculateTotalCost([sot]);
+       var storageCost = this.calculateTotalCost_R1([sot]);
       // let packDepotItm: PackageDepotItem = new PackageDepotItem();
       // packDepotItm.storage_cal_cv = item.storage_cal_cv;
 
@@ -1218,6 +1222,139 @@ async  export_report(reportType: number) {
 
  }
 
+ calculateTotalCost_R1(items: StoringOrderTankItem[]) {
+    // this.invoiceTotalCostControl.setValue('0.00');
+    var invalidItm: any[] = [];
+    const totalCost = items.reduce((accumulator, s) => {
+      // Add buffer_cost and cleaning_cost of the current item to the accumulator
+
+      var itm: BillingSOTItem = s.billing_sot || new BillingSOTItem();
+      var total_cost = 0;
+      var billableDays = this.getStorageDays(s,itm.storage_cal_cv);
+      total_cost += (billableDays || 0) * (itm.storage_cost || 0);
+      //if (itm.storage_billing) itm.storage_billing.storage_detail = this.filterDeleted(itm.storage_billing.storage_detail);
+      // if (!itm.storage_billing) {
+      //   let packDepotItm: PackageDepotItem = new PackageDepotItem();
+      //   packDepotItm.storage_cal_cv = itm.storage_cal_cv;
+
+      //   let cutOffDt: Date = new Date();
+      //   if (this.searchForm!.get('cutoff_dt')?.value) {
+      //     cutOffDt = new Date(this.searchForm?.get('cutoff_dt')?.value);
+      //   }
+      //   cutOffDt.setHours(23);
+      //   cutOffDt.setMinutes(59);
+      //   cutOffDt.setSeconds(59);
+
+      //   let startDate = this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm?.storage_cal_cv);
+      //   let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0, (cutOffDt.getTime() / 1000)));
+      //   let freeStorage = itm.free_storage || 0;
+      //   let remainFreeDays = freeStorage - daysDifference;
+      //   let startDt = new Date(startDate);
+      //   //startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
+      //   if (itm.storing_order_tank?.tank_status_cv === "RELEASED") {
+      //     cutOffDt = new Date(startDt);
+      //     cutOffDt.setDate(cutOffDt.getDate() + daysDifference + freeStorage - 1);
+      //   }
+      //   total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
+      
+      // } else {
+      //   let packDepotItm: PackageDepotItem = new PackageDepotItem();
+      //   packDepotItm.storage_cal_cv = itm.storage_cal_cv;
+      //   let cutOffDt: Date = new Date();
+      //   if (this.searchForm!.get('cutoff_dt')?.value) {
+      //     cutOffDt = new Date(this.searchForm?.get('cutoff_dt')?.value);
+      //   }
+      //   cutOffDt.setHours(23);
+      //   cutOffDt.setMinutes(59);
+      //   cutOffDt.setSeconds(59);
+
+      //   let startDt = this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm?.storage_cal_cv);
+      //   let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0, (cutOffDt.getTime() / 1000)));
+      //   let freeStorage = itm.free_storage || 0;
+      //   let remainFreeDays = freeStorage - daysDifference;
+      //   // let startDt= new Date(this.invoiceDateControl.value!);
+      //   // startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
+
+
+      //   var state = "BILLING"
+      //   if (s?.tank_status_cv == "RELEASED") {
+      //     if ((s?.storage_detail?.length || 0) > 0) state = "END";
+      //     else state = "START_END";
+
+      //   }
+      //   else {
+      //     if (s?.storage_detail?.length === 0) state = "START";
+      //   }
+
+
+
+      //   if ((s?.storage_detail?.length || 0) > 0) {
+      //     var storageDetails = [...s?.storage_detail || []].sort((a, b) =>
+      //       (b.end_dt || 0) - (a.end_dt || 0)
+      //     );
+
+      //     var lastStorageDetail = storageDetails[0]
+      //     if (["END", "BILLING"].includes(state)) {
+      //       startDt = new Date((lastStorageDetail?.end_dt || 0) * 1000);
+      //       startDt.setDate(startDt.getDate() + 1);
+      //       daysDifference = this.calculateDateDifference(startDt, cutOffDt);
+      //       remainFreeDays = (lastStorageDetail?.remaining_free_storage || 0) - daysDifference;
+
+      //       if ((state === "END" || state === "START_END") && (s?.out_gate?.length || 0) > 0) {
+      //         cutOffDt = new Date((lastStorageDetail?.end_dt || 0) * 1000);
+      //         cutOffDt.setHours(23);
+      //         cutOffDt.setMinutes(59);
+      //         cutOffDt.setSeconds(59);
+      //         var outGate = s?.out_gate?.[0] ?? undefined;
+
+      //         var outDt = new Date(((outGate?.eir_dt || 0) * 1000) || 0);
+      //         outDt.setHours(23);
+      //         outDt.setMinutes(59);
+      //         outDt.setSeconds(59);
+      //         if (cutOffDt.getTime() === outDt.getTime()) {
+      //           invalidItm.push(itm);
+      //           return accumulator;
+      //         }
+      //         cutOffDt = new Date(startDt);
+      //         cutOffDt.setDate(startDt.getDate() + daysDifference - 1);
+
+      //       }
+
+      //     }
+      //   }
+      //   else if (["END", "START_END"].includes(state)) {
+      //     if ((s?.out_gate?.length || 0) > 0) {
+
+      //       var outGate = s?.out_gate?.[0] ?? undefined;
+      //       var outDt = new Date(((outGate?.eir_dt || 0) * 1000) || 0);
+      //       outDt.setHours(23);
+      //       outDt.setMinutes(59);
+      //       outDt.setSeconds(59);
+      //       if (cutOffDt.getTime() === outDt.getTime()) {
+      //         invalidItm.push(itm);
+      //         return accumulator;
+      //       }
+      //       daysDifference = this.calculateDateDifference(startDt, outDt);
+      //       cutOffDt = new Date(startDt);
+      //       cutOffDt.setDate(startDt.getDate() + daysDifference - 1);
+
+      //     }
+
+      //   }
+      //   total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
+
+
+      // }
+
+      return accumulator + total_cost;
+      //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
+    }, 0); // Initialize accumulator to 0
+
+
+    return totalCost;
+
+  }
+
   calculateTotalCost(items: StoringOrderTankItem[]) {
     // this.invoiceTotalCostControl.setValue('0.00');
     var invalidItm: any[] = [];
@@ -1361,5 +1498,18 @@ async  export_report(reportType: number) {
 
   displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
+  }
+
+  getStorageDays(sot:StoringOrderTankItem, storage_cal_cv:any )
+  {
+    var retval:String ="-";
+      let packDepotItm: PackageDepotItem = new PackageDepotItem();
+      packDepotItm.storage_cal_cv = storage_cal_cv;
+      var storageDetail=sot?.storage_detail?.[0];
+      let daysDifference: number = Number(this.pdDS.getStorageDays(sot,
+         packDepotItm,storageDetail?.remaining_free_storage));
+
+
+    return  daysDifference; //Utility.formatNumberDisplay(daysDifference) ;
   }
 }

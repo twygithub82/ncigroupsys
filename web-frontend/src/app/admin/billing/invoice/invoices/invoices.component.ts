@@ -29,7 +29,7 @@ import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { BillingDS, BillingEstimateRequest, BillingItem, BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
+import { BillingDS, BillingEstimateRequest, BillingItem, BillingSOTItem, BillingStorageDetail, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -51,6 +51,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { CustomerInvoicesExcelComponent } from 'app/document-template/excel/billing/customer-invoices-/customer-invoices-excel.component';
+import { S } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-invoices',
@@ -284,7 +285,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     //   })
     // ).subscribe();
 
-       this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -314,13 +315,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       })
     ).subscribe();
 
-     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+    this.searchForm!.get('branch_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-      //  this.branch_companyList = [];
-      //  this.branchCodeControl.reset('');
+        //  this.branch_companyList = [];
+        //  this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -575,7 +576,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      const itm: any = { customer_company : { code: {eq: this.searchForm!.get('branch_code')?.value.code} }};
+      const itm: any = { customer_company: { code: { eq: this.searchForm!.get('branch_code')?.value.code } } };
       // itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       // itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       // itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
@@ -980,7 +981,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.selection.clear();
     this.subs.sink = this.billDS.searchBillingWithBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.billList = data;
+        const filteredData = data.map((item: any) => ({
+          ...item,
+          storage_detail: item.storage_detail.filter(
+            (detail: any) => detail.delete_dt === null
+          )
+        }));
+        this.billList = filteredData;
         console.log(this.billList)
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
@@ -1395,7 +1402,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     if (b.repair_customer?.length! > 0) this.calculateRepairCost(b.repair_customer!, repBillItems);
     if (b.repair_owner?.length! > 0) this.calculateRepairCost(b.repair_owner!, repBillItems, 1);
     if (b.residue?.length! > 0) this.calculateResidueCost(b.residue!, repBillItems);
-    if (b.storage_billing_sot?.length! > 0) this.calculateStorageCost(b.storage_billing_sot!, repBillItems);
+    if (b.storage_billing_sot?.length! > 0) this.calculateStorageCost_r1(b.storage_billing_sot!, b.storage_detail!, repBillItems);
     if (b.steaming?.length! > 0) this.calculateSteamingCost(b.steaming!, repBillItems);
 
 
@@ -1542,6 +1549,61 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           }
           rep_bill_item.preins_est_no += 1;
           rep_bill_item.preins_cost = Number(Number(rep_bill_item?.preins_cost || 0) + (c.preinspection ? c.preinspection_cost! : 0)).toFixed(2);
+          if (newItem) rep_bill_items.push(rep_bill_item);
+
+        });
+      }
+    }
+    return retval;
+  }
+
+  calculateStorageCost_r1(billSotItems: BillingSOTItem[], items: BillingStorageDetail[], rep_bill_items: report_billing_item[]) {
+    var retval: string = "";
+
+    if (items.length > 0) {
+      var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+
+      if (itms.length > 0) {
+        itms.forEach(c => {
+
+          const s = billSotItems.find(
+            v => v.sot_guid === v.sot_guid && v.delete_dt == null
+          );
+
+          let newItem = false;
+          let rep_bill_item = rep_bill_items.find(item => item.sot_guid === s?.storing_order_tank?.guid);
+          if (!rep_bill_item) {
+            newItem = true;
+            rep_bill_item = new report_billing_item();
+            rep_bill_item.sot_guid = c.sot_guid;
+          }
+
+          if (s?.storing_order_tank?.tank_no) { rep_bill_item.tank_no = s?.storing_order_tank?.tank_no; }
+          if (s?.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = s?.storing_order_tank?.tariff_cleaning?.cargo;
+
+          // let packDepotItm: PackageDepotItem = new PackageDepotItem();
+          // packDepotItm.storage_cal_cv = c.storage_cal_cv;
+
+          // let daysDifference: number = Number(this.pdDS.getStorageDays(c.storing_order_tank!, packDepotItm));
+
+
+
+          // var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          var total_cost = Number(c.total_cost);
+          var storage_cost = Number(s?.storage_cost||0);
+          rep_bill_item.days = String(total_cost/storage_cost);
+          rep_bill_item.storage_est_no += 1;
+          rep_bill_item.storage_cost = Utility.formatNumberDisplay(total_cost);
+
+          var in_gates = s?.storing_order_tank?.in_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
+          if (in_gates?.length) {
+            rep_bill_item.in_date = Utility.convertEpochToDateStr(in_gates?.[0]?.eir_dt);
+            rep_bill_item.eir_no = in_gates?.[0]?.eir_no;
+          }
+          // if (out_gates?.length) {
+          //   rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
+          //   rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
+          // }
           if (newItem) rep_bill_items.push(rep_bill_item);
 
         });
@@ -1770,20 +1832,16 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
- getCustomerCode(item:any)
-  {
-    var itm =item?.customer_company;
-    if(itm)
-    {
+  getCustomerCode(item: any) {
+    var itm = item?.customer_company;
+    if (itm) {
       return itm.code;
     }
     return "-";
   }
-    getCustomerName(item:any)
-  {
-    var itm =item?.customer_company;
-    if(itm)
-    {
+  getCustomerName(item: any) {
+    var itm = item?.customer_company;
+    if (itm) {
       return itm.name;
     }
     return "-";

@@ -38,6 +38,8 @@ export class report_billing_item {
   repair_cost?: string;
   preins_cost?: string;
   lolo_cost?: string;
+  lift_on_cost?:string;
+  lift_off_cost?:string;
   days?: string;
   storage_cost?: string;
   steam_cost?: string;
