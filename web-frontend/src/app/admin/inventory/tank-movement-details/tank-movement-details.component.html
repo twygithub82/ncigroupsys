@@ -1815,13 +1815,13 @@
                             <mat-icon>edit</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (canOverwriteJobNo()) {
-                            <button mat-menu-item
-                              (click)="overwriteJobNoDialog($event)">{{translatedLangText.JOB_NO}}</button>
-                            }
                             @if (canOverwriteDepotCost()) {
                             <button mat-menu-item
                               (click)="overwriteDepotCostDialog($event)">{{translatedLangText.DEPOT_COST}}</button>
+                            }
+                            @if (canOverwriteJobNo()) {
+                            <button mat-menu-item
+                              (click)="overwriteJobNoDialog($event)">{{translatedLangText.JOB_NO}}</button>
                             }
                           </mat-menu>
                           }
