@@ -16,6 +16,7 @@ namespace IDMS.Inventory.GqlTypes.LocalModel
         public InGateSurvey? IngateSurvey { get; set; }
         public List<Steaming?>? Steaming { get; set; }
         public Cleaning? Cleaning { get; set; }  
+        public bool typeChange { get; set; }
     }
 
     [NotMapped]

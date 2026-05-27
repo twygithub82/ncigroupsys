@@ -14,6 +14,7 @@ using IDMS.Models.Inventory;
 using IDMS.Models.Package;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using IDMS.Models.Billing;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -844,6 +845,40 @@ namespace IDMS.Inventory.GqlTypes
                                 updateSteaming.est_hour = 1.0;
                                 updateSteaming.total_hour = 0.0;
                                 //if hourly_rate --> total_hour updated after completed
+                            }
+                        }
+
+                        //newly added logic
+                        if (tankDetailRequest?.typeChange ?? false)
+                        {
+                            if (string.IsNullOrEmpty(tankDetailRequest?.SO?.customer_company_guid ?? ""))
+                            {
+                                _logger.LogError("Customer_guid cannot be null or empty.");
+                                throw new GraphQLException(new Error($"Customer_guid cannot be null or empty", "ERROR"));
+                            }
+                            string customerGuid = tankDetailRequest?.SO.customer_company_guid;
+                            string sotGuid = tankDetailRequest?.SOT?.guid;
+                            //Added for later use
+                            //var unit_type_guid = sot?.unit_type_guid;
+                            var tarifDepotGuid = await context.Set<tank>().Where(t => t.guid == unit_type_guid && t.delete_dt == null).Select(t => t.tariff_depot_guid).FirstOrDefaultAsync();
+
+                            var packageDepot = await context.Set<package_depot>().Where(t => t.tariff_depot_guid == tarifDepotGuid && t.customer_company_guid == customerGuid && t.delete_dt == null).FirstOrDefaultAsync();
+                            if (packageDepot != null)
+                            {
+                                var billingSot = await context.Set<billing_sot>().Where(b => b.sot_guid == sotGuid && (b.delete_dt == null)).FirstOrDefaultAsync();
+                                if (billingSot != null)
+                                {
+                                    billingSot.preinspection_cost = packageDepot.preinspection_cost;
+                                    billingSot.lift_on_cost = packageDepot.lolo_cost;
+                                    billingSot.lift_off_cost = packageDepot.lolo_cost;
+                                    billingSot.gate_in_cost = packageDepot.gate_in_cost;
+                                    billingSot.gate_out_cost = packageDepot.gate_out_cost;
+                                    billingSot.storage_cost = packageDepot.storage_cost;
+                                    billingSot.free_storage = packageDepot.free_storage;
+                                    billingSot.tariff_depot_guid = tarifDepotGuid;
+                                    billingSot.update_by = user;
+                                    billingSot.update_dt = currentDateTime;
+                                }
                             }
                         }
                     }

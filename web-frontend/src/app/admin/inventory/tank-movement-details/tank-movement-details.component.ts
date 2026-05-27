@@ -699,6 +699,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   });
   stepperOrientation: Observable<StepperOrientation>;
 
+  isPreinspBilled = false;
+  isLonBilled = false;
+  isLoffBilled = false;
+  isGinBilled = false;
+  isGoutBilled = false;
+  isStorageBilled = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -1692,6 +1699,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         translatedLangText: this.translatedLangText,
         transferList: this.transferList,
         ccDS: this.ccDS,
+        isAnyDepotCostBilled: (this.isPreinspBilled || this.isLonBilled || this.isLoffBilled || this.isGinBilled || this.isGoutBilled || this.isStorageBilled),
         populateData: {
           claddingCvList: this.claddingCvList,
           testTypeCvList: this.testTypeCvList,
@@ -1726,9 +1734,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         const tankDetailRequest = {
           cleaning: undefined,
           ingateSurvey: newIgs,
-          so: undefined,
+          so: {
+            guid: this.sot?.storing_order?.guid,
+            customer_company_guid: this.sot?.storing_order?.customer_company?.guid
+          },
           sot: newSot,
-          steaming: undefined
+          steaming: undefined,
+          typeChange: (!!result?.unit_type_guid) && (result?.unit_type_guid !== this.sot?.unit_type_guid)
         }
         console.log(`updateTankDetails: `, tankDetailRequest)
         this.sotDS.updateTankDetails(tankDetailRequest).subscribe(result => {
@@ -3145,6 +3157,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(`sot: `, data)
         this.sot = data[0];
         this.loadSotDepotCost();
+        this.checkBillingStatus();
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         this.getCustomerLabourPackage(this.sot?.storing_order?.customer_company?.guid!);
         this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
@@ -3906,4 +3919,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  checkBillingStatus() {
+    this.isPreinspBilled = !!this.sot?.billing_sot?.preinsp_billing_guid;
+    this.isLonBilled = !!this.sot?.billing_sot?.lon_billing_guid;
+    this.isLoffBilled = !!this.sot?.billing_sot?.loff_billing_guid;
+    this.isGinBilled = !!this.sot?.billing_sot?.gin_billing_guid;
+    this.isGoutBilled = !!this.sot?.billing_sot?.gout_billing_guid;
+    this.isStorageBilled = !!this.sot?.billing_sot?.storage_billing?.storage_detail?.length;
+  }
 }
