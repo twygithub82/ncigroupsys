@@ -245,7 +245,10 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
     STORAGE: 'MENUITEMS.BILLING.LIST.STORAGE',
     GATEIO: 'COMMON-FORM.GATEIO',
-    GATEIO_S: 'COMMON-FORM.GATEIO-S'
+    GATEIO_S: 'COMMON-FORM.GATEIO-S',
+    INVOICE_SUMMARY:'COMMON-FORM.INVOICE-SUMMARY',
+    GATE_IN:'COMMON-FORM.GATE-IN',
+    GATE_OUT:'COMMON-FORM.GATE-OUT',
   }
 
   type?: string | null;
@@ -860,7 +863,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.CUSTOMER_INVOICE} `
+    return `${this.translatedLangText.INVOICE_SUMMARY} `
   }
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     // Improved PDF generation code
@@ -902,7 +905,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       this.translatedLangText.JOB_NO,
       this.translatedLangText.DATE_IN,
       this.translatedLangText.DATE_OUT,
-      this.translatedLangText.GATEIO_S,
+      this.translatedLangText.GATE_IN,
+      this.translatedLangText.GATE_OUT,
       this.translatedLangText.PRE_INSPECTION,
       this.translatedLangText.LOLO,
       this.translatedLangText.DAYS,
@@ -919,20 +923,21 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 22, minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle', cellWidth: 56, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 47, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       5: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       14: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      16: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      17: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
     };
 
     // Define header styles
@@ -1123,7 +1128,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
             itm.job_no || "",
             itm.in_date || "",
             itm.out_date || "",
-            (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost),
+            (itm.gate_in_cost === "0.00" ? '' : itm.gate_in_cost),
+            (itm.gate_out_cost === "0.00" ? '' : itm.gate_out_cost),
             (itm.preins_cost === "0.00" ? '' : itm.preins_cost),
             (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost),
             itm.days,

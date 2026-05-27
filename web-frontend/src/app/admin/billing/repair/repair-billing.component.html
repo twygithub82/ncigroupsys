@@ -419,7 +419,7 @@
                             </ng-container>
                             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                             <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                              (click)="repairDialog($event, repairRow)" matRipple>
+                               (click)="repairDialog($event, repairRow)" matRipple> 
                             </mat-row>
                           </table>
                         </div>

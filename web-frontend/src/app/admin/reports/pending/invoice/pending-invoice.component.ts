@@ -26,6 +26,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
@@ -132,7 +133,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT'
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    WARNING: 'COMMON-FORM.WARNING',
+    NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
   searchForm?: UntypedFormGroup;
@@ -317,7 +320,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     const where: any = {};
 
     where.and = [
-      {tank_status_cv:{in:BILLING_TANK_STATUS}}
+      { tank_status_cv: { in: BILLING_TANK_STATUS } }
     ];
 
     const itm: any = { or: [] };
@@ -547,10 +550,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     return rep_bill_item;
   }
 
-  calculateCleaningCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string)//(items:InGateCleaningItem[],rep_bill_items:report_billing_item[])
+  calculateCleaningCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[], customerGuid: string)//(items:InGateCleaningItem[],rep_bill_items:report_billing_item[])
   {
 
-    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null && c.bill_to_guid==customerGuid) || [];
+    // var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null && c.bill_to_guid == customerGuid) || [];
+    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null ) || [];
 
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
@@ -592,7 +596,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     const item: BillingSOTItem = sot.billing_sot!;
 
     if (item && (item.delete_dt === null || item.delete_dt === 0) &&
-      (item.gout_billing_guid == null && item.gin_billing_guid == null)
+      (item.gout_billing_guid == null || item.gin_billing_guid == null)
       //(item.gout_billing_guid == null || item.gin_billing_guid == null)
     ) {
       item.storing_order_tank = sot;
@@ -608,12 +612,25 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       // Calculate gate I/O cost and update rep_bill_item
-      const gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
+      // var gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
+      var gateIOCost = 0;
+      rep_bill_item.gate_in_cost = "0.00";
+      if (item.gate_in && item.gin_billing_guid == null) {
+        gateIOCost += (item.gate_in_cost || 0);
+        rep_bill_item.gate_in_cost = this.displayNumber(item.gate_in_cost || 0);
+      }
+
+      rep_bill_item.gate_out_cost = "0.00";
+      if (item.gate_out && item.gout_billing_guid == null) {
+        gateIOCost += (item.gate_out_cost || 0);
+        rep_bill_item.gate_out_cost = this.displayNumber(item.gate_out_cost || 0);
+      }
 
       //if (gateIOCost > 0) 
       if (item.gate_in || item.gate_out) {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
       }
+
 
       rep_bill_item.gateio_cost = this.displayNumber(Number(rep_bill_item.gateio_cost?.toNumber() || 0) + gateIOCost);
 
@@ -623,7 +640,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    
+
 
 
   }
@@ -634,7 +651,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     const item = sot.billing_sot; // Single object instead of an array
 
     if (item && (item.delete_dt === null || item.delete_dt === 0) &&
-      (item.lon_billing_guid == null && item.loff_billing_guid == null)
+      (item.lon_billing_guid == null || item.loff_billing_guid == null)
       // (item.lon_billing_guid == null || item.loff_billing_guid == null)
 
     ) {
@@ -648,7 +665,21 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item = this.createNewReportBillingItem(sot);
       }
 
-      const loloCost = (item.lift_off ? item.lift_off_cost! : 0) + (item.lift_on ? item.lift_on_cost! : 0);
+      // const loloCost = (item.lift_off ? item.lift_off_cost! : 0) + (item.lift_on ? item.lift_on_cost! : 0);
+
+      var loloCost = 0;
+      rep_bill_item.gate_in_cost = "0.00";
+      if (item.lift_on && item.lon_billing_guid == null) {
+        loloCost += (item.lift_on_cost || 0);
+        rep_bill_item.lift_on_cost = this.displayNumber(item.lift_on_cost || 0);
+      }
+
+      rep_bill_item.gate_out_cost = "0.00";
+      if (item.lift_off && item.loff_billing_guid == null) {
+        loloCost += (item.lift_off_cost || 0);
+        rep_bill_item.lift_off_cost = this.displayNumber(item.lift_off_cost || 0);
+      }
+
 
       //if (loloCost > 0)
       if (item.lift_off || item.lift_on) {
@@ -656,6 +687,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item.lolo_sot_guid.push(item.sot_guid!);
       }
 
+      // rep_bill_item.lift_off_cost=this.displayNumber(item.lift_off ? (item.lift_off_cost || 0) : 0);
+      //  rep_bill_item.lift_on_cost=this.displayNumber(item.lift_on ? (item.lift_on_cost || 0) : 0);
       rep_bill_item.lolo_cost = this.displayNumber((Number(rep_bill_item?.lolo_cost?.toNumber() || 0) + loloCost));
 
       if (newItem) {
@@ -717,20 +750,20 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         rep_bill_item = this.createNewReportBillingItem(sot);
       }
 
-     // var storageCost=this.calculateStorageCostTotal(sot);
-       var storageCost = this.calculateTotalCost([sot]);
+      // var storageCost=this.calculateStorageCostTotal(sot);
+      var result = this.calculateTotalCost_R1([sot]);
       // let packDepotItm: PackageDepotItem = new PackageDepotItem();
       // packDepotItm.storage_cal_cv = item.storage_cal_cv;
 
       // let daysDifference: number = Number(this.pdDS.getStorageDays(item.storing_order_tank!, packDepotItm));
       // rep_bill_item.days = String(daysDifference);
 
-      if ((sot.storage_detail?.length ||0)== 0) 
-      {
+      if ((sot.storage_detail?.length || 0) == 0) {
         rep_bill_item.storage_est_no += 1;
       }
 
-      rep_bill_item.storage_cost = this.displayNumber(storageCost);
+      rep_bill_item.storage_cost = this.displayNumber(result.totalCost);
+      rep_bill_item.days = String(result.totalDays);
 
       if (newItem) {
         rep_bill_items.push(rep_bill_item);
@@ -743,9 +776,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   calculateRepairCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[], CustomerType: number = 0)//(items:RepairItem[],rep_bill_items:report_billing_item[],CustomerType:number=0)
   {
 
-    var items: RepairItem[] = sot.repair?.filter(r => r.customer_billing_guid == null ) || [];
+    var items: RepairItem[] = sot.repair?.filter(r => r.customer_billing_guid == null) || [];
     if (CustomerType == 1) {
-      items = sot.repair?.filter(r => r.owner_billing_guid == null ) || [];
+      items = sot.repair?.filter(r => r.owner_billing_guid == null) || [];
     }
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
@@ -767,7 +800,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
             const totalCost = this.repDS.calculateCostWithRoundUp(c, c.repair_part!, c.labour_cost);
-             rep_bill_item.repair_cost = Utility.formatNumberDisplay(Number(Number(rep_bill_item?.repair_cost?.toNumber() || 0) + (CustomerType == 0 ? Number(totalCost.net_lessee_cost?.toNumber() || 0) : Number(totalCost.net_owner_cost?.toNumber() || 0))));
+            rep_bill_item.repair_cost = Utility.formatNumberDisplay(Number(Number(rep_bill_item?.repair_cost?.toNumber() || 0) + (CustomerType == 0 ? Number(totalCost.net_lessee_cost?.toNumber() || 0) : Number(totalCost.net_owner_cost?.toNumber() || 0))));
             //  rep_bill_item.repair_cost = Utility.formatNumberDisplay(CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0));
             var currentEstNo: number = rep_bill_item.repair_est_no;
             // if ((CustomerType == 0 && Number(totalCost.total_lessee_mat_cost || 0) > 0) ||
@@ -775,7 +808,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
             {
               rep_bill_item.repair_est_no += 1;
 
-              rep_bill_item.repair_estimates.push(c.estimate_no||'');
+              rep_bill_item.repair_estimates.push(c.estimate_no || '');
             }
 
             if (newItem && (rep_bill_item.repair_est_no > currentEstNo)) rep_bill_items.push(rep_bill_item);
@@ -788,10 +821,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
 
-  calculateResidueCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string)//(items:ResidueItem[],rep_bill_items:report_billing_item[])
+  calculateResidueCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[], customerGuid: string)//(items:ResidueItem[],rep_bill_items:report_billing_item[])
   {
 
-    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null && r.bill_to_guid==customerGuid) || [];
+    // var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null && r.bill_to_guid == customerGuid) || [];
+    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null ) || [];
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
       if (itms.length > 0) {
@@ -829,67 +863,67 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
   }
 
- async calculateSteamingCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[],customerGuid :string) {
-  const items: SteamItem[] = sot.steaming?.filter(s => s.customer_billing_guid == null && s.bill_to_guid==customerGuid) || [];
+  async calculateSteamingCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[], customerGuid: string) {
+    // const items: SteamItem[] = sot.steaming?.filter(s => s.customer_billing_guid == null && s.bill_to_guid == customerGuid) || [];
+    const items: SteamItem[] = sot.steaming?.filter(s => s.customer_billing_guid == null) || [];
+    if (!items.length) return;
 
-  if (!items.length) return;
+    const itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
+    if (!itms.length) return;
 
-  const itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
-  if (!itms.length) return;
+    // ✅ Use for...of instead of forEach to properly await
+    for (const c of itms) {
+      c.storing_order_tank = sot;
+      let newItem = false;
 
-  // ✅ Use for...of instead of forEach to properly await
-  for (const c of itms) {
-    c.storing_order_tank = sot;
-    let newItem = false;
+      // Find or create billing item
+      let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
+      if (!rep_bill_item) {
+        newItem = true;
+        rep_bill_item = this.createNewReportBillingItem(sot);
+      }
 
-    // Find or create billing item
-    let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
-    if (!rep_bill_item) {
-      newItem = true;
-      rep_bill_item = this.createNewReportBillingItem(sot);
-    }
+      // ✅ Only process valid statuses
+      if (
+        !['NO_ACTION', 'KIV'].includes(c.status_cv!) &&
+        BILLING_ESTIMATE_STATUS.includes(c.status_cv!)
+      ) {
+        // ✅ Properly await async cost retrieval
+        const total = await firstValueFrom(this.getSteamTotalCost(c));
 
-    // ✅ Only process valid statuses
-    if (
-      !['NO_ACTION', 'KIV'].includes(c.status_cv!) &&
-      BILLING_ESTIMATE_STATUS.includes(c.status_cv!)
-    ) {
-      // ✅ Properly await async cost retrieval
-      const total = await firstValueFrom(this.getSteamTotalCost(c));
+        // ✅ Safely accumulate cost
+        const currentCost = Number(rep_bill_item.steam_cost?.toNumber?.() || rep_bill_item.steam_cost || 0);
+        rep_bill_item.steam_cost = this.displayNumber(currentCost + total);
 
-      // ✅ Safely accumulate cost
-      const currentCost = Number(rep_bill_item.steam_cost?.toNumber?.() || rep_bill_item.steam_cost || 0);
-      rep_bill_item.steam_cost = this.displayNumber(currentCost + total);
+        rep_bill_item.steam_est_no = (rep_bill_item.steam_est_no || 0) + 1;
+        rep_bill_item.steam_estimates = rep_bill_item.steam_estimates || [];
+        rep_bill_item.steam_estimates.push(c.estimate_no!);
 
-      rep_bill_item.steam_est_no = (rep_bill_item.steam_est_no || 0) + 1;
-      rep_bill_item.steam_estimates = rep_bill_item.steam_estimates || [];
-      rep_bill_item.steam_estimates.push(c.estimate_no!);
-
-      if (newItem) rep_bill_items.push(rep_bill_item);
+        if (newItem) rep_bill_items.push(rep_bill_item);
+      }
     }
   }
-}
 
-getSteamTotalCost(row: any): Observable<number> {
-  const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
-  const where = { and: [{ customer_company_guid: { eq: customer_company_guid } }] };
+  getSteamTotalCost(row: any): Observable<number> {
+    const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
+    const where = { and: [{ customer_company_guid: { eq: customer_company_guid } }] };
 
-  return this.plDS.getCustomerPackageCost(where).pipe(
-    map(data => {
-      if (data.length > 0) {
-        const cost = data[0].cost;
-        const isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
-        if (isAutoApproveSteaming) {
-          row.total_cost = (row.rate || 0);
-          if (!row.flat_rate) return row.total_hour * row.rate;
-        } else {
-          return (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+    return this.plDS.getCustomerPackageCost(where).pipe(
+      map(data => {
+        if (data.length > 0) {
+          const cost = data[0].cost;
+          const isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+          if (isAutoApproveSteaming) {
+            row.total_cost = (row.rate || 0);
+            if (!row.flat_rate) return row.total_hour * row.rate;
+          } else {
+            return (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+          }
         }
-      }
-      return 0;
-    })
-  );
-}
+        return 0;
+      })
+    );
+  }
 
   retrieveLabourCost(ccGuid: string): number {
     var cost: number = 0;
@@ -963,77 +997,78 @@ getSteamTotalCost(row: any): Observable<number> {
     }
   }
 
-async  export_report(reportType: number) {
-    // if (!this.sotList.length) {
-    //   this.isGeneratingReport = false;
-    //   return;
-    // }
+  async export_report(reportType: number) {
+    if (!this.sotList.length) {
+      this.isGeneratingReport = false;
+      this.ShowWarningMessage();
+      return;
+    }
 
-  //  await this.getAllClientLabourCost().then(async () => {
-      var repCustomers: report_billing_customer[] = []
-      // var rpItems:report_billing_item[]=[];
+    //  await this.getAllClientLabourCost().then(async () => {
+    var repCustomers: report_billing_customer[] = []
+    // var rpItems:report_billing_item[]=[];
 
-      for (const b of this.sotList) {
-            // Try to find existing customer in the report list
-            let repCust = repCustomers.find(c => c.guid === b.storing_order?.customer_company?.guid);
-            let newCust = false;
+    for (const b of this.sotList) {
+      // Try to find existing customer in the report list
+      let repCust = repCustomers.find(c => c.guid === b.storing_order?.customer_company?.guid);
+      let newCust = false;
 
-            if (!repCust) {
-              repCust = new report_billing_customer();
-              repCust.guid = b.storing_order?.customer_company?.guid;
-              repCust.customer = b.storing_order?.customer_company?.name;
-              repCust.items = [];
-              newCust = true;
-            }
-
-            // ✅ Wait for async report item creation
-            await this.createReportBillingItem_R1(b, repCust);
-
-            if (newCust) repCustomers.push(repCust);
-
-            // Assuming synchronous
-            this.checkRepairBillingForTankOwner(b, repCustomers);
+      if (!repCust) {
+        repCust = new report_billing_customer();
+        repCust.guid = b.storing_order?.customer_company?.guid;
+        repCust.customer = b.storing_order?.customer_company?.name;
+        repCust.items = [];
+        newCust = true;
       }
 
-     
-      repCustomers.map(c => {
+      // ✅ Wait for async report item creation
+      await this.createReportBillingItem_R1(b, repCust);
 
-        c.items?.map(i => {
-          var total: number = 0;
-          total = Number(i.clean_cost || 0) + Number(i.gateio_cost || 0) + Number(i.lolo_cost || 0) + Number(i.preins_cost || 0)
-            + Number(i.storage_cost || 0) + Number(i.repair_cost || 0) + Number(i.residue_cost || 0) + Number(i.steam_cost || 0)
-            ;
-          i.total = total.toFixed(2);
+      if (newCust) repCustomers.push(repCust);
 
-        });
+      // Assuming synchronous
+      this.checkRepairBillingForTankOwner(b, repCustomers);
+    }
+
+
+    repCustomers.map(c => {
+
+      c.items?.map(i => {
+        var total: number = 0;
+        total = Number(i.clean_cost || 0) + Number(i.gateio_cost || 0) + Number(i.lolo_cost || 0) + Number(i.preins_cost || 0)
+          + Number(i.storage_cost || 0) + Number(i.repair_cost || 0) + Number(i.residue_cost || 0) + Number(i.steam_cost || 0)
+          ;
+        i.total = total.toFixed(2);
 
       });
 
-      if (this.searchForm!.get('customer_code')?.value) {
-        repCustomers = repCustomers.filter(c => c.guid === this.searchForm!.get('customer_code')?.value.guid);
-      }
+    });
 
-      repCustomers.forEach(r => {
+    if (this.searchForm!.get('customer_code')?.value) {
+      repCustomers = repCustomers.filter(c => c.guid === this.searchForm!.get('customer_code')?.value.guid);
+    }
+
+    repCustomers.forEach(r => {
       r.items?.sort((a, b) =>
         (a.in_date || '').localeCompare(b.in_date || '')
       );
     });
-      
-        // Sort report_records by customer_code
+
+    // Sort report_records by customer_code
     repCustomers.sort((a, b) =>
       (a.customer || '').localeCompare(b.customer || '')
     );
 
-      if (reportType === 1) {
-        this.onExportSummary(repCustomers);
-      }
-      else if (reportType == 2) {
-        this.onExportDetail_Cost(repCustomers);
+    if (reportType === 1) {
+      this.onExportSummary(repCustomers);
+    }
+    else if (reportType == 2) {
+      this.onExportDetail_Cost(repCustomers);
 
-      }
-      else if(reportType == 5){
-           this.onExportDetail_CostExcel(repCustomers);
-      }
+    }
+    else if (reportType == 5) {
+      this.onExportDetail_CostExcel(repCustomers);
+    }
     // });
 
 
@@ -1078,10 +1113,10 @@ async  export_report(reportType: number) {
     // if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
     //if(b.billing_sot?.length!>0) this.calculateBillingSOT(b.billing_sot!,repBillItems);
     var custGuid = rbCust.guid!;
-    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems,custGuid);
-    if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems,0);
-    if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems,custGuid);
-    if (b.steaming?.length! > 0) await this.calculateSteamingCost(b, repBillItems,custGuid);
+    if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems, custGuid);
+    if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems, 0);
+    if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems, custGuid);
+    if (b.steaming?.length! > 0) await this.calculateSteamingCost(b, repBillItems, custGuid);
     if (b.billing_sot != null) this.calculateBillingSOT(b, repBillItems);
     rbCust.items = repBillItems || [];
     //return repBillItems;
@@ -1096,7 +1131,7 @@ async  export_report(reportType: number) {
     // if(b.residue?.length!>0) this.calculateResidueCost(b.residue!,repBillItems);
     // if(b.steaming?.length!>0) this.calculateSteamingCost(b.steaming!,repBillItems);
     //if(b.billing_sot?.length!>0) this.calculateBillingSOT(b.billing_sot!,repBillItems);
-    
+
     // if (b.cleaning?.length! > 0) this.calculateCleaningCost(b, repBillItems);
     // if (b.repair?.length! > 0) this.calculateRepairCost(b, repBillItems);
     // if (b.residue?.length! > 0) this.calculateResidueCost(b, repBillItems);
@@ -1205,18 +1240,42 @@ async  export_report(reportType: number) {
     return new Date();
   }
 
- calculateStorageCostTotal(sot:StoringOrderTankItem)
- {
- 
-    var res= sot.billing_sot;
-      let packDepotItm: PackageDepotItem = new PackageDepotItem();
-      packDepotItm.storage_cal_cv = res?.storage_cal_cv;
-      let daysDifference: number = Number(this.pdDS.getStorageDays(res?.storing_order_tank!, packDepotItm));
+  calculateStorageCostTotal(sot: StoringOrderTankItem) {
+
+    var res = sot.billing_sot;
+    let packDepotItm: PackageDepotItem = new PackageDepotItem();
+    packDepotItm.storage_cal_cv = res?.storage_cal_cv;
+    let daysDifference: number = Number(this.pdDS.getStorageDays(res?.storing_order_tank!, packDepotItm));
 
 
-      return  (daysDifference || 0) * (res?.storage_cost || 0) ;
+    return (daysDifference || 0) * (res?.storage_cost || 0);
 
- }
+  }
+
+  calculateTotalCost_R1(items: StoringOrderTankItem[]) {
+    var invalidItm: any[] = [];
+
+    const result = items.reduce((accumulator, s) => {
+
+      var itm: BillingSOTItem = s.billing_sot || new BillingSOTItem();
+
+      var billableDays = this.getStorageDays(s, itm.storage_cal_cv) || 0;
+      var storageCost = itm.storage_cost || 0;
+
+      var total_cost = billableDays * storageCost;
+
+      return {
+        totalCost: accumulator.totalCost + total_cost,
+        totalDays: accumulator.totalDays + billableDays
+      };
+
+    }, {
+      totalCost: 0,
+      totalDays: 0
+    });
+
+    return result;
+  }
 
   calculateTotalCost(items: StoringOrderTankItem[]) {
     // this.invoiceTotalCostControl.setValue('0.00');
@@ -1250,7 +1309,7 @@ async  export_report(reportType: number) {
           cutOffDt.setDate(cutOffDt.getDate() + daysDifference + freeStorage - 1);
         }
         total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
-      
+
       } else {
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
         packDepotItm.storage_cal_cv = itm.storage_cal_cv;
@@ -1361,5 +1420,37 @@ async  export_report(reportType: number) {
 
   displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
+  }
+
+  getStorageDays(sot: StoringOrderTankItem, storage_cal_cv: any) {
+    var retval: String = "-";
+    let packDepotItm: PackageDepotItem = new PackageDepotItem();
+    packDepotItm.storage_cal_cv = storage_cal_cv;
+    var storageDetail = sot?.storage_detail?.[0];
+    let daysDifference: number = Number(this.pdDS.getStorageDays(sot,
+      packDepotItm, storageDetail?.remaining_free_storage));
+
+
+    return daysDifference; //Utility.formatNumberDisplay(daysDifference) ;
+  }
+
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

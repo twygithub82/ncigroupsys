@@ -44,6 +44,7 @@ export interface DialogData {
   transferList?: TransferItem[];
   ccDS?: CustomerCompanyDS;
   populateData?: any;
+  isAnyDepotCostBilled?: boolean;
 }
 
 @Component({
@@ -97,6 +98,7 @@ export class EditSotDetailsFormDialogComponent {
   initialDt = new Date();
   maxManuDOMDt: Date = new Date();
   next_test_desc = "";
+  isAnyDepotCostBilled = false;
 
   constructor(
     public dialogRef: MatDialogRef<EditSotDetailsFormDialogComponent>,
@@ -113,6 +115,7 @@ export class EditSotDetailsFormDialogComponent {
     this.latestSurveyDetailItem = data.latestSurveyDetailItem!;
     this.transferList = data.transferList!;
     this.ccDS = data.ccDS!;
+    this.isAnyDepotCostBilled = data.isAnyDepotCostBilled || false;
     this.overwriteForm = this.createForm();
   }
 
@@ -131,7 +134,7 @@ export class EditSotDetailsFormDialogComponent {
       max_weight_cv: this.igs?.max_weight_cv,
       walkway_cv: this.igs?.walkway_cv
     });
-    if (!this.isAllowEditUnitType()) {
+    if (!this.isAllowEditUnitType() || this.isAnyDepotCostBilled) {
       formGroup.get('unit_type_guid')?.disable()
     }
     if (!this.isAllowEditCladding()) {
