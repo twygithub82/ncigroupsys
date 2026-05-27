@@ -297,7 +297,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     //   })
     // ).subscribe();
 
-     this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -327,13 +327,13 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       })
     ).subscribe();
 
-     this.searchForm!.get('branch_code')!.valueChanges.pipe(
+    this.searchForm!.get('branch_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-      //  this.branch_companyList = [];
-      //  this.branchCodeControl.reset('');
+        //  this.branch_companyList = [];
+        //  this.branchCodeControl.reset('');
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
@@ -356,6 +356,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
         });
       })
     ).subscribe();
+
     this.searchForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -755,10 +756,15 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     let invNo: string = `${this.invoiceNoControl.value}`;
     const where: any = {};
     where.invoice_no = { eq: invNo };
-    where.delete_dt={eq:null};
+    where.delete_dt = { eq: null };
     this.billDS.searchResidueBilling(where).subscribe(b => {
+      // b = b.filter(b => (b.residue?.length || 0) > 0);
       if (b.length) {
-        if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
+        var fiteredb = b.filter(b => (b.residue?.length || 0) > 0);
+        if (fiteredb.length == 0) {
+          this.UpdateBilling(event, b[0]);
+        }
+        else if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
           this.ConfirmUpdateBilling(event, b[0]);
         }
         else {
@@ -1113,11 +1119,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     return "-";
   }
-    getCustomerName(item:any)
-  {
-    var itm =item?.storing_order_tank?.storing_order?.customer_company;
-    if(itm)
-    {
+  getCustomerName(item: any) {
+    var itm = item?.storing_order_tank?.storing_order?.customer_company;
+    if (itm) {
       return itm.name;
     }
     return "-";

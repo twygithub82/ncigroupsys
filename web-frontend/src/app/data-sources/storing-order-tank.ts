@@ -1505,6 +1505,17 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
           status_cv
           update_by
           update_dt
+          customer_billing {
+            bill_to_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            invoice_type
+            update_by
+            update_dt
+          }
           storing_order_tank {
             storing_order {
               customer_company_guid
@@ -1612,6 +1623,17 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE_CLIENT = gql`
           status_cv
           update_by
           update_dt
+          customer_billing {
+            bill_to_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            invoice_type
+            update_by
+            update_dt
+          }
           storing_order_tank {
             storing_order {
               customer_company_guid
@@ -1752,6 +1774,18 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
           update_dt
           create_by
           create_dt
+          customer_billing {
+            bill_to_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            invoice_type
+
+            update_by
+            update_dt
+          }
           storing_order_tank {
             storing_order {
               customer_company_guid
@@ -1894,6 +1928,17 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE_CLIENT = gql`
           update_dt
           create_by
           create_dt
+          customer_billing {
+            bill_to_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            invoice_type
+            update_by
+            update_dt
+          }
           storing_order_tank {
             storing_order {
               customer_company_guid
