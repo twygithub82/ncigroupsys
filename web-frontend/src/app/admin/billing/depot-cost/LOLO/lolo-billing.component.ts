@@ -1190,19 +1190,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     // }
   }
   DisplayCost(row: any) {
-    return this.displayNumber(row.lift_on_cost + row.lift_off_cost); //row.lift_on_cost+row.lift_off_cost
-    // if (billing_type == "LIFT_ON") {
-    //   if (row.lon_billing) {
-    //     return this.displayNumber(row.lift_on_cost);
-    //   }
-    //   else { return '-'; }
-    // }
-    // else {
-    //   if (row.loff_billing) {
-    //     return this.displayNumber(row.lift_off_cost);
-    //   }
-    //   else { return '-'; }
-    // }
+    // return this.displayNumber(row.lift_on_cost + row.lift_off_cost); //row.lift_on_cost+row.lift_off_cost
+    return `${this.displayNumber(row.lift_on_cost)} - ${this.displayNumber(row.lift_off_cost)}` ;
   }
 
   //DisplayInvoiceNo(billing_type: string, row: any) 
@@ -1340,4 +1329,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       this.search();
     }
   }
+
+  
+ 
 }

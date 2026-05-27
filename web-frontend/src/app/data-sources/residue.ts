@@ -1069,7 +1069,13 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canRollback(re: ResidueItem): boolean {
     const validStatus = ['APPROVED', 'CANCELED', 'NO_ACTION']//, 'COMPLETED', 'QC_COMPLETED']
-    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
+    var allowed = validStatus.includes(re?.status_cv ? re?.status_cv : '');
+    if(allowed)
+    {
+      allowed =re?.customer_billing===null;
+    }
+    return allowed;
+    // return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canRollbackJobInProgress(re: ResidueItem | undefined): boolean {

@@ -429,6 +429,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 eir_status_cv
                 guid
               }
+              storing_order {
+                customer_company {
+                    code
+                    name
+                }
+              }
             }
           }
          gin_billing_sot {
@@ -457,6 +463,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                   eir_no
                   eir_status_cv
                   guid
+                }
+                storing_order {
+                  customer_company {
+                    code
+                    name
+                  }
                 }
               }
           }
@@ -487,6 +499,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                   eir_status_cv
                   guid
                 }
+                storing_order {
+                  customer_company {
+                    code
+                    name
+                  }
+                }
               }
           }
           lon_billing_sot {
@@ -498,6 +516,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             lift_on_cost
             remarks
             sot_guid
+            lon_billing_guid
             tariff_depot_guid
             storing_order_tank {
                 estimate_cv
@@ -526,6 +545,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             lift_on_cost
             remarks
             sot_guid
+            loff_billing_guid
             tariff_depot_guid
             storing_order_tank {
                 estimate_cv
@@ -570,6 +590,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 eir_status_cv
                 guid
               }
+              storing_order {
+                customer_company {
+                    code
+                    name
+                }
+              }
             }
         }
          cleaning {
@@ -595,7 +621,13 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                   eir_status_cv
                   guid
                 }
+              storing_order {
+                customer_company {
+                    code
+                    name
+                }
               }
+            }
           }
           repair_customer {
             customer_billing_guid
@@ -630,6 +662,8 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 material_cost
                 quantity
                 hour
+                delete_dt
+                owner
               }
           }
           repair_owner {
@@ -657,6 +691,8 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 material_cost
                 quantity
                 hour
+                delete_dt
+                owner
               }
           }
           residue {
@@ -679,6 +715,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                   eir_no
                   eir_status_cv
                   guid
+                }
+                storing_order {
+                  customer_company {
+                      code
+                      name
+                  }
                 }
               }
          residue_part {
@@ -716,6 +758,12 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
                 eir_no
                 eir_status_cv
                 guid
+              }
+              storing_order {
+                customer_company {
+                    code
+                    name
+                }
               }
             }
             steaming_part {

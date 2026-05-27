@@ -1395,9 +1395,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     var sot_guids: string[] = [];
     if (b.cleaning?.length! > 0) this.calculateCleaningCost(b.cleaning!, repBillItems);
     if (b.gin_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gin_billing_sot!, repBillItems);
-    if (b.gout_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gout_billing_sot!, repBillItems);
+    if (b.gout_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gout_billing_sot!, repBillItems,1);
     if (b.lon_billing_sot?.length! > 0) this.calculateLOLOCost(b.lon_billing_sot!, repBillItems);
-    if (b.loff_billing_sot?.length! > 0) this.calculateLOLOCost(b.loff_billing_sot!, repBillItems);
+    if (b.loff_billing_sot?.length! > 0) this.calculateLOLOCost(b.loff_billing_sot!, repBillItems,1);
     if (b.preinsp_billing_sot?.length! > 0) this.calculatePreInspectionCost(b.preinsp_billing_sot!, repBillItems);
     if (b.repair_customer?.length! > 0) this.calculateRepairCost(b.repair_customer!, repBillItems);
     if (b.repair_owner?.length! > 0) this.calculateRepairCost(b.repair_owner!, repBillItems, 1);
@@ -1455,7 +1455,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   }
 
-  calculateGateInOutCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+  calculateGateInOutCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[] , type:number=0) {
     var retval: string = "";
 
     if (items.length > 0) {
@@ -1478,9 +1478,20 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
           rep_bill_item.gateio_est_no += 1;
-          rep_bill_item.gateio_cost = Number(Number(rep_bill_item?.gateio_cost || 0) + (c.gate_in_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
-          rep_bill_item.gate_in_cost = Number(Number(rep_bill_item?.gate_in_cost || 0) + (c.gate_in_cost || 0)).toFixed(2);
-          rep_bill_item.gate_out_cost = Number(Number(rep_bill_item?.gate_out_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
+          if(type===0)
+          {
+            rep_bill_item.gateio_cost = Number(Number(rep_bill_item?.gateio_cost || 0) + (c.gate_in_cost || 0)).toFixed(2);
+            rep_bill_item.gate_in_cost = Number(Number(rep_bill_item?.gate_in_cost || 0) + (c.gate_in_cost || 0)).toFixed(2);
+          }
+          else
+          {
+            rep_bill_item.gateio_cost = Number(Number(rep_bill_item?.gateio_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
+             rep_bill_item.gate_out_cost = Number(Number(rep_bill_item?.gate_out_cost || 0) + (c.gate_out_cost || 0)).toFixed(2);
+          }
+
+          
+          
+         
           if (newItem) rep_bill_items.push(rep_bill_item);
 
         });
@@ -1490,7 +1501,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   }
 
-  calculateLOLOCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[]) {
+  calculateLOLOCost(items: BillingSOTItem[], rep_bill_items: report_billing_item[],type:number=0) {
     var retval: string = "";
 
     if (items.length > 0) {
@@ -1514,7 +1525,20 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
           rep_bill_item.lolo_est_no += 1;
-          rep_bill_item.lolo_cost = Number(Number(rep_bill_item?.lolo_cost || 0) + (c.lift_off ? c.lift_off_cost! : 0) + (c.lift_on ? c.lift_on_cost! : 0)).toFixed(2);
+
+           if(type===0)
+          {
+              rep_bill_item.lolo_cost = Number(Number(rep_bill_item?.lolo_cost || 0) + (c.lift_on_cost || 0)).toFixed(2);
+             rep_bill_item.lift_on_cost = Number(Number(rep_bill_item?.lift_on_cost || 0) + (c.lift_on_cost || 0)).toFixed(2);
+          }
+          else
+          {
+            rep_bill_item.lolo_cost = Number(Number(rep_bill_item?.lolo_cost || 0) + (c.lift_off_cost || 0)).toFixed(2);
+             rep_bill_item.lift_off_cost = Number(Number(rep_bill_item?.lift_off_cost || 0) + (c.lift_off_cost || 0)).toFixed(2);
+          }
+          //  rep_bill_item.lift_off_cost = Number(Number(rep_bill_item?.lift_off_cost || 0) + (c.lift_off_cost || 0)).toFixed(2);
+          // rep_bill_item.lift_on_cost = Number(Number(rep_bill_item?.lift_on_cost || 0) + (c.lift_on_cost || 0)).toFixed(2);
+          // rep_bill_item.lolo_cost = Number(Number(rep_bill_item?.lolo_cost || 0) + (c.lift_off ? c.lift_off_cost! : 0) + (c.lift_on ? c.lift_on_cost! : 0)).toFixed(2);
           if (newItem) rep_bill_items.push(rep_bill_item);
 
         });
@@ -1564,6 +1588,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
 
       if (itms.length > 0) {
+        var total_cost =0;
+        var total_days = 0;
         itms.forEach(c => {
 
           const s = billSotItems.find(
@@ -1589,9 +1615,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
           // var out_gates = c.storing_order_tank?.out_gate?.filter(v => v.delete_dt === null || v.delete_dt === 0);
-          var total_cost = Number(c.total_cost);
+          var cost = Number(c.total_cost);
+          
           var storage_cost = Number(s?.storage_cost||0);
-          rep_bill_item.days = String(total_cost/storage_cost);
+          var days =(cost/storage_cost);
+          total_cost += cost;
+          total_days+= days;
+          rep_bill_item.days = String(total_days);
           rep_bill_item.storage_est_no += 1;
           rep_bill_item.storage_cost = Utility.formatNumberDisplay(total_cost);
 
@@ -1686,7 +1716,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           if (c.storing_order_tank?.job_no) { rep_bill_item.job_no = c.storing_order_tank?.job_no; }
           if (c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo = c.storing_order_tank?.tariff_cleaning?.cargo;
           rep_bill_item.repair_est_no += 1;
-          const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
+          const totalCost = this.repDS.calculateCostWithRoundUp(c, c.repair_part!, c.labour_cost);
           rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.net_lessee_cost || 0) : Number(totalCost.net_owner_cost || 0))).toFixed(2);
           if (newItem) rep_bill_items.push(rep_bill_item);
 
@@ -1834,6 +1864,34 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   getCustomerCode(item: any) {
     var itm = item?.customer_company;
+    if((item.gin_billing_sot?.length||0)>0)
+    {
+       itm = item?.gin_billing_sot[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.gout_billing_sot?.length||0)>0)
+    {
+       itm = item?.gout_billing_sot[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.storage_billing_sot?.length||0)>0)
+    {
+       itm = item?.storage_billing_sot[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.steaming?.length||0)>0)
+    {
+       itm = item?.steaming[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.cleaning?.length||0)>0)
+    {
+       itm = item?.cleaning[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.residue?.length||0)>0)
+    {
+       itm = item?.residue[0].storing_order_tank?.storing_order?.customer_company;
+    }
+    else if((item.storage_billing_sot?.length||0)>0)
+    {
+       itm = item?.storage_billing_sot[0].storing_order_tank?.storing_order?.customer_company;
+    }
     if (itm) {
       return itm.code;
     }

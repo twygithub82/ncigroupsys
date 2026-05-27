@@ -790,8 +790,13 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     where.invoice_no = { eq: invNo };
     where.delete_dt={eq:null};
     this.billDS.searchSteamingBilling(where).subscribe(b => {
+       
       if (b.length) {
-        if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
+        var fiteredb = b.filter(b => (b.steaming?.length || 0) > 0);
+        if (fiteredb.length == 0) {
+          this.UpdateBilling(event, b[0]);
+        }
+        else if (b[0].bill_to_guid === this.selectedEstimateItem?.customer_company?.guid) {
           this.ConfirmUpdateBilling(event, b[0]);
         }
         else {

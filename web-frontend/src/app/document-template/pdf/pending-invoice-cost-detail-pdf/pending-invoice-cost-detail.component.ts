@@ -243,7 +243,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
     TOTAL_AMOUNT: "COMMON-FORM.TOTAL-AMOUNT",
     DETAILS: 'COMMON-FORM.DETAILS',
-    S_N:'COMMON-FORM.S_N',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -324,7 +324,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
 
-   
+
   }
 
 
@@ -819,16 +819,16 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     return `${this.translatedLangText.REPORT_TITLE}`
   }
 
-  GetReportColumnsHeader(): any{
+  GetReportColumnsHeader(): any {
     const headerRow: string[] = [
       this.translatedLangText.S_N,
-       this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
-        this.translatedLangText.LAST_CARGO, this.translatedLangText.JOB_NO,
-      
+      this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
+      this.translatedLangText.LAST_CARGO, this.translatedLangText.JOB_NO,
+
       this.translatedLangText.DATE_IN, this.translatedLangText.DATE_OUT,
       this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
       this.translatedLangText.LOLO_COST, this.translatedLangText.DAYS,
-      this.translatedLangText.STORAGE_COST,  
+      this.translatedLangText.STORAGE_COST,
     ];
     // const headerRow: string[] = [
     //   this.translatedLangText.S_N,
@@ -848,19 +848,19 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     // this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
     // this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
     // this.translatedLangText.GATEIO_S
-    
+
     if (!this.modulePackageService.isStarterPackage()) {
       headerRow.push(
-       
-        this.translatedLangText.STEAM_COST, 
+
+        this.translatedLangText.STEAM_COST,
       );
     }
     headerRow.push(this.translatedLangText.CLEAN_COST);
 
     if (!this.modulePackageService.isStarterPackage()) {
       headerRow.push(
-       
-        this.translatedLangText.RESIDUE_COST, 
+
+        this.translatedLangText.RESIDUE_COST,
       );
     }
 
@@ -892,14 +892,14 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
     let fontSz_hdr = PDFUtility.TableHeaderFontSizeXS_Landscape();
-    let fontSz_body= PDFUtility.TableHeaderFontSizeXS_Landscape()
+    let fontSz_body = PDFUtility.TableHeaderFontSizeXS_Landscape()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
     const headers = [this.GetReportColumnsHeader()];
-   
+
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
@@ -925,38 +925,37 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let lastTableFinalY = 40;
 
     const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
-    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
       rightMargin, this.translate, reportTitle, cutoffDate);
-      StartPosY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-      StartPosY+=PDFUtility.GapBetweenLeftTitleAndTable();
+    StartPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    StartPosY += PDFUtility.GapBetweenLeftTitleAndTable();
     // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
 
 
 
-   let afterSumTableY= await  this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,StartPosY,
-      minHeightBodyCell,fontSz_body,pagePositions,reportTitle);
-      afterSumTableY+=PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    let afterSumTableY = await this.AddSummaryTable(pdf, pageWidth, leftMargin, rightMargin, topMargin, StartPosY,
+      minHeightBodyCell, fontSz_body, pagePositions, reportTitle);
+    afterSumTableY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
-  //  pdf.addPage();
+    //  pdf.addPage();
     //await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
     // lastTableFinalY=topMargin+45;
-   
+
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
-       let startY = 0; // Start Y position for the current table
+      let startY = 0; // Start Y position for the current table
 
-       if (n > 0) 
-        {
-          lastTableFinalY += 6; // 2nd table
-        }
+      if (n > 0) {
+        lastTableFinalY += 6; // 2nd table
+      }
       else {
-         startY=afterSumTableY ;
+        startY = afterSumTableY;
         lastTableFinalY = startY; // First table of the page
       }
 
       const data: any[][] = []; // Explicitly define data as a 2D array
-     
+
       let cust = this.repBillingCustomers[n];
 
       // Calculate space required for customer name and table
@@ -967,13 +966,13 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-        if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-          pdf.addPage();
-          lastTableFinalY = StartPosY -PDFUtility.GapBetweenLeftTitleAndTable();
-        }
-        else {
-          CurrentPage = repPage;
-        }
+      if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+        pdf.addPage();
+        lastTableFinalY = StartPosY - PDFUtility.GapBetweenLeftTitleAndTable();
+      }
+      else {
+        CurrentPage = repPage;
+      }
 
       // // Check if there is enough space on the current page
       // if (lastTableFinalY + customerNameHeight + tableHeight > maxContentHeight) {
@@ -982,13 +981,13 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       //   pageNumber++;
       //   lastTableFinalY = topMargin; // Reset Y position for the new page
       // }
-      const customer= `${cust.customer}`;
-        await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      const customer = `${cust.customer}`;
+      await Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
       lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
 
-      startY=StartPosY+PDFUtility.GapBetweenLeftTitleAndTable();
+      startY = StartPosY + PDFUtility.GapBetweenLeftTitleAndTable();
       // startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
-     // PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
+      // PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
       // pdf.setFontSize(8);
       // //pdf.setFont("helvetica", "bold"); // Make it bold
       // pdf.setTextColor(0, 0, 0); // Black text
@@ -1000,29 +999,37 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       for (let b = 0; b < cust.items!.length; b++) {
         var itm = cust.items?.[b]!;
 
-        
+
         const row = [
-          (b + 1).toString(), itm.tank_no || "",  itm.eir_no || "",
-          itm.last_cargo || "", itm.job_no || "",itm.in_date || "", itm.out_date || "",
-          this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
-          this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
+          (b + 1).toString(),
+          itm.tank_no || "",
+          itm.eir_no || "",
+          itm.last_cargo || "",
+          itm.job_no || "",
+          itm.in_date || "",
+          itm.out_date || "",
+          this.displayGateIOCost(itm) || "",
+          this.displayPreinsCost(itm) || "",
+          this.displayLOLOCost(itm) || "",
+          itm.days === "0" ? "" : itm.days || "",
+          this.displayStorageCost(itm) || "",
         ];
 
         if (!this.modulePackageService.isStarterPackage()) {
           row.push(
             this.displaySteamCost(itm) || "");
         }
-        
-         row.push(   this.displayCleanCost(itm) || "");
-         if (!this.modulePackageService.isStarterPackage()) {
+
+        row.push(this.displayCleanCost(itm) || "");
+        if (!this.modulePackageService.isStarterPackage()) {
           row.push(
             this.displayResidueCost(itm) || "");
         }
-           row.push(   this.displayRepairCost(itm) || "");
-      
+        row.push(this.displayRepairCost(itm) || "");
+
         row.push((itm.total === "0.00" ? '' : this.displaySubTotalCost(itm)));
         data.push(row);
-      
+
 
       }
       pdf.setDrawColor(0, 0, 0); // red line color
@@ -1034,31 +1041,31 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         body: data,
         // startY: lastTableFinalY, // Start table at the current startY value
         theme: 'grid',
-        margin: { left: leftMargin , top:StartPosY },
+        margin: { left: leftMargin, top: StartPosY },
         styles: {
           fontSize: fontSz_body,
           minCellHeight: minHeightHeaderCol
 
         },
-        tableWidth:contentWidth,
+        tableWidth: contentWidth,
         columnStyles: {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center', valign: 'middle', cellWidth: 10,minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle', cellWidth: 23,minCellHeight: minHeightBodyCell },
-          2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
-          3: { halign: 'left', valign: 'middle', cellWidth: 32,minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-          4: { halign: 'center', valign: 'middle',cellWidth: 14,  minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-          5: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
-          6: { halign: 'center', valign: 'middle',cellWidth: 15, minCellHeight: minHeightBodyCell },
+          0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+          1: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+          2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+          3: { halign: 'left', valign: 'middle', cellWidth: 32, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+          4: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+          5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+          6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          8: { halign: 'center', valign: 'middle',cellWidth: 20, minCellHeight: minHeightBodyCell },
-          9: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          10: { halign: 'center', valign: 'middle',cellWidth: 12, minCellHeight: minHeightBodyCell },
-          11: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          12: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          13: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          14: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
-          15: { halign: 'center', valign: 'middle',cellWidth: 14, minCellHeight: minHeightBodyCell },
+          8: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+          9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+          11: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          12: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          13: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          14: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          15: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
           16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         },
         headStyles: headStyles, // Custom header styles
@@ -1070,27 +1077,26 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         didDrawPage: (data: any) => {
           const pageCount = pdf.getNumberOfPages();
 
-          
+
           // Capture the final Y position of the table
           lastTableFinalY = data.cursor.y;
           var pg = pagePositions.find(p => p.page == pageCount);
-          if (!pg)
-          { 
-              pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-              if (pageCount > 1) {
-               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                  PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin);
-                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-                // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
-              }
-           }
+          if (!pg) {
+            pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+            if (pageCount > 1) {
+              PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              PDFUtility.addReportSubTitle_Portrait(pdf, cutoffDate, pageWidth, leftMargin, rightMargin);
+              // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+              // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
+            }
+          }
         },
       });
 
     }
 
     await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
-   
+
     // const totalPages = pdf.getNumberOfPages();
 
     //  for (const { page, x, y } of pagePositions) {
@@ -1128,74 +1134,72 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
 
-  async AddSummaryTable(pdf: jsPDF,pageWidth:number,  
-    leftMargin:number,rightMargin:number,topMargin:number,
-    lastTableFinalY: number, 
-    minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
-  {
-      //  pdf.addPage();
+  async AddSummaryTable(pdf: jsPDF, pageWidth: number,
+    leftMargin: number, rightMargin: number, topMargin: number,
+    lastTableFinalY: number,
+    minHeightBodyCell: any, fontsz: number, pagePositions: any, reportTitle: string) {
+    //  pdf.addPage();
 
-      //  lastTableFinalY=45;
-     //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-       const tableWidthTotal = 10 + 60 + 40;
-       const columnStyles:any= {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center', valign: 'middle',cellWidth: 10, minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell },
-          2: { halign: 'center', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
-          
-        };
+    //  lastTableFinalY=45;
+    //  PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+    const tableWidthTotal = 10 + 60 + 40;
+    const columnStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 60, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
 
-          const headStyles: Partial<Styles> = {
-            fillColor: [211, 211, 211], // Background color
-            textColor: 0, // Text color (white)
-            fontStyle: "bold", // Valid fontStyle value
-            halign: 'center', // Centering header text
-            valign: 'middle',
-            lineColor: 201,
-            lineWidth: 0.1
-          };
+    };
+
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
 
 
-        const headers = [[this.translatedLangText.S_N,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_AMOUNT]];
+    const headers = [[this.translatedLangText.S_N, this.translatedLangText.CUSTOMER, this.translatedLangText.TOTAL_AMOUNT]];
 
-        var data:any[]=[];
-         for (let n = 0; n < this.repBillingCustomers.length; n++)
-         {
-          var cust =this.repBillingCustomers[n];
-           data.push([n+1,cust.customer,this.displayTotalCost(cust)]); 
-        }
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: lastTableFinalY, // Start table at the current startY value
-          theme: 'grid',
-          margin: { left: (pageWidth-tableWidthTotal)/2 },
-          columnStyles: columnStyles,
-          styles: {
-            fontSize: fontsz,
-            minCellHeight: minHeightBodyCell
-          },
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-          },
-          headStyles: headStyles, // Custom header styles
-           didDrawPage: (data: any) => {
-          const pageCount = pdf.getNumberOfPages();
+    var data: any[] = [];
+    for (let n = 0; n < this.repBillingCustomers.length; n++) {
+      var cust = this.repBillingCustomers[n];
+      data.push([n + 1, cust.customer, this.displayTotalCost(cust)]);
+    }
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: lastTableFinalY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: (pageWidth - tableWidthTotal) / 2 },
+      columnStyles: columnStyles,
+      styles: {
+        fontSize: fontsz,
+        minCellHeight: minHeightBodyCell
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      headStyles: headStyles, // Custom header styles
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
 
-          if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
-          // Capture the final Y position of the table
-          lastTableFinalY = data.cursor.y;
-          var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
-          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-        },
-        })
+        if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    })
 
-        return lastTableFinalY;
+    return lastTableFinalY;
   }
-  
+
 
   addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -1286,7 +1290,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
 
-  
+
 
 
   async exportToPDF(fileName: string = 'document.pdf') {
@@ -1462,54 +1466,54 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   displayTotalCost(Cust: report_billing_customer): string {
     const total = Cust.items?.reduce((accumulator, item) => {
-     var total = this.GetTotalCost(item);
+      var total = this.GetTotalCost(item);
       return accumulator + (Number(total || 0)); // Add item.total to the accumulator (default to 0 if item.total is undefined)
     }, 0); // Start with an initial value of 0
 
     // Return the total as a string
-    var retval=Utility.formatNumberDisplay(total || 0);
+    var retval = Utility.formatNumberDisplay(total || 0);
     return retval;
   }
 
-  
+
 
   displaySubTotalCost(item: report_billing_item): string {
-    var retval : number=0;
+    var retval: number = 0;
 
-    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "")||0) : 0;
-   
-    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "") || 0) : 0;
+
+    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "") || 0) : 0;
     if (!this.modulePackageService.isStarterPackage()) {
-      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "")||0) : 0;
-     retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "")||0) : 0;
+      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "") || 0) : 0;
+      retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "") || 0) : 0;
     }
 
-    var ret=Utility.formatNumberDisplay(retval || 0);
+    var ret = Utility.formatNumberDisplay(retval || 0);
     return ret;
   }
   GetTotalCost(item: report_billing_item): number {
-    var retval : number=0;
+    var retval: number = 0;
 
-    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "")||0) : 0;
-    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "")||0) : 0;
-   
-    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "")||0) : 0;
+    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost?.replaceAll(",", "") || 0) : 0;
+
+    retval += item.repair_cost ? Number(item.repair_cost?.replaceAll(",", "") || 0) : 0;
     if (!this.modulePackageService.isStarterPackage()) {
-      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "")||0) : 0;
-     retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "")||0) : 0;
+      retval += item.residue_cost ? Number(item.residue_cost?.replaceAll(",", "") || 0) : 0;
+      retval += item.steam_cost ? Number(item.steam_cost?.replaceAll(",", "") || 0) : 0;
     }
 
-    
+
     return retval;
   }
 
- 
+
 
 }
