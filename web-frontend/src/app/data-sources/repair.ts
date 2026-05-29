@@ -2105,7 +2105,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'PENDING' || re?.status_cv === 'CANCELED';
   }
 
-  canRollbackStatus(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
+  canRollbackStatus(re: RepairItem | undefined): boolean {
     // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'PENDING');
     return (re?.status_cv === 'NO_ACTION' || re?.status_cv === 'APPROVED');
   }
