@@ -69,6 +69,7 @@ namespace IDMS.Master.Application
                 var loggerFactory = LoggerFactory.Create(builder => { });
                 var mappingConfig = new MapperConfiguration(cfg =>
                 {
+                    cfg.AddProfile<MapperProfile>();
                 }, loggerFactory);
 
                 IMapper mapper = mappingConfig.CreateMapper();
