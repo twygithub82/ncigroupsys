@@ -63,6 +63,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public long? clean_dt { get; set; }
         [NotMapped]
         public long? survey_dt { get; set; }
+        [NotMapped]
+        public string? test_type_cv { get; set; }
     }
 
 
