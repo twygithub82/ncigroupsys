@@ -14,17 +14,24 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     public class OrderTrackingResult
     {
         public string? tank_no { get; set; }
-        public string? eir_no { get; set; }
-        public long? eir_date { get; set; }
+        //public string? eir_no { get; set; }
+        //public long? eir_date { get; set; }
+        [GraphQLIgnore]
         public long? release_date { get; set; }
+        [GraphQLIgnore]
         public string? customer_code { get; set; }
+        [GraphQLIgnore]
         public string? customer_name { get; set; }
         public string? last_cargo { get; set; }
+        [GraphQLIgnore]
         public string? order_no { get; set; }
+        [GraphQLIgnore]
+        public string? order_status { get; set; }
+        [GraphQLIgnore]
         public long? order_date { get; set; }
-        public long? cancel_date { get; set; }
-        public string? cancel_remarks { get; set; }
-        public string? status { get; set; }
+        //public long? cancel_date { get; set; }
+        //public string? cancel_remarks { get; set; }
+        public string? sot_status { get; set; }
         public string? purpose { get; set; }
         [GraphQLIgnore]
         public bool? purpose_storage { get; set; }

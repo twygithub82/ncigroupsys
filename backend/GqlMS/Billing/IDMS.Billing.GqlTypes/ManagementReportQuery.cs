@@ -771,11 +771,167 @@ namespace IDMS.Billing.GqlTypes
 
         #endregion
 
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        //public async Task<List<OrderTrackingSummary>?> QueryOrderTracking(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        //        [Service] IHttpContextAccessor httpContextAccessor, OrderTrackingRequest orderTrackingRequest)
+        //{
+        //    try
+        //    {
+        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+        //        string CANCELED = "CANCELED";
+        //        long sDate = orderTrackingRequest.start_date;
+        //        long eDate = orderTrackingRequest.end_date;
+
+        //        IQueryable<OrderTrackingResult> query;
+
+        //        if (orderTrackingRequest.order_type.EqualsIgnore("ro"))
+        //        {
+        //            query = (from ro in context.Set<release_order>()
+        //                     join ros in context.Set<release_order_sot>() on ro.guid equals ros.ro_guid
+        //                     join sot in context.storing_order_tank on ros.sot_guid equals sot.guid into sotGroup
+        //                     from sot in sotGroup.DefaultIfEmpty()
+        //                     join so in context.Set<storing_order>() on sot.so_guid equals so.guid into soGroup
+        //                     from so in soGroup.DefaultIfEmpty()
+        //                     join cc in context.customer_company on ro.customer_company_guid equals cc.guid into ccGroup
+        //                     from cc in ccGroup.DefaultIfEmpty()
+        //                     join ig in context.out_gate on sot.guid equals ig.so_tank_guid into igGroup
+        //                     from ig in igGroup.DefaultIfEmpty()
+        //                     join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+        //                     where ro.create_dt >= sDate && ro.create_dt <= eDate && so.status_cv != CANCELED && ig.delete_dt == null &&
+        //                     (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
+        //                     (string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no.Contains(orderTrackingRequest.ro_no))
+        //                     select new OrderTrackingResult
+        //                     {
+        //                         tank_no = sot.tank_no,
+        //                         eir_no = ig.eir_no,
+        //                         eir_date = ig.eir_dt,
+        //                         release_date = ro.release_dt,
+        //                         customer_code = cc.code,
+        //                         customer_name = cc.name,
+        //                         last_cargo = tc.cargo,
+        //                         order_no = ro.ro_no,
+        //                         order_date = ro.create_dt,
+        //                         cancel_date = ros.status_cv.Equals(CANCELED) ? ros.update_dt : null,
+        //                         cancel_remarks = ros.status_cv.Equals(CANCELED) ? ros.remarks : "",
+        //                         status = ros.status_cv, //sot.status_cv,
+        //                         purpose_cleaning = sot.purpose_cleaning,
+        //                         purpose_steaming = sot.purpose_steam,
+        //                         purpose_repair = sot.purpose_repair_cv,
+        //                         purpose_storage = sot.purpose_storage
+        //                     }).AsQueryable();
+        //        }
+        //        else
+        //        {
+        //            query = (from so in context.storing_order
+        //                     join sot in context.storing_order_tank on so.guid equals sot.so_guid
+        //                     join ros in context.Set<release_order_sot>() on sot.guid equals ros.sot_guid into rosGroup
+        //                     from ros in rosGroup.DefaultIfEmpty()
+        //                     join ro in context.Set<release_order>() on ros.ro_guid equals ro.guid into roGroup
+        //                     from ro in roGroup.DefaultIfEmpty()
+        //                     join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+        //                     from cc in ccGroup.DefaultIfEmpty()
+        //                     join ig in context.in_gate on sot.guid equals ig.so_tank_guid into igGroup
+        //                     from ig in igGroup.DefaultIfEmpty()
+        //                     join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
+        //                     where so.create_dt >= sDate && so.create_dt <= eDate && ro.status_cv != CANCELED && ig.delete_dt == null &&
+        //                     (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
+        //                     (string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no.Contains(orderTrackingRequest.so_no))
+        //                     select new OrderTrackingResult
+        //                     {
+        //                         tank_no = sot.tank_no,
+        //                         eir_no = ig.eir_no,
+        //                         eir_date = ig.eir_dt,
+        //                         release_date = ro.release_dt,
+        //                         customer_code = cc.code,
+        //                         customer_name = cc.name,
+        //                         last_cargo = tc.cargo,
+        //                         order_no = so.so_no,
+        //                         order_date = so.create_dt,
+        //                         cancel_date = sot.status_cv.Equals(CANCELED) ? sot.update_dt : null,
+        //                         cancel_remarks = sot.status_cv.Equals(CANCELED) ? sot.remarks : "",
+        //                         status = sot.status_cv,
+        //                         purpose_cleaning = sot.purpose_cleaning,
+        //                         purpose_steaming = sot.purpose_steam,
+        //                         purpose_repair = sot.purpose_repair_cv,
+        //                         purpose_storage = sot.purpose_storage
+        //                     }).AsQueryable();
+        //        }
+
+
+        //        if (!string.IsNullOrEmpty(orderTrackingRequest.customer_code))
+        //        {
+        //            query = query.Where(tr => tr.customer_code.Contains(orderTrackingRequest.customer_code));
+        //        }
+        //        if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
+        //        {
+        //            query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
+        //        }
+        //        if (!string.IsNullOrEmpty(orderTrackingRequest.tank_no))
+        //        {
+        //            query = query.Where(tr => tr.tank_no.Contains(orderTrackingRequest.tank_no));
+        //        }
+        //        if (!string.IsNullOrEmpty(orderTrackingRequest.last_cargo))
+        //        {
+        //            query = query.Where(tr => tr.last_cargo.Contains(orderTrackingRequest.last_cargo));
+        //        }
+        //        if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
+        //        {
+        //            query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
+        //        }
+        //        if (orderTrackingRequest != null && orderTrackingRequest.purpose.Any())
+        //        {
+        //            foreach (var purpose in orderTrackingRequest.purpose)
+        //            {
+        //                if (purpose.EqualsIgnore("cleaning"))
+        //                    query = query.Where(tr => tr.purpose_cleaning == true);
+        //                if (purpose.EqualsIgnore("steaming") || purpose.EqualsIgnore("steam"))
+        //                    query = query.Where(tr => tr.purpose_steaming == true);
+        //                if (purpose.EqualsIgnore("storage"))
+        //                    query = query.Where(tr => tr.purpose_storage == true);
+        //                if (purpose.EqualsIgnore("repair"))
+        //                    query = query.Where(tr => !string.IsNullOrEmpty(tr.purpose_repair));
+        //            }
+        //        }
+
+        //        //var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
+        //        //resultList.ForEach(result => result.CompileFinalPurpose());
+        //        //return resultList;
+
+
+        //        var rows = await query.ToListAsync();
+        //        rows.ForEach(result => result.CompileFinalPurpose());  
+        //        var result = rows
+        //            .GroupBy(x => x.order_no)
+        //            .Select(g => new OrderTrackingSummary
+        //            {
+        //                order_no = g.Key,
+        //                order_date = g.Max(x => x.order_date),
+        //                count = g.Count(),
+        //                tanks = g.ToList()
+        //            })
+        //            .OrderBy(x => x.order_date)
+        //            .ToList();
+
+
+        //        //_logger.LogInformation($"QueryOrderTracking returned {resultList.Count} records.");
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error in QueryOrderTracking");
+        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+        //    }
+        //}
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public async Task<List<OrderTrackingResult>?> QueryOrderTracking(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        public async Task<List<OrderTrackingSummary>?> QueryOrderTracking(ApplicationBillingDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, OrderTrackingRequest orderTrackingRequest)
         {
             try
@@ -798,26 +954,27 @@ namespace IDMS.Billing.GqlTypes
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on ro.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             join ig in context.out_gate on sot.guid equals ig.so_tank_guid into igGroup
-                             from ig in igGroup.DefaultIfEmpty()
+                             //join ig in context.out_gate on sot.guid equals ig.so_tank_guid into igGroup
+                             //from ig in igGroup.DefaultIfEmpty()
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             where ro.create_dt >= sDate && ro.create_dt <= eDate && so.status_cv != CANCELED && ig.delete_dt == null &&
+                             where ro.create_dt >= sDate && ro.create_dt <= eDate && so.status_cv != CANCELED &&
                              (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
                              (string.IsNullOrEmpty(orderTrackingRequest.ro_no) || ro.ro_no.Contains(orderTrackingRequest.ro_no))
                              select new OrderTrackingResult
                              {
                                  tank_no = sot.tank_no,
-                                 eir_no = ig.eir_no,
-                                 eir_date = ig.eir_dt,
-                                 release_date = ro.release_dt,
+                                 //eir_no = ig.eir_no,
+                                 //eir_date = ig.eir_dt,
+                                 //release_date = ro.release_dt,
                                  customer_code = cc.code,
                                  customer_name = cc.name,
                                  last_cargo = tc.cargo,
                                  order_no = ro.ro_no,
-                                 order_date = ro.create_dt,
-                                 cancel_date = ros.status_cv.Equals(CANCELED) ? ros.update_dt : null,
-                                 cancel_remarks = ros.status_cv.Equals(CANCELED) ? ros.remarks : "",
-                                 status = ros.status_cv, //sot.status_cv,
+                                 order_status = ro.status_cv,
+                                 order_date = ro.release_dt,
+                                 //cancel_date = ros.status_cv.Equals(CANCELED) ? ros.update_dt : null,
+                                 //cancel_remarks = ros.status_cv.Equals(CANCELED) ? ros.remarks : "",
+                                 sot_status = ros.status_cv, //sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
                                  purpose_repair = sot.purpose_repair_cv,
@@ -834,26 +991,27 @@ namespace IDMS.Billing.GqlTypes
                              from ro in roGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             join ig in context.in_gate on sot.guid equals ig.so_tank_guid into igGroup
-                             from ig in igGroup.DefaultIfEmpty()
+                             //join ig in context.in_gate on sot.guid equals ig.so_tank_guid into igGroup
+                             //from ig in igGroup.DefaultIfEmpty()
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
-                             where so.create_dt >= sDate && so.create_dt <= eDate && ro.status_cv != CANCELED && ig.delete_dt == null &&
+                             where so.create_dt >= sDate && so.create_dt <= eDate && ro.status_cv != CANCELED  &&
                              (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
                              (string.IsNullOrEmpty(orderTrackingRequest.so_no) || so.so_no.Contains(orderTrackingRequest.so_no))
                              select new OrderTrackingResult
                              {
                                  tank_no = sot.tank_no,
-                                 eir_no = ig.eir_no,
-                                 eir_date = ig.eir_dt,
-                                 release_date = ro.release_dt,
+                                 //eir_no = ig.eir_no,
+                                 //eir_date = ig.eir_dt,
+                                 //release_date = ro.release_dt,
                                  customer_code = cc.code,
                                  customer_name = cc.name,
                                  last_cargo = tc.cargo,
                                  order_no = so.so_no,
+                                 order_status = so.status_cv,
                                  order_date = so.create_dt,
-                                 cancel_date = sot.status_cv.Equals(CANCELED) ? sot.update_dt : null,
-                                 cancel_remarks = sot.status_cv.Equals(CANCELED) ? sot.remarks : "",
-                                 status = sot.status_cv,
+                                 //cancel_date = sot.status_cv.Equals(CANCELED) ? sot.update_dt : null,
+                                 //cancel_remarks = sot.status_cv.Equals(CANCELED) ? sot.remarks : "",
+                                 sot_status = sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
                                  purpose_repair = sot.purpose_repair_cv,
@@ -866,10 +1024,10 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = query.Where(tr => tr.customer_code.Contains(orderTrackingRequest.customer_code));
                 }
-                if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
-                {
-                    query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
-                }
+                //if (!string.IsNullOrEmpty(orderTrackingRequest.eir_no))
+                //{
+                //    query = query.Where(tr => tr.eir_no.Contains(orderTrackingRequest.eir_no));
+                //}
                 if (!string.IsNullOrEmpty(orderTrackingRequest.tank_no))
                 {
                     query = query.Where(tr => tr.tank_no.Contains(orderTrackingRequest.tank_no));
@@ -880,7 +1038,7 @@ namespace IDMS.Billing.GqlTypes
                 }
                 if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
                 {
-                    query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
+                    query = query.Where(tr => orderTrackingRequest.status.Contains(tr.sot_status));
                 }
                 if (orderTrackingRequest != null && orderTrackingRequest.purpose.Any())
                 {
@@ -897,11 +1055,25 @@ namespace IDMS.Billing.GqlTypes
                     }
                 }
 
-                var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
-                resultList.ForEach(result => result.CompileFinalPurpose());
+                var rows = await query.ToListAsync();
+                rows.ForEach(result => result.CompileFinalPurpose());
+                var result = rows
+                    .GroupBy(x => x.order_no)
+                    .Select(g => new OrderTrackingSummary
+                    {
+                        order_no = g.Key,
+                        order_date = g.Max(x => x.order_date),
+                        order_status = g.Select(x => x.order_status).FirstOrDefault(),
+                        customer = g.Select(x => x.customer_name).FirstOrDefault(),
+                        count = g.Count(),
+                        tanks = g.ToList()
+                    })
+                    .OrderBy(x => x.order_date)
+                    .ToList();
 
-                _logger.LogInformation($"QueryOrderTracking returned {resultList.Count} records.");
-                return resultList;
+
+                _logger.LogInformation($"QueryOrderTracking returned {rows.Count} records.");
+                return result;
             }
             catch (Exception ex)
             {
@@ -909,6 +1081,8 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
+
 
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
