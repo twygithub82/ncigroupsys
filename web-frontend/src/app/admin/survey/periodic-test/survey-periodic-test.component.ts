@@ -151,7 +151,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT'
   }
 
   customerCodeControl = new UntypedFormControl();

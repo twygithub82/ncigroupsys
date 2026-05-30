@@ -110,10 +110,10 @@ export class FormDialogComponent {
 
     this.minDate = Utility.getEarlierDate(Utility.convertDate(this.igDS.getInGateItem(this.sot?.in_gate)?.eir_dt) as Date, this.minDate);
     if (this.action === 'edit') {
-      this.dialogTitle = data.translatedLangText.EDIT_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
+      this.dialogTitle = data.translatedLangText.EDIT + " " + data.translatedLangText.PERIODIC_TEST; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
       this.maxDate = Utility.getLaterDate(Utility.convertDate(this.roSotDS.getReleaseOrderSotItem(this.sot?.release_order_sot)?.release_order?.release_dt) as Date, this.maxDate);
     } else {
-      this.dialogTitle = data.translatedLangText.NEW_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
+      this.dialogTitle = data.translatedLangText.NEW + " " + data.translatedLangText.PERIODIC_TEST; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
     }
     if (this.sot?.tank_status_cv === 'RELEASED') {
       const found = this.sot.release_order_sot?.filter(x => x.status_cv === 'ACCEPTED')
