@@ -101,10 +101,10 @@ export class OverwriteRepairApprovalFormDialogComponent {
     'price',
     'material',
     'isOwner',
-    'approve_part',
     'approve_qty',
     'approve_hour',
-    'approve_cost'
+    'approve_cost',
+    'approve_part',
   ];
 
   sot: StoringOrderTankItem;
@@ -636,10 +636,10 @@ export class OverwriteRepairApprovalFormDialogComponent {
         'price',
         'material',
         'isOwner',
-        'approve_part',
         'approve_qty',
         'approve_hour',
-        'approve_cost'
+        'approve_cost',
+        'approve_part',
       ];
     } else {
       this.displayedColumns = [
@@ -652,10 +652,10 @@ export class OverwriteRepairApprovalFormDialogComponent {
         'hour',
         'price',
         'material',
-        'approve_part',
         'approve_qty',
         'approve_hour',
-        'approve_cost'
+        'approve_cost',
+        'approve_part',
       ];
     }
   }
