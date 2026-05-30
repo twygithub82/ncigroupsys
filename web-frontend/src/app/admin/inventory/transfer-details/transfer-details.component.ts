@@ -93,7 +93,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     'location_from_cv',
     'location_to_cv',
     'update_by',
-    'update_dt',
+    //'update_dt',
     'actions'
   ];
 

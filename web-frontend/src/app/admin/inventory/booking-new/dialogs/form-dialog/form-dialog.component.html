@@ -160,7 +160,7 @@
             }
           </mat-form-field> -->
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
+            <mat-label>{{data.translatedLangText.TYPE}}</mat-label>
             <input matInput [formControl]="bookTypeCvControl" [matAutocomplete]="bookType" required>
             <mat-autocomplete #bookType="matAutocomplete" [displayWith]="displayCodeValueFn">
               @for (cv of bookingTypeCvList; track cv) {
@@ -176,14 +176,14 @@
             }
             <!-- @if (bookTypeCvControl.hasError('existed')) { -->
             <mat-error>
-              {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
+              <!-- {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}} -->
             </mat-error>
             <!-- } -->
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
+            <mat-label>{{data.translatedLangText.DATE}}</mat-label>
             <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday1"
               required>
             <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
