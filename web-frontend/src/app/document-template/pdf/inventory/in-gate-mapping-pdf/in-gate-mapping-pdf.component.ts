@@ -496,17 +496,16 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE} : ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
 
-    var inspect_dt = `${this.translatedLangText.INSPECTION_DATE} : ${this.getInspectionDateDisplay()}`;
-    PDFUtility.AddTextAtRightCornerPage(pdf, inspect_dt, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     var tnkNo = `${this.translatedLangText.TANK_NO} : ${this.sot?.tank_no}`;
-    var tnkPosX = leftMargin;
-    tnkPosX += 32;
+    var tnkPosX = leftMargin + 22;
     PDFUtility.addText(pdf, tnkNo, lastTableFinalY + 5, tnkPosX, 8);
 
+    const afterTnkX = tnkPosX + pdf.getTextWidth(tnkNo) + 60;
+    var inspect_dt = `${this.translatedLangText.INSPECTION_DATE} : ${this.getInspectionDateDisplay()}`;
+    PDFUtility.addText(pdf, inspect_dt, lastTableFinalY + 5, afterTnkX, 8);
     var cargo = `${this.translatedLangText.LAST_CARGO} : ${this.sot?.tariff_cleaning?.cargo}`;
-    PDFUtility.AddTextAtCenterPage(pdf, cargo, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+    PDFUtility.addText(pdf, cargo, lastTableFinalY + 10, afterTnkX + 6, 8);
 
     startY = lastTableFinalY + 2;
 
@@ -531,7 +530,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     var bufferRatio = 0.735;
     let imgHeight = (chartContentWidth / aspectRatio) * bufferRatio;
     const chartContentWidth1 = chartContentWidth * bufferRatio;
-    startY += 8;
+    startY += 11;
     let imgLeftPos = leftMargin;
     imgLeftPos -= 3;
     pdf.addImage(imgData, 'JPEG', imgLeftPos, startY, chartContentWidth1, imgHeight);
@@ -550,7 +549,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // Calculate scaled height based on available width
     let imgHeight1 = (chartContentWidth2) / aspectRatio1
 
-    startY += 8;
+    // startY += 8;
 
     pdf.addImage(imgData1, 'JPEG', (leftMargin + chartContentWidth) - buffer, startY, chartContentWidth2, imgHeight1);
 
