@@ -537,7 +537,11 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
       }
     });
 
-    const result = Array.from(surfaceTypeMap.values());
+    const result = Array.from(surfaceTypeMap.values()).sort((a, b) => {
+      const aName = this.inspectionTypes.find(t => t.type === a.type_cv)?.displayName || '';
+      const bName = this.inspectionTypes.find(t => t.type === b.type_cv)?.displayName || '';
+      return aName.localeCompare(bName);
+    });
 
     // Sync form array with the new structure
     this.syncSurfaceTypesFormArray(result);
@@ -893,6 +897,20 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
     // Trigger update of surface types list
     // this.updateUniqueSurfaceTypes();
+  }
+
+  clearAll(): void {
+    this.markedCells = new Map();
+    this.circularMarkedSections = { front: new Map(), rear: new Map() };
+
+    // Unsaved ('new') types are removed; persisted types are marked as 'cancel'
+    this.existingSurfaceTypes = this.existingSurfaceTypes.filter(st => st.action !== 'new');
+    this.existingSurfaceTypes.forEach(st => {
+      st.action = 'cancel';
+    });
+
+    this.validationErrorMessage = '';
+    this.updateSurfaceTypesLists();
   }
 
   deleteItem(event: Event, item: SurfaceTypesItem, index: number) {

@@ -549,6 +549,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CLEANING_DETAILS: 'COMMON-FORM.CLEANING-DETAILS',
     CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     BUFFER_COST: 'COMMON-FORM.BUFFER-COST',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   sot_guid: string | null | undefined;

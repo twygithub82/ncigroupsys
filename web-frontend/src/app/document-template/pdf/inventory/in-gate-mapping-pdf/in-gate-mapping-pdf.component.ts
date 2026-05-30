@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, AfterViewInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -7,36 +7,33 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
 //import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { BehaviorSubject, firstValueFrom, lastValueFrom, Observable, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FileManagerService } from '@core/service/filemanager.service';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AuthService } from '@core';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import autoTable, { Styles } from 'jspdf-autotable';
-import { PDFUtility } from 'app/utilities/pdf-utility';
-import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
-import * as domtoimage from 'dom-to-image-more';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType, SurfaceTypesItem } from 'app/data-sources/inspections';
+import { FileManagerService } from '@core/service/filemanager.service';
 import { CellMark, MappingChartComponent } from '@shared/components/mapping-chart/mapping-chart.component';
-import { MatCardModule } from '@angular/material/card';
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType, SurfaceTypesItem } from 'app/data-sources/inspections';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { PDFUtility } from 'app/utilities/pdf-utility';
+import * as domtoimage from 'dom-to-image-more';
+import jsPDF from 'jspdf';
+import { Styles } from 'jspdf-autotable';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 export interface DialogData {
   reportTitle: string;
-  takeInDateLabel:string;
+  takeInDateLabel: string;
   sot: StoringOrderTankItem;
   markedCells: Map<number, CellMark>;
   circularMarkedSections: { front: Map<string, CellMark>, rear: Map<string, CellMark> };
@@ -337,16 +334,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder) {
     super();
     this.translateLangText();
-    
-    // this.igsDS = data.igsDS || new InGateSurveyDS(this.apollo);
-    // this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
-    // this.sotDS = data.sotDS || new StoringOrderTankDS(this.apollo);
-    // this.cvDS = data.cvDS || new CodeValuesDS(this.apollo);
-    // this.gate_survey_guid = data.gate_survey_guid;
-    // this.eir_no = data.eir_no;
-    // this.eirPdf = data.eirPdf;
-    // this.toDownload = data.toDownload || true;
-    // this.toUpload = data.toUpload || false;
+
     this.translatedLangText = data.translatedLangText;
     this.inspection = data.inspection || [];
     this.inspectionForm = this.createForm();
@@ -364,48 +352,21 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
     this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
-    // this.eirDisclaimerNote = customerInfo.eirDisclaimerNote
-    //   .replace(/{companyName}/g, this.customerInfo.companyName)
-    //   .replace(/{companyUen}/g, this.customerInfo.companyUen)
-    //   .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
     this.updateSurfaceTypesLists(); // Initialize the lists
     this.patchForm();
   }
 
-  // StartGeneratingPDF(): void {
-  //   setTimeout(() => {
-  //     this.generatePDF();
-  //   }, 50); // Let Angular render everything
-  // }
-
-   async ngAfterViewInit() {
-
+  async ngAfterViewInit() {
     var delay = 500;
-    setTimeout(() => { 
-      this.generatePDF(); }, 
-    delay);
-
+    setTimeout(() => {
+      this.generatePDF();
+    }, delay);
   }
 
 
   async ngOnInit() {
     this.eirTitle = this.type === "in" ? this.translatedLangText.IN_GATE : this.translatedLangText.OUT_GATE;
-
-    // Await the data fetching
-    // const data = this.isInGate() ? await this.getInGateSurveyData() : await this.getOutGateSurveyData();
-    // if (data?.length > 0) 
-    {
-      // this.eirDetails = data[0];
-      console.log(this.eirDetails);
-
-
-
-      // this.cdr.detectChanges();
-      // this.StartGeneratingPDF();
-      //  this.updateCellValues();
-
-
-    }
+    console.log(this.eirDetails);
   }
 
   updateCellValues() {
@@ -536,28 +497,22 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE} : ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
-    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
-    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     var inspect_dt = `${this.translatedLangText.INSPECTION_DATE} : ${this.getInspectionDateDisplay()}`;
     PDFUtility.AddTextAtRightCornerPage(pdf, inspect_dt, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     var tnkNo = `${this.translatedLangText.TANK_NO} : ${this.sot?.tank_no}`;
-    var tnkPosX=leftMargin;
-    tnkPosX+=32;
+    var tnkPosX = leftMargin;
+    tnkPosX += 32;
     PDFUtility.addText(pdf, tnkNo, lastTableFinalY + 5, tnkPosX, 8);
 
     var cargo = `${this.translatedLangText.LAST_CARGO} : ${this.sot?.tariff_cleaning?.cargo}`;
     PDFUtility.AddTextAtCenterPage(pdf, cargo, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-
-
-    var data: any = [];
 
     startY = lastTableFinalY + 2;
 
     const chartContentWidth = contentWidth / 2;
 
     const element = this.captureWalkwayElementRef.nativeElement as HTMLElement
-
 
     const perf = window.performance;
     const startTotal = perf.now();
@@ -577,10 +532,9 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let imgHeight = (chartContentWidth / aspectRatio) * bufferRatio;
     const chartContentWidth1 = chartContentWidth * bufferRatio;
     startY += 8;
-    let imgLeftPos =leftMargin;
-    imgLeftPos -=3;
-    pdf.addImage(imgData, 'JPEG', imgLeftPos , startY, chartContentWidth1, imgHeight);
-
+    let imgLeftPos = leftMargin;
+    imgLeftPos -= 3;
+    pdf.addImage(imgData, 'JPEG', imgLeftPos, startY, chartContentWidth1, imgHeight);
 
     const element1 = this.captureMalidElementRef.nativeElement as HTMLElement
 
@@ -600,14 +554,13 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     pdf.addImage(imgData1, 'JPEG', (leftMargin + chartContentWidth) - buffer, startY, chartContentWidth2, imgHeight1);
 
-
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
     // Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     const pdfBlob = pdf.output('blob');
-   
+
     // return;
     if (this.toDownload) {
       this.downloadFile(pdfBlob, this.getReportTitle());
@@ -788,12 +741,6 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsWalkwayBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottom, walkwayBottom);
   }
 
-
-
-
-
-
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -810,7 +757,7 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
   getReportTitle(): string {
     var title: string = '';
-    title = `${this.reportTitle}.pdf`
+    title = `${this.sot?.tank_no} ${this.reportTitle}.pdf`
     return `${title}`
   }
 
@@ -1238,5 +1185,5 @@ export class InGateMappingPdfComponent extends UnsubscribeOnDestroyAdapter imple
     return this.inspection?.inspect_dt ? Utility.convertEpochToDateStr(this.inspection?.inspect_dt) : '';
   }
 
- 
+
 }
