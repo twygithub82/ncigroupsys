@@ -89,6 +89,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   displayedColumns = [
     'tank_no',
     'customer',
+    'eir_no',
     'eir_dt',
     'last_cargo',
     'purpose',

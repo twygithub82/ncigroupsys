@@ -154,6 +154,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OWNER: 'COMMON-FORM.OWNER',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
+    DETAILS: 'COMMON-FORM.DETAILS',
     EDIT_SURVEY: 'COMMON-FORM.EDIT-SURVEY',
     NEW_SURVEY: 'COMMON-FORM.NEW-SURVEY',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
@@ -161,6 +162,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     INTERNAL_SURVEYOR: 'COMMON-FORM.INTERNAL-SURVEYOR',
     DATE: 'COMMON-FORM.DATE',
     TYPE: 'COMMON-FORM.TYPE',
+    EXTERNAL_SURVEY: 'COMMON-FORM.EXTERNAL-SURVEY',
   }
 
   sotDS: StoringOrderTankDS;
@@ -300,7 +302,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           this.sotItem = data[0];
           console.log(this.sotItem)
-          this.surveyDetailItem = this.sotItem?.survey_detail || [];
+          this.surveyDetailItem = (this.sotItem?.survey_detail || [])
+            .sort((a, b) => (a.survey_dt ?? 0) - (b.survey_dt ?? 0));
           this.tiItem = this.sotItem?.tank_info;
           this.last_test_desc = this.getLastTest();
           this.next_test_desc = this.getNextTest();
@@ -316,7 +319,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       sot_guid: { eq: this.sot_guid },
       survey_type_cv: { neq: 'PERIODIC_TEST' }
     }
-    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
+    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "ASC" }).subscribe(data => {
       this.surveyDetailItem = data;
     });
   }
