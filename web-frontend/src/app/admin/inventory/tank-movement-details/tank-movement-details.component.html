@@ -1079,7 +1079,7 @@
                                               @if (canExportSteamingEst(row)) {
                                               <button mat-menu-item (click)="exportSteamingEst($event, row)">
                                                 <mat-icon>file_download</mat-icon>
-                                                <span>{{translatedLangText.DOWNLOAD}}</span>
+                                                <span>{{translatedLangText.EXPORT}}</span>
                                               </button>
                                               }
                                               <!-- @if (isAutoApproveSteaming(row)) {
@@ -1279,22 +1279,28 @@
                                             <mat-icon>more_vert</mat-icon>
                                           </button>
                                           <mat-menu #menu="matMenu">
-                                            @if (canRollbackResidueCompleted(row)) {
-                                            <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
-                                              <mat-icon>undo</mat-icon>
-                                              <span>{{translatedLangText.REINSTATE}}</span>
-                                            </button>
-                                            }
                                             @if (canOverwriteResidueApproval(row)) {
                                             <button mat-menu-item (click)="overwriteResidueApprovalDialog($event, row)">
                                               <mat-icon>edit</mat-icon>
                                               <span>{{translatedLangText.APPROVAL}}</span>
                                             </button>
                                             }
+                                            @if (canRollbackResidueCompleted(row)) {
+                                            <button mat-menu-item (click)="onRollbackResidueJobs($event, row)">
+                                              <mat-icon>undo</mat-icon>
+                                              <span>{{translatedLangText.REINSTATE}}</span>
+                                            </button>
+                                            }
+                                            @if (canRollbackResidueApproval(row)) {
+                                            <button mat-menu-item (click)="onRollbackResidueApproval($event, row)">
+                                              <mat-icon>undo</mat-icon>
+                                              <span>{{translatedLangText.REINSTATE}}</span>
+                                            </button>
+                                            }
                                             @if (canExportResidueEst(row)) {
                                             <button mat-menu-item (click)="exportResidueEst($event, row?.guid)">
                                               <mat-icon>file_download</mat-icon>
-                                              <span>{{translatedLangText.DOWNLOAD}}</span>
+                                              <span>{{translatedLangText.EXPORT}}</span>
                                             </button>
                                             }
                                           </mat-menu>
@@ -1716,6 +1722,12 @@
                                                 <span>{{translatedLangText.APPROVAL}}</span>
                                               </button>
                                               }
+                                              @if (canRollbackRepairApproval(row)) {
+                                              <button mat-menu-item (click)="onRollbackRepairApproval($event, row)">
+                                                <mat-icon>undo</mat-icon>
+                                                <span>{{translatedLangText.REINSTATE}}</span>
+                                              </button>
+                                              }
                                               @if (canRollbackRepairQC(row)) {
                                               <button mat-menu-item (click)="onRollbackRepairQC($event, row)">
                                                 <mat-icon>undo</mat-icon>
@@ -1725,7 +1737,7 @@
                                               @if (canExportRepairEst(row)) {
                                               <button mat-menu-item (click)="exportRepairEst($event, row?.guid)">
                                                 <mat-icon>file_download</mat-icon>
-                                                <span>{{translatedLangText.DOWNLOAD}}</span>
+                                                <span>{{translatedLangText.EXPORT}}</span>
                                               </button>
                                               }
                                             </mat-menu>

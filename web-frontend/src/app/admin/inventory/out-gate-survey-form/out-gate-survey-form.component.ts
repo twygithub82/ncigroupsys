@@ -310,6 +310,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   last_test_desc?: string = "";
   next_test_desc?: string = "";
 
+  frameTypeSeq = ['LEFT_SIDE', 'REAR_SIDE', 'RIGHT_SIDE', 'TOP_SIDE', 'FRONT_SIDE', 'BOTTOM_SIDE'];
+
   isMobile = false;
 
   // Stepper
@@ -411,6 +413,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   private updateView(width: number): void {
     this.isMobile = width < 768;
+    if (this.isMobile) {
+      this.frameTypeSeq = ['REAR_SIDE', 'LEFT_SIDE', 'RIGHT_SIDE', 'BOTTOM_SIDE', 'FRONT_SIDE', 'TOP_SIDE'];
+    }
   }
 
   initForm() {
@@ -1279,7 +1284,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth || this.in_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
-          manlid_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_comp_cv || this.in_gate_survey?.airline_valve_conn_spec_oth),
+          manlid_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_comp_cv || this.in_gate_survey?.manlid_comp_cv),
           manlid_cover_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_cover_cv || this.in_gate_survey?.manlid_cover_cv),
           manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth || this.in_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs || this.in_gate_survey?.manlid_cover_pcs,
@@ -1832,9 +1837,31 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
+
+    if (dataIndex !== null && target) {
       const cellIndex = +dataIndex;
-      highlightedCells[cellIndex] = this.toggleState;
+
+      // Find which row this cell belongs to
+      const parentRow = target.closest('.grid-top-row, .grid-middle-row, .grid-bottom-row');
+
+      // Determine which array this cell should belong to based on its parent row
+      let correctArray: boolean[] | null = null;
+      if (parentRow?.classList.contains('grid-top-row')) {
+        correctArray = this.highlightedCellsWalkwayTop;
+      } else if (parentRow?.classList.contains('grid-middle-row')) {
+        correctArray = this.highlightedCellsWalkwayMiddle;
+      } else if (parentRow?.classList.contains('grid-bottom-row')) {
+        correctArray = this.highlightedCellsWalkwayBottom;
+      } else {
+        // If no parent row found, this is an outer grid cell (highlightedCellsTop, etc.)
+        // Allow highlighting for the passed-in array
+        correctArray = highlightedCells;
+      }
+
+      // Only highlight if the cell belongs to the array we're supposed to be drawing on
+      if (correctArray === highlightedCells) {
+        highlightedCells[cellIndex] = this.toggleState;
+      }
     }
   }
 
@@ -1867,7 +1894,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
-      return event.target;
+      return document.elementFromPoint(event.clientX, event.clientY);
     } else if (event instanceof TouchEvent) {
       return document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
     }
@@ -2154,7 +2181,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       return {
         file: image.file, // The actual file object
         metadata: {
-          TableName: 'in_gate_survey',
+          TableName: 'out_gate_survey',
           FileType: 'img',
           GroupGuid: guid,
           Description: image.side // Use the side as description
@@ -2169,7 +2196,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         return {
           file: file, // The actual file object
           metadata: {
-            TableName: 'in_gate_survey',
+            TableName: 'out_gate_survey',
             FileType: 'img',
             GroupGuid: guid,
             Description: 'DMG' // Use the file name or custom description
@@ -2232,7 +2259,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value;
       const test_class = this.surveyForm!.get('periodic_test.test_class_cv')!.value;
       const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + test_class;
     }
     return "";
   }
@@ -2316,6 +2343,22 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
     if (!previewVal) {
       inputRef.click();
+    }
+    else {
+      var index = this.getImagePreviewIndex(formPath!);
+      this.previewImagesDialog(new Event('click'), index);
+    }
+  }
+
+  getImagePreviewIndex(imgType: string) {
+    switch (imgType) {
+      case 'frame_type.leftImage': return 0;
+      case 'frame_type.rearImage': return 1;
+      case 'frame_type.rightImage': return 2;
+      case 'frame_type.topImage': return 3;
+      case 'frame_type.frontImage': return 4;
+      case 'frame_type.bottomImage': return 5;
+      default: return -1;
     }
   }
 
