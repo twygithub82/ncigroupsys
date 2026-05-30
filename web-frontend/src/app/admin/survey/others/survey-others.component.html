@@ -110,6 +110,7 @@
                           <mat-date-range-picker #eir_dt_picker></mat-date-range-picker>
                         </mat-form-field>
                       </div>
+
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
@@ -278,8 +279,9 @@
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         <mat-icon>more_vert</mat-icon>
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let bookingRow" class="">
-                        <span class="mobile-tab-label"><mat-icon>more_vert</mat-icon>:</span>
+                      <mat-cell mat-cell *matCellDef="let bookingRow"
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-auto-xl tbl-col-width-per-auto-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label"><mat-icon>more_vert</mat-icon>:</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">

@@ -341,123 +341,136 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6-5 col-lg-6-5 col-md-12 col-sm-12 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border div-bg-blue">
-                          <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.HOUR}}</div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.MATERIAL_COST}}</div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.TOTAL_COST}}</div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.LABOUR_DISCOUNT}}</div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.MATERIAL_DISCOUNT}}</div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          <div class="table-label">{{translatedLangText.NET_COST}}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
-                          <span class="font-bold">{{translatedLangText.RATE}}</span>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label cost-label">
-                            <span>$</span><span>{{tempForm?.get("labour_rate")?.value | number: '1.2-2'}}</span>
-                          </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label">
-                            <tlx-form-field customClass="example-full-width">
-                              <mat-form-field>
-                                <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
-                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
-                                <!-- @if (tempForm?.get('labour_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              } -->
-                              </mat-form-field>
-                            </tlx-form-field>
-                          </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label">
-                            <tlx-form-field customClass="example-full-width">
-                              <mat-form-field>
-                                <input class="text-end" tlxFormInput matInput formControlName="material_discount"
-                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
-                                <!-- @if (tempForm?.get('material_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              } -->
-                              </mat-form-field>
-                            </tlx-form-field>
-                          </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <div class="row">
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
-                          <span class="font-bold">{{translatedLangText.HOUR}}</span>
-                        </div>
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
-                          <span class="font-bold">{{translatedLangText.TOTAL}}</span>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span></span><span>{{tempForm!.get('labour_hour')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                              </div>
+                <div class="tbl-col-width-per-6_5-xl tbl-col-width-per-6_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm p-0">
+                  <div class="table-responsive">
+                    <table class="table table-bordered   m-b-0 thick-inner-lines">
+                       <colgroup>
+                        <col style="width: 22%;"> <!-- Description column -->
+                        <col style="width: 12%;"> <!-- Rate column - made smaller -->
+                        <col style="width: 33%;"> <!-- Hour column -->
+                        <col style="width: 33%;"> <!-- Total column -->
+                      </colgroup>
+                      <thead>
+                        <tr  class="table-header-compact">
+                          <th class="div-bg-blue">
+                            <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
+                          </th>
+                          <th class="div-bg-blue text-center">
+                            <span class="font-bold">{{translatedLangText.RATE}}</span>
+                          </th>
+                          <th class="div-bg-blue text-center">
+                            <span class="font-bold">{{translatedLangText.HOUR}}</span>
+                          </th>
+                          <th class="div-bg-blue text-center">
+                            <span class="font-bold">{{translatedLangText.TOTAL}}</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Labour Row -->
+                        <tr>
+                          <td class="ps-4 thick-inner-border">
+                            <div class="table-label">{{translatedLangText.LABOUR}}</div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm?.get("labour_rate")?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span></span><span>{{tempForm!.get('labour_hour')?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm!.get('labour_total')?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        <!-- Material Cost Row -->
+                        <tr>
+                          <td class="ps-4 thick-inner-border">
+                            <div class="table-label">{{translatedLangText.MATERIAL_COST}}</div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm!.get('total_material_cost')?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        <!-- Total Cost Row -->
+                        <tr>
+                          <td class="ps-4 thick-inner-border">
+                            <div class="table-label">{{translatedLangText.TOTAL_COST}}</div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm!.get('total_cost')?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        <!-- Labour Discount Row -->
+                        <tr>
+                          <td class="ps-4 thick-inner-border">
+                            <div class="table-label">{{translatedLangText.LABOUR_DISCOUNT}}</div>
+                          </td>
+                          <td class="pe-1 thick-inner-border">
+                            <div class="table-label">
+                              <tlx-form-field  customClass="example-full-width">
+                                <mat-form-field class="w-100">
+                                  <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
+                                    [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
+                                </mat-form-field>
+                              </tlx-form-field>
+                            </div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        <!-- Material Discount Row -->
+                        <tr>
+                          <td class="ps-4 thick-inner-border">
+                            <div class="table-label">{{translatedLangText.MATERIAL_DISCOUNT}}</div>
+                          </td>
+                          <td class="pe-1 thick-inner-border">
+                            <div class="table-label">
+                              <tlx-form-field customClass="example-full-width">
+                                <mat-form-field class="w-100">
+                                  <input class="text-end" tlxFormInput matInput formControlName="material_discount"
+                                    [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
+                                </mat-form-field>
+                              </tlx-form-field>
+                            </div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label"></div>
+                          </td>
+                          <td class="text-end pe-4 thick-inner-border">
+                            <div class="table-label cost-label">
+                              <span>$</span><span>{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
                               <div class="row">
