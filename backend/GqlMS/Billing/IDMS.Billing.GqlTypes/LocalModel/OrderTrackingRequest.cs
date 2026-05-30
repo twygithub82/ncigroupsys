@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDMS.Billing.GqlTypes.BillingResult;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,5 +23,16 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public long end_date { get; set; }
         public List<string?>? purpose { get; set; }
         public List<string?>? status { get; set; }
+    }
+
+    [NotMapped]
+    public class OrderTrackingSummary
+    {
+        public string? order_no { get; set; }
+        public long? order_date { get; set; }
+        public string? order_status { get; set; }
+        public string? customer { get; set; }
+        public int? count { get; set; }
+        public List<OrderTrackingResult?>? tanks { get; set; }
     }
 }

@@ -829,7 +829,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
           this.dataSubject.next(resultList.nodes);
           this.totalCount = resultList.totalCount;
           this.pageInfo = resultList.pageInfo;
-            resultList.nodes = resultList.nodes.map((item: ResidueItem) => ({
+          resultList.nodes = resultList.nodes.map((item: ResidueItem) => ({
             ...item,
             customer_billing:
               item.customer_billing?.delete_dt != null && item.customer_billing.delete_dt !== 0
@@ -1034,9 +1034,8 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
   }
 
-
   canAmend(re: ResidueItem): boolean {
-     if (!re?.status_cv) return true;
+    if (!re?.status_cv) return true;
     const validStatus = ['PENDING']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
@@ -1076,6 +1075,11 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     }
     return allowed;
     // return validStatus.includes(re?.status_cv ? re?.status_cv : '');
+  }
+
+  canRollbackApproved(re: ResidueItem): boolean {
+    const validStatus = ['APPROVED', 'NO_ACTION']
+    return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
   canRollbackJobInProgress(re: ResidueItem | undefined): boolean {

@@ -62,7 +62,7 @@
         </div>
         <div class="col-xl-7-5 col-lg-7-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
           <div class="row justify-content-center">
-            <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
               <!-- Legend -->
               <div class="card modal-card">
                 <div class="header header-custom-padding">
@@ -171,6 +171,12 @@
         </div>
       </div>
       <div mat-dialog-actions class="align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="warn" class="m-l-5 mb-2" (click)="clearAll()" [disabled]="isGeneratingReport">
+          <mat-icon>clear_all</mat-icon>
+          {{ data.translatedLangText.CLEAR_ALL }}
+        </button>
+        }
         @if (canDownload()) {
         <button mat-flat-button class="m-l-5 mb-2 orange-button" (click)="download()" [disabled]="isGeneratingReport">
           <mat-icon>

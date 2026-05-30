@@ -1,15 +1,15 @@
-﻿using HotChocolate;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using CommonUtil.Core.Service;
+using HotChocolate;
 using IDMS.Billing.Application;
-using CommonUtil.Core.Service;
+using IDMS.Billing.GqlTypes.LocalModel;
 using IDMS.Models.Billing;
 using IDMS.Models.DB;
-using IDMS.Billing.GqlTypes.LocalModel;
 using IDMS.Models.Service;
 using IDMS.Models.Shared;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -616,6 +616,36 @@ namespace IDMS.Billing.GqlTypes
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in UpdateStorageDetail: {Message}", ex.Message);
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        public async Task<int> DeleteStorageDetail(ApplicationBillingDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+         [Service] IConfiguration config, string[] storageDetailsGuids)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+
+                var stoDetails = context.storage_detail.Where(s => storageDetailsGuids.Contains(s.guid) && s.delete_dt == null);
+
+                foreach (var item in stoDetails)
+                {
+                    item.delete_dt = currentDateTime;
+                    item.update_dt = currentDateTime;
+                    item.update_by = user;
+                }
+
+                var res = await context.SaveChangesAsync();
+                _logger.LogInformation($"DeleteStorageDetail completed: marked {res} storage_detail records as deleted");
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DeleteStorageDetail: {Message}", ex.Message);
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }

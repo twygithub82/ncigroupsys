@@ -257,66 +257,12 @@ export interface InspectionType {
 export function getDefaultInspectionTypes(): InspectionType[] {
   return [
     {
-      type: 'discoloration',
-      name: 'discoloration',
-      displayName: 'Discoloration',
-      color: '#FFFFFF',              // Shape color (bright)
-      backgroundColor: '#FF6B35',     // Background color (light)
-      shape: 'circle',
-      enabled: true
-    },
-    {
-      type: 'scratches',
-      name: 'scratches',
-      displayName: 'Scratches',
+      type: 'crack',
+      name: 'crack',
+      displayName: 'Crack',
       color: '#FFFFFF',
-      backgroundColor: '#4ECDC4',
-      shape: 'circle',
-      enabled: true
-    },
-    {
-      type: 'gouges',
-      name: 'gouges',
-      displayName: 'Gouges',
-      color: '#FFFFFF',
-      backgroundColor: '#C44569',
-      shape: 'circle',
-      enabled: true
-    },
-    {
-      type: 'rust',
-      name: 'rust',
-      displayName: 'Rust',
-      color: '#FFFFFF',
-      backgroundColor: '#F38181',
+      backgroundColor: '#E84393',
       shape: 'triangle',
-      enabled: true
-    },
-    {
-      type: 'stain',
-      name: 'stain',
-      displayName: 'Stain',
-      color: '#FFFFFF',
-      backgroundColor: '#AA96DA',
-      shape: 'triangle',
-      enabled: true
-    },
-    {
-      type: 'pitting',
-      name: 'pitting',
-      displayName: 'Pitting',
-      color: '#FFFFFF',
-      backgroundColor: '#FFD93D',
-      shape: 'triangle',
-      enabled: true
-    },
-    {
-      type: 'pinhole',
-      name: 'pinhole',
-      displayName: 'Pinhole',
-      color: '#FFFFFF',
-      backgroundColor: '#6BCB77',
-      shape: 'square',
       enabled: true
     },
     {
@@ -325,15 +271,6 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       displayName: 'Crated Pitting',
       color: '#FFFFFF',
       backgroundColor: '#4D96FF',
-      shape: 'square',
-      enabled: true
-    },
-    {
-      type: 'harden_stain',
-      name: 'harden_stain',
-      displayName: 'Harden Stain',
-      color: '#FFFFFF',
-      backgroundColor: '#845EC2',
       shape: 'square',
       enabled: true
     },
@@ -347,11 +284,74 @@ export function getDefaultInspectionTypes(): InspectionType[] {
       enabled: true
     },
     {
-      type: 'crack',
-      name: 'crack',
-      displayName: 'Crack',
+      type: 'discoloration',
+      name: 'discoloration',
+      displayName: 'Discoloration',
+      color: '#FFFFFF',              // Shape color (bright)
+      backgroundColor: '#FF6B35',     // Background color (light)
+      shape: 'circle',
+      enabled: true
+    },
+    {
+      type: 'gouges',
+      name: 'gouges',
+      displayName: 'Gouges',
       color: '#FFFFFF',
-      backgroundColor: '#E84393',
+      backgroundColor: '#C44569',
+      shape: 'circle',
+      enabled: true
+    },
+    {
+      type: 'harden_stain',
+      name: 'harden_stain',
+      displayName: 'Harden Stain',
+      color: '#FFFFFF',
+      backgroundColor: '#845EC2',
+      shape: 'square',
+      enabled: true
+    },
+    {
+      type: 'pinhole',
+      name: 'pinhole',
+      displayName: 'Pinhole',
+      color: '#FFFFFF',
+      backgroundColor: '#6BCB77',
+      shape: 'square',
+      enabled: true
+    },
+    {
+      type: 'pitting',
+      name: 'pitting',
+      displayName: 'Pitting',
+      color: '#FFFFFF',
+      backgroundColor: '#FFD93D',
+      shape: 'triangle',
+      enabled: true
+    },
+    {
+      type: 'rust',
+      name: 'rust',
+      displayName: 'Rust',
+      color: '#FFFFFF',
+      backgroundColor: '#F38181',
+      shape: 'triangle',
+      enabled: true
+    },
+    {
+      type: 'scratches',
+      name: 'scratches',
+      displayName: 'Scratches',
+      color: '#FFFFFF',
+      backgroundColor: '#4ECDC4',
+      shape: 'circle',
+      enabled: true
+    },
+    {
+      type: 'stain',
+      name: 'stain',
+      displayName: 'Stain',
+      color: '#FFFFFF',
+      backgroundColor: '#AA96DA',
       shape: 'triangle',
       enabled: true
     }

@@ -438,7 +438,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.isMobile) {
       this.frameTypeSeq = ['REAR_SIDE', 'LEFT_SIDE', 'RIGHT_SIDE', 'BOTTOM_SIDE', 'FRONT_SIDE', 'TOP_SIDE'];
     }
-
   }
 
   initForm() {
@@ -1443,38 +1442,64 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   compartmentTypeFormCheck(): any[] {
-    const compartmentTypeFormChecks = [];
+    const checks: string[] = [];
 
-    const bottomFormGroup = this.getBottomFormGroup();
-    if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value?.length || bottomFormGroup.get('btm_dis_valve_cv')?.value?.length
-      || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value?.length || bottomFormGroup.get('foot_valve_cv')?.value?.length
-      || bottomFormGroup.get('btm_valve_brand_cv')?.value || bottomFormGroup.get('thermometer')?.value
-      || bottomFormGroup.get('thermometer_cv')?.value?.length || bottomFormGroup.get('ladder')?.value
-      || bottomFormGroup.get('data_csc_transportplate')?.value)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
+    const bottomRaw = this.getBottomFormGroup().getRawValue();
+    const hasBottomValues = [
+      bottomRaw.btm_dis_comp_cv?.length,
+      bottomRaw.btm_dis_valve_cv?.length,
+      bottomRaw.btm_dis_valve_spec_cv?.length,
+      bottomRaw.foot_valve_cv?.length,
+      bottomRaw.btm_valve_brand_cv,
+      bottomRaw.thermometer,
+      bottomRaw.thermometer_cv?.length,
+      bottomRaw.ladder,
+      bottomRaw.data_csc_transportplate
+    ].some(v => !!v);
+
+    if (!hasBottomValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
     }
 
-    const topFormGroup = this.getTopFormGroup();
-    if (!(topFormGroup.get('top_dis_comp_cv')?.value?.length || topFormGroup.get('top_dis_valve_cv')?.value?.length
-      || topFormGroup.get('top_dis_valve_spec_cv')?.value?.length || topFormGroup.get('top_valve_brand_cv')?.value
-      || topFormGroup.get('airline_valve_cv')?.value?.length || topFormGroup.get('airline_valve_pcs')?.value
-      || topFormGroup.get('airline_valve_dim')?.value || topFormGroup.get('airline_valve_conn_cv')?.value?.length
-      || topFormGroup.get('airline_valve_conn_spec_cv')?.value?.length)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
+    const topRaw = this.getTopFormGroup().getRawValue();
+    const hasTopValues = [
+      topRaw.top_dis_comp_cv?.length,
+      topRaw.top_dis_valve_cv?.length,
+      topRaw.top_dis_valve_spec_cv?.length,
+      topRaw.top_valve_brand_cv,
+      topRaw.airline_valve_cv?.length,
+      topRaw.airline_valve_pcs,
+      topRaw.airline_valve_dim,
+      topRaw.airline_valve_conn_cv?.length,
+      topRaw.airline_valve_conn_spec_cv?.length
+    ].some(v => !!v);
+
+    if (!hasTopValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
     }
 
-    const manlidFormGroup = this.getManlidFormGroup();
-    if (!(manlidFormGroup.get('manlid_comp_cv')?.value?.length || manlidFormGroup.get('manlid_cover_cv')?.value?.length
-      || manlidFormGroup.get('manlid_cover_pcs')?.value || manlidFormGroup.get('manlid_cover_pts')?.value
-      || manlidFormGroup.get('manlid_seal_cv')?.value?.length || manlidFormGroup.get('pv_type_cv')?.value?.length
-      || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value?.length
-      || manlidFormGroup.get('pv_spec_pcs')?.value || manlidFormGroup.get('safety_handrail')?.value
-      || manlidFormGroup.get('buffer_plate')?.value || manlidFormGroup.get('residue')?.value
-      || manlidFormGroup.get('dipstick')?.value)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_MANLID_EMPTY);
+    const manlidRaw = this.getManlidFormGroup().getRawValue();
+    const hasManlidValues = [
+      manlidRaw.manlid_comp_cv?.length,
+      manlidRaw.manlid_cover_cv?.length,
+      manlidRaw.manlid_cover_pcs,
+      manlidRaw.manlid_cover_pts,
+      manlidRaw.manlid_seal_cv?.length,
+      manlidRaw.pv_type_cv?.length,
+      manlidRaw.pv_type_pcs,
+      manlidRaw.pv_spec_cv?.length,
+      manlidRaw.pv_spec_pcs,
+      manlidRaw.safety_handrail,
+      manlidRaw.buffer_plate,
+      manlidRaw.residue,
+      manlidRaw.dipstick
+    ].some(v => !!v);
+
+    if (!hasManlidValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_MANLID_EMPTY);
     }
 
-    return compartmentTypeFormChecks;
+    return checks;
   }
 
   canChangeTankNo() {
@@ -1620,7 +1645,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             if (wantPublish) {
               this.onPublish();
             }
-            //   this.preventBackButton();
           }
         });
       } else {
@@ -1637,7 +1661,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             //   this.onDownload(record.guid[0], record.residue_guid);
             // }
             this.onDownload(record.guid[0], record.residue_guid);
-            //this.preventBackButton();
           }
         });
       }
@@ -2486,36 +2509,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return emails;
   }
 
-  preventBackButton() {
-    // Clear existing history
-    // history.replaceState(null, '', window.location.href);
-
-    // Add current page to history
-
-    history.pushState(null, '', window.location.href);
-
-    // Handle back button press
-    window.addEventListener('popstate', (event) => {
-      history.pushState(null, '', window.location.href);
-      // You can also show a custom modal or message here
-      this.showBackButtonWarning();
-    });
-  }
-
   blockDecimal(event: KeyboardEvent) {
     if (event.key === '.' || event.key === ',' || event.key === 'e') {
       event.preventDefault();
     }
-  }
-
-  private showBackButtonWarning() {
-    // Custom implementation - show modal, toast, etc.
-    console.warn('Back navigation is disabled');
-    this.router.navigate([], { replaceUrl: true });
-    this.router.navigate(
-      ['/admin/inventory/in-gate-main'],
-      { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true }
-    );
   }
 
   disableBackButton() {

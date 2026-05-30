@@ -1,7 +1,7 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,19 +20,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CellMark, MappingChartComponent } from '@shared/components/mapping-chart/mapping-chart.component';
-import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS } from 'app/data-sources/code-values';
 import { getDefaultInspectionTypes, InspectionsDS, InspectionsItem, InspectionType, SurfaceTypesItem } from 'app/data-sources/inspections';
-import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TariffRepairDS } from 'app/data-sources/tariff-repair';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { InGateMappingPdfComponent } from 'app/document-template/pdf/inventory/in-gate-mapping-pdf/in-gate-mapping-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -79,11 +73,8 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     MatProgressSpinnerModule,
-    PreventNonNumericDirective,
     MappingChartComponent,
     MatCardModule,
-    TlxCardListComponent,
-    TlxFormFieldComponent,
     NumericTextDirective
   ],
 })
@@ -546,7 +537,11 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
       }
     });
 
-    const result = Array.from(surfaceTypeMap.values());
+    const result = Array.from(surfaceTypeMap.values()).sort((a, b) => {
+      const aName = this.inspectionTypes.find(t => t.type === a.type_cv)?.displayName || '';
+      const bName = this.inspectionTypes.find(t => t.type === b.type_cv)?.displayName || '';
+      return aName.localeCompare(bName);
+    });
 
     // Sync form array with the new structure
     this.syncSurfaceTypesFormArray(result);
@@ -902,6 +897,20 @@ export class MappingChartFormDialogComponent extends UnsubscribeOnDestroyAdapter
 
     // Trigger update of surface types list
     // this.updateUniqueSurfaceTypes();
+  }
+
+  clearAll(): void {
+    this.markedCells = new Map();
+    this.circularMarkedSections = { front: new Map(), rear: new Map() };
+
+    // Unsaved ('new') types are removed; persisted types are marked as 'cancel'
+    this.existingSurfaceTypes = this.existingSurfaceTypes.filter(st => st.action !== 'new');
+    this.existingSurfaceTypes.forEach(st => {
+      st.action = 'cancel';
+    });
+
+    this.validationErrorMessage = '';
+    this.updateSurfaceTypesLists();
   }
 
   deleteItem(event: Event, item: SurfaceTypesItem, index: number) {

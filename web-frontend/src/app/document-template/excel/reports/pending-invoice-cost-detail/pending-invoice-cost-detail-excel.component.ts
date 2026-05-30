@@ -246,6 +246,8 @@ export class PendingInvoiceCostDetailExcelComponent extends UnsubscribeOnDestroy
     TOTAL_AMOUNT: "COMMON-FORM.TOTAL-AMOUNT",
     DETAILS: 'COMMON-FORM.DETAILS',
     S_N: 'COMMON-FORM.S_N',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
 
   }
 
@@ -826,30 +828,13 @@ export class PendingInvoiceCostDetailExcelComponent extends UnsubscribeOnDestroy
       this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
       this.translatedLangText.LAST_CARGO, this.translatedLangText.JOB_NO,
-
       this.translatedLangText.DATE_IN, this.translatedLangText.DATE_OUT,
-      this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
+      this.translatedLangText.GATE_IN, this.translatedLangText.GATE_OUT,
+      this.translatedLangText.PREINSP_COST,
       this.translatedLangText.LOLO_COST, this.translatedLangText.DAYS,
       this.translatedLangText.STORAGE_COST,
     ];
-    // const headerRow: string[] = [
-    //   this.translatedLangText.S_N,
-    //   this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
-    //   this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
-    //   this.translatedLangText.DATE_IN, this.translatedLangText.DATE_OUT,
-    //   this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
-    //   this.translatedLangText.LOLO_COST, this.translatedLangText.STORAGE_COST,
-    //   this.translatedLangText.DAYS,this.translatedLangText.CLEAN_COST, 
-    // ];
-
-    // this.translatedLangText.NO,
-    // this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
-    // this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
-    // this.translatedLangText.DATE_IN, this.translatedLangText.DATE_OUT,
-    // this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
-    // this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
-    // this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
-    // this.translatedLangText.GATEIO_S
+    
 
     if (!this.modulePackageService.isStarterPackage()) {
       headerRow.push(
@@ -979,7 +964,7 @@ export class PendingInvoiceCostDetailExcelComponent extends UnsubscribeOnDestroy
        const values = [
           (i + 1).toString(), itm.tank_no || "", itm.eir_no || "",
           itm.last_cargo || "", itm.job_no || "", itm.in_date || "", itm.out_date || "",
-          this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
+          this.displayGateInCost(itm) || "",  this.displayGateOutCost(itm) || "",this.displayPreinsCost(itm) || "",
           this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
         ];
 
@@ -1626,6 +1611,20 @@ export class PendingInvoiceCostDetailExcelComponent extends UnsubscribeOnDestroy
 
 
     retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gateio_cost)}`) //`${item.gateio_cost}`)
+    return retval;
+  }
+  displayGateInCost(item: report_billing_item): string {
+    let retval: string = '';
+
+
+    retval = (item.gate_in_cost === "0.00" || item.gate_in_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gate_in_cost)}`) //`${item.gateio_cost}`)
+    return retval;
+  }
+  displayGateOutCost(item: report_billing_item): string {
+    let retval: string = '';
+
+
+    retval = (item.gate_out_cost === "0.00" || item.gate_out_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gate_out_cost)}`) //`${item.gateio_cost}`)
     return retval;
   }
 

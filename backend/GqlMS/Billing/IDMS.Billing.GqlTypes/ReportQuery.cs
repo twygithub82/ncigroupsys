@@ -241,6 +241,7 @@ namespace IDMS.Billing.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
+
         public async Task<List<DailyTankSurveySummary>> QueryDailyTankSurveySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, DailyTankSurveyRequest dailyTankSurveyRequest)
         {
@@ -249,97 +250,113 @@ namespace IDMS.Billing.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 List<DailyTankSurveySummary> result = new List<DailyTankSurveySummary>();
 
-                //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
-                string surveryorCodeValType = "TEST_CLASS";
-                string tankStatusCV = "ACCEPTED";
-                string jointInspec = "JOINT_INSPECT";
-
                 long sDate = dailyTankSurveyRequest.start_date;
                 long eDate = dailyTankSurveyRequest.end_date;
 
-                //IQueryable<DailyTankSurveySummary> query = from sot in context.storing_order_tank
-                //                                           join so in context.storing_order on sot.so_guid equals so.guid
-                //                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                //                                           join sd in context.survey_detail on sot.guid equals sd.sot_guid
-                //                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val
-                //                                           join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
-                //                                           from cl in clGroup.DefaultIfEmpty()
-                //                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
-                //                                           from i in iGroup.DefaultIfEmpty()
-                //                                           where sot.status_cv == tankStatusCV
-                //                                               && !StatusCondition.BeforeTankIn.Contains(sot.tank_status_cv)
-                //                                               && sd.survey_dt >= sDate
-                //                                               && sd.survey_dt <= eDate
-                //                                               && (i.delete_dt == null)
-                //                                               && sd.delete_dt == null
-                //                                               && (cv.code_val_type == surveryorCodeValType
-                //                                               || sd.survey_type_cv == jointInspec)
+                var surveyTypes = dailyTankSurveyRequest.survey_type ?? new List<string>();
 
-                IQueryable<DailyTankSurveySummary> query = from sd in context.survey_detail
-                                                           join sot in context.storing_order_tank on sd.sot_guid equals sot.guid
-                                                           join so in context.storing_order on sot.so_guid equals so.guid
-                                                           join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                                                           join cv in context.code_values on sd.test_class_cv equals cv.code_val into cvGroup
-                                                           from cv in cvGroup.DefaultIfEmpty()
-                                                           join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
-                                                           from cl in clGroup.DefaultIfEmpty()
-                                                           join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
-                                                           from i in iGroup.DefaultIfEmpty()
-                                                           where sd.survey_dt >= sDate
-                                                               && sd.survey_dt <= eDate
-                                                               && sd.delete_dt == null
+                var normalTypes = surveyTypes
+                    .Where(x => !x.EndsWith("_PERIODIC_TEST"))
+                    .ToList();
 
-                                                           group new { sot, cc, sd, cl, i, cv } by new
-                                                           {
-                                                               cc.code,
-                                                               sot.tank_no,
-                                                               //sot.status_cv,
-                                                               sd.status_cv,
-                                                               i.eir_no,
-                                                               sd.survey_type_cv,
-                                                               sd.survey_dt,
-                                                               description = cv.description ?? "",
-                                                               clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
-                                                           } into g
+                var periodicTypes = surveyTypes
+                    .Where(x => x.EndsWith("_PERIODIC_TEST"))
+                    .Select(x => x.Replace("_PERIODIC_TEST", ""))
+                    .ToList();
 
-                                                           select new DailyTankSurveySummary
-                                                           {
-                                                               customer_code = g.Key.code,
-                                                               tank_no = g.Key.tank_no,
-                                                               status = g.Key.status_cv,
-                                                               eir_no = g.Key.eir_no,
-                                                               survey_type = g.Key.survey_type_cv,
-                                                               survey_dt = g.Key.survey_dt,
-                                                               surveryor = g.Key.description,
-                                                               clean_dt = g.Key.clean_dt,
-                                                               visit = g.Count().ToString()
-                                                           };
+
+                var baseQuery =
+                    from sd in context.survey_detail
+                    join sot in context.storing_order_tank on sd.sot_guid equals sot.guid
+                    join so in context.storing_order on sot.so_guid equals so.guid
+                    join cc in context.customer_company on so.customer_company_guid equals cc.guid
+                    join cv in context.code_values on sd.test_class_cv equals cv.code_val into cvGroup
+                    from cv in cvGroup.DefaultIfEmpty()
+                    join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
+                    from cl in clGroup.DefaultIfEmpty()
+                    join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+                    from i in iGroup.DefaultIfEmpty()
+                    where sd.survey_dt >= sDate
+                          && sd.survey_dt <= eDate
+                          && sd.delete_dt == null
+                    select new
+                    {
+                        sd,
+                        sot,
+                        so,
+                        cc,
+                        cv,
+                        cl,
+                        i
+                    };
 
                 if (!string.IsNullOrEmpty(dailyTankSurveyRequest.customer_code))
                 {
-                    query = query.Where(tf => String.Equals(tf.customer_code, dailyTankSurveyRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+                    baseQuery = baseQuery.Where(x =>
+                        x.cc.code.ToUpper() == dailyTankSurveyRequest.customer_code.ToUpper());
                 }
 
                 if (!string.IsNullOrEmpty(dailyTankSurveyRequest.tank_no))
                 {
-                    query = query.Where(tf => tf.tank_no.Contains(dailyTankSurveyRequest.tank_no));
+                    baseQuery = baseQuery.Where(x =>
+                        x.sot.tank_no.Contains(dailyTankSurveyRequest.tank_no));
                 }
 
                 if (!string.IsNullOrEmpty(dailyTankSurveyRequest.eir_no))
                 {
-                    query = query.Where(tf => tf.eir_no.Contains(dailyTankSurveyRequest.eir_no));
+                    baseQuery = baseQuery.Where(x =>
+                        x.i.eir_no.Contains(dailyTankSurveyRequest.eir_no));
                 }
 
-                if (dailyTankSurveyRequest.survey_type != null && dailyTankSurveyRequest.survey_type.Any())
-                {
-                    query = query.Where(tf => dailyTankSurveyRequest.survey_type.Contains(tf.survey_type));
+                if (surveyTypes.Any())
+                {      
+                    // Normal survey types
+                    baseQuery = baseQuery.Where(x => normalTypes.Contains(x.sd.survey_type_cv)
+
+                        ||
+
+                        // Periodic test with test_type_cv
+                        (
+                            x.sd.survey_type_cv == "PERIODIC_TEST" && periodicTypes.Contains(x.sd.test_type_cv)
+                        )
+                    );
                 }
 
+                var query = from x in baseQuery
+                            group x by new
+                            {
+                                x.cc.code,
+                                x.sot.tank_no,
+                                x.sd.status_cv,
+                                x.i.eir_no,
+                                x.sd.survey_type_cv,
+                                x.sd.test_type_cv,
+                                x.sd.survey_dt,
+                                description = x.cv.description ?? "",
+                                clean_dt = x.sot.purpose_cleaning == true && x.cl.complete_dt.HasValue
+                                    ? x.cl.complete_dt
+                                    : null
+                            }
+                            into g
+
+                            select new DailyTankSurveySummary
+                            {
+                                customer_code = g.Key.code,
+                                tank_no = g.Key.tank_no,
+                                status = g.Key.status_cv,
+                                eir_no = g.Key.eir_no,
+                                survey_type = g.Key.survey_type_cv,
+                                test_type_cv = g.Key.test_type_cv,
+                                survey_dt = g.Key.survey_dt,
+                                surveryor = g.Key.description,
+                                clean_dt = g.Key.clean_dt,
+                                visit = g.Count().ToString()
+                            };
                 if (!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
                 {
-                    query = query.Where(tf => tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
+                    query = query.Where(tf =>
+                        tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
                 }
-
                 return await query.OrderBy(i => i.customer_code).ToListAsync();
             }
             catch (Exception ex)
@@ -348,6 +365,123 @@ namespace IDMS.Billing.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
+        //public async Task<List<DailyTankSurveySummary>> QueryDailyTankSurveySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
+        //        [Service] IHttpContextAccessor httpContextAccessor, DailyTankSurveyRequest dailyTankSurveyRequest)
+        //{
+        //    try
+        //    {
+        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        List<DailyTankSurveySummary> result = new List<DailyTankSurveySummary>();
+
+        //        //var excludeStatus = new List<string>() { "SO_GENERATED", "IN_GATE", "IN_SURVEY" };
+        //        string surveryorCodeValType = "TEST_CLASS";
+        //        string tankStatusCV = "ACCEPTED";
+        //        string jointInspec = "JOINT_INSPECT";
+
+        //        long sDate = dailyTankSurveyRequest.start_date;
+        //        long eDate = dailyTankSurveyRequest.end_date;
+
+        //        IQueryable<DailyTankSurveySummary> query = from sd in context.survey_detail
+        //                                                   join sot in context.storing_order_tank on sd.sot_guid equals sot.guid
+        //                                                   join so in context.storing_order on sot.so_guid equals so.guid
+        //                                                   join cc in context.customer_company on so.customer_company_guid equals cc.guid
+        //                                                   join cv in context.code_values on sd.test_class_cv equals cv.code_val into cvGroup
+        //                                                   from cv in cvGroup.DefaultIfEmpty()
+        //                                                   join cl in context.cleaning on sot.guid equals cl.sot_guid into clGroup
+        //                                                   from cl in clGroup.DefaultIfEmpty()
+        //                                                   join i in context.in_gate on sot.guid equals i.so_tank_guid into iGroup
+        //                                                   from i in iGroup.DefaultIfEmpty()
+        //                                                   where sd.survey_dt >= sDate
+        //                                                       && sd.survey_dt <= eDate
+        //                                                       && sd.delete_dt == null
+
+        //                                                   group new { sot, cc, sd, cl, i, cv } by new
+        //                                                   {
+        //                                                       cc.code,
+        //                                                       sot.tank_no,
+        //                                                       //sot.status_cv,
+        //                                                       sd.status_cv,
+        //                                                       i.eir_no,
+        //                                                       sd.survey_type_cv,
+        //                                                       sd.test_type_cv,
+        //                                                       sd.survey_dt,
+        //                                                       description = cv.description ?? "",
+        //                                                       clean_dt = sot.purpose_cleaning == true && cl.complete_dt.HasValue ? cl.complete_dt : null
+        //                                                   } into g
+
+        //                                                   select new DailyTankSurveySummary
+        //                                                   {
+        //                                                       customer_code = g.Key.code,
+        //                                                       tank_no = g.Key.tank_no,
+        //                                                       status = g.Key.status_cv,
+        //                                                       eir_no = g.Key.eir_no,
+        //                                                       survey_type = g.Key.survey_type_cv,
+        //                                                       test_type_cv = g.Key.test_type_cv,
+        //                                                       survey_dt = g.Key.survey_dt,
+        //                                                       surveryor = g.Key.description,
+        //                                                       clean_dt = g.Key.clean_dt,
+        //                                                       visit = g.Count().ToString()
+        //                                                   };
+
+        //        if (!string.IsNullOrEmpty(dailyTankSurveyRequest.customer_code))
+        //        {
+        //            query = query.Where(tf => String.Equals(tf.customer_code, dailyTankSurveyRequest.customer_code, StringComparison.OrdinalIgnoreCase));
+        //        }
+
+        //        if (!string.IsNullOrEmpty(dailyTankSurveyRequest.tank_no))
+        //        {
+        //            query = query.Where(tf => tf.tank_no.Contains(dailyTankSurveyRequest.tank_no));
+        //        }
+
+        //        if (!string.IsNullOrEmpty(dailyTankSurveyRequest.eir_no))
+        //        {
+        //            query = query.Where(tf => tf.eir_no.Contains(dailyTankSurveyRequest.eir_no));
+        //        }
+
+        //        if (dailyTankSurveyRequest.survey_type != null && dailyTankSurveyRequest.survey_type.Any())
+        //        {
+        //            //query = query.Where(tf => dailyTankSurveyRequest.survey_type.Contains(tf.survey_type));
+        //            var surveyTypes = dailyTankSurveyRequest.survey_type;
+
+        //            var normalTypes = surveyTypes
+        //                .Where(x => !x.EndsWith("_PERIODIC_TEST"))
+        //                .ToList();
+
+        //            var periodicTypes = surveyTypes
+        //                .Where(x => x.EndsWith("_PERIODIC_TEST"))
+        //                .Select(x => x.Split('_')[0]) // 2.5 or 5
+        //                .ToList();
+
+        //            query = query.Where(tf =>
+        //                // Normal survey types
+        //                normalTypes.Contains(tf.survey_type)
+
+        //                ||
+
+        //                // Periodic tests
+        //                (tf.survey_type == "PERIODIC_TEST" && (
+        //                    (periodicTypes.Contains("2.5") && tf.test_type_cv == "2.5")
+        //                    ||
+        //                    (periodicTypes.Contains("5") && tf.test_type_cv == "5")
+        //                ))
+        //            );
+
+        //        }
+
+        //        if (!string.IsNullOrEmpty(dailyTankSurveyRequest.surveyor_name))
+        //        {
+        //            query = query.Where(tf => tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
+        //        }
+
+        //        return await query.OrderBy(i => i.customer_code).ToListAsync();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error in QueryDailyTankSurveySummary");
+        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+        //    }
+        //}
 
         public async Task<List<DailyInventorySummary>> QueryDailyInventorySummary(ApplicationBillingDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, DailyInventoryRequest dailyInventoryRequest)

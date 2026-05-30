@@ -220,7 +220,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   pageIndex = 0;
   pageSize = 1000;
   lastSearchCriteria: any;
-  lastOrderBy: any = {};
+  lastOrderBy: any = {customer: "DESC"};
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
