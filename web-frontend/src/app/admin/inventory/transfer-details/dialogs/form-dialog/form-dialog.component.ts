@@ -90,6 +90,16 @@ export class FormDialogComponent {
     }
     this.index = data.index;
     this.transferForm = this.createForm();
+
+    // Auto-select when only one option exists
+    if (
+      this.filteredYardCvList?.length === 1 &&
+      !this.transferItem.location_to_cv
+    ) {
+      this.transferForm.patchValue({
+        location_to_cv: this.filteredYardCvList[0].code_val,
+      });
+    }
   }
 
   createForm(): UntypedFormGroup {
