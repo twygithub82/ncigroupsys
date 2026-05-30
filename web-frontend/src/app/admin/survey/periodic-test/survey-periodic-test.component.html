@@ -126,7 +126,7 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                           <mat-select multiple formControlName="status_cv" (selectionChange)="AutoSearch()">
-                            @for (codeValue of statusCvList; track codeValue) {
+                            @for (codeValue of tankStatusCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
                             </mat-option>
