@@ -212,7 +212,7 @@
                         @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                         <div class="responsive_table">
                           <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
-                            class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                             <ng-container matColumnDef="id">
                               <mat-header-cell *matHeaderCellDef></mat-header-cell>
                               <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
