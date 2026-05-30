@@ -26,7 +26,7 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
 import { report_status_yard, report_status, DailyQCDetail, DailyTeamRevenue } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, UPDATE_LAST_CARGO } from 'app/data-sources/storing-order-tank';
 import { autoTable, Cell, Styles } from 'jspdf-autotable';
 import { OrderTrackingItem } from 'app/data-sources/reports-management';
 import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
@@ -191,6 +191,14 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     RELEASE_ORDER: 'COMMON-FORM.RELEASE-ORDER',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     S_N: 'COMMON-FORM.S_N',
+    RO_STATUS: 'COMMON-FORM.RO-STATUS',
+    RO_DATE: 'COMMON-FORM.RO-DATE',
+    NO_OF_TANK: 'COMMON-FORM.NO-OF-TANK',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    SO: 'COMMON-FORM.SO',
+    RO: 'COMMON-FORM.RO',
+
+
   }
 
   type?: string | null;
@@ -495,6 +503,9 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     this.exportToPDF_r1();
   }
 
+  isRO(){
+    return this.repType=="ro";
+  }
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -524,28 +535,34 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE, this.translatedLangText.RELEASE_DATE,
-      this.translatedLangText.LAST_CARGO, this.translatedLangText.PURPOSE, this.translatedLangText.ORDER_NO,
-      this.translatedLangText.ORDER_DATE, this.translatedLangText.CANCEL_DATE,
-      this.translatedLangText.CANCEL_REMARK, this.translatedLangText.STATUS
+
+    var typ = this.isRO()?this.translatedLangText.RO:this.translatedLangText.SO;
+     const headers = [[
+      this.translatedLangText.S_N,  this.translatedLangText.SO_NO,
+      `${typ} ${this.translatedLangText.DATE}`,
+      `${typ} ${this.translatedLangText.STATUS}`,
+      this.translatedLangText.CUSTOMER, 
+      this.translatedLangText.NO_OF_TANKS, 
+      this.translatedLangText.TANK_NO,
+      this.translatedLangText.LAST_CARGO, 
+      this.translatedLangText.PURPOSE, 
+      this.translatedLangText.TANK_STATUS
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell,  overflow: 'ellipsize' },
-      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 58, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      6: { halign: 'left', valign: 'middle', cellWidth: 36, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      7: { halign: 'center', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      11: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell,  },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 50, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell,  },
+      6: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell,  },
+      7: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      // 10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      
     };
 
     // Define headStyles with valid fontStyle
@@ -587,17 +604,29 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let CustomerCodeName = '';
     for (let n = 0; n < (this.repData?.length || 0); n++) {
       let itm = this.repData?.[n];
-      var CurrentCustomer = `${itm?.customer_code} - ${itm?.customer_name}`;
-      if (CustomerCodeName !== CurrentCustomer) {
-        CustomerCodeName = CurrentCustomer;
-        data.push([CustomerCodeName, "", "", "", "", "", "", "", "", "", ""]);
+      let index =n+1;
+      let tnkCnt=(itm?.tanks?.length||0);
+      for (let i=0;i<tnkCnt;i++){
+        var tnk=itm?.tanks?.[i];
+        
+       if(i===0){
+        data.push([
+          index.toString(), itm?.order_no || "", 
+          Utility.convertEpochToDateStr(itm?.order_date) || "", 
+          itm?.order_status || "",
+          itm?.customer || "",tnkCnt||"",
+          tnk?.tank_no || '',  tnk?.last_cargo || '', tnk?.purpose || '',tnk?.sot_status
+        ]);
+       }
+       else
+       {
+         data.push([
+          "",  "", "",  "", "",  "", 
+         tnk?.tank_no || '',  tnk?.last_cargo || '', tnk?.purpose || '',tnk?.sot_status
+        ]);
+       }
+       
       }
-      data.push([
-        (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_date) || "",
-        Utility.convertEpochToDateStr(itm?.release_date) || '', (itm?.last_cargo || ""), itm?.purpose || '',
-        itm?.order_no || '', Utility.convertEpochToDateStr(itm?.order_date) || '', Utility.convertEpochToDateStr(itm?.cancel_date) || '',
-        itm?.cancel_remarks || "", itm?.status || ''
-      ]);
     }
 
     pdf.setDrawColor(0, 0, 0); // red line color
@@ -625,38 +654,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
         //halign: 'left', // Left-align content for body by default
         //valign: 'middle', // Vertically align content
       },
-      didParseCell: (data: any) => {
-        let colSpan: number = 0;
-        if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
-          colSpan = 12;
-          data.cell.styles.halign = 'left';
-          data.cell.styles.valign = 'bottom';
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fontSize = 8;
-          data.cell.colSpan = colSpan;
-          AllowedRowColSpan = data.row.index;
-        }
-
-        // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        // if(data.row.index==totalRowIndex){
-        //   data.cell.styles.fontStyle = 'bold';
-        //   data.cell.styles.fillColor=[231, 231, 231];
-        //   data.cell.styles.valign = 'middle'; // Center text vertically
-        //   if (data.column.index === 0) {
-        //     data.cell.colSpan = colSpan;  // Merge 4 columns into one
-        //     data.cell.styles.halign = 'right'; // Center text horizontally
-        //   }
-        // }
-        if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-          //bColSpan=false;
-        }
-      },
+      
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 

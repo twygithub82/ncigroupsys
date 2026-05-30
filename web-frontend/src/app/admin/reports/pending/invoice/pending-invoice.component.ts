@@ -544,7 +544,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     if (out_gates?.length) {
       rep_bill_item.out_date = Utility.convertEpochToDateStr(out_gates?.[0]?.eir_dt);
-      rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
+      // rep_bill_item.eir_no = out_gates?.[0]?.eir_no;
     }
 
     return rep_bill_item;
@@ -554,7 +554,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   {
 
     // var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null && c.bill_to_guid == customerGuid) || [];
-    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null ) || [];
+    var items: InGateCleaningItem[] = sot.cleaning?.filter(c => c.customer_billing_guid == null) || [];
 
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
@@ -825,7 +825,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   {
 
     // var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null && r.bill_to_guid == customerGuid) || [];
-    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null ) || [];
+    var items: ResidueItem[] = sot.residue?.filter(r => r.customer_billing_guid == null) || [];
     if (items.length > 0) {
       var itms = items.filter(v => v.delete_dt === null || v.delete_dt === 0);
       if (itms.length > 0) {
@@ -889,7 +889,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         BILLING_ESTIMATE_STATUS.includes(c.status_cv!)
       ) {
         // ✅ Properly await async cost retrieval
-        const total = await firstValueFrom(this.getSteamTotalCost(c));
+        const total = await firstValueFrom(this.getSteamTotalCost_r1(c));
 
         // ✅ Safely accumulate cost
         const currentCost = Number(rep_bill_item.steam_cost?.toNumber?.() || rep_bill_item.steam_cost || 0);
@@ -923,6 +923,48 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         return 0;
       })
     );
+  }
+
+  IsApproved(steam: SteamItem) {
+    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return validStatus.includes(steam!.status_cv!);
+
+  }
+
+  getSteamTotalCost_r1(row: any): Observable<number> {
+
+    const customer_company_guid = row.storing_order_tank?.storing_order?.customer_company?.guid;
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    };
+    // this.plDS.getCustomerPackageCost(where).subscribe(data => {
+    return this.plDS.getCustomerPackageCost(where).pipe(map(data => {
+      if (data.length > 0) {
+        var cost: number = data[0].cost;
+        var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+        if (isAutoApproveSteaming) {
+          var stmPart = row.steaming_part[0];
+          row.total_cost = 0;
+          if (stmPart) {
+
+            return this.IsApproved(row) ? (stmPart.approve_cost || 0) : (stmPart.cost || 0);
+          }
+
+          if (!row.flat_rate) {
+            return row.total_hour * row.rate;
+          }
+        }
+        else {
+          return (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        }
+        //this.calculateTotalCost();
+      }
+    }));
+
+    // });
+
   }
 
   retrieveLabourCost(ccGuid: string): number {

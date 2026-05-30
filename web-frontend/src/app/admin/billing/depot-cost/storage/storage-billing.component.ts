@@ -167,6 +167,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     START_DATE: 'COMMON-FORM.START-DATE',
     
     
+    
   }
 
   invForm?: UntypedFormGroup;
@@ -1519,11 +1520,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       },
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      // if (result > 0) {
-      //   this.handleSaveSuccess(result);
-      //   // if (this.packRepairItems.length > 1)
-      //   //   this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      // }
+      
+      if (result > 0) {
+        this.search();
+      }
     });
   }
 

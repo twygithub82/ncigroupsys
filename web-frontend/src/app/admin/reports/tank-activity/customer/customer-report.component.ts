@@ -908,10 +908,28 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
 
 
+    var TankInYards = report_customer_tank_acts.filter(c => (c.in_yard_storing_order_tank?.length||0) > 0);
+    if (TankInYards.length === 0) {
+      this.isGeneratingReport = false;
+      this.ShowWarningMessage();
+      return;
+    }
+    
     // sort repair estimate no after customer grouping
+
     report_customer_tank_acts.forEach(cust => {
 
-      cust.storing_order_tank?.forEach(tank => {
+      cust.in_yard_storing_order_tank?.forEach(tank => {
+
+        if ((tank.repair?.length || 0) > 0) {
+          tank.repair = tank.repair?.sort((a, b) =>
+            (a.estimate_no || '').localeCompare(b.estimate_no || '')
+          );
+        }
+
+      });
+
+      cust.released_storing_order_tank?.forEach(tank => {
 
         if ((tank.repair?.length || 0) > 0) {
           tank.repair = tank.repair?.sort((a, b) =>
@@ -922,6 +940,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       });
 
     });
+
+    
 
     if (this.reportFmt === 1) {
       this.onExportDetail(report_customer_tank_acts, report_type, customerNm);
