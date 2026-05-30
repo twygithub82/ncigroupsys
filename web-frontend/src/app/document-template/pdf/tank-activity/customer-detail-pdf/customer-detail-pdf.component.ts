@@ -733,6 +733,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
         startY = lastTableFinalY; // Start table 20mm below the customer name
         var fontSz = 6;
+        
         for (let b = 0; b < (cust.in_yard_storing_order_tank?.length || 0); b++) {
           var itm = cust.in_yard_storing_order_tank?.[b]!;
           data.push([
@@ -856,7 +857,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           },
         });
       }
+      else
+      {
+        continue;
+      }
 
+      
       if ((cust.released_storing_order_tank?.length || 0) > 0) {
         subTitleHeight = 10;
 

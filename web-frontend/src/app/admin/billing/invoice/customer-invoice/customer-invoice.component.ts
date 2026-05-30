@@ -526,6 +526,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     itm.or.push({ lolo_billing_sot: { any: true } });
     itm.or.push({ preinsp_billing_sot: { any: true } });
     itm.or.push({ storage_billing_sot: { any: true } });
+    itm.or.push({ storage_detail: { any: true } });
     where.and.push(itm);
     
       const itm1:any={ or: [] };
@@ -972,8 +973,8 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
 
     var sot_guids: string[] = [];
     if (b.cleaning?.length! > 0) this.calculateCleaningCost(b.cleaning!, repBillItems);
-    if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
-    if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
+    // if (b.gateio_billing_sot?.length! > 0) this.calculateGateInOutCost(b.gateio_billing_sot!, repBillItems);
+    // if (b.lolo_billing_sot?.length! > 0) this.calculateLOLOCost(b.lolo_billing_sot!, repBillItems);
     if (b.preinsp_billing_sot?.length! > 0) this.calculatePreInspectionCost(b.preinsp_billing_sot!, repBillItems);
     if (b.repair_customer?.length! > 0) this.calculateRepairCost(b.repair_customer!, repBillItems);
     if (b.repair_owner?.length! > 0) this.calculateRepairCost(b.repair_owner!, repBillItems, 1);

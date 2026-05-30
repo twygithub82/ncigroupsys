@@ -635,10 +635,6 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     event.preventDefault(); // Prevents the form submission
   }
 
-  canRollback(): boolean {
-    return this.repairItem?.status_cv === 'CANCELED' || this.repairItem?.status_cv === 'APPROVED';
-  }
-
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }

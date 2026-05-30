@@ -244,6 +244,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     TOTAL_AMOUNT: "COMMON-FORM.TOTAL-AMOUNT",
     DETAILS: 'COMMON-FORM.DETAILS',
     S_N: 'COMMON-FORM.S_N',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
 
   }
 
@@ -826,7 +828,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       this.translatedLangText.LAST_CARGO, this.translatedLangText.JOB_NO,
 
       this.translatedLangText.DATE_IN, this.translatedLangText.DATE_OUT,
-      this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
+      this.translatedLangText.GATE_IN, this.translatedLangText.GATE_OUT, 
+      this.translatedLangText.PREINSP_COST,
       this.translatedLangText.LOLO_COST, this.translatedLangText.DAYS,
       this.translatedLangText.STORAGE_COST,
     ];
@@ -1008,7 +1011,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           itm.job_no || "",
           itm.in_date || "",
           itm.out_date || "",
-          this.displayGateIOCost(itm) || "",
+          this.displayGateInCost(itm) || "",
+          this.displayGateOutCost(itm) || "",
           this.displayPreinsCost(itm) || "",
           this.displayLOLOCost(itm) || "",
           itm.days === "0" ? "" : itm.days || "",
@@ -1051,22 +1055,23 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         columnStyles: {
           // Set columns 0 to 16 to be center aligned
           0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
-          2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
-          3: { halign: 'left', valign: 'middle', cellWidth: 32, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+          1: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+          2: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+          3: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
           4: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
           5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
           6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          8: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-          9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
-          11: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          12: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          13: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          14: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          15: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          16: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+          8: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+          9: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+          10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          11: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+          12: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          13: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          14: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          15: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          16: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+          17: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         },
         headStyles: headStyles, // Custom header styles
         bodyStyles: {
@@ -1464,6 +1469,21 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     return retval;
   }
 
+  displayGateInCost(item: report_billing_item): string {
+    let retval: string = '';
+
+
+    retval = (item.gate_in_cost === "0.00" || item.gate_in_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gate_in_cost)}`) //`${item.gateio_cost}`)
+    return retval;
+  }
+  displayGateOutCost(item: report_billing_item): string {
+    let retval: string = '';
+
+
+    retval = (item.gate_out_cost === "0.00" || item.gate_out_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gate_out_cost)}`) //`${item.gateio_cost}`)
+    return retval;
+  }
+
   displayTotalCost(Cust: report_billing_customer): string {
     const total = Cust.items?.reduce((accumulator, item) => {
       var total = this.GetTotalCost(item);
@@ -1480,7 +1500,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   displaySubTotalCost(item: report_billing_item): string {
     var retval: number = 0;
 
-    retval += item.gateio_cost ? Number(item.gateio_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.gate_in_cost ? Number(item.gate_in_cost?.replaceAll(",", "") || 0) : 0;
+    retval += item.gate_out_cost ? Number(item.gate_out_cost?.replaceAll(",", "") || 0) : 0;
     retval += item.preins_cost ? Number(item.preins_cost?.replaceAll(",", "") || 0) : 0;
     retval += item.lolo_cost ? Number(item.lolo_cost?.replaceAll(",", "") || 0) : 0;
     retval += item.storage_cost ? Number(item.storage_cost?.replaceAll(",", "") || 0) : 0;

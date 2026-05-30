@@ -317,7 +317,38 @@ export class MonthlyProcessData {
   }
 }
 
+export class OrderTrackingResult {
+  last_cargo?: string;
+  purpose?: string;
+  sot_status?: string;
+  tank_no?: string;
+   constructor(item: Partial<OrderTrackingResult> = {}) {
+    this.last_cargo = item.last_cargo;
+    this.purpose = item.purpose;
+    this.sot_status = item.sot_status;
+    this.tank_no = item.tank_no;
+    
+  }
+}
 export class OrderTrackingItem {
+  count?: number;
+  customer?: string;
+  order_date?: number;
+  order_no?: string;
+  order_status?: string;
+  tanks?:OrderTrackingResult[];
+
+  constructor(item: Partial<OrderTrackingItem> = {}) {
+    this.count = item.count;
+    this.customer = item.customer;
+    this.order_date = item.order_date;
+    this.order_no = item.order_no;
+    this.order_status = item.order_status;
+    this.tanks=item.tanks;
+  }
+}
+
+export class OrderTrackingItemOld {
   cancel_date?: number;
   cancel_remarks?: string;
   customer_code?: string;
@@ -331,7 +362,7 @@ export class OrderTrackingItem {
   release_date?: number;
   status?: string;
   tank_no?: string;
-  constructor(item: Partial<OrderTrackingItem> = {}) {
+  constructor(item: Partial<OrderTrackingItemOld> = {}) {
     this.cancel_date = item.cancel_date;
     this.cancel_remarks = item.cancel_remarks;
     this.customer_code = item.customer_code;
@@ -351,7 +382,7 @@ export class OrderTrackingItem {
 export class WeeklyPerformmanceItem {
   average_gate_count?: number;
   cleaning_count?: number;
-  steaming_count?:number;
+  steaming_count?: number;
   depot_count?: number;
   gate_in_count?: number;
   gate_out_count?: number;
@@ -362,7 +393,7 @@ export class WeeklyPerformmanceItem {
   constructor(item: Partial<WeeklyPerformmanceItem> = {}) {
     this.average_gate_count = item.average_gate_count;
     this.cleaning_count = item.cleaning_count;
-    this.steaming_count=item.steaming_count;
+    this.steaming_count = item.steaming_count;
     this.depot_count = item.depot_count;
 
     this.gate_in_count = item.gate_in_count;
@@ -888,6 +919,7 @@ export class InventoryAnalyzer {
   static convertToCleanerSummary(data: CleanerPerformance[]): CleanerSummary[] {
     const grouped: { [key: string]: CleanerSummary } = {};
 
+
     data.forEach(item => {
       const cleaner = item.cleaner_name;
       const cost = item.cost ?? 0; // default to 0 if undefined
@@ -1271,6 +1303,33 @@ export const GET_MANAGEMENT_REPORT_WEEKLY_PERFORMANCE_REPORT = gql`
   }
 `
 export const GET_MANAGEMENT_REPORT_ORDER_TRACKING_REPORT = gql`
+  query queryOrderTracking($orderTrackingRequest:OrderTrackingRequestInput!,$order:[OrderTrackingSummarySortInput!],$first:Int,$after:String,$last:Int,$before:String) {
+    resultList:  queryOrderTracking(orderTrackingRequest:$orderTrackingRequest,first:$first,after:$after,last:$last,before:$before,order:$order) {
+    totalCount
+    nodes {
+      count
+        customer
+        order_date
+        order_no
+        order_status
+        tanks {
+          last_cargo
+          purpose
+          sot_status
+          tank_no
+        }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+    
+  }
+`
+export const GET_MANAGEMENT_REPORT_ORDER_TRACKING_REPORT_OLD = gql`
   query queryOrderTracking($orderTrackingRequest:OrderTrackingRequestInput!,$order:[OrderTrackingResultSortInput!],$first:Int,$after:String,$last:Int,$before:String) {
     resultList:  queryOrderTracking(orderTrackingRequest:$orderTrackingRequest,first:$first,after:$after,last:$last,before:$before,order:$order) {
     totalCount

@@ -1,16 +1,10 @@
-﻿using CommonUtil.Core.Service;
-using HotChocolate;
+﻿using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Billing.Application;
-using IDMS.Billing.GqlTypes.BillingResult;
-using IDMS.Billing.GqlTypes.LocalModel;
 using IDMS.Models.Billing;
 using IDMS.Models.DB;
-using IDMS.Models.Parameter;
 using IDMS.Models.Shared;
-using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -37,7 +31,7 @@ namespace IDMS.Billing.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                return context.billing.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                return context.billing.Where(d => d.delete_dt == null || d.delete_dt == 0); 
             }
             catch (Exception ex)
             {

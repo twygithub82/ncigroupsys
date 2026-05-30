@@ -1434,7 +1434,12 @@
     "NO-OF": "Number of",
     "BILLABLE-DAYS": "Billable Days",
     "DAILY": "Daily",
-    "INVOICE-SUMMARY": "Invoice Summary"
+    "INVOICE-SUMMARY": "Invoice Summary",
+    "SO": "SO",
+    "RO":"RO"
+    
+   
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

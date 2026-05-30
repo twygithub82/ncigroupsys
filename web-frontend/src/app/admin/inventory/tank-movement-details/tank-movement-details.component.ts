@@ -52,7 +52,7 @@ import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-su
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairItem, RepairRequest } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { ResidueEstPartGO } from 'app/data-sources/residue-part';
@@ -549,6 +549,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CLEANING_DETAILS: 'COMMON-FORM.CLEANING-DETAILS',
     CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     BUFFER_COST: 'COMMON-FORM.BUFFER-COST',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   sot_guid: string | null | undefined;
@@ -2851,6 +2852,47 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  canRollbackResidueApproval(row: ResidueItem) {
+    return this.isAllowResidueReinstate() && (this.sot?.tank_status_cv === "CLEANING") && this.residueDS.canRollbackApproved(row);
+  }
+
+  onRollbackResidueApproval(event: Event, row: ResidueItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = [row].map((item: any) => {
+          const ResidueEstimateRequestInput = {
+            customer_guid: this.sot?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: result.remarks,
+            sot_guid: item.sot_guid,
+            is_approved: item?.status_cv == "APPROVED"
+          }
+          return ResidueEstimateRequestInput;
+        });
+        console.log(reList);
+        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackResidue)
+          this.loadDataHandling_residue(this.sot_guid!);
+        });
+      }
+    });
+  }
+
   canRollbackResidueCompleted(row: ResidueItem) {
     return this.isAllowResidueReinstate() && this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
   }
@@ -3006,6 +3048,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  canRollbackRepairApproval(row: RepairItem) {
+    return this.isAllowRepairReinstate() && (this.sot?.tank_status_cv === "REPAIR") && this.repairDS.canRollbackStatus(row);
+  }
+
   canRollbackRepairQC(row: RepairItem) {
     return this.isAllowRepairReinstate() && (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
   }
@@ -3117,6 +3163,44 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             this.handleSaveSuccess(result?.data?.overwriteQCRepair);
             this.loadDataHandling_repair(this.sot_guid!);
           }
+        });
+      }
+    });
+  }
+
+  onRollbackRepairApproval(event: Event, row: RepairItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = [row].map((item: any) => {
+          const RepairRequestInput = new RepairRequest({
+            customer_guid: this.sot?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            is_approved: true,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
+          })
+          return RepairRequestInput
+        });
+        console.log(reList);
+        this.repairDS.rollbackRepair(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepair)
+          this.loadDataHandling_repair(this.sot_guid!);
         });
       }
     });
