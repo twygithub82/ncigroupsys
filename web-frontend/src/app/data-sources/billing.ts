@@ -203,6 +203,7 @@ export class BillingItemStorageDetail extends BillingGo {
     this.loff_billing_sot = item.loff_billing_sot;
     this.gin_billing_sot = item.gin_billing_sot;
     this.gout_billing_sot = item.gout_billing_sot;
+    
   }
 }
 
@@ -222,6 +223,8 @@ export class BillingStorageDetail {
   public update_by?: string;
   public update_dt?: number;
   public billing?: BillingItem;
+  public storing_order_tank?: StoringOrderTankItem;
+  
   constructor(item: Partial<BillingStorageDetail> = {}) {
     this.billing_guid = item.billing_guid;
     this.create_by = item.create_by;
@@ -238,6 +241,7 @@ export class BillingStorageDetail {
     this.update_by = item.update_by;
     this.update_dt = item.update_dt;
     this.billing = item.billing;
+    this.storing_order_tank = item.storing_order_tank;
   }
 }
 
@@ -402,6 +406,13 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
             total_cost
             update_by
             update_dt
+            storing_order_tank {
+              tank_no
+              guid
+              tariff_cleaning {
+                cargo
+              }
+            }
           }
          storage_billing_sot {
             delete_dt
@@ -1385,6 +1396,13 @@ export const UPDATE_BILLING_SOT = gql`
   }
 `;
 
+export const DELETE_STORAGE_DETAIL = gql`
+  mutation deleteStorageDetail($storageDetailsGuids: [String!]!) {
+    deleteStorageDetail(storageDetailsGuids: $storageDetailsGuids)
+  }
+`;
+
+
 export class BillingDS extends BaseDataSource<BillingItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1688,6 +1706,15 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       mutation: UPDATE_BILLING_SOT,
       variables: {
         billing_sot
+      }
+    });
+  }
+
+   deleteStorageDetails(storageDetailsGuids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_STORAGE_DETAIL,
+      variables: {
+        storageDetailsGuids
       }
     });
   }

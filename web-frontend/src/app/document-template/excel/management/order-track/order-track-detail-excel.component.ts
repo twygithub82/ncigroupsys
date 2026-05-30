@@ -192,6 +192,13 @@ export class OrderTrackingDetailExcelComponent extends UnsubscribeOnDestroyAdapt
     RELEASE_ORDER: 'COMMON-FORM.RELEASE-ORDER',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     S_N: 'COMMON-FORM.S_N',
+    RO_STATUS: 'COMMON-FORM.RO-STATUS',
+    RO_DATE: 'COMMON-FORM.RO-DATE',
+    NO_OF_TANK: 'COMMON-FORM.NO-OF-TANK',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    SO: 'COMMON-FORM.SO',
+    RO: 'COMMON-FORM.RO',
+    
   }
 
   type?: string | null;
@@ -503,20 +510,18 @@ export class OrderTrackingDetailExcelComponent extends UnsubscribeOnDestroyAdapt
   // =========================
   // HEADERS
   // =========================
-  const headers = [
-    this.translatedLangText.S_N,
-    this.translatedLangText.TANK_NO,
-    this.translatedLangText.EIR_NO,
-    this.translatedLangText.EIR_DATE,
-    this.translatedLangText.RELEASE_DATE,
-    this.translatedLangText.LAST_CARGO,
-    this.translatedLangText.PURPOSE,
-    this.translatedLangText.ORDER_NO,
-    this.translatedLangText.ORDER_DATE,
-    this.translatedLangText.CANCEL_DATE,
-    this.translatedLangText.CANCEL_REMARK,
-    this.translatedLangText.STATUS
-  ];
+  var typ = this.isRO()?this.translatedLangText.RO:this.translatedLangText.SO;
+     const headers = [
+      this.translatedLangText.S_N,  this.translatedLangText.SO_NO,
+      `${typ} ${this.translatedLangText.DATE}`,
+      `${typ} ${this.translatedLangText.STATUS}`,
+      this.translatedLangText.CUSTOMER, 
+      this.translatedLangText.NO_OF_TANKS, 
+      this.translatedLangText.TANK_NO,
+      this.translatedLangText.LAST_CARGO, 
+      this.translatedLangText.PURPOSE, 
+      this.translatedLangText.TANK_STATUS
+    ];
 
   wsData.push(headers);
 
@@ -528,42 +533,32 @@ export class OrderTrackingDetailExcelComponent extends UnsubscribeOnDestroyAdapt
   // =========================
   // DATA
   // =========================
-  for (let n = 0; n < (this.repData?.length || 0); n++) {
-
-    const itm = this.repData?.[n];
-    const currentCustomer = `${itm?.customer_code} - ${itm?.customer_name}`;
-
-    // 👉 Customer group row (like PDF colSpan)
-    if (lastCustomer !== currentCustomer) {
-      lastCustomer = currentCustomer;
-
-      const rowIndex = wsData.length;
-
-      wsData.push([currentCustomer]);
-
-      // Merge across all columns
-      mergeRanges.push({
-        s: { r: rowIndex, c: 0 },
-        e: { r: rowIndex, c: headers.length - 1 }
-      });
+   for (let n = 0; n < (this.repData?.length || 0); n++) {
+      let itm = this.repData?.[n];
+      let index =n+1;
+      let tnkCnt=(itm?.tanks?.length||0);
+      for (let i=0;i<tnkCnt;i++){
+        var tnk=itm?.tanks?.[i];
+        
+       if(i===0){
+        wsData.push([
+          index.toString(), itm?.order_no || "", 
+          Utility.convertEpochToDateStr(itm?.order_date) || "", 
+          itm?.order_status || "",
+          itm?.customer || "",tnkCnt||"",
+          tnk?.tank_no || '',  tnk?.last_cargo || '', tnk?.purpose || '',tnk?.sot_status
+        ]);
+       }
+       else
+       {
+         wsData.push([
+          "",  "", "",  "", "",  "", 
+         tnk?.tank_no || '',  tnk?.last_cargo || '', tnk?.purpose || '',tnk?.sot_status
+        ]);
+       }
+       
+      }
     }
-
-    // Data row
-    wsData.push([
-      ++idx,
-      itm?.tank_no || "",
-      itm?.eir_no || "",
-      Utility.convertEpochToDateStr(itm?.eir_date) || "",
-      Utility.convertEpochToDateStr(itm?.release_date) || "",
-      itm?.last_cargo || "",
-      itm?.purpose || "",
-      itm?.order_no || "",
-      Utility.convertEpochToDateStr(itm?.order_date) || "",
-      Utility.convertEpochToDateStr(itm?.cancel_date) || "",
-      itm?.cancel_remarks || "",
-      itm?.status || ""
-    ]);
-  }
 
   // =========================
   // WORKSHEET
@@ -665,235 +660,12 @@ export class OrderTrackingDetailExcelComponent extends UnsubscribeOnDestroyAdapt
   this.dialogRef.close();
 }
 
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 5;
-    const rightMargin = 5;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-    let minHeightBodyCell = 5;
-    let minHeightHeaderCol = 3;
-     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
-    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    // const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE, this.translatedLangText.RELEASE_DATE,
-      this.translatedLangText.LAST_CARGO, this.translatedLangText.PURPOSE, this.translatedLangText.ORDER_NO,
-      this.translatedLangText.ORDER_DATE, this.translatedLangText.CANCEL_DATE,
-      this.translatedLangText.CANCEL_REMARK, this.translatedLangText.STATUS
-    ]];
-
-    const comStyles: any = {
-      // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell,  overflow: 'ellipsize' },
-      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 58, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      6: { halign: 'left', valign: 'middle', cellWidth: 36, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      7: { halign: 'center', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      11: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-    };
-
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz_hdr,
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 50;
-
-    let startY = lastTableFinalY; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
-
-    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.DATE, (Utility.convertEpochToDateStr(this.data.start_dt) + " - " + Utility.convertEpochToDateStr(this.data.end_dt))); // Replace with your actual cutoff date
-    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin , startY - 2, PDFUtility.RightSubTitleFontSize());
-    const subtitlePos = 0;
-    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-    rightMargin,this.translate,reportTitle,cutoffDate,subtitlePos);
-    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
-
-    var idx = 0;
-    let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours = 0;
-    let totalMaterialCost = 0;
-    let CustomerCodeName = '';
-    for (let n = 0; n < (this.repData?.length || 0); n++) {
-      let itm = this.repData?.[n];
-      var CurrentCustomer = `${itm?.customer_code} - ${itm?.customer_name}`;
-      if (CustomerCodeName !== CurrentCustomer) {
-        CustomerCodeName = CurrentCustomer;
-        data.push([CustomerCodeName, "", "", "", "", "", "", "", "", "", ""]);
-      }
-      data.push([
-        (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_date) || "",
-        Utility.convertEpochToDateStr(itm?.release_date) || '', (itm?.last_cargo || ""), itm?.purpose || '',
-        itm?.order_no || '', Utility.convertEpochToDateStr(itm?.order_date) || '', Utility.convertEpochToDateStr(itm?.cancel_date) || '',
-        itm?.cancel_remarks || "", itm?.status || ''
-      ]);
-    }
-
-    pdf.setDrawColor(0, 0, 0); // red line color
-
-    pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    let AllowedRowColSpan = -1;
-    // Add table using autoTable plugin
-
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      //startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: startY },
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz_body,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let colSpan: number = 0;
-        if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
-          colSpan = 12;
-          data.cell.styles.halign = 'left';
-          data.cell.styles.valign = 'bottom';
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fontSize = 8;
-          data.cell.colSpan = colSpan;
-          AllowedRowColSpan = data.row.index;
-        }
-
-        // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        // if(data.row.index==totalRowIndex){
-        //   data.cell.styles.fontStyle = 'bold';
-        //   data.cell.styles.fillColor=[231, 231, 231];
-        //   data.cell.styles.valign = 'middle'; // Center text vertically
-        //   if (data.column.index === 0) {
-        //     data.cell.colSpan = colSpan;  // Merge 4 columns into one
-        //     data.cell.styles.halign = 'right'; // Center text horizontally
-        //   }
-        // }
-        if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-          //bColSpan=false;
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
-
-        lastTableFinalY = d.cursor.y;
-
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            PDFUtility.addReportSubTitle_Landscape(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
-            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
-          }
-        }
-      },
-    });
-
-      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
-      rightMargin, this.translate,pagePositions);
-
-    // var gap = 7;
-
-    // if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
-    //   pdf.addPage();
-    //   const pageCount = pdf.getNumberOfPages();
-    //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    // }
-
-    // const totalPages = pdf.getNumberOfPages();
-
-    // for (const { page, x, y } of pagePositions) {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-
-    //   const lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-    //   if (page > 1) {
-    //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    //   }
-    // }// Add Second Page, Add For Loop
-
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
-
-
-
-
-    this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
+isRO(){
+    return this.repType=="ro";
   }
+
+
+ 
 
 
 

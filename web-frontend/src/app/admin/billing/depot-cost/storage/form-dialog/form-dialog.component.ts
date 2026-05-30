@@ -1,3 +1,4 @@
+import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -6,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -16,10 +17,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { BillingSOTItem } from 'app/data-sources/billing';
+import { BillingDS, BillingSOTItem } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
@@ -50,6 +53,7 @@ export interface DialogData {
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
+    MatTooltipModule,
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
@@ -85,6 +89,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // 'bDate',
     'cost',
     'storage',
+    'actions'
   ];
 
   action: string;
@@ -94,6 +99,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   maxMaterialCost: number = 20;
   //packageDepotItems?: PackageDepotItem[]=[];
   //packageDepotDS?:PackageDepotDS;
+  billDS?:BillingDS;
   packRepairDS?: PackageRepairDS;
   igDS: InGateDS;
   packRepairItem?: PackageRepairItem[] = [];
@@ -212,6 +218,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
 
   selectedItem: BillingSOTItem;
+  result :number=0;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -222,6 +229,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    public dialog: MatDialog,
   ) {
     // Set the defaults
     super();
@@ -229,6 +237,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.langText = data.langText;
     this.billingItems = this.transformList(this.selectedItem)
     this.pcForm = this.createPackageRepair();
+    this.billDS = new BillingDS(this.apollo);
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -408,7 +417,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.result);
   }
 
   getMaterialCostLabel() {
@@ -441,6 +450,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       transformedList.push({
         guid: `${item.guid}-${storageDetail.guid}`,
+        sd_guid: storageDetail.guid,
         billing_type: "STORAGE",
         invoice_no: storageDetail.billing?.invoice_no || '',
         invoice_dt: (storageDetail.billing?.invoice_dt) || 0,
@@ -515,5 +525,46 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const diffInDays = Math.floor(diffInMs / ( 60 * 60 * 24))+1;
 
     return diffInDays;
+  }
+
+  isShowDeleteIcon(row :any,i:number){
+    if(i==0){
+      return true;
+    }
+    return false;
+  }
+ 
+  handleDelete(event: Event, row: any) {
+  
+      event.preventDefault(); // Prevents the form submission
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          // headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+          action: 'delete',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+           this.RemoveStorageDetail(row);
+        }
+      });
+    }
+  RemoveStorageDetail(row:any)
+  {
+     var storageDetailsGuids = [row.sd_guid];
+      this.billDS?.deleteStorageDetails(storageDetailsGuids).subscribe(d => {
+      this.result = d.data.deleteStorageDetail;
+      if(this.result>0){
+        this.onNoClick();
+      }
+    });
   }
 }

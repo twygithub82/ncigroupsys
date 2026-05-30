@@ -558,6 +558,7 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
     var repTitle =PDFUtility.FormatColon(this.translatedLangText.TANK_ACTIVITY, this.customerName);
     wsData.push([repTitle]);
     wsData.push([]);
+
   for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
 
     const cust = this.report_customer_tank_activity[n];
@@ -571,6 +572,13 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
     // ==========================
     // IN YARD SECTION
     // ==========================
+
+      if (this.customerName === '') {
+       
+        wsData.push([`${cust.customer||''}`]); // Add customer name 10mm below the last table
+      }
+
+      
     if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
 
       var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.IN_YARD);
@@ -583,6 +591,8 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
       for (let b = 0; b < cust.in_yard_storing_order_tank!.length; b++) {
 
         const itm = cust.in_yard_storing_order_tank![b];
+
+   
 
         wsData.push([
           b + 1,
@@ -615,49 +625,54 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
 
         }
 
-          if (itm.residue) {
-            if (itm.residue?.length || 0 > 1) {
-              for (let r = 0; r < itm.residue!.length; r++) {
-                var rs = itm.residue?.[r]!;
-                wsData.push([
+          // if (itm.residue) {
+          //   if (itm.residue?.length || 0 > 1) {
+          //     for (let r = 0; r < itm.residue!.length; r++) {
+          //       var rs = itm.residue?.[r]!;
+          //       wsData.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+          //         //Tank details
+          //         "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                  "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
+          //         //Maintenance details
+          //         "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-          }
+          //         // Release details
+          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+          //       ]);
+          //     }
+          //   }
+          // }
 
-        if(itm.steaming)
-        {
-           if (itm.steaming?.length || 0 > 1) {
-              for (let r = 0; r < itm.steaming!.length; r++) {
-                var st = itm.steaming?.[r]!;
-                wsData.push([
+        // if(itm.steaming)
+        // {
+        //    if (itm.steaming?.length || 0 > 1) {
+        //       for (let r = 0; r < itm.steaming!.length; r++) {
+        //         var st = itm.steaming?.[r]!;
+        //         wsData.push([
 
-                  //Tank details
-                  "", "", "", "", "", "", "",
+        //           //Tank details
+        //           "", "", "", "", "", "", "",
 
-                  //Maintenance details
-                   "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
+        //           //Maintenance details
+        //            "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
 
-                  // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
-                ]);
-              }
-            }
-        }
+        //           // Release details
+        //           "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+        //         ]);
+        //       }
+        //     }
+        // }
 
        
       }
 
-     
+      wsData.push([]);
+      wsData.push([]);
+    }
+    else 
+    {
+      continue;
     }
 
     // ==========================
@@ -665,8 +680,7 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
     // ==========================
     if ((cust.released_storing_order_tank?.length || 0) > 0) {
 
-      wsData.push([]);
-      wsData.push([]);
+    
 
       var subTitle = PDFUtility.FormatColon(this.translatedLangText.TANK_STATUS, this.translatedLangText.RELEASED);
       wsData.push([subTitle]);
@@ -687,6 +701,27 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
           this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "", this.displayTankPurpose_InShort(itm) || "",
           this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
         ]);
+
+         if(itm.repair)
+        {
+           if (itm.repair?.length || 0 > 1) {
+              for (let r = 1; r < itm.repair!.length; r++) {
+                var rp = itm.repair?.[r]!;
+                wsData.push([
+
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
+                  //Maintenance details
+                   "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
+
+                  // Release details
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                ]);
+              }
+            }
+
+        }
       }
 
       wsData.push([]);
