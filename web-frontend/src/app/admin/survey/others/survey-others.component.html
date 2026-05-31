@@ -110,8 +110,8 @@
                           <mat-date-range-picker #eir_dt_picker></mat-date-range-picker>
                         </mat-form-field>
                       </div>
-
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                           <mat-select multiple formControlName="purpose" (selectionChange)="AutoSearch()">
@@ -123,7 +123,7 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                           <mat-select multiple formControlName="status_cv" (selectionChange)="AutoSearch()">
@@ -135,11 +135,23 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                        <mat-form-field class="example-full-width" appearance="fill" hidden>
-                          <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                          <mat-select formControlName="depot_status_cv" (selectionChange)="AutoSearch()">
-                            @for (codeValue of depotCvList; track codeValue) {
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                          <input matInput formControlName="eir_no">
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.REFERENCE}}</mat-label>
+                      <input matInput formControlName="reference">
+                    </mat-form-field>
+                  </div> -->
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
+                          <mat-select multiple formControlName="purpose" (selectionChange)="AutoSearch()">
+                            @for (codeValue of purposeOptionCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
                             </mat-option>
