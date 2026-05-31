@@ -1539,6 +1539,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
+      this.markFormGroupTouched(this.getTopFormGroup());
+      this.markFormGroupTouched(this.getBottomFormGroup());
+      this.markFormGroupTouched(this.getManlidFormGroup());
+      this.cdr.detectChanges();
     }
   }
 
@@ -1634,17 +1638,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.top_remarks = this.surveyForm.get('frame_type.topRemarks')?.value;
       igs.front_remarks = this.surveyForm.get('frame_type.frontRemarks')?.value;
       igs.bottom_remarks = this.surveyForm.get('frame_type.bottomRemarks')?.value;
-      console.log('igs Value', igs);
-      console.log('ig Value', ig);
+      console.log('[Submit] 10% - Saving survey...');
+
       if (igs.guid) {
         this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
-          console.log(result)
           if (result?.data?.updateInGateSurvey) {
+            console.log('[Submit] 40% - Survey saved, uploading images...');
             const wantPublish = toPublish && ig?.eir_status_cv !== "PUBLISHED";
-            this.uploadImages(igs.guid!, !wantPublish);
-            if (wantPublish) {
-              this.onPublish();
-            }
+            this.uploadImages(igs.guid!, !wantPublish, wantPublish ? () => this.onPublish() : undefined);
           }
         });
       } else {
@@ -1652,21 +1653,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           igs.action = "published";
         }
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
-          console.log(result)
           const record = result.data.record
           if (record?.affected) {
-            this.uploadImages(record.guid[0], false);
-            // if (!this.isMobile) {
-            //   // If mobile, do not download
-            //   this.onDownload(record.guid[0], record.residue_guid);
-            // }
-            this.onDownload(record.guid[0], record.residue_guid);
+            console.log('[Submit] 40% - Survey saved, uploading images...');
+            this.uploadImages(record.guid[0], false, () => this.onDownload(record.guid[0], record.residue_guid));
           }
         });
       }
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
+      this.markFormGroupTouched(this.getTopFormGroup());
+      this.markFormGroupTouched(this.getBottomFormGroup());
+      this.markFormGroupTouched(this.getManlidFormGroup());
+      this.detectChanges();
     }
   }
 
@@ -1739,6 +1739,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
+      this.markFormGroupTouched(this.getTopFormGroup());
+      this.markFormGroupTouched(this.getBottomFormGroup());
+      this.markFormGroupTouched(this.getManlidFormGroup());
+      this.detectChanges();
     }
   }
 
@@ -1748,13 +1752,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       const inGateItem: any = new InGate(this.in_gate);
       inGateItem.in_gate_survey = inGateSurveyItem
       console.log('publishInGateSurvey: ', inGateItem)
+      console.log('[Submit] 90% - Publishing survey...');
       this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
-        console.log(result)
         const record = result.data?.publishIngateSurvey
         this.handleSaveSuccess(record?.affected);
-        // if (!this.isMobile) {
-        //   this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
-        // }
+        console.log('[Submit] 100% - Published, generating EIR PDF...');
         this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
       });
     }
@@ -1784,9 +1786,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
 
+    console.log('[Submit] 85% - Generating EIR PDF...');
     this.fileManagerService.actionLoadingSubject.next(true);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
+      console.log('[Submit] 92% - Sending email...');
       // Call email then directly process the next flow instead of waiting
       this.subs.sink = this.emailApiService
         .email(this.in_gate?.tank?.tank_no!, igs_guid!, this.getEmails(), 'IN_GATE')
@@ -1795,12 +1799,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             if (residue_guid && !this.isMobile) {
               this.onDownloadResidue(residue_guid);
             } else {
+              console.log('[Submit] 100% - Complete.');
               this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
             }
           },
           error: (error) => {
             console.log(error)
-            // this.errorDialog();
           },
         });
     });
@@ -1823,7 +1827,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       },
       direction: tempDirection
     });
+    console.log('[Submit] 96% - Generating Residue PDF...');
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      console.log('[Submit] 100% - Complete.');
       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
       // this.subs.sink = this.emailApiService
       //   .email(this.in_gate?.tank?.tank_no!, residue_guid!, this.getEmails(), 'IN_GATE')
@@ -1847,6 +1853,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.markFormGroupTouched(control);
         } else {
           control!.markAsTouched();
+          control!.updateValueAndValidity({ emitEvent: false });
         }
       });
     }
@@ -2279,7 +2286,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  uploadImages(guid: string, redirect: boolean) {
+  uploadImages(guid: string, redirect: boolean, onComplete?: () => void) {
     const leftImg = this.surveyForm?.get('frame_type.leftImage')?.value;
     const rearImg = this.surveyForm?.get('frame_type.rearImage')?.value;
     const rightImg = this.surveyForm?.get('frame_type.rightImage')?.value;
@@ -2287,22 +2294,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const frontImg = this.surveyForm?.get('frame_type.frontImage')?.value;
     const bottomImg = this.surveyForm?.get('frame_type.bottomImage')?.value;
 
-    const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file);
+    const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file && !image.url);
 
     const additionalMetadata = additionalImages.map(image => {
       return {
-        file: image.file, // The actual file object
+        file: image.file,
         metadata: {
           TableName: 'in_gate_survey',
           FileType: 'img',
           GroupGuid: guid,
-          Description: image.side // Use the side as description
+          Description: image.side
         }
       };
     });
 
     const dmgImages = this.dmgImages().controls
-      .filter(preview => preview.get('file')?.value)
+      .filter(preview => preview.get('file')?.value && !preview.get('url')?.value)
       .map(preview => {
         const file = preview.get('file')?.value;
         return {
@@ -2318,9 +2325,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const allImages = dmgImages.concat(additionalMetadata);
     // Call the FileManagerService to upload files
     if (allImages.length) {
+      console.log(`[Submit] 60% - Uploading ${allImages.length} image(s)...`);
       this.fileManagerService.uploadFiles(allImages).subscribe({
         next: (response) => {
-          console.log('Files uploaded successfully:', response);
           this.handleSaveSuccess(response?.affected);
         },
         error: (error) => {
@@ -2328,17 +2335,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.handleSaveError();
         },
         complete: () => {
-          console.log('Upload process completed.');
+          console.log('[Submit] 80% - Images uploaded.');
           if (redirect) {
+            console.log('[Submit] 100% - Complete.');
             this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
           }
+          onComplete?.();
         }
       });
     } else {
       this.handleSaveSuccess(1);
+      console.log('[Submit] 80% - No images to upload.');
       if (redirect) {
+        console.log('[Submit] 100% - Complete.');
         this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex }, replaceUrl: true });
       }
+      onComplete?.();
     }
   }
 
