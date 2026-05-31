@@ -7,7 +7,7 @@
     </div>
   </div>
   <div mat-dialog-content class="p-4">
-    <div class="card modal-card">
+    <!-- <div class="card modal-card">
       <div class="header header-custom-padding">
         <h2>
           {{data.translatedLangText.TANK_DETAILS}}
@@ -120,7 +120,7 @@
           </div>
         </mat-card-content>
       </div>
-    </div>
+    </div> -->
     <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -137,7 +137,7 @@
                     <div class="row">
                       <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-0 align-right">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{data.translatedLangText.BILLING_TO}}</mat-label>
+                          <mat-label>{{data.translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="billing_to">
                             @for (item of data.populateData.billingBranchList; track item) {
                             <mat-option [value]="item">
@@ -149,7 +149,7 @@
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+                          <mat-label>{{data.translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no">
                         </mat-form-field>
                       </div>
@@ -405,11 +405,11 @@
 
     <form class="register-form" [formGroup]="summaryTableForm" #formDirective="ngForm">
       <div class="card modal-card">
-        <div class="header header-custom-padding">
+        <!-- <div class="header header-custom-padding">
           <h2>
             {{data.translatedLangText.ESTIMATE_SUMMARY}}
           </h2>
-        </div>
+        </div> -->
         <div class="body">
           <div class="row m-0">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -421,7 +421,7 @@
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                       <div class="table-label">
-                        {{data.translatedLangText.LABOUR}}
+                        {{data.translatedLangText.HOUR}}
                       </div>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
@@ -437,12 +437,12 @@
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                       <div class="table-label">
-                        {{data.translatedLangText.LABOUR_DISCOUNT}} (%)
+                        {{data.translatedLangText.LABOUR_DISCOUNT}}
                       </div>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                       <div class="table-label">
-                        {{data.translatedLangText.MATERIAL_DISCOUNT}} (%)
+                        {{data.translatedLangText.MATERIAL_DISCOUNT}}
                       </div>
                     </div>
                     }
@@ -659,7 +659,7 @@
                 <div class="col-xl col-lg col-md col-sm m-b-0">
                   <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.LABOUR}}</span>
+                      <span class="font-bold">{{data.translatedLangText.HOUR}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
                       <span class="font-bold">{{data.translatedLangText.TOTAL}}</span>

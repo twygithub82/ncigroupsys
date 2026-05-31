@@ -133,7 +133,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     REFERENCE: "COMMON-FORM.REFERENCE",
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    TYPE: "COMMON-FORM.TYPE",
+    CURRENT_STATUS: "COMMON-FORM.TANK-STATUS",
     CUSTOMER: "COMMON-FORM.CUSTOMER",
     CAPACITY: "COMMON-FORM.CAPACITY",
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
@@ -165,7 +166,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     '',
     'CLEANING',
     'STEAM',
-    'RESIDUE',
+    //'RESIDUE',
     'REPAIR',
     'STORAGE'
   ]
@@ -476,7 +477,16 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        {
+          in_gate: {
+            some: {
+              eir_no: {
+                contains: tankNo
+              }
+            }
+          }
+        }
       ]
     }
 

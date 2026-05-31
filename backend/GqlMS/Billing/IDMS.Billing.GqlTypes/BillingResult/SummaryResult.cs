@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using HotChocolate;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Billing.GqlTypes.BillingResult
 {
@@ -63,6 +64,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public long? clean_dt { get; set; }
         [NotMapped]
         public long? survey_dt { get; set; }
+        [GraphQLIgnore]
         [NotMapped]
         public string? test_type_cv { get; set; }
     }

@@ -226,7 +226,7 @@
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <div class="responsive_table">
                                   <table mat-table [dataSource]="transferList" matSort
-                                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                                     <ng-container matColumnDef="id">
                                       <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -398,7 +398,7 @@
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="responsive_table">
                               <table mat-table [dataSource]="transferList" matSort
-                                class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                                 <ng-container matColumnDef="id">
                                   <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -427,44 +427,44 @@
                                 </ng-container>
                                 <ng-container matColumnDef="days">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.DAYS}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
                                     <span>{{transferDS.getDays(row) || "-"}}</span>
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="location_from_cv">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.FROM_YARD}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
                                       class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="location_to_cv">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.TO_YARD}}
                                   </mat-header-cell>
                                   <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
                                       class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
                                   </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="update_by">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.UPDATE_BY}}
                                   </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <mat-cell mat-cell *matCellDef="let row"  
+                                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
                                       class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by
                                     || row?.create_by}}

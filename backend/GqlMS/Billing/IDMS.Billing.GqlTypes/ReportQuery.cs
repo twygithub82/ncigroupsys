@@ -357,7 +357,16 @@ namespace IDMS.Billing.GqlTypes
                     query = query.Where(tf =>
                         tf.surveryor.Contains(dailyTankSurveyRequest.surveyor_name));
                 }
-                return await query.OrderBy(i => i.customer_code).ToListAsync();
+
+                result = await query.OrderBy(i => i.customer_code).ToListAsync();
+                result.ForEach(x =>
+                {
+                    if (x.survey_type == "PERIODIC_TEST")
+                    {
+                        x.survey_type = $"{x.test_type_cv}_{x.survey_type}";
+                    }
+                });
+                return result;
             }
             catch (Exception ex)
             {

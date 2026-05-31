@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Type, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -93,7 +93,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     'scheduling_dt',
     'book_type_cv',
     'reference',
-    'status_cv',
+    //'status_cv',
     'actions',
   ];
 
@@ -132,7 +132,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     REFERENCE: "COMMON-FORM.REFERENCE",
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    TYPE: "COMMON-FORM.TYPE",
+    CURRENT_STATUS: "COMMON-FORM.TANK-STATUS",
     CAPACITY: "COMMON-FORM.CAPACITY",
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
@@ -166,7 +167,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     'CLEANING',
     'REPAIR',
     'STEAM',
-    'RESIDUE',
+    //'RESIDUE',
     'STORAGE',
     // 'RELEASED'
   ]
@@ -207,12 +208,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  pageStateType="Scheduling";
+  pageStateType = "Scheduling";
 
   availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE"];
 
   todayDt: Date = new Date();
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -441,7 +442,16 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.or = [
         { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+        { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } },
+        {
+          in_gate: {
+            some: {
+              eir_no: {
+                contains: tankNo
+              }
+            }
+          }
+        }
       ]
     }
 
@@ -654,7 +664,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
 
@@ -662,7 +672,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
 
@@ -670,7 +680,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       startWith(''),
       debounceTime(300),
       tap(value => {
-          this.search();
+        this.search();
       })
     ).subscribe();
   }
@@ -953,169 +963,168 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
 
-     export_excel()
-          {
-            this.isGeneratingReport=true;
-            const where :any = this.lastSearchCriteria;
-            //  const where: any = {
-            //     and: [
-            //       { status_cv: { eq: "ACCEPTED" } },
-            //     ]
-            //   };
-           this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+  export_excel() {
+    this.isGeneratingReport = true;
+    const where: any = this.lastSearchCriteria;
+    //  const where: any = {
+    //     and: [
+    //       { status_cv: { eq: "ACCEPTED" } },
+    //     ]
+    //   };
+    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
 
-                const prcList: StoringOrderTankItem[] = res.map(item => ({
-                  ...item,
+      const prcList: StoringOrderTankItem[] = res.map(item => ({
+        ...item,
 
-                  tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),
+        tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),
 
-                  in_gate: item.in_gate?.map(i => ({
-                    ...i,
-                    yard_cv: this.getYardDescription(this.getLastLocation(item)),
-                  })),
-                  scheduling_sot:  item.scheduling_sot?.filter(b => b.delete_dt === null)
-                  .map(b => ({
-                    scheduling: b.scheduling && b.scheduling.delete_dt === null
-                    ? {
-                        ...b.scheduling,
-                        book_type_cv: this.getBookTypeDescription(
-                          b.scheduling.book_type_cv
-                        )
-                      }
-                    : b.scheduling,   // keep original if deleted or undefined
-                 
-                  // scheduling_sot: item.scheduling_sot?.map(b => ({
-                  //   ...b,
-                  //   scheduling: b.scheduling && b.scheduling.delete_dt === null
-                  //   ? {
-                  //       ...b.scheduling,
-                  //       book_type_cv: this.getBookTypeDescription(
-                  //         b.scheduling.book_type_cv
-                  //       )
-                  //     }
-                  //   : b.scheduling,   // keep original if deleted or undefined
-
-                    status_cv: this.getBookingStatusDescription(b.status_cv)
-                  }))
-                }));
-
-                this.exportExcelReport(prcList);
-              });
-
-        
-              
-          }
-          exportExcelReport(repData:any) {
-              
-                 //this.preventDefault(event);
-                  let cut_off_dt = new Date();
-              
-              
-                  let tempDirection: Direction;
-                  if (localStorage.getItem('isRtl') === 'true') {
-                    tempDirection = 'rtl';
-                  } else {
-                    tempDirection = 'ltr';
-                  }
-              
-                  const dialogRef = this.dialog.open(InventorySchedulingExcelComponent, {
-                    width: reportPreviewWindowDimension.portrait_width_rate,
-                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                    
-                    data: {
-                      repData: repData
-                    },
-              
-                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                    direction: tempDirection
-                  });
-              
-                    dialogRef.updatePosition({
-                    top: '-90vh',  // Move far above the screen
-                    left: '0px'  // Move far to the left of the screen
-                  });
-              
-                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                    this.isGeneratingReport = false;
-                  });
-          
-            }
-
-            export_report() {
-                this.isGeneratingReport = true;
-                const where: any = this.lastSearchCriteria;
-                //  const where: any = {
-                //     and: [
-                //       { status_cv: { eq: "ACCEPTED" } },
-                //     ]
-                //   };
-                  this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
-
-                const prcList: StoringOrderTankItem[] = res.map(item => ({
-                  ...item,
-
-                  tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),
-
-                  in_gate: item.in_gate?.map(i => ({
-                    ...i,
-                    yard_cv: this.getYardDescription(this.getLastLocation(item)),
-                  })),
-                  scheduling_sot:  item.scheduling_sot?.filter(b => b.delete_dt === null)
-                  .map(b => ({
-                    scheduling: b.scheduling && b.scheduling.delete_dt === null
-                    ? {
-                        ...b.scheduling,
-                        book_type_cv: this.getBookTypeDescription(
-                          b.scheduling.book_type_cv
-                        )
-                      }
-                    : b.scheduling,   // keep original if deleted or undefined
-                 
-
-                    status_cv: this.getBookingStatusDescription(b.status_cv)
-                  }))
-                }));
-
-                this.exportPdfReport(prcList);
-              });
-            
-            
+        in_gate: item.in_gate?.map(i => ({
+          ...i,
+          yard_cv: this.getYardDescription(this.getLastLocation(item)),
+        })),
+        scheduling_sot: item.scheduling_sot?.filter(b => b.delete_dt === null)
+          .map(b => ({
+            scheduling: b.scheduling && b.scheduling.delete_dt === null
+              ? {
+                ...b.scheduling,
+                book_type_cv: this.getBookTypeDescription(
+                  b.scheduling.book_type_cv
+                )
               }
-              exportPdfReport(repData: any) {
-            
-                //this.preventDefault(event);
-                let cut_off_dt = new Date();
-            
-            
-                let tempDirection: Direction;
-                if (localStorage.getItem('isRtl') === 'true') {
-                  tempDirection = 'rtl';
-                } else {
-                  tempDirection = 'ltr';
-                }
-            
-                const dialogRef = this.dialog.open(SchedulingPdfComponent, {
-                  width: reportPreviewWindowDimension.portrait_width_rate,
-                  maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                  maxHeight: reportPreviewWindowDimension.report_maxHeight,
-            
-                  data: {
-                    repData: repData
-                  },
-            
-                  // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                  direction: tempDirection
-                });
-            
-                dialogRef.updatePosition({
-                  top: '-90vh',  // Move far above the screen
-                  left: '0px'  // Move far to the left of the screen
-                });
-            
-                this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                  this.isGeneratingReport = false;
-                });
-            
+              : b.scheduling,   // keep original if deleted or undefined
+
+            // scheduling_sot: item.scheduling_sot?.map(b => ({
+            //   ...b,
+            //   scheduling: b.scheduling && b.scheduling.delete_dt === null
+            //   ? {
+            //       ...b.scheduling,
+            //       book_type_cv: this.getBookTypeDescription(
+            //         b.scheduling.book_type_cv
+            //       )
+            //     }
+            //   : b.scheduling,   // keep original if deleted or undefined
+
+            status_cv: this.getBookingStatusDescription(b.status_cv)
+          }))
+      }));
+
+      this.exportExcelReport(prcList);
+    });
+
+
+
+  }
+  exportExcelReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(InventorySchedulingExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+
+  export_report() {
+    this.isGeneratingReport = true;
+    const where: any = this.lastSearchCriteria;
+    //  const where: any = {
+    //     and: [
+    //       { status_cv: { eq: "ACCEPTED" } },
+    //     ]
+    //   };
+    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+
+      const prcList: StoringOrderTankItem[] = res.map(item => ({
+        ...item,
+
+        tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),
+
+        in_gate: item.in_gate?.map(i => ({
+          ...i,
+          yard_cv: this.getYardDescription(this.getLastLocation(item)),
+        })),
+        scheduling_sot: item.scheduling_sot?.filter(b => b.delete_dt === null)
+          .map(b => ({
+            scheduling: b.scheduling && b.scheduling.delete_dt === null
+              ? {
+                ...b.scheduling,
+                book_type_cv: this.getBookTypeDescription(
+                  b.scheduling.book_type_cv
+                )
               }
+              : b.scheduling,   // keep original if deleted or undefined
+
+
+            status_cv: this.getBookingStatusDescription(b.status_cv)
+          }))
+      }));
+
+      this.exportPdfReport(prcList);
+    });
+
+
+  }
+  exportPdfReport(repData: any) {
+
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(SchedulingPdfComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
 }

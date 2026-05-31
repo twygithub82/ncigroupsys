@@ -89,7 +89,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
   displayedColumns = [
     'tank_no',
     'customer',
-    // 'eir_no',
+    'eir_no',
     'eir_dt',
     'last_cargo',
     'purpose',
@@ -158,6 +158,15 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
 
+  availableTankStatus: string[] = [
+    'STEAM',
+    'CLEANING',
+    'REPAIR',
+    'STORAGE',
+    'RELEASED'
+  ]
+
+
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   searchForm?: UntypedFormGroup;
@@ -195,7 +204,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
+  availableStatuses: string[] = ["CLEANING", "STEAM", "REPAIR", "STORAGE", "RELEASED"];
   isGeneratingReport: boolean = false;
   constructor(
     public httpClient: HttpClient,
@@ -281,10 +290,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-      this.statusCvList = data.filter(s => this.availableStatuses.includes(s.code_val!));
-      this.statusCvList.sort((a, b) => {
-        return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
-      });
+      this.tankStatusCvList = data.filter(s => this.availableStatuses.includes(s.code_val!));
+      // this.tankStatusCvList.sort((a, b) => {
+      //   return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
+      // });
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = addDefaultSelectOption(data, 'All');

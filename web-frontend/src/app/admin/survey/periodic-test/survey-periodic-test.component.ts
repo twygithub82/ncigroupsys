@@ -89,6 +89,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   displayedColumns = [
     'tank_no',
     'customer',
+    'eir_no',
     'eir_dt',
     'last_cargo',
     'purpose',
@@ -151,7 +152,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -191,7 +193,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
+  availableStatuses: string[] = ["CLEANING", "STEAM", "REPAIR", "STORAGE", "RELEASED"];
 isGeneratingReport: boolean = false;
   constructor(
     private route: ActivatedRoute,
@@ -278,10 +280,10 @@ isGeneratingReport: boolean = false;
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-      this.statusCvList = data.filter(s => this.availableStatuses.includes(s.code_val!));
-      this.statusCvList.sort((a, b) => {
-        return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
-      });
+      this.tankStatusCvList = data.filter(s => this.availableStatuses.includes(s.code_val!));
+      // this.tankStatusCvList.sort((a, b) => {
+      //   return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
+      // });
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = addDefaultSelectOption(data, 'All');
