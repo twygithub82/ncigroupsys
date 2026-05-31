@@ -2668,7 +2668,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.EQUIVALENT} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: `${this.translatedLangText.TOTAL} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } }
