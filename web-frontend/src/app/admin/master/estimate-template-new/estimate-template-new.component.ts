@@ -55,6 +55,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { isDirty } from 'environments/environment';
 
+
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -91,6 +92,7 @@ import { isDirty } from 'environments/environment';
     MatChipsModule
   ]
 })
+
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   displayedColumns = [
     'seq',
@@ -218,7 +220,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     FILTER: 'COMMON-FORM.DESCRIPTION',
     S_N: 'COMMON-FORM.S_N',
     ID: 'COMMON-FORM.ID',
-    ALL:'COMMON-FORM.ALL',
+    ALL: 'COMMON-FORM.ALL',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -445,43 +447,43 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
- initTempForm() {
+  initTempForm() {
 
-  this.tempForm = this.fb.group({
-    guid: [''],
-    customer_company_guid: [''],
-    customer: [''],
-    customer_code: [''],
-    template_name: [''],
-    remarks: [''],
-    repList: [''],
-    labour_hour: ['0'],
-    labour_rate: ['0.00'],
-    labour_additional: ['0.00'],
-    labour_total: ['0.00'],
-    total_material_cost: ['0.00'],
-    total_cost: ['0.00'],
-    labour_discount: [0],
-    material_discount: [0],
-    labour_discount_amount: ['0.00'],
-    material_discount_amount: ['0.00'],
-    net_cost: ['0.00']
-  });
+    this.tempForm = this.fb.group({
+      guid: [''],
+      customer_company_guid: [''],
+      customer: [''],
+      customer_code: [''],
+      template_name: [''],
+      remarks: [''],
+      repList: [''],
+      labour_hour: ['0'],
+      labour_rate: ['0.00'],
+      labour_additional: ['0.00'],
+      labour_total: ['0.00'],
+      total_material_cost: ['0.00'],
+      total_cost: ['0.00'],
+      labour_discount: [0],
+      material_discount: [0],
+      labour_discount_amount: ['0.00'],
+      material_discount_amount: ['0.00'],
+      net_cost: ['0.00']
+    });
 
-  let isInitialized = false;
+    let isInitialized = false;
 
-  this.tempForm.valueChanges.subscribe(() => {
-    if (isInitialized) {
-      this.isDirty = true;
-    }
-  });
+    this.tempForm.valueChanges.subscribe(() => {
+      if (isInitialized) {
+        this.isDirty = true;
+      }
+    });
 
-  const intTO=1000;
-  setTimeout(() => {
-    // this.tempForm.markAsPristine();
-    isInitialized = true;
-  }, intTO);
-}
+    const intTO = 1000;
+    setTimeout(() => {
+      // this.tempForm.markAsPristine();
+      isInitialized = true;
+    }, intTO);
+  }
 
   initializeFilter() {
   }
