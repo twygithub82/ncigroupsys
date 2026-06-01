@@ -10,13 +10,13 @@
           <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
-              <mat-icon>assignment</mat-icon>
+              <mat-icon>assessment</mat-icon>
             </button>
           </div>
         }
         @if(modulePackageService.AllowExcelReport())
         {
-          <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
+          <div class="m-l-10" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
             <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport || !AllowToSearch()">
               <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }}"

@@ -13,9 +13,9 @@
           </div>
           @if (modulePackageService.AllowPdfReport()) {
           <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
-            <button mat-mini-fab class="primary-light" (click)="search_detail()" (click)="$event.stopPropagation()"
+            <button mat-mini-fab [class.blue-button]="true" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
-              <mat-icon>assignment</mat-icon>
+              <mat-icon>insert_drive_file</mat-icon>
             </button>
           </div>
           }
