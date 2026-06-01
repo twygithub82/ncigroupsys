@@ -21,12 +21,12 @@
             </button>
           </div>
           <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
-            <button mat-mini-fab class="primary-light" (click)="search_detail()" (click)="$event.stopPropagation()"
+            <button mat-mini-fab [class.blue-button]=true (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
-              <mat-icon>assignment</mat-icon>
+              <mat-icon>insert_drive_file</mat-icon>
             </button>
           </div>
-          <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
+          <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
             <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
               [disabled]="isGeneratingReport">
               <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}" class="fab-icon">

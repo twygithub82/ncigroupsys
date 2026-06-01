@@ -9,12 +9,12 @@
           <div class="m-l-" [matTooltip]="translatedLangText.GENERATE_REPORT">
             <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
               [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
-              <mat-icon>assignment</mat-icon>
+              <mat-icon>assessment</mat-icon>
             </button>
           </div>
         }
             @if (modulePackageService.AllowExcelReport()) {
-             <div class="m-l-5" matTooltip="{{translatedLangText.GENERATE_REPORT}} - Excel">
+             <div class="m-l-10" matTooltip="{{translatedLangText.GENERATE_REPORT}} - Excel">
                 <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
                   [disabled]="isGeneratingReport || !AllowToSearch()">
                   <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}"
@@ -32,7 +32,7 @@
       </mat-expansion-panel-header>
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <div class="row">
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput formControlName="customer_code" [formControl]="customerCodeControl"

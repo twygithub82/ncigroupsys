@@ -21,14 +21,14 @@
                             <mat-icon>search</mat-icon>
                           </button>
                         </div>
-                        <div class="m-l-5" [matTooltip]="translatedLangText.CLEAR_ALL">
+                        <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
                           <button mat-mini-fab color="accent" (click)="resetDialog($event)"
                             (click)="$event.stopPropagation()">
                             <mat-icon>clear_all</mat-icon>
                           </button>
                         </div>
                         @if (modulePackageService.AllowPdfReport()) {
-                        <div class="m-l-5" [matTooltip]="translatedLangText.DETAIL_REPORT">
+                        <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
                           <button mat-mini-fab [class.blue-button]=true (click)="export_pdf()"
                             (click)="$event.stopPropagation()"
                             [disabled]="((sotDS.loading$ | async) ||isGeneratingReport)">
@@ -37,7 +37,7 @@
                         </div>
                         }
                         @if (modulePackageService.AllowExcelReport()) {
-                        <div class="m-l-5" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
+                        <div class="m-l-10" matTooltip="{{translatedLangText.DETAIL_REPORT}}">
                           <button mat-mini-fab class="light-green-button" (click)="export_excel()"
                             (click)="$event.stopPropagation()" [disabled]="isGeneratingReport">
                             <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.EXPORT }}"

@@ -37,7 +37,7 @@
 
                     @if(modulePackageService.AllowPdfReport()) {
                     <div class="export-button m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
-                      <button mat-mini-fab [class.orange-button]="hasSearchResult()" (click)="export_report()"
+                      <button mat-mini-fab [class.blue-button]="hasSearchResult()" (click)="export_report()"
                         (click)="$event.stopPropagation()"
                         [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
                         <mat-icon>insert_drive_file</mat-icon>
@@ -47,7 +47,7 @@
                     @if(modulePackageService.AllowExcelReport()) {
 
 
-                    <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
+                    <div class="m-l-10" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
                       <button mat-mini-fab class="light-green-button" (click)="export_report(5)"
                         (click)="$event.stopPropagation()"  [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
                         <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }}"
