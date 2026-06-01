@@ -42,6 +42,21 @@ namespace IDMS.FileManagement.Interface.Model
             return $"EIR OUT_Tank Number: {tankNumber}_Photos";
         }
 
+        public static string GetResidueSubject(string tankNumber)
+        {
+            return $"Tank Number: {tankNumber}_Residue Quotation";
+        }
+
+        public static string GetRepairSubject(string tankNumber)
+        {
+            return $"Tank Number: {tankNumber}_Repair Quotation";
+        }
+
+        public static string GetDefaultSubject(string tankNumber)
+        {
+            return $"Tank Number: {tankNumber}_Quotation";
+        }
+
         public static string GetTankActivitySubject(string customerName)
         {
             return $"Tank Activity Report";
@@ -64,6 +79,27 @@ namespace IDMS.FileManagement.Interface.Model
         {
             return @"<p>Dear All,</p>
                  <p>Please find attached EIR OUT for your reference.</p>
+                 <p>Thank you!</p>";
+        }
+
+        public static string GetDefaultBody()
+        {
+            return @"<p>Dear All,</p>
+                 <p>Please find attached Quotation for your reference.</p>
+                 <p>Thank you!</p>";
+        }
+
+        public static string GetResidueBody()
+        {
+            return @"<p>Dear All,</p>
+                 <p>Please find attached Residue Disposal Quotation for your reference.</p>
+                 <p>Thank you!</p>";
+        }
+
+        public static string GetRepairBody()
+        {
+            return @"<p>Dear All,</p>
+                 <p>Please find attached Repair Quotation for your reference.</p>
                  <p>Thank you!</p>";
         }
 

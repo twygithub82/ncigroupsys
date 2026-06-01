@@ -40,6 +40,7 @@ namespace IDMS.Email.Service
         private readonly EmailConfiguration _emailConfig;
         private readonly IFileManagement _fileMangementService;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly Dictionary<string, int> _emailJobTypeMapping;
 
 
         private readonly ILogger<EmailService> _logger;
@@ -61,7 +62,16 @@ namespace IDMS.Email.Service
             _emailConfig = emailConfig;
             _fileMangementService = fileMangementService;
             _scopeFactory = scopeFactory;
-           
+
+
+            _emailJobTypeMapping = config
+                                         .GetSection("EmailJobTypeMapping")
+                                         .Get<Dictionary<string, int>>()?
+                                         .ToDictionary(
+                                             x => x.Key,
+                                             x => x.Value,
+                                             StringComparer.OrdinalIgnoreCase)
+                                         ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         public async Task<bool> SendEmailWithZipAttachmentAsync(List<string> toEmails, List<string?>? ccEmails, List<string?>? bccEmails,
@@ -178,12 +188,14 @@ namespace IDMS.Email.Service
                 newEmailJob.tank_no = emailJob.tank_no;
                 newEmailJob.status = 0;
                 newEmailJob.attempt_count = 0;
-                if (emailJob.type.EqualsIgnore("IN_GATE"))
-                    newEmailJob.type = 1;
-                else if (emailJob.type.EqualsIgnore("OUT_GATE"))
-                    newEmailJob.type = 2;
-                else
-                    newEmailJob.type = 0;
+                newEmailJob.type = GetEmailJobType(emailJob.type);
+
+                //if (emailJob.type.EqualsIgnore("IN_GATE"))
+                //    newEmailJob.type = 1;
+                //else if (emailJob.type.EqualsIgnore("OUT_GATE"))
+                //    newEmailJob.type = 2;
+                //else
+                //    newEmailJob.type = 0;
 
                 // Convert to JSON string
                 newEmailJob.to_addresses = JsonSerializer.Serialize(emailJob.to_addresses) ?? "";
@@ -196,7 +208,7 @@ namespace IDMS.Email.Service
                 await _context.email_job.AddAsync(newEmailJob);
                 var res = await _context.SaveChangesAsync();
 
-                if (emailJob.type.EqualsIgnore("IN_GATE"))
+                if (emailJob.type.EqualsIgnore("IN_GATE") || emailJob.type.EqualsIgnore("RESIDUE"))
                     Task.Run(() => EirEmailThread(new List<email_job>() { newEmailJob }));
                 //Task.Run(() => InGateEmailThread(emailJob.eir_group_guid, emailJob.tank_no, newEmailJob.guid,
                 //    emailJob.to_addresses, emailJob.cc_addresses, emailJob.bcc_addresses));
@@ -285,13 +297,31 @@ namespace IDMS.Email.Service
                                 // Convert directly to byte array
                                 byte[]? zipBytes = zipStream.ToArray();
 
-                                string subject = emJob.type == 2
-                                    ? EirMessage.GetEirSubject_OutGate(emJob.tank_no)
-                                    : EirMessage.GetEirSubject_InGate(emJob.tank_no);
+                                //string subject = emJob.type == 2
+                                //    ? EirMessage.GetEirSubject_OutGate(emJob.tank_no)
+                                //    : EirMessage.GetEirSubject_InGate(emJob.tank_no);
 
-                                string htmlBody = emJob.type == 2
-                                    ? EirMessage.GetEirBody_OutGate()
-                                    : EirMessage.GetEirBody_InGate();
+                                string subject = emJob.type switch
+                                {
+                                    1 => EirMessage.GetEirSubject_InGate(emJob.tank_no),
+                                    2 => EirMessage.GetEirSubject_OutGate(emJob.tank_no),
+                                    3 => EirMessage.GetResidueSubject(emJob.tank_no),
+                                    4 => EirMessage.GetRepairSubject(emJob.tank_no),
+                                    _ => EirMessage.GetDefaultSubject(emJob.tank_no)
+                                };
+
+                                //string htmlBody = emJob.type == 2
+                                //    ? EirMessage.GetEirBody_OutGate()
+                                //    : EirMessage.GetEirBody_InGate();
+
+                                string htmlBody = emJob.type switch
+                                {
+                                    1 => EirMessage.GetEirBody_InGate(),
+                                    2 => EirMessage.GetEirBody_OutGate(),
+                                    3 => EirMessage.GetResidueBody(),
+                                    4 => EirMessage.GetRepairBody(),
+                                    _ => EirMessage.GetDefaultBody()
+                                };
 
                                 var toAddress = JsonSerializer.Deserialize<List<string>>(emJob.to_addresses ?? "[]");
                                 var ccAddress = JsonSerializer.Deserialize<List<string>>(emJob.cc_addresses ?? "[]");
@@ -351,6 +381,15 @@ namespace IDMS.Email.Service
                     _logger.LogError(ex, "EirEmailThread failed");
                 }
             }
+        }
+
+        private int GetEmailJobType(string emailType)
+        {
+            return _emailJobTypeMapping.TryGetValue(
+                emailType?.ToUpperInvariant() ?? string.Empty,
+                out var type)
+                    ? type
+                    : 0;
         }
     }
 }
