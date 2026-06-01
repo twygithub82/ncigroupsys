@@ -410,8 +410,8 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
           }
         ]
       },
-      // { repair: { any: false } },
-      { tank_status_cv: { in: ["REPAIR"] } }
+      //  { repair: { any: false } },
+       { tank_status_cv: { in: ["REPAIR"] } }
 
     ]
     if (this.searchForm!.get('tank_no')?.value) {
