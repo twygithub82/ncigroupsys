@@ -1595,17 +1595,13 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       ogs.top_remarks = this.surveyForm.get('frame_type.topRemarks')?.value;
       ogs.front_remarks = this.surveyForm.get('frame_type.frontRemarks')?.value;
       ogs.bottom_remarks = this.surveyForm.get('frame_type.bottomRemarks')?.value;
-      console.log('ogs Value', ogs);
-      console.log('og Value', og);
+      console.log('[Submit] 10% - Saving survey...');
       if (ogs.guid) {
         this.ogsDS.updateOutGateSurvey(ogs, og).subscribe(result => {
-          console.log(result)
           if (result?.data?.updateOutGateSurvey) {
+            console.log('[Submit] 40% - Survey saved, uploading images...');
             const wantPublish = toPublish && og?.eir_status_cv !== "PUBLISHED";
-            this.uploadImages(ogs.guid!, !wantPublish);
-            if (wantPublish) {
-              this.onPublish();
-            }
+            this.uploadImages(ogs.guid!, !wantPublish, wantPublish ? () => this.onPublish() : undefined);
           }
         });
       } else {
@@ -1613,10 +1609,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           ogs.action = "published";
         }
         this.ogsDS.addOutGateSurvey(ogs, og).subscribe(result => {
-          console.log(result)
+          console.log('[Submit] 40% - Survey saved, uploading images...');
           const record = result.data.record
-          this.uploadImages(record.guid[0], false);
-          this.onDownload(record.guid[0]);
+          this.uploadImages(record.guid[0], false, () => this.onDownload(record.guid[0]));
         });
       }
     } else {
@@ -1666,10 +1661,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       const outGateRequest: any = new OutGate(this.out_gate);
       outGateRequest.tank = new StoringOrderTank(this.out_gate?.tank)
       outGateRequest.out_gate_survey = new OutGateSurveyGO(this.out_gate?.out_gate_survey)
-      console.log('publishOutGateSurvey: ', outGateRequest)
+      console.log('[Submit] 90% - Publishing survey...');
       this.ogDS.publishOutGateSurvey(outGateRequest).subscribe(result => {
-        console.log(result)
         this.handleSaveSuccess(result.data?.publishOutGateSurvey)
+        console.log('[Submit] 100% - Published, generating EIR PDF...');
         this.onDownload(this.out_gate?.out_gate_survey?.guid);
       });
     }
@@ -1699,20 +1694,20 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       },
       direction: tempDirection
     });
+    console.log('[Submit] 85% - Generating EIR PDF...');
     this.fileManagerService.actionLoadingSubject.next(true);
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    this.subs.sink = dialogRef.afterClosed().subscribe((_) => {
       this.fileManagerService.actionLoadingSubject.next(false);
-      console.log('eir form dialog closed')
+      console.log('[Submit] 92% - Sending email...');
       this.subs.sink = this.emailApiService
         .email(this.out_gate?.tank?.tank_no!, ogs_guid!, this.getEmails(), 'OUT_GATE')
         .subscribe({
-          next: (res) => {
-            console.log(res)
+          next: (_res) => {
+            console.log('[Submit] 100% - Complete.');
             this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
           },
           error: (error) => {
             console.log(error)
-            // this.errorDialog();
           },
         });
     });
@@ -2167,7 +2162,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  uploadImages(guid: string, redirect: boolean) {
+  uploadImages(guid: string, redirect: boolean, onComplete?: () => void) {
     const leftImg = this.surveyForm?.get('frame_type.leftImage')?.value;
     const rearImg = this.surveyForm?.get('frame_type.rearImage')?.value;
     const rightImg = this.surveyForm?.get('frame_type.rightImage')?.value;
@@ -2175,22 +2170,22 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     const frontImg = this.surveyForm?.get('frame_type.frontImage')?.value;
     const bottomImg = this.surveyForm?.get('frame_type.bottomImage')?.value;
 
-    const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file);
+    const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file && !image.url);
 
     const additionalMetadata = additionalImages.map(image => {
       return {
-        file: image.file, // The actual file object
+        file: image.file,
         metadata: {
           TableName: 'out_gate_survey',
           FileType: 'img',
           GroupGuid: guid,
-          Description: image.side // Use the side as description
+          Description: image.side
         }
       };
     });
 
     const dmgImages = this.dmgImages().controls
-      .filter(preview => preview.get('file')?.value)
+      .filter(preview => preview.get('file')?.value && !preview.get('url')?.value)
       .map(preview => {
         const file = preview.get('file')?.value;
         return {
@@ -2206,9 +2201,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     const allImages = dmgImages.concat(additionalMetadata);
     // Call the FileManagerService to upload files
     if (allImages.length) {
+      console.log(`[Submit] 60% - Uploading ${allImages.length} image(s)...`);
       this.fileManagerService.uploadFiles(allImages).subscribe({
         next: (response) => {
-          console.log('Files uploaded successfully:', response);
           this.handleSaveSuccess(response?.affected);
         },
         error: (error) => {
@@ -2216,17 +2211,22 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           this.handleSaveError();
         },
         complete: () => {
-          console.log('Upload process completed.');
+          console.log('[Submit] 80% - Images uploaded.');
           if (redirect) {
+            console.log('[Submit] 100% - Complete.');
             this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
           }
+          onComplete?.();
         }
       });
     } else {
       this.handleSaveSuccess(1);
+      console.log('[Submit] 80% - No images to upload.');
       if (redirect) {
+        console.log('[Submit] 100% - Complete.');
         this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
       }
+      onComplete?.();
     }
   }
 
