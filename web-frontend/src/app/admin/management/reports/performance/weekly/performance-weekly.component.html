@@ -11,12 +11,12 @@
               <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
                 <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
                   [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
-                  <mat-icon>assignment</mat-icon>
+                  <mat-icon>assessment</mat-icon>
                 </button>
               </div>
             }
             @if(modulePackageService.AllowExcelReport()) {
-              <div class="m-l-5" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
+              <div class="m-l-10" matTooltip="{{translatedLangText.SUMMARY_REPORT}}">
                 <button mat-mini-fab class="light-green-button" (click)="search(5)" (click)="$event.stopPropagation()"
                   [disabled]="isGeneratingReport || !AllowToSearch()">
                   <img src="assets/images/icons/xlsx1_64x64.png" alt="{{ translatedLangText.SUMMARY_REPORT }}"
@@ -34,7 +34,7 @@
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                   <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -48,7 +48,7 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
                   <mat-select formControlName="inventory_type">
@@ -62,8 +62,8 @@
                     }
                   </mat-select>
                 </mat-form-field>
-              </div>
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              </div> -->
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.MONTH}}</mat-label>
                   <mat-select formControlName="month">
@@ -75,7 +75,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.YEAR}}</mat-label>
                   <mat-select formControlName="year">
