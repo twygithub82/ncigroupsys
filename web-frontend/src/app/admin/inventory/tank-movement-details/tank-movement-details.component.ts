@@ -205,8 +205,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'days',
     'location_from_cv',
     'location_to_cv',
-    'update_by',
-    'update_dt'
+    'update_by'
   ];
 
   displayedColumnsDepotCostDetails = [
@@ -550,6 +549,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     BUFFER_COST: 'COMMON-FORM.BUFFER-COST',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   sot_guid: string | null | undefined;

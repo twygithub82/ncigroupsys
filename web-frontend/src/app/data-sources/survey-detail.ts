@@ -175,7 +175,7 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
       sot_guid: { eq: sot_guid }
     }
     const order = {
-      survey_dt: "DESC"
+      survey_dt: "ASC"
     }
 
     return this.apollo
