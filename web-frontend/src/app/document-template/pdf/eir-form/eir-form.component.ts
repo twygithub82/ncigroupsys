@@ -1956,7 +1956,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         TableName: this.isInGate() ? 'in_gate_survey' : 'out_gate_survey',
         FileType: 'pdf',
         GroupGuid: group_guid,
-        Description: this.isInGate() ? 'IN_GATE_EIR' : 'OUT_GATE_EIR'
+        Description: `EIR-${this.getGate()?.eir_no}-${this.getGate()?.tank?.tank_no}.pdf`
       }
     }
 
