@@ -3779,6 +3779,15 @@ mat-checkbox.compact-checkbox {
   }
 }
 
+// Prevent mobile browsers from auto-zooming on input focus (requires font-size >= 16px)
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 .fab-icon {
   width: 24px;
   height: 24px;
