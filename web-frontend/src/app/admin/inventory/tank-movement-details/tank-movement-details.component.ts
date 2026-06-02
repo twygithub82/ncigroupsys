@@ -3374,7 +3374,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   loadDataHandling_booking(sot_guid: string) {
-    this.subs.sink = this.bkDS.getBookingForMovement(sot_guid).subscribe(data => {
+    this.subs.sink = this.bkDS.getBookingForMovement(sot_guid, { booking_dt: 'ASC', book_type_cv: 'ASC' }).subscribe(data => {
       if (data.length > 0) {
         console.log(`booking: `, data);
         this.bookingList = data;
@@ -3383,7 +3383,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   loadDataHandling_schedulingSot(sot_guid: string) {
-    this.subs.sink = this.schedulingSotDS.getSchedulingSotForMovement(sot_guid).subscribe(data => {
+    this.subs.sink = this.schedulingSotDS.getSchedulingSotForMovement(sot_guid, { scheduling_dt: 'ASC', book_type_cv: 'ASC' }).subscribe(data => {
       if (data.length > 0) {
         console.log(`scheduling Sot: `, data);
         this.schedulingSotList = data;
