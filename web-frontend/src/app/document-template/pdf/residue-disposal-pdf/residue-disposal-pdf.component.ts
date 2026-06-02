@@ -11,7 +11,8 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, lastValueFrom, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 // import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -42,7 +43,7 @@ export interface DialogData {
   cvDS: CodeValuesDS;
   estimate_no?: string;
   retrieveFile: boolean;
-
+  toUpload?: boolean;
 }
 
 @Component({
@@ -211,6 +212,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   isEstimateApproved: boolean = false;
+  toUpload = false;
   constructor(
     public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -228,6 +230,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.residue_guid = data.residue_guid;
+    this.toUpload = data.toUpload || false;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -923,8 +926,34 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     pdf.line(leftMargin, yPos, (pageWidth + 2 - rightMargin), yPos);
     startY = yPos + 4;
     // await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
-    this.downloadFile(pdf.output('blob'), this.getPdfFileName())
+    const pdfBlob = pdf.output('blob');
+    if (this.toUpload) {
+      await lastValueFrom(this.uploadResidue(this.residue_guid!, pdfBlob));
+    }
+    this.downloadFile(pdfBlob, this.getPdfFileName());
     this.dialogRef.close();
+  }
+
+  uploadResidue(residue_guid: string, pdfBlob: Blob) {
+    const uploadRequest: any = {
+      file: pdfBlob,
+      metadata: {
+        TableName: 'residue',
+        FileType: 'pdf',
+        GroupGuid: residue_guid,
+        Description: 'RESIDUE_PDF'
+      }
+    };
+    return this.fileManagerService.uploadFiles([uploadRequest]).pipe(
+      tap({
+        next: (response) => {
+          console.log('Residue PDF uploaded:', response);
+        },
+        error: (error) => {
+          console.error('Residue PDF upload error:', error);
+        }
+      })
+    );
   }
 
   createResidueEstimateDetail_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {

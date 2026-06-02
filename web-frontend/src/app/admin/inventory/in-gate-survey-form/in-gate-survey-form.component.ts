@@ -1824,24 +1824,25 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       height: '80vh',
       data: {
         residue_guid: residue_guid,
+        toUpload: true
       },
       direction: tempDirection
     });
     console.log('[Submit] 96% - Generating Residue PDF...');
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       console.log('[Submit] 100% - Complete.');
-      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
-      // this.subs.sink = this.emailApiService
-      //   .email(this.in_gate?.tank?.tank_no!, residue_guid!, this.getEmails(), 'IN_GATE')
-      //   .subscribe({
-      //     next: (res) => {
-      //       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
-      //     },
-      //     error: (error) => {
-      //       console.log(error)
-      //       // this.errorDialog();
-      //     },
-      //   });
+      // this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      this.subs.sink = this.emailApiService
+        .email(this.in_gate?.tank?.tank_no!, residue_guid!, this.getEmails(), 'RESIDUE')
+        .subscribe({
+          next: (res) => {
+            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          },
+          error: (error) => {
+            console.log(error)
+            // this.errorDialog();
+          },
+        });
     });
   }
 
