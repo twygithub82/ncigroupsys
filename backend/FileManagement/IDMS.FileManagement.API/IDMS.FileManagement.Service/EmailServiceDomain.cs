@@ -35,6 +35,7 @@ namespace IDMS.Email.Service
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly string _from;
         private readonly GraphServiceClient _graphClient;
+        private readonly Dictionary<string, int> _emailJobTypeMapping;
 
         private readonly ILogger<EmailServiceDomain> _logger;
 
@@ -61,6 +62,15 @@ namespace IDMS.Email.Service
             var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
             _graphClient = new GraphServiceClient(credential);
 
+            _emailJobTypeMapping = config
+                                         .GetSection("EmailJobTypeMapping")
+                                         .Get<Dictionary<string, int>>()?
+                                         .ToDictionary(
+                                             x => x.Key,
+                                             x => x.Value,
+                                             StringComparer.OrdinalIgnoreCase)
+                                         ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
             _fileMangementService = fileMangementService;
             _scopeFactory = scopeFactory;
            
@@ -71,69 +81,6 @@ namespace IDMS.Email.Service
         {
             try
             {
-                //var email = new MimeMessage();
-                //email.From.Add(MailboxAddress.Parse(_emailConfig.from));
-
-                //// Add multiple recipients
-                //foreach (var toEmail in toEmails)
-                //{
-                //    if (!string.IsNullOrWhiteSpace(toEmail))
-                //    {
-                //        email.To.Add(MailboxAddress.Parse(toEmail.Trim()));
-                //    }
-                //}
-
-                //// Add multiple recipients
-                //if (ccEmails != null)
-                //{
-                //    foreach (var ccEmail in ccEmails)
-                //    {
-                //        if (!string.IsNullOrWhiteSpace(ccEmail))
-                //        {
-                //            email.Cc.Add(MailboxAddress.Parse(ccEmail.Trim()));
-                //        }
-                //    }
-                //}
-
-                //// Add multiple recipients
-                //if(bccEmails != null)
-                //{
-                //    foreach (var bccEmail in bccEmails)
-                //    {
-                //        if (!string.IsNullOrWhiteSpace(bccEmail))
-                //        {
-                //            email.Bcc.Add(MailboxAddress.Parse(bccEmail.Trim()));
-                //        }
-                //    }
-                //}   
-
-
-                ////email.To.Add(MailboxAddress.Parse(toEmail));
-                //email.Subject = subject;
-
-                //var builder = new BodyBuilder
-                //{
-                //    HtmlBody = htmlBody
-                //};
-
-                //// Attach the ZIP file
-                //builder.Attachments.Add(zipFileName, zipBytes, new ContentType("application", "zip"));
-
-                ////string pdfFilePath = @"D:\Email\email.pdf";
-                ////// Attach the PDF file
-                ////builder.Attachments.Add(pdfFilePath, new ContentType("application", "pdf"));
-
-                //email.Body = builder.ToMessageBody();
-
-                //using var smtp = new SmtpClient();
-                //await smtp.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
-                //await smtp.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
-                //await smtp.SendAsync(email);
-                //await smtp.DisconnectAsync(true);
-
-                //return true;
-
-
                 var recipients = new List<Recipient>();
                 var ccRecipients = new List<Recipient>();
                 var bccRecipients = new List<Recipient>();
@@ -271,12 +218,18 @@ namespace IDMS.Email.Service
                 newEmailJob.tank_no = emailJob.tank_no;
                 newEmailJob.status = 0;
                 newEmailJob.attempt_count = 0;
-                if (emailJob.type.EqualsIgnore("IN_GATE"))
-                    newEmailJob.type = 1;
-                else if (emailJob.type.EqualsIgnore("OUT_GATE"))
-                    newEmailJob.type = 2;
-                else
-                    newEmailJob.type = 0;
+
+                newEmailJob.type = GetEmailJobType(emailJob.type);
+                //if (emailJob.type.EqualsIgnore("IN_GATE"))
+                //    newEmailJob.type = 1;
+                //else if (emailJob.type.EqualsIgnore("OUT_GATE"))
+                //    newEmailJob.type = 2;
+                //else if (emailJob.type.EqualsIgnore("RESIDUE"))
+                //    newEmailJob.type = 3;
+                //else if (emailJob.type.EqualsIgnore("REPAIR"))
+                //    newEmailJob.type = 4;
+                //else
+                //    newEmailJob.type = 0;
 
                 // Convert to JSON string
                 newEmailJob.to_addresses = JsonSerializer.Serialize(emailJob.to_addresses) ?? "";
@@ -289,13 +242,10 @@ namespace IDMS.Email.Service
                 await _context.email_job.AddAsync(newEmailJob);
                 var res = await _context.SaveChangesAsync();
 
-                if (emailJob.type.EqualsIgnore("IN_GATE"))
+                if (emailJob.type.EqualsIgnore("IN_GATE") || emailJob.type.EqualsIgnore("RESIDUE"))
                     Task.Run(() => EirEmailThread(new List<email_job>() { newEmailJob }));
-                //Task.Run(() => InGateEmailThread(emailJob.eir_group_guid, emailJob.tank_no, newEmailJob.guid,
-                //    emailJob.to_addresses, emailJob.cc_addresses, emailJob.bcc_addresses));
 
-
-                _logger.LogInformation($"Inserted new email job for Tank {emailJob.tank_no}, Type {emailJob.type}");
+                    _logger.LogInformation($"Inserted new email job for Tank {emailJob.tank_no}, Type {emailJob.type}");
                 await Task.Delay(300);
                 return res > 0 ? true : false;
             }
@@ -378,13 +328,31 @@ namespace IDMS.Email.Service
                                 // Convert directly to byte array
                                 byte[]? zipBytes = zipStream.ToArray();
 
-                                string subject = emJob.type == 2
-                                    ? EirMessage.GetEirSubject_OutGate(emJob.tank_no)
-                                    : EirMessage.GetEirSubject_InGate(emJob.tank_no);
+                                //string subject = emJob.type == 2
+                                //    ? EirMessage.GetEirSubject_OutGate(emJob.tank_no)
+                                //    : EirMessage.GetEirSubject_InGate(emJob.tank_no);
 
-                                string htmlBody = emJob.type == 2
-                                    ? EirMessage.GetEirBody_OutGate()
-                                    : EirMessage.GetEirBody_InGate();
+                                string subject = emJob.type switch
+                                {
+                                    1 => EirMessage.GetEirSubject_InGate(emJob.tank_no),
+                                    2 => EirMessage.GetEirSubject_OutGate(emJob.tank_no),
+                                    3 => EirMessage.GetResidueSubject(emJob.tank_no),
+                                    4 => EirMessage.GetRepairSubject(emJob.tank_no),
+                                    _ => EirMessage.GetDefaultSubject(emJob.tank_no)
+                                };
+
+                                //string htmlBody = emJob.type == 2
+                                //    ? EirMessage.GetEirBody_OutGate()
+                                //    : EirMessage.GetEirBody_InGate();
+
+                                string htmlBody = emJob.type switch
+                                {
+                                    1 => EirMessage.GetEirBody_InGate(),
+                                    2 => EirMessage.GetEirBody_OutGate(),
+                                    3 => EirMessage.GetResidueBody(),
+                                    4 => EirMessage.GetRepairBody(),
+                                    _ => EirMessage.GetDefaultBody()
+                                };
 
                                 var toAddress = JsonSerializer.Deserialize<List<string>>(emJob.to_addresses ?? "[]");
                                 var ccAddress = JsonSerializer.Deserialize<List<string>>(emJob.cc_addresses ?? "[]");
@@ -444,6 +412,15 @@ namespace IDMS.Email.Service
                     _logger.LogError(ex, "EirEmailThread failed");
                 }
             }
+        }
+
+        private int GetEmailJobType(string emailType)
+        {
+            return _emailJobTypeMapping.TryGetValue(
+                emailType?.ToUpperInvariant() ?? string.Empty,
+                out var type)
+                    ? type
+                    : 0;
         }
     }
 }
