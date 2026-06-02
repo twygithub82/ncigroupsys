@@ -1,24 +1,11 @@
-export const environment1 = {
-  production: true,
-  title: 'IDMS',
-  companyNameShort: 'NCI Global',
-  companyName: 'NCI GLOBAL PTE LTD',
-  apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
-  graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
-  topicSubscribe: '/idms/all/*'
-};
-
 export const environment = {
   production: false,
-  title: 'SIT IDMS',
+  title: 'IDMS',
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagement-app-b6aga4fcfwhbggd7.southeastasia-01.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  //  graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
   topicSubscribe: '/idms/all/*'
 };
