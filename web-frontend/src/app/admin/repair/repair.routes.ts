@@ -1,99 +1,24 @@
 import { Routes } from "@angular/router";
-import { RepairApprovalViewComponent } from "./approval-view/approval-view.component";
-import { RepairApprovalComponent } from "./approval/approval.component";
-import { RepairEstimateNewComponent } from "./estimate-new/estimate-new.component";
-import { RepairQCViewComponent } from "./estimate-qc/estimate-qc.component";
-import { RepairEstimateComponent } from "./estimate/estimate.component";
-import { JobOrderAllocationComponent } from "./job-order-allocation/job-order-allocation.component";
-import { JobOrderTaskDetailsComponent } from "./job-order-task-details/job-order-task-details.component";
-import { JobOrderComponent } from "./job-order/job-order.component";
-import { AuthGuard } from "@core/guard/auth.guard";
-import { RepairApprovalClientComponent } from "./client-approval/client-approval.component";
-import { RepairApprovalClientViewComponent } from "./client-approval-view/client-approval-view.component";
 
 export const REPAIR_ROUTE: Routes = [
   {
     path: "estimate",
-    component: RepairEstimateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
-  },
-  {
-    path: "estimate/new/:id",
-    component: RepairEstimateNewComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
-  },
-  {
-    path: "estimate/edit/:id/:repair_id",
-    component: RepairEstimateNewComponent,
-    canActivate: [AuthGuard],
-    data: { action: 'edit', expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
-  },
-  {
-    path: "estimate/duplicate/:id/:repair_id",
-    component: RepairEstimateNewComponent,
-    canActivate: [AuthGuard],
-    data: { action: 'duplicate', expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
+    loadChildren: () =>
+      import("./estimate/estimate.routes").then(m => m.ESTIMATE_ROUTES)
   },
   {
     path: "approval",
-    component: RepairApprovalComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
-  },
-  {
-    path: "approval/:id",
-    component: RepairApprovalComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
-  },
-  {
-    path: "approval/view/:id",
-    component: RepairApprovalViewComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_DELETE', 'REPAIR_ESTIMATE_APPROVAL_EDIT', 'REPAIR_ESTIMATE_APPROVAL_VIEW', 'REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
+    loadChildren: () =>
+      import("./approval/approval.routes").then(m => m.APPROVAL_ROUTES)
   },
   {
     path: "client-approval",
-    component: RepairApprovalClientComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
-  },
-  {
-    path: "client-approval/view/:id",
-    component: RepairApprovalClientViewComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_ESTIMATE_APPROVAL_CLIENT'] }
+    loadChildren: () =>
+      import("./client-approval/client-approval.routes").then(m => m.CLIENT_APPROVAL_ROUTES)
   },
   {
     path: "job-order",
-    component: JobOrderComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_JOB_ALLOCATION_DELETE', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_VIEW', 'REPAIR_JOBS_DELETE', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_VIEW', 'REPAIR_QC_DELETE', 'REPAIR_QC_EDIT', 'REPAIR_QC_VIEW'] }
-  },
-  {
-    path: "job-order/:id",
-    component: JobOrderComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_JOB_ALLOCATION_DELETE', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_VIEW', 'REPAIR_JOBS_DELETE', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_VIEW', 'REPAIR_QC_DELETE', 'REPAIR_QC_EDIT', 'REPAIR_QC_VIEW'] }
-  },
-  {
-    path: "job-order/allocation/:id",
-    component: JobOrderAllocationComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_JOB_ALLOCATION_DELETE', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_VIEW'] }
-  },
-  {
-    path: "job-order/task/:id/:repair_id",
-    component: JobOrderTaskDetailsComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_JOBS_DELETE', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_VIEW'] }
-  },
-  {
-    path: "job-order/qc/view/:id",
-    component: RepairQCViewComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_QC_DELETE', 'REPAIR_QC_EDIT', 'REPAIR_QC_VIEW'] }
-  },
+    loadChildren: () =>
+      import("./job-order/job-order.routes").then(m => m.JOB_ORDER_ROUTES)
+  }
 ];
