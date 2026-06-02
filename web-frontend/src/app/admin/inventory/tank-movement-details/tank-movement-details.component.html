@@ -1675,11 +1675,11 @@
                                         <ng-container matColumnDef="qc_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                                            {{translatedLangText.QC_DATE}}
+                                            {{translatedLangText.COMPLETED_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                                            <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
+                                            <span class="mobile-tab-label">{{translatedLangText.COMPLETED_DATE}}:</span>
                                             <span>{{displayDate(repairDS.getRepairJobQcDt(row)) ?? "-"}}</span>
                                           </mat-cell>
                                         </ng-container>
