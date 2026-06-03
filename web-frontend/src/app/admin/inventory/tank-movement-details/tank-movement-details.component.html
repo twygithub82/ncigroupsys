@@ -1675,11 +1675,11 @@
                                         <ng-container matColumnDef="qc_dt">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                                            {{translatedLangText.QC_DATE}}
+                                            {{translatedLangText.COMPLETED_DATE}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                                            <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
+                                            <span class="mobile-tab-label">{{translatedLangText.COMPLETED_DATE}}:</span>
                                             <span>{{displayDate(repairDS.getRepairJobQcDt(row)) ?? "-"}}</span>
                                           </mat-cell>
                                         </ng-container>
@@ -2024,11 +2024,11 @@
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
                                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                      {{translatedLangText.BOOKING_TYPE}}
+                                      {{translatedLangText.TYPE}}
                                     </mat-header-cell>
                                     <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span
-                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                        class="mobile-tab-label">{{translatedLangText.TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="booking_dt">
@@ -2106,11 +2106,11 @@
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
                                     <mat-header-cell mat-header-cell *matHeaderCellDef>
-                                      {{translatedLangText.BOOKING_TYPE}}
+                                      {{translatedLangText.TYPE}}
                                     </mat-header-cell>
                                     <mat-cell mat-cell *matCellDef="let row">
                                       <span
-                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
+                                        class="mobile-tab-label">{{translatedLangText.TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="scheduling_dt">
@@ -2191,12 +2191,12 @@
                               <ng-container matColumnDef="book_type_cv">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.BOOKING_TYPE}}
+                                  {{translatedLangText.TYPE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="booking_dt">
@@ -2277,12 +2277,12 @@
                               <ng-container matColumnDef="book_type_cv">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                  {{translatedLangText.BOOKING_TYPE}}
+                                  {{translatedLangText.TYPE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="scheduling_dt">
@@ -2385,19 +2385,19 @@
                               </ng-container>
                               <ng-container matColumnDef="survey_type">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                  {{translatedLangText.SURVEY_TYPE}}
+                                  {{translatedLangText.TYPE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.SURVEY_TYPE}}:</span>{{getSurveyTypeDescription(row.survey_type_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.TYPE}}:</span>{{getSurveyTypeDescription(row.survey_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_dt">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                  {{translatedLangText.SURVEY_DATE}}
+                                  {{translatedLangText.DATE}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                                  <span class="mobile-tab-label">{{translatedLangText.SURVEY_DATE}}:</span>
+                                  <span class="mobile-tab-label">{{translatedLangText.DATE}}:</span>
                                   <span>{{displayDate(row?.survey_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
@@ -2412,11 +2412,11 @@
                               </ng-container>
                               <ng-container matColumnDef="status_cv">
                                 <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                  [ngClass]="''">
                                   {{translatedLangText.STATUS}}
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                                  [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>
                                   @if (row?.status_cv === "ACCEPTED") {
                                   <mat-icon [ngClass]="'font-bold text-success'">
@@ -2424,7 +2424,7 @@
                                   </mat-icon>
                                   }
                                   @else {
-                                  <mat-icon>
+                                  <mat-icon [ngClass]="'font-bold col-red'">
                                     close
                                   </mat-icon>
                                   }
@@ -2518,7 +2518,7 @@
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.FROM}}:</span>{{displayDate(row.transfer_out_dt)}}
+                                    class="mobile-tab-label">{{translatedLangText.FROM}}:</span>{{displayDateTime(row.transfer_out_dt)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="transfer_in_dt">
@@ -2527,7 +2527,7 @@
                                 </mat-header-cell>
                                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.TO}}:</span>
-                                  <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
+                                  <span>{{displayDateTime(row.transfer_in_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="days">

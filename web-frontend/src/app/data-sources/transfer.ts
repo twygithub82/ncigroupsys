@@ -145,10 +145,13 @@ export class TransferDS extends BaseDataSource<TransferItem> {
     const where = {
       sot_guid: { eq: sot_guid }
     }
+    const order = {
+      transfer_out_dt: "ASC"
+    }
     return this.apollo
       .query<any>({
         query: GET_TRANSFER_BY_SOT_ID_FOR_MOVEMENT,
-        variables: { where },
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
