@@ -2008,6 +2008,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.cleaningDS.updateInGateCleaning(newSot, newIgs).subscribe(result => {
           console.log(result)
           if (this.sot_guid) {
+            this.loadDataHandling_igs(this.sot_guid)
             this.loadDataHandling_cleaning(this.sot_guid)
             this.handleSaveSuccess(result?.data?.updateCleaning);
           }
