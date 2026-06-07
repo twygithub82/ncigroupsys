@@ -505,12 +505,15 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
           repairPurposes.push('OFFHIRE');
         }
         
-        sotSome.purpose_repair_cv = { or: [] }
+        const orConditions: any[] = [];
         if (purpose.includes('NO_REPAIR')) {
-          sotSome.purpose_repair_cv.or.push({ in: "" });
+          orConditions.push({ in: "" });
         }
         if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv.or.push({ in: repairPurposes });
+          orConditions.push({ in: repairPurposes });
+        }
+        if (orConditions.length > 0) {
+          sotSome.purpose_repair_cv = { or: orConditions };
         }
       }
 

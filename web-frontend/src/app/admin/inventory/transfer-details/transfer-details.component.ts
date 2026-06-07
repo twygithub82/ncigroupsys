@@ -187,6 +187,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     UPDATE: 'COMMON-FORM.UPDATE',
     CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
+    COMPLETE: "COMMON-FORM.COMPLETE",
   }
 
   storingOrderTankItem?: StoringOrderTankItem;

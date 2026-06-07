@@ -160,7 +160,6 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
   availableProcessStatus: string[] = [
     'STEAM',
-    'RESIDUE',
     'CLEANING',
     'REPAIR',
     'STORAGE',
