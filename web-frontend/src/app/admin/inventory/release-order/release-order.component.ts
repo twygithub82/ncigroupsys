@@ -140,6 +140,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     SEARCH: 'COMMON-FORM.SEARCH',
     DELETE: 'COMMON-FORM.DELETE',
+    OUTSTANDING: 'COMMON-FORM.OUTSTANDING',
+    RO_NOTES: 'COMMON-FORM.RO-NOTES',
   }
 
   searchForm?: UntypedFormGroup;
@@ -245,7 +247,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         'customer_code',
         'no_of_tanks',
         'status',
-        'ro_dt',
+        'waiting_status',
+        'accept_status',
+        'cancel_status',
+        'ro_notes',
         'actions'
       ];
     } else {
@@ -254,7 +259,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         'customer_code',
         'no_of_tanks',
         'status',
-        'ro_dt',
+        'waiting_status',
+        'accept_status',
+        'cancel_status',
+        'ro_notes',
         'actions'
       ];
     }
