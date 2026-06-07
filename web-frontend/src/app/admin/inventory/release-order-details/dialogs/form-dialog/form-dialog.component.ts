@@ -322,12 +322,22 @@ export class FormDialogComponent {
     this.schedulingDS.searchSchedulingForRO(where)
       .subscribe(data => {
         if (this.schedulingDS.totalCount > 0) {
-          this.schedulingList = data;//.flatMap(s => s.scheduling_sot);
+          this.schedulingList = data;
+          const today = Date.now();
+          this.schedulingList.sort((a, b) => {
+            const nearestA = Math.min(...(a.scheduling_sot || []).map(s => Math.abs((s.scheduling_dt || 0) - today)));
+            const nearestB = Math.min(...(b.scheduling_sot || []).map(s => Math.abs((s.scheduling_dt || 0) - today)));
+            return nearestA - nearestB;
+          });
+          const seenSotGuids = new Set<string>();
           this.schedulingList.forEach(scheduling => {
             scheduling.scheduling_sot = this.sort(
               scheduling.scheduling_sot!.filter(sotLink => {
                 const sot = sotLink.storing_order_tank;
-                return sot && this.shouldShowTank(sot);
+                if (!sot || !this.shouldShowTank(sot)) return false;
+                if (seenSotGuids.has(sot.guid!)) return false;
+                seenSotGuids.add(sot.guid!);
+                return true;
               })
             );
           });

@@ -547,7 +547,7 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
 `;
 
 const GET_STORING_ORDER_TANKS_BOOKING = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String, $bookingWhere: bookingFilterInput, $schedulingSotWhere: scheduling_sotFilterInput) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       nodes {
@@ -596,7 +596,7 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
             capacity
           }
         }
-        booking {
+        booking(where: $bookingWhere, order: [{ booking_dt: ASC }]) {
           book_type_cv
           booking_dt
           create_by
@@ -610,7 +610,7 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
           update_by
           update_dt
         }
-        scheduling_sot {
+        scheduling_sot(where: $schedulingSotWhere, order: [{ scheduling_dt: ASC }]) {
           create_by
           create_dt
           delete_dt
@@ -5503,12 +5503,20 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksForBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksForBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string, bookTypes?: string[], schedulingSotBookTypes?: string[]): Observable<StoringOrderTankItem[]> {
+    const bookingWhere: any = { delete_dt: { eq: null } };
+    if (bookTypes?.length) {
+      bookingWhere.book_type_cv = { in: bookTypes };
+    }
+    const schedulingSotWhere: any = { delete_dt: { eq: null } };
+    if (schedulingSotBookTypes?.length) {
+      schedulingSotWhere.scheduling = { book_type_cv: { in: schedulingSotBookTypes } };
+    }
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_BOOKING,
-        variables: { where, order, first, after, last, before },
+        variables: { where, order, first, after, last, before, bookingWhere, schedulingSotWhere },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -5531,7 +5539,9 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   searchAllStoringOrderTanksForBooking(
     where: any,
     order?: any,
-    batchSize: number = 100
+    batchSize: number = 100,
+    bookTypes?: string[],
+    schedulingSotBookTypes?: string[]
   ): Observable<StoringOrderTankItem[]> {
 
     this.loadingSubject.next(true);
@@ -5544,17 +5554,18 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         where,
         order,
         batchSize,
-        after
+        after,
+        undefined,
+        undefined,
+        bookTypes,
+        schedulingSotBookTypes
       ).pipe(
         switchMap(items => {
-
           allItems = [...allItems, ...items];
-
           if (this.pageInfo?.hasNextPage && this.pageInfo?.endCursor) {
             after = this.pageInfo.endCursor;   // update cursor
             return loadBatch();                // load next page
           }
-
           return of(allItems); // stop recursion
         })
       );
