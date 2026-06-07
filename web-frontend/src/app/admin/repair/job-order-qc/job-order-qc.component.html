@@ -19,7 +19,7 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <div class="row">
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>
                 {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
@@ -27,7 +27,7 @@
               <input matInput formControlName="filterRepair">
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
               <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
@@ -40,7 +40,18 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.COMPLETE_DATE}}</mat-label>
+              <mat-date-range-input [rangePicker]="complete_picker" [max]="getMaxDate()">
+                <input matStartDate placeholder="Start date" formControlName="complete_dt_start">
+                <input matEndDate placeholder="End date" formControlName="complete_dt_end">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="complete_picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #complete_picker></mat-date-range-picker>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
               <mat-select multiple formControlName="repairOptionCv" (selectionChange)="AutoSearch()">

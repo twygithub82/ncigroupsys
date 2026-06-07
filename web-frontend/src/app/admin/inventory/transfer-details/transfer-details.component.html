@@ -495,7 +495,7 @@
                                       @if (transferDS.canCompleteTransfer(row)) {
                                       <button mat-menu-item (click)="completeTransfer($event, row)">
                                         <mat-icon [ngClass]="">checked</mat-icon>
-                                        <span>{{translatedLangText.TRANSFER_IN}}</span>
+                                        <span>{{translatedLangText.COMPLETE}}</span>
                                       </button>
                                       }
                                       @if (transferDS.canCancel(row)) {

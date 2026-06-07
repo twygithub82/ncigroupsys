@@ -1415,7 +1415,7 @@
     "PRE-REPAIR-MAPPING-CHART": "Pre-Repair Mapping Chart",
     "POST-REPAIR-MAPPING-CHART": "Post-Repair Mapping Chart",
     "GATE-OUT-DATE": "Gate Out Date",
-    "VALUE-ZERO":"can't be zero or below",
+    "VALUE-ZERO": "can't be zero or below",
     "TOTP-REQUIRED": "TOTP is required",
     "TOTP-INVALID": "Invalid TOTP",
     "TOTP-CODE": "TOTP Code",
@@ -1430,16 +1430,14 @@
     "REVERT": "Revert",
     "JOB": "Job",
     "LOLO-ON-OFF": "LOLO On/Off",
-    "DAILY-REVENUE" : "Daily Revenue",
+    "DAILY-REVENUE": "Daily Revenue",
     "NO-OF": "Number of",
     "BILLABLE-DAYS": "Billable Days",
     "DAILY": "Daily",
     "INVOICE-SUMMARY": "Invoice Summary",
     "SO": "SO",
-    "RO":"RO"
-    
-   
-
+    "RO": "RO",
+    "COMPLETE": "Complete"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
