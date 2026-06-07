@@ -249,6 +249,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   updateROList() {
     this.cdr.markForCheck(); // Trigger change detection manually
+    this.sotTable?.renderRows();
   }
 
   getReleaseOrderSotArray(): UntypedFormArray {
