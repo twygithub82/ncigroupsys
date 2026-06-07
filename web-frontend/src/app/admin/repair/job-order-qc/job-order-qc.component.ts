@@ -213,7 +213,6 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       complete_dt_start: [''],
       complete_dt_end: [''],
       repairOptionCv: '',
-      
     });
   }
 
@@ -299,7 +298,6 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   constructSearchCriteria() {
     const where: any = {};
 
-
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterRepair')?.value;
       where.or = [
@@ -343,13 +341,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       if (estDtStart && new Date(estDtStart) < today && !estDtEnd) {
         where.complete_dt = {
           gte: Utility.convertDate(estDtStart),
-          lte: Utility.convertDate(today), // Set end date to today
+          lte: Utility.convertDate(today, true), // Set end date to today
         };
       } else if (estDtStart || estDtEnd) {
         // Handle general case where either or both dates are provided
         where.complete_dt = {
           gte: Utility.convertDate(estDtStart || today),
-          lte: Utility.convertDate(estDtEnd || today),
+          lte: Utility.convertDate(estDtEnd || today, true),
         };
       }
       // where.complete_dt = { gte: Utility.convertDate(this.filterJobOrderForm!.get('complete_dt_start')?.value), lte: Utility.convertDate(this.filterJobOrderForm!.get('complete_dt_end')?.value, true) };
@@ -577,9 +575,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.onFilter();
   }
 
-    AutoSearch() {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.onFilter();
+  }
+
+  getMaxDate() {
+    return new Date();
   }
 
   // private subscribeToJobOrderEvent(
