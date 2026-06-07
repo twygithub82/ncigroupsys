@@ -95,9 +95,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'tank_no',
     'schedule_dt',
     'tank_status_cv',
-    'status_cv',
     'yard_cv',
     'job_no',
+    'status_cv',
     'actions',
   ];
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-NEW'
@@ -163,6 +163,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TANK_STATUS: "COMMON-FORM.TANK-STATUS",
     LOCATION: "COMMON-FORM.LOCATION",
     SAVE: "COMMON-FORM.SAVE",
+    NO_OF_TANKS: "COMMON-FORM.NO-OF-TANKS",
+    PROCESS: "COMMON-FORM.PROCESS",
   }
 
   clean_statusList: CodeValuesItem[] = [];

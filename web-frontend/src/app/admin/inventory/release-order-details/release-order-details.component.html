@@ -82,18 +82,21 @@
                 </div>
               </div>
               <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 text-end">
+                  <mat-label>{{translatedLangText.NO_OF_TANKS}} ({{releaseOrderItem.release_order_sot?.length || 0}})</mat-label>
+                </div>
+              </div>
+              <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   @if (getReleaseOrderSotArray().controls.length) {
                   <div formArrayName="sotList">
                     <table mat-table [dataSource]="getReleaseOrderSotArray().controls" matSort
                       class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                       <ng-container matColumnDef="tank_no">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.TANK_NO}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
@@ -103,12 +106,10 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="schedule_dt">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.SCHEDULE_DATE}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">{{translatedLangText.SCHEDULE_DATE}}:</span>
                           <span>
                             {{row.get('schedule_dt')?.value}}
@@ -116,12 +117,10 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_status_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.TANK_STATUS}}
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.TANK_STATUS}}:</span>
                             <span>
@@ -131,25 +130,21 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
-                          {{translatedLangText.STATUS}}
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.PROCESS}}
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="''">
-                          <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                        <mat-cell *matCellDef="let row" [ngClass]="''">
+                          <span class="mobile-label">{{translatedLangText.PROCESS}}:</span>
                           <span>
                             {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
                           </span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="yard_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.LOCATION}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">{{translatedLangText.LOCATION}}:</span>
                           <span>
                             {{getYardDescription(row.get('yard_cv')?.value)}}

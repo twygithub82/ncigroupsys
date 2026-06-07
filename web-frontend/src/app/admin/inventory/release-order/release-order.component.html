@@ -77,15 +77,6 @@
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                        <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                          <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
-                            [min]="todayDt">
-                          <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
-                          <mat-datepicker #release_dt_picker></mat-datepicker>
-                        </mat-form-field>
-                      </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.STATUS}}</mat-label>
                           <mat-select formControlName="ro_status">
@@ -95,6 +86,15 @@
                             </mat-option>
                             }
                           </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
+                          <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
+                            [min]="todayDt">
+                          <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
+                          <mat-datepicker #release_dt_picker></mat-datepicker>
                         </mat-form-field>
                       </div>
                     </div>
