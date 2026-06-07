@@ -596,7 +596,7 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
             capacity
           }
         }
-        booking(where: $bookingWhere) {
+        booking(where: $bookingWhere, order: [{ booking_dt: ASC }]) {
           book_type_cv
           booking_dt
           create_by
@@ -610,7 +610,7 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
           update_by
           update_dt
         }
-        scheduling_sot(where: $schedulingSotWhere) {
+        scheduling_sot(where: $schedulingSotWhere, order: [{ scheduling_dt: ASC }]) {
           create_by
           create_dt
           delete_dt
