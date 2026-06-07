@@ -73,6 +73,7 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 mt-2 align-right">
+        @if (canEdit()) {
         <button mat-flat-button color="primary" class="me-1" (click)="submit()">
           <mat-icon>
             save
@@ -84,6 +85,7 @@
           {{data.translatedLangText.UPDATE}}
           }
         </button>
+        }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
