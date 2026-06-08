@@ -1719,6 +1719,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(result)
         const newSot = {
           guid: this.sot?.guid,
+          tank_no: this.sot?.tank_no,
           unit_type_guid: result?.unit_type_guid
         }
         const newIgs = {
