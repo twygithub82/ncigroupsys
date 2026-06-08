@@ -416,6 +416,10 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         const currentIn = where.tank_status_cv.in || [statusValue];
         where.tank_status_cv = { in: [...currentIn, 'RO_GENERATED'] };
       }
+
+      if (statusValue === 'RELEASED') {
+        where.tank_status_cv = { in: ['RELEASED', 'OUT_GATE', 'OUT_SURVEY'] };
+      }
     } else {
       const notReleasedStatus = this.availableProcessStatus.filter(s => s !== 'RELEASED');
       where.tank_status_cv = { in: notReleasedStatus };
