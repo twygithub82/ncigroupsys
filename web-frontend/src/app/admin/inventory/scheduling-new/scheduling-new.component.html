@@ -218,29 +218,28 @@
                                   'bg-extra-light-grey': checkDisable(row)}" [expanded]="false">
                       <mat-expansion-panel-header class="tank-header">
                         <mat-panel-description>
-                          <mat-checkbox color="primary"
-                            [class.invisible]="checkDisable(row)"
+                          <mat-checkbox color="primary" [class.invisible]="checkDisable(row)"
                             (change)="$event ? toggleRow(row) : null"
                             [disabled]="isGeneratingReport || checkDisable(row)"
-                            [checked]="sotSelection.isSelected(row)"
-                            class="card-checkbox" (click)="$event.stopPropagation()">
+                            [checked]="sotSelection.isSelected(row)" class="card-checkbox"
+                            (click)="$event.stopPropagation()">
                           </mat-checkbox>
                           <div class="w-xl-16 w-lg-33">
                             <span class="font-bold">{{row.tank_no}}</span>
-                            @if (checkScheduling(filterDeleted(row.scheduling_sot || []))){
-                            <div [ngClass]="'badge badge-solid-green ms-1'">
-                              {{filterDeleted(row.scheduling_sot || [])?.length}}</div>
-                            }
                             @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                             @if (checkBooking(filterDeleted(row.booking || []))){
-                            <div [ngClass]="'badge badge-solid-orange ms-1'">
+                            <div [ngClass]="'badge badge-solid-green ms-1'">
                               {{filterDeleted(row.booking || [])?.length}}</div>
                             }
+                            }
+                            @if (checkScheduling(filterDeleted(row.scheduling_sot || []))){
+                            <div [ngClass]="'badge badge-solid-orange ms-1'">
+                              {{filterDeleted(row.scheduling_sot || [])?.length}}</div>
                             }
                           </div>
                           <div class="w-xl-27 w-lg-33">
                             <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
-                            {{ccDS.displayCodeDashName(row.storing_order?.customer_company)}}
+                            {{row.storing_order?.customer_company?.code}}
                           </div>
                           <div class="w-xl-17 w-lg-33">
                             <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
@@ -466,14 +465,14 @@
                   [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
                 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-                  <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-green badge-fixed-size">{{translatedLangText.SCHEDULED}}</span>
-                  </div>
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                   <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-orange badge-fixed-size ms-1">{{translatedLangText.BOOKED}}</span>
+                    <span class="badge badge-solid-green badge-fixed-size">{{translatedLangText.BOOKED}}</span>
                   </div>
                   }
+                  <div class="legend-item d-flex align-items-center me-4 mb-0">
+                    <span class="badge badge-solid-orange badge-fixed-size ms-1">{{translatedLangText.SCHEDULED}}</span>
+                  </div>
                 </div>
               </div>
             </div>

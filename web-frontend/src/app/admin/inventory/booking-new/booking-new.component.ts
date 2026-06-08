@@ -202,6 +202,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
+  lastBookTypes: string[] = [];
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
@@ -330,7 +331,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = addDefaultSelectOption(data, 'All');
-      this.testClassCvListNewBooking = addDefaultSelectOption(data);
+      this.testClassCvListNewBooking = addDefaultSelectOption(data, 'NA');
     });
     this.search();
   }
@@ -507,6 +508,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     if (this.searchForm!.get('book_type_cv')?.value) {
       const booking: any = {};
       booking.book_type_cv = { contains: this.searchForm!.get('book_type_cv')?.value };
+      booking.delete_dt = { eq: null };
       where.booking = { some: booking };
     }
 
@@ -586,13 +588,15 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    const bookType = this.searchForm!.get('book_type_cv')?.value;
+    this.lastBookTypes = bookType ? [bookType] : [];
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before, this.lastBookTypes)
       .subscribe(data => {
         this.sotSelection.clear();
         this.selectedCompany = "";
@@ -982,16 +986,11 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     if (Utility.IsAllowAutoSearch())
       this.search();
   }
+
   export_excel() {
     this.isGeneratingReport = true;
     const where: any = this.lastSearchCriteria;
-    //  const where: any = {
-    //     and: [
-    //       { status_cv: { eq: "ACCEPTED" } },
-    //     ]
-    //   };
-    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
-
+    this.sotDS.searchAllStoringOrderTanksForBooking(where, undefined, 100, this.lastBookTypes).subscribe(res => {
       var prcList: StoringOrderTankItem[] = res.map(item => ({
         ...item,
         tank_status_cv: this.getTankStatusDescription(item.tank_status_cv),  // your custom logic
@@ -1007,17 +1006,11 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
           }))
       }));;
       this.exportExcelReport(prcList);
-
     })
-
-
   }
+
   exportExcelReport(repData: any) {
-
-    //this.preventDefault(event);
     let cut_off_dt = new Date();
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1057,7 +1050,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     //       { status_cv: { eq: "ACCEPTED" } },
     //     ]
     //   };
-    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+    this.sotDS.searchAllStoringOrderTanksForBooking(where, undefined, 100, this.lastBookTypes).subscribe(res => {
 
       var prcList: StoringOrderTankItem[] = res.map(item => ({
         ...item,
