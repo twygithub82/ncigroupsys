@@ -28,8 +28,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { InGateSurveyComponent } from './in-gate-survey/in-gate-survey.component';
 import { InGateComponent } from './in-gate/in-gate.component';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
-import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-in-gate-main',
@@ -163,19 +161,19 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
- lockBackButton() {
-  // Push exactly ONE dummy state
-  history.pushState(null, '', location.href);
-
-  window.addEventListener('popstate', () => {
-    // User tries to go back → force stay on In-Gate Main
-    this.router.navigate(
-      ['/admin/inventory/in-gate-main'],
-      { queryParams: { tabIndex: 'app-in-gate-survey' }, replaceUrl: true }
-    );
-
-    // Re-push the dummy state so Back never escapes
+  lockBackButton() {
+    // Push exactly ONE dummy state
     history.pushState(null, '', location.href);
-  });
-}
+
+    window.addEventListener('popstate', () => {
+      // User tries to go back → force stay on In-Gate Main
+      this.router.navigate(
+        ['/admin/inventory/in-gate-main'],
+        { queryParams: { tabIndex: 'app-in-gate-survey' }, replaceUrl: true }
+      );
+
+      // Re-push the dummy state so Back never escapes
+      history.pushState(null, '', location.href);
+    });
+  }
 }
