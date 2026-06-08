@@ -848,6 +848,32 @@ namespace IDMS.Inventory.GqlTypes
                             }
                         }
 
+
+                        //newly added to update tank_info
+                        if(!string.IsNullOrEmpty(tankDetailRequest?.SOT?.tank_no))
+                        {
+                            var tankInfo = await context.tank_info.Where(t => t.tank_no == tankDetailRequest.SOT.tank_no && t.delete_dt == null).FirstOrDefaultAsync();
+                            if (tankInfo != null)
+                            {
+                                tankInfo.tare_weight = tankDetailRequest?.IngateSurvey?.tare_weight;
+                                tankInfo.capacity = tankDetailRequest?.IngateSurvey?.capacity;
+                                tankInfo.dom_dt = tankDetailRequest?.IngateSurvey?.dom_dt;
+                                tankInfo.max_weight_cv = tankDetailRequest?.IngateSurvey?.max_weight_cv;
+                                tankInfo.manufacturer_cv = tankDetailRequest?.IngateSurvey?.manufacturer_cv;
+                                tankInfo.cladding_cv = tankDetailRequest?.IngateSurvey?.cladding_cv;
+                                tankInfo.walkway_cv = tankDetailRequest?.IngateSurvey?.walkway_cv;  
+                                tankInfo.update_by = user;
+                                tankInfo.update_dt = currentDateTime;
+
+                            }
+                            else
+                            {
+                                _logger.LogError("TankInfo not found for TankNo {TankNo}", tankDetailRequest.SOT.tank_no);
+                                throw new GraphQLException(new Error($"TankInfo not found for TankNo {tankDetailRequest.SOT.tank_no}", "ERROR"));
+                            }
+                        }
+
+
                         //newly added logic
                         if (tankDetailRequest?.typeChange ?? false)
                         {
