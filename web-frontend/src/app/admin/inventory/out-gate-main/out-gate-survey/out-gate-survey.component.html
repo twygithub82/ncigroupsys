@@ -93,11 +93,11 @@
         <ng-container matColumnDef="eir_dt">
           <mat-header-cell mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-            {{translatedLangText.RELEASE_DATE}}
+            {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-            <span class="mobile-label">{{translatedLangText.RELEASE_DATE}}:</span>{{displayDate(row.eir_dt)}}
+            <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.eir_dt)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="last_cargo">
