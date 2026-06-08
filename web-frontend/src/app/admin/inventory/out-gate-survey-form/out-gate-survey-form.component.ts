@@ -515,7 +515,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           pv_spec_pcs: [{ value: '', disabled: !this.canEdit() }],
           safety_handrail: [{ value: '', disabled: !this.canEdit() }],
           buffer_plate: [{ value: '', disabled: !this.canEdit() }],
-          residue: [{ value: '', disabled: !this.canEdit() }],
+          residue: [{ value: '', disabled: true }],
           dipstick: [{ value: '', disabled: !this.canEdit() }],
         })
       }),

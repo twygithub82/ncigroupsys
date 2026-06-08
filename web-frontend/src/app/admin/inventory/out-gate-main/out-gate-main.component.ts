@@ -7,7 +7,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -100,24 +100,21 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
       queryParams: { tabIndex: tabName },
       queryParamsHandling: 'merge',
     });
+
+    switch (index) {
+      case 0:
+        this.outGateComp?.onTabFocused();
+        break;
+      case 1:
+        this.outGateSurveyComp?.onTabFocused();
+        break;
+    }
   }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
-  }
-
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    switch (event.index) {
-
-      case 0:
-        this.outGateComp?.onTabFocused(); break;
-      case 1:
-        this.outGateSurveyComp?.onTabFocused(); break;
-
-    }
   }
 
   tabConfig = [

@@ -348,7 +348,7 @@
                               </div> -->
                             </div>
                             <div class="row">
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" class="text-uppercase" required
@@ -360,27 +360,9 @@
                                   } -->
                                 </mat-form-field>
                               </div>
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                                  <input matInput formControlName="driver_name" class="text-uppercase" required
-                                    (input)="onAlphaOnly($event, 'driver_name')">
-                                  <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
-                                  <mat-error>
-                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
-                                  </mat-error>
-                                  } -->
-                                </mat-form-field>
-                              </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width textarea-line-1">
-                                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <input matInput formControlName="remarks">
-                                </mat-form-field>
-                              </div>
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
                                   <mat-select formControlName="yard_cv" required>
@@ -398,7 +380,7 @@
                             </div>
                           </div>
                           <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <div class="row">
+                            <!-- <div class="row">
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
@@ -413,8 +395,8 @@
                                   <input matInput formControlName="job_no" required>
                                 </mat-form-field>
                               </div>
-                            </div>
-                            <div class="row">
+                            </div> -->
+                            <!-- <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
@@ -427,11 +409,6 @@
                                     </mat-option>
                                     }
                                   </mat-autocomplete>
-                                  <!-- @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
-                                  <mat-error>
-                                    {{translatedLangText.LAST_CARGO}} {{translatedLangText.SO_REQUIRED}}
-                                  </mat-error>
-                                  } -->
                                   @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                                   <mat-error>
                                     {{translatedLangText.INVALID_SELECTION}}
@@ -439,8 +416,26 @@
                                   }
                                 </mat-form-field>
                               </div>
-                            </div>
+                            </div> -->
                             <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
+                                  <input matInput formControlName="driver_name" class="text-uppercase" required
+                                    (input)="onAlphaOnly($event, 'driver_name')">
+                                  <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  } -->
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width textarea-line-1">
+                                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                                  <input matInput formControlName="remarks">
+                                </mat-form-field>
+                              </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <label>{{translatedLangText.OPEN_AT_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
