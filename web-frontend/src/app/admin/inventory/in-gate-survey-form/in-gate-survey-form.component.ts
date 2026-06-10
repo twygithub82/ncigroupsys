@@ -1183,6 +1183,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
+          if (this.in_gate.tank && (this.in_gate.tank?.tank_info?.delete_dt || 0) > 0) {
+            this.in_gate.tank.tank_info = undefined;
+          }
           console.log(this.in_gate)
           this.dateOfInspection = this.in_gate?.in_gate_survey?.create_dt ? Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date : new Date();
           this.populateInGateForm(this.in_gate);
