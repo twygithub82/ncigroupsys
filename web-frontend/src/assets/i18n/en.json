@@ -1437,7 +1437,8 @@
     "INVOICE-SUMMARY": "Invoice Summary",
     "SO": "SO",
     "RO": "RO",
-    "COMPLETE": "Complete"
+    "COMPLETE": "Complete",
+    "SAVE-ERROR": "Error"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

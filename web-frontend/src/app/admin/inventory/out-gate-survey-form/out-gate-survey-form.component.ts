@@ -1937,15 +1937,15 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelectedTankSide(event: Event, tankSideForm: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(file => {
+      Array.from(input.files).forEach(async file => {
+        const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          const preview = reader.result as string | ArrayBuffer;
-          tankSideForm.get('file')?.setValue(file);
-          tankSideForm.get('preview')?.setValue(preview);
+          tankSideForm.get('file')?.setValue(compressed);
+          tankSideForm.get('preview')?.setValue(reader.result as string | ArrayBuffer);
           this.detectChanges();
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       });
     }
     input.value = '';
@@ -1954,14 +1954,14 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(file => {
+      Array.from(input.files).forEach(async file => {
+        const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          const preview = reader.result as string | ArrayBuffer;
-          this.dmgImages().push(this.createImageForm('', preview, file));
+          this.dmgImages().push(this.createImageForm('', reader.result as string | ArrayBuffer, compressed));
           this.detectChanges();
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       });
     }
     input.value = '';
