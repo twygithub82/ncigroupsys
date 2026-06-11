@@ -1183,6 +1183,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
+          if (this.in_gate.tank && (this.in_gate.tank?.tank_info?.delete_dt || 0) > 0) {
+            this.in_gate.tank.tank_info = undefined;
+          }
           console.log(this.in_gate)
           this.dateOfInspection = this.in_gate?.in_gate_survey?.create_dt ? Utility.convertDate(this.in_gate?.in_gate_survey?.create_dt) as Date : new Date();
           this.populateInGateForm(this.in_gate);
@@ -2062,15 +2065,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   onFileSelectedTankSide(event: Event, tankSideForm: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(file => {
+      Array.from(input.files).forEach(async file => {
+        const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          const preview = reader.result as string | ArrayBuffer;
-          tankSideForm.get('file')?.setValue(file);
-          tankSideForm.get('preview')?.setValue(preview);
+          tankSideForm.get('file')?.setValue(compressed);
+          tankSideForm.get('preview')?.setValue(reader.result as string | ArrayBuffer);
           this.detectChanges();
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       });
     }
     input.value = '';
@@ -2079,14 +2082,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(file => {
+      Array.from(input.files).forEach(async file => {
+        const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          const preview = reader.result as string | ArrayBuffer;
-          this.dmgImages().push(this.createImageForm('', preview, file));
+          this.dmgImages().push(this.createImageForm('', reader.result as string | ArrayBuffer, compressed));
           this.detectChanges();
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       });
     }
     input.value = '';

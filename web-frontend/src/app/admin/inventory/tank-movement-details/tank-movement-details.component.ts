@@ -1120,15 +1120,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   onFileSelectedTankSide(event: Event, tankSideForm: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(file => {
+      Array.from(input.files).forEach(async file => {
+        const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
-          const preview = reader.result as string | ArrayBuffer;
-          tankSideForm.get('file')?.setValue(file);
-          tankSideForm.get('preview')?.setValue(preview);
+          tankSideForm.get('file')?.setValue(compressed);
+          tankSideForm.get('preview')?.setValue(reader.result as string | ArrayBuffer);
           // this.markForCheck();
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressed);
       });
     }
     input.value = '';
@@ -1719,6 +1719,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(result)
         const newSot = {
           guid: this.sot?.guid,
+          tank_no: this.sot?.tank_no,
           unit_type_guid: result?.unit_type_guid
         }
         const newIgs = {
@@ -2008,6 +2009,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.cleaningDS.updateInGateCleaning(newSot, newIgs).subscribe(result => {
           console.log(result)
           if (this.sot_guid) {
+            this.loadDataHandling_igs(this.sot_guid)
             this.loadDataHandling_cleaning(this.sot_guid)
             this.handleSaveSuccess(result?.data?.updateCleaning);
           }

@@ -416,4 +416,19 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
       );
   }
 
+  getAccepetedStatusCount(ro: ReleaseOrderItem): number {
+    return this.getStatusCount(ro, ['ACCEPTED']);
+  }
+
+  getWaitingStatusCount(ro: ReleaseOrderItem): number {
+    return this.getStatusCount(ro, ['WAITING']);
+  }
+
+  getCanceledStatusCount(ro: ReleaseOrderItem): number {
+    return this.getStatusCount(ro, ['CANCELED']);
+  }
+
+  getStatusCount(ro: ReleaseOrderItem, status: string[]): number {
+    return ro?.release_order_sot?.filter(item => status.includes(item.status_cv ?? '')).length ?? 0;
+  }
 }

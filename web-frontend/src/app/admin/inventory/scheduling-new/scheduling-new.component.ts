@@ -202,6 +202,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
+  lastBookTypes: string[] = [];
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
@@ -470,13 +471,10 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     if (this.searchForm!.get('book_type_cv')?.value) {
-      const scheduling_sot: any = {};
-
-      if (this.searchForm!.get('book_type_cv')?.value) {
-        const scheduling: any = {};
-        scheduling.book_type_cv = { contains: this.searchForm!.get('book_type_cv')?.value };
-        scheduling_sot.scheduling = scheduling;
-      }
+      const scheduling_sot: any = { delete_dt: { eq: null } };
+      const scheduling: any = {};
+      scheduling.book_type_cv = { contains: this.searchForm!.get('book_type_cv')?.value };
+      scheduling_sot.scheduling = scheduling;
       where.scheduling_sot = { some: scheduling_sot };
     }
 
@@ -558,6 +556,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    const bookType = this.searchForm!.get('book_type_cv')?.value;
+    this.lastBookTypes = bookType ? [bookType] : [];
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.sotSelection.clear();
       this.selectedCompany = "";
@@ -567,7 +567,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before, undefined, this.lastBookTypes)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -966,13 +966,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   export_excel() {
     this.isGeneratingReport = true;
     const where: any = this.lastSearchCriteria;
-    //  const where: any = {
-    //     and: [
-    //       { status_cv: { eq: "ACCEPTED" } },
-    //     ]
-    //   };
-    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
-
+    this.sotDS.searchAllStoringOrderTanksForBooking(where, undefined, 100, undefined, this.lastBookTypes).subscribe(res => {
       const prcList: StoringOrderTankItem[] = res.map(item => ({
         ...item,
 
@@ -992,34 +986,16 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
                 )
               }
               : b.scheduling,   // keep original if deleted or undefined
-
-            // scheduling_sot: item.scheduling_sot?.map(b => ({
-            //   ...b,
-            //   scheduling: b.scheduling && b.scheduling.delete_dt === null
-            //   ? {
-            //       ...b.scheduling,
-            //       book_type_cv: this.getBookTypeDescription(
-            //         b.scheduling.book_type_cv
-            //       )
-            //     }
-            //   : b.scheduling,   // keep original if deleted or undefined
-
             status_cv: this.getBookingStatusDescription(b.status_cv)
           }))
       }));
 
       this.exportExcelReport(prcList);
     });
-
-
-
   }
+
   exportExcelReport(repData: any) {
-
-    //this.preventDefault(event);
     let cut_off_dt = new Date();
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1048,7 +1024,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;
     });
-
   }
 
   export_report() {
@@ -1059,7 +1034,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     //       { status_cv: { eq: "ACCEPTED" } },
     //     ]
     //   };
-    this.sotDS.searchAllStoringOrderTanksForBooking(where).subscribe(res => {
+    this.sotDS.searchAllStoringOrderTanksForBooking(where, undefined, 100, undefined, this.lastBookTypes).subscribe(res => {
 
       const prcList: StoringOrderTankItem[] = res.map(item => ({
         ...item,

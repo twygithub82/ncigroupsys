@@ -36,8 +36,7 @@
                         @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                         <div class="m-l-10" [matTooltip]="translatedLangText.DELETE" (click)="$event.stopPropagation()">
                           <button mat-mini-fab (click)="cancelSelectedRows(roSelection.selected)"
-                            [class.red-button]="!canCancelSelectedRows()"
-                            [disabled]="canCancelSelectedRows()">
+                            [class.red-button]="!canCancelSelectedRows()" [disabled]="canCancelSelectedRows()">
                             <mat-icon class="col-white">close</mat-icon>
                           </button>
                         </div>
@@ -78,15 +77,6 @@
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                        <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                          <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
-                            [min]="todayDt">
-                          <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
-                          <mat-datepicker #release_dt_picker></mat-datepicker>
-                        </mat-form-field>
-                      </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.STATUS}}</mat-label>
                           <mat-select formControlName="ro_status">
@@ -96,6 +86,15 @@
                             </mat-option>
                             }
                           </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
+                          <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
+                            [min]="todayDt">
+                          <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
+                          <mat-datepicker #release_dt_picker></mat-datepicker>
                         </mat-form-field>
                       </div>
                     </div>
@@ -140,13 +139,12 @@
                     </ng-container>
                     <ng-container matColumnDef="customer_code">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.CUSTOMER}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
+                        [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="ro_dt">
@@ -170,6 +168,36 @@
                         {{row.release_order_sot?.length}}
                       </mat-cell>
                     </ng-container>
+                    <ng-container matColumnDef="accept_status">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        {{translatedLangText.ACCEPTED}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        <span class="mobile-label">{{translatedLangText.ACCEPTED}}:</span>
+                        {{roDS.getAccepetedStatusCount(row)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="waiting_status">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        {{translatedLangText.OUTSTANDING}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        <span class="mobile-label">{{translatedLangText.OUTSTANDING}}:</span>
+                        {{roDS.getWaitingStatusCount(row)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="cancel_status">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        {{translatedLangText.CANCELED}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        <span class="mobile-label">{{translatedLangText.CANCELED}}:</span>
+                        {{roDS.getCanceledStatusCount(row)}}</mat-cell>
+                    </ng-container>
                     <ng-container matColumnDef="status">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -180,38 +208,22 @@
                         <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
                         {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
                     </ng-container>
-                    <!-- <ng-container matColumnDef="accept_status">
-                  <mat-header-cell *matHeaderCellDef >
-                    {{translatedLangText.ACCEPTED}} {{translatedLangText.TANKS}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="waiting_status">
-                  <mat-header-cell *matHeaderCellDef >
-                    {{translatedLangText.WAITING}} {{translatedLangText.TANKS}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getWaitingStatusCount(row)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="cancel_status">
-                  <mat-header-cell *matHeaderCellDef >
-                    {{translatedLangText.CANCELED}} {{translatedLangText.TANKS}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getCanceledStatusCount(row)}}</mat-cell>
-                </ng-container> -->
-                    <!-- actions -->
+                    <ng-container matColumnDef="ro_notes">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                        {{translatedLangText.RO_NOTES}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                        <span class="mobile-label">{{translatedLangText.RO_NOTES}}:</span>
+                        <span class="truncate-text" [matTooltip]="row.ro_notes">{{row.ro_notes}}</span></mat-cell>
+                    </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row; let i=index;"
-                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
-                        <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                    </button> -->
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         @if (roDS.canCancel(row)) {
                         <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
                           (click)="cancelItem(row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">

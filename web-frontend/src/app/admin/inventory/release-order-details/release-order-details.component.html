@@ -9,18 +9,18 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="roForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
           <div class="card">
-            <div class="row ms-1">
+            <div class="header">
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <h3>
                   @if (releaseOrderItem.ro_no) {
                   {{releaseOrderItem.ro_no}}
                   }
                 </h3>
-                @if (releaseOrderItem.status_cv){
+                <!-- @if (releaseOrderItem.status_cv){
                 <span class="badge badge-sm badge-solid-blue font-bold mb-2 ms-2">
                   {{getRoStatusDescription(releaseOrderItem.status_cv)}}
                 </span>
-                }
+                } -->
               </div>
             </div>
             <div class="body">
@@ -82,18 +82,21 @@
                 </div>
               </div>
               <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 text-end">
+                  <mat-label>{{translatedLangText.NO_OF_TANKS}} ({{getReleaseOrderSotArray().controls.length || 0}})</mat-label>
+                </div>
+              </div>
+              <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   @if (getReleaseOrderSotArray().controls.length) {
                   <div formArrayName="sotList">
                     <table mat-table [dataSource]="getReleaseOrderSotArray().controls" matSort
                       class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                       <ng-container matColumnDef="tank_no">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.TANK_NO}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
@@ -103,12 +106,10 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="schedule_dt">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.SCHEDULE_DATE}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">{{translatedLangText.SCHEDULE_DATE}}:</span>
                           <span>
                             {{row.get('schedule_dt')?.value}}
@@ -116,12 +117,10 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_status_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.TANK_STATUS}}
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.TANK_STATUS}}:</span>
                             <span>
@@ -131,25 +130,21 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
-                          {{translatedLangText.STATUS}}
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.PROCESS}}
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="''">
-                          <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                        <mat-cell *matCellDef="let row" [ngClass]="''">
+                          <span class="mobile-label">{{translatedLangText.PROCESS}}:</span>
                           <span>
                             {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
                           </span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="yard_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           {{translatedLangText.LOCATION}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                           <span class="mobile-label">{{translatedLangText.LOCATION}}:</span>
                           <span>
                             {{getYardDescription(row.get('yard_cv')?.value)}}
@@ -344,6 +339,17 @@
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
               }
+              <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded mt-2">
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-green badge-fixed-size">NEW</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-cyan badge-fixed-size">EDIT</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-orange badge-fixed-size">CANCEL</span>
+                </div>
+              </div>
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"

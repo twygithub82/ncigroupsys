@@ -190,13 +190,7 @@
                         </div>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                        <!-- <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
-                            <span class="contact-detail-info font-bold">{{eir_no}}</span>
-                          </div>
-                        </div> -->
-                        <div class="row right-align-display">
+                        <!-- <div class="row right-align-display">
                           <div class="col-xl-5 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                           </div>
@@ -208,17 +202,10 @@
                               </span>
                             </div>
                           </div>
-                        </div>
-                        <!-- <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
-                            <span
-                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
-                          </div>
                         </div> -->
                         <div class="row right-align-display">
                           <div class="col-xl-5 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                            <span class="label-display-info">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                            <span class="label-display-info">{{translatedLangText.CONDITIONS}}:</span>
                           </div>
                           <div
                             class="col-xl-7 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
@@ -285,17 +272,9 @@
                             </mat-form-field>
                           </div>
                         </div>
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                              <input matInput formControlName="remarks">
-                            </mat-form-field>
-                          </div>
-                        </div>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
@@ -310,7 +289,7 @@
                               <input matInput formControlName="release_job_no" required>
                             </mat-form-field>
                           </div>
-                        </div>
+                        </div> -->
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <mat-form-field class="example-full-width">
@@ -322,6 +301,14 @@
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
                                   } -->
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                              <input matInput formControlName="remarks">
                             </mat-form-field>
                           </div>
                         </div>

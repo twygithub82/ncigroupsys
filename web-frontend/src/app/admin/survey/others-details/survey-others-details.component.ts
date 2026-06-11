@@ -279,7 +279,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = this.sortByDescription(data);
-      this.testClassCvList = addDefaultSelectOption(this.testClassCvList);
+      // this.testClassCvList = addDefaultSelectOption(this.testClassCvList);
       this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {

@@ -475,14 +475,14 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           if (!data) {
             throw new Error('No data returned from query');
           }
-  
+
           // Extract the nodes and totalCount
           const retResult = data.inGates || { nodes: [], totalCount: 0 };
-  
+
           // Update internal state
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
-  
+
           // Return the nodes
           return retResult.nodes;
         }),
@@ -543,7 +543,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       );
   }
 
- getInGateCountForYetToPublish(): Observable<number> {
+  getInGateCountForYetToPublish(): Observable<number> {
     this.loadingSubject.next(true);
     let where: any = { eir_status_cv: { eq: 'PENDING' } }
     return this.apollo
@@ -565,7 +565,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           return retResult.totalCount;
         })
       );
-  }  
+  }
 
   addInGate(inGate: any): Observable<any> {
     this.actionLoadingSubject.next(true);

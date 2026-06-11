@@ -23,7 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -95,9 +95,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'tank_no',
     'schedule_dt',
     'tank_status_cv',
-    'status_cv',
     'yard_cv',
     'job_no',
+    'status_cv',
     'actions',
   ];
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-NEW'
@@ -163,6 +163,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TANK_STATUS: "COMMON-FORM.TANK-STATUS",
     LOCATION: "COMMON-FORM.LOCATION",
     SAVE: "COMMON-FORM.SAVE",
+    NO_OF_TANKS: "COMMON-FORM.NO-OF-TANKS",
+    PROCESS: "COMMON-FORM.PROCESS",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -225,6 +227,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   @ViewChild('filter', { static: true }) filter!: ElementRef;
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
+  @ViewChild(MatTable) sotTable!: MatTable<any>;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
@@ -246,6 +249,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   updateROList() {
     this.cdr.markForCheck(); // Trigger change detection manually
+    this.sotTable?.renderRows();
   }
 
   getReleaseOrderSotArray(): UntypedFormArray {
@@ -566,8 +570,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const sotArray = this.getReleaseOrderSotArray();
-        // Remove the item from the FormArray
         sotArray.removeAt(index);
+        this.sotTable?.renderRows();
       }
     });
   }

@@ -74,8 +74,10 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         public IEnumerable<out_gate>? out_gate { get; set; }
         [UseFiltering]
+        [UseSorting]
         public IEnumerable<booking>? booking { get; set; }
         [UseFiltering]
+        [UseSorting]
         public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }
         [UseFiltering]
         public IEnumerable<release_order_sot>? release_order_sot { get; set; }
