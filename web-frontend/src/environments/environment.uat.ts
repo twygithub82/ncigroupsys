@@ -49,6 +49,10 @@ export const systemCurrencyCode: string = "SGD";
 export const defaultDiscountThreshold: number = 25;
 
 export const isDirty: boolean = true;
+
+
+export const UploadImageResolution = 0.6; //0.1 to 1.2 MP - previously is 1.2
+
 export interface cleanlinessReportTextBlock {
   text?: string | ((data: any) => string);
   type?: 'text' | 'line';   // 👈 NEW
