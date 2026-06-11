@@ -321,6 +321,79 @@ namespace IDMS.Survey.GqlTypes
         }
 
 
+        public async Task<int> RollbackPublish(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+           [Service] IHttpContextAccessor httpContextAccessor, string sot_guid)
+        {
+            int retval = 0;
+            try
+            {
+
+                var suAdmin = "suAdmin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                _logger.LogInformation($"Rollback published invoked by {user} for sot_Guid {sot_guid}");
+                //string user = "admin";
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var cleaning = await context.cleaning.Where(c => c.sot_guid  == $"{sot_guid}" && c.delete_dt == null).FirstOrDefaultAsync();
+                if (cleaning != null)
+                {
+                    cleaning.delete_dt = currentDateTime;
+                    cleaning.update_by = suAdmin;
+                    cleaning.update_dt = currentDateTime;
+                    _logger.LogInformation($"cleaning soft-deleted sot {sot_guid}");
+                }
+
+                var residue = await context.residue.Where(r => r.sot_guid == $"{sot_guid}" && r.delete_dt == null).FirstOrDefaultAsync();
+                if (residue != null)
+                {
+                    residue.delete_dt = currentDateTime;
+                    residue.update_by = suAdmin;
+                    residue.update_dt = currentDateTime;
+                    _logger.LogInformation($"residue soft-deleted sot {sot_guid}");
+                }
+
+                var steaming = await context.steaming.Where(s => s.sot_guid == $"{sot_guid}" && s.delete_dt == null).FirstOrDefaultAsync();
+                if (steaming != null)
+                {
+                    //var steamingParts = await context.steaming_part.Where(sp => sp.steaming_guid == steaming.guid && sp.delete_dt == null).ToListAsync();
+                    //if (steamingParts != null && steamingParts.Count > 0)
+                    //{
+                    //    foreach(var part in steamingParts)
+                    //    {
+                    //        part.delete_dt = currentDateTime;
+                    //        part.update_by = suAdmin;
+                    //        part.update_dt = currentDateTime;
+                    //    }
+                    //    _logger.LogInformation($"steaming_part soft-deleted for steaming {steaming.guid} related to sot {sot_guid}");
+                    //}
+                    steaming.delete_dt = currentDateTime;
+                    steaming.update_by = suAdmin;
+                    steaming.update_dt = currentDateTime;
+                    _logger.LogInformation($"steaming soft-deleted for sot {sot_guid}");
+                }
+
+                var repair = await context.repair.Where(r => r.sot_guid == $"{sot_guid}" && r.delete_dt == null).FirstOrDefaultAsync();
+                if (repair != null)
+                {
+                    repair.delete_dt = currentDateTime;
+                    repair.update_by = suAdmin;
+                    repair.update_dt = currentDateTime;
+                    _logger.LogInformation($"repair soft-deleted for sot {sot_guid}");
+                }
+
+                retval = await context.SaveChangesAsync(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"RollbackPublish failed for sot_guid {sot_guid}");
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+            return retval;
+        }
+
+
+
+
         //private async Task<int> PublishIngateSurveyOld(ApplicationInventoryDBContext context, [Service] IConfiguration config,
         //        [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         //{

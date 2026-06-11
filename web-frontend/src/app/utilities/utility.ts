@@ -8,7 +8,7 @@ import { jsPDF } from 'jspdf';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
-import { systemCurrencyCode } from '../../environments/environment';
+import { systemCurrencyCode, UploadImageResolution } from '../../environments/environment';
 import { PDFUtility } from "./pdf-utility";
 
 import {
@@ -28,11 +28,84 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 // import * as XLSX from 'xlsx';
- import * as XLSX from 'xlsx-js-style';
+import * as XLSX from 'xlsx-js-style';
+import { Q } from "@angular/cdk/keycodes";
 
 
 export class Utility {
-  static compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.75): Promise<File> {
+
+  static compressImageByMP(
+  file: File,
+  targetMP = 1.2,
+  quality = 0.75
+): Promise<File> {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+
+    // Restrict target MP to 0.1 ~ 1.2
+    targetMP = Math.max(0.1, Math.min(1.2, targetMP));
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      let width = img.width;
+      let height = img.height;
+
+      const currentPixels = width * height;
+      const targetPixels = targetMP * 1_000_000;
+
+      // Resize only when current image exceeds target MP
+      if (currentPixels > targetPixels) {
+        const scaleFactor = Math.sqrt(targetPixels / currentPixels);
+
+        width = Math.round(width * scaleFactor);
+        height = Math.round(height * scaleFactor);
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          resolve(
+            blob
+              ? new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                })
+              : file
+          );
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+
+    img.src = url;
+  });
+}
+
+   static async compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.75): Promise<File> {
+    var compressed =UploadImageResolution;
+    return await this.compressImageByMP(file, compressed, quality);
+  }
+
+  static compressImage_r0(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.75): Promise<File> {
     return new Promise((resolve) => {
       if (!file.type.startsWith('image/')) { resolve(file); return; }
       const img = new Image();
@@ -813,8 +886,8 @@ export class Utility {
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
-  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, 
-    rightMargin: number, topPosition: number, fontSize: number,bold: boolean = false) {
+  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number,
+    rightMargin: number, topPosition: number, fontSize: number, bold: boolean = false) {
     pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
     pdf.setFont("helvetica", bold ? "bold" : "normal");
@@ -1897,12 +1970,12 @@ export class Utility {
 
   static displayTankPurpose_InShort(sot: any): string {
     let purposes: any[] = [];
-   
-   
+
+
     if (sot?.purpose_cleaning) {
       purposes.push("C");
     }
-     if (sot?.purpose_repair_cv) {
+    if (sot?.purpose_repair_cv) {
       purposes.push("R");
     }
     if (sot?.purpose_steam) {
@@ -1911,8 +1984,8 @@ export class Utility {
     if (sot?.purpose_storage) {
       purposes.push("S");
     }
-   
-   
+
+
     return purposes.join('; ');
   }
 
@@ -2007,189 +2080,187 @@ export class Utility {
 
   static padTitleToCenter(title: string, worksheet: XLSX.WorkSheet, totalColumns: number): string {
 
-  // Get total width of all columns (wch)
-  const totalWidth = (worksheet['!cols'] || [])
-    .slice(0, totalColumns)
-    .reduce((sum: number, col: any) => sum + (col?.wch || 10), 0);
+    // Get total width of all columns (wch)
+    const totalWidth = (worksheet['!cols'] || [])
+      .slice(0, totalColumns)
+      .reduce((sum: number, col: any) => sum + (col?.wch || 10), 0);
 
-  // const titleLength = title.length;
-const titleLength =0;
-  // Calculate padding
-  const padding = Math.max(Math.floor((totalWidth - titleLength) / 2), 0);
+    // const titleLength = title.length;
+    const titleLength = 0;
+    // Calculate padding
+    const padding = Math.max(Math.floor((totalWidth - titleLength) / 2), 0);
 
-  return " ".repeat(padding) + title;
-}
-
-static saveExcel_xlsx(rows: any[], fileName: string, totalColumns: number): void {
-
-  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-
-  const headerRowIndex = 2;
-  const columnCount = rows[headerRowIndex].length;
-  const dataRows = rows.slice(headerRowIndex);
-
-  // ===== 1️⃣ Calculate column widths =====
-  worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
-    const maxLength = dataRows.reduce((max, row) => {
-      const cell = row[colIndex];
-      return Math.max(max, cell ? cell.toString().length : 0);
-    }, 10);
-
-    return { wch: maxLength + 1 };
-  });
-
-  // ===== 2️⃣ Center title using padding trick =====
-  const originalTitle = rows[0][0];
-  const paddedTitle = this.padTitleToCenter(originalTitle, worksheet, totalColumns);
-  rows[0][0] = paddedTitle;
-
-  // Re-apply title cell manually
-  worksheet["A1"] = { t: "s", v: paddedTitle };
-
-  // ===== 3️⃣ Merge title row =====
-  worksheet['!merges'] = [
-    {
-      s: { r: 0, c: 0 },
-      e: { r: 0, c: totalColumns - 1 }
-    }
-  ];
-
-  // ===== 4️⃣ Create workbook =====
-  const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-  XLSX.writeFile(workbook, fileName);
-}
-
-
-static saveExcel_r1(rows:any[],startRow:number,fileName:string ,totalColumns:number):void
-  {
-     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-        //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
-        //   const maxLength = rows.reduce((max, row) => {
-        //     const cell = row[colIndex];
-        //     return Math.max(max, cell ? cell.toString().length : 0);
-        //   }, 10);
-        //   return { wch: maxLength + 2 };
-        // });
-    
-        const headerRowIndex = startRow;
-
-          // Use header row to determine number of columns
-          const columnCount = rows[headerRowIndex].length;
-
-          // Skip title and empty row when calculating width
-          const dataRows = rows.slice(headerRowIndex);
-
-          worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
-            const maxLength = dataRows.reduce((max, row) => {
-              const cell = row[colIndex];
-              return Math.max(max, cell ? cell.toString().length : 0);
-            }, 10);
-
-            return { wch: maxLength + 1 };
-          });
-
-        worksheet['!merges'] = [
-          {
-            s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
-            e: { r: 0, c: totalColumns - 1 }  // end at last column
-          }
-        ];
-
-      
-        worksheet["A1"].s = {
-          alignment: {
-            horizontal: "center",
-            vertical: "center"
-          },
-          font: {
-            bold: true,
-            sz: 14
-          }
-        };
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-    
-        XLSX.writeFile(workbook, fileName);
+    return " ".repeat(padding) + title;
   }
 
-  
+  static saveExcel_xlsx(rows: any[], fileName: string, totalColumns: number): void {
 
-  static saveExcel(rows:any[],fileName:string ,totalColumns:number ,hdRowIndex:number =2):void
-  {
-     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-        //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
-        //   const maxLength = rows.reduce((max, row) => {
-        //     const cell = row[colIndex];
-        //     return Math.max(max, cell ? cell.toString().length : 0);
-        //   }, 10);
-        //   return { wch: maxLength + 2 };
-        // });
-    
-        const headerRowIndex = hdRowIndex;
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
 
-          // Use header row to determine number of columns
-          const columnCount = rows[headerRowIndex].length;
+    const headerRowIndex = 2;
+    const columnCount = rows[headerRowIndex].length;
+    const dataRows = rows.slice(headerRowIndex);
 
-          // Skip title and empty row when calculating width
-          const dataRows = rows.slice(headerRowIndex);
+    // ===== 1️⃣ Calculate column widths =====
+    worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
+      const maxLength = dataRows.reduce((max, row) => {
+        const cell = row[colIndex];
+        return Math.max(max, cell ? cell.toString().length : 0);
+      }, 10);
 
-          worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
-            const maxLength = dataRows.reduce((max, row) => {
-              const cell = row[colIndex];
-              return Math.max(max, cell ? cell.toString().length : 0);
-            }, 10);
-
-            return { wch: maxLength + 1 };
-          });
-
-        worksheet['!merges'] = [
-          {
-            s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
-            e: { r: 0, c: totalColumns - 1 }  // end at last column
-          }
-        ];
-
-      
-        worksheet["A1"].s = {
-          alignment: {
-            horizontal: "center",
-            vertical: "center"
-          },
-          font: {
-            bold: true,
-            sz: 14
-          }
-        };
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-    
-        XLSX.writeFile(workbook, fileName);
-  }
-
- static autoFitColumns(data: any[][]) {
-  const colWidths: number[] = [];
-
-  data.forEach(row => {
-    row.forEach((cell, colIndex) => {
-      if(colIndex>=3) return;
-      const cellValue = cell ? cell.toString() : "";
-      const length = cellValue.length;
-
-      colWidths[colIndex] = Math.max(colWidths[colIndex] || 10, length);
+      return { wch: maxLength + 1 };
     });
-  });
 
-  return colWidths.map((w, i) => {
-    // if (i === 3) return { wch: Math.min(w + 2, 60) }; // Cargo column
-    return { wch: Math.min(w + 2, 60) };
-  });
-}
+    // ===== 2️⃣ Center title using padding trick =====
+    const originalTitle = rows[0][0];
+    const paddedTitle = this.padTitleToCenter(originalTitle, worksheet, totalColumns);
+    rows[0][0] = paddedTitle;
 
-  
-  
+    // Re-apply title cell manually
+    worksheet["A1"] = { t: "s", v: paddedTitle };
+
+    // ===== 3️⃣ Merge title row =====
+    worksheet['!merges'] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: totalColumns - 1 }
+      }
+    ];
+
+    // ===== 4️⃣ Create workbook =====
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    XLSX.writeFile(workbook, fileName);
+  }
+
+
+  static saveExcel_r1(rows: any[], startRow: number, fileName: string, totalColumns: number): void {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+
+    const headerRowIndex = startRow;
+
+    // Use header row to determine number of columns
+    const columnCount = rows[headerRowIndex].length;
+
+    // Skip title and empty row when calculating width
+    const dataRows = rows.slice(headerRowIndex);
+
+    worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
+      const maxLength = dataRows.reduce((max, row) => {
+        const cell = row[colIndex];
+        return Math.max(max, cell ? cell.toString().length : 0);
+      }, 10);
+
+      return { wch: maxLength + 1 };
+    });
+
+    worksheet['!merges'] = [
+      {
+        s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
+        e: { r: 0, c: totalColumns - 1 }  // end at last column
+      }
+    ];
+
+
+    worksheet["A1"].s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center"
+      },
+      font: {
+        bold: true,
+        sz: 14
+      }
+    };
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    XLSX.writeFile(workbook, fileName);
+  }
+
+
+
+  static saveExcel(rows: any[], fileName: string, totalColumns: number, hdRowIndex: number = 2): void {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+    //  worksheet['!cols'] = rows[3].map((_:any, colIndex:number) => {
+    //   const maxLength = rows.reduce((max, row) => {
+    //     const cell = row[colIndex];
+    //     return Math.max(max, cell ? cell.toString().length : 0);
+    //   }, 10);
+    //   return { wch: maxLength + 2 };
+    // });
+
+    const headerRowIndex = hdRowIndex;
+
+    // Use header row to determine number of columns
+    const columnCount = rows[headerRowIndex].length;
+
+    // Skip title and empty row when calculating width
+    const dataRows = rows.slice(headerRowIndex);
+
+    worksheet['!cols'] = Array.from({ length: columnCount }).map((_, colIndex) => {
+      const maxLength = dataRows.reduce((max, row) => {
+        const cell = row[colIndex];
+        return Math.max(max, cell ? cell.toString().length : 0);
+      }, 10);
+
+      return { wch: maxLength + 1 };
+    });
+
+    worksheet['!merges'] = [
+      {
+        s: { r: 0, c: 0 },                // start at row 0 col 0 (A1)
+        e: { r: 0, c: totalColumns - 1 }  // end at last column
+      }
+    ];
+
+
+    worksheet["A1"].s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center"
+      },
+      font: {
+        bold: true,
+        sz: 14
+      }
+    };
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    XLSX.writeFile(workbook, fileName);
+  }
+
+  static autoFitColumns(data: any[][]) {
+    const colWidths: number[] = [];
+
+    data.forEach(row => {
+      row.forEach((cell, colIndex) => {
+        if (colIndex >= 3) return;
+        const cellValue = cell ? cell.toString() : "";
+        const length = cellValue.length;
+
+        colWidths[colIndex] = Math.max(colWidths[colIndex] || 10, length);
+      });
+    });
+
+    return colWidths.map((w, i) => {
+      // if (i === 3) return { wch: Math.min(w + 2, 60) }; // Cargo column
+      return { wch: Math.min(w + 2, 60) };
+    });
+  }
+
+
+
   //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
   //   {
   //     var imgRetval:string ='';
@@ -2260,7 +2331,7 @@ export const BILLING_TANK_STATUS = [
   'RO_GENERATED'
 ]
 
-export const BILLING_ESTIMATE_STATUS = ['RO_GENERATED','QC_COMPLETED', 'COMPLETED', "COMPLETE",'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'];
+export const BILLING_ESTIMATE_STATUS = ['RO_GENERATED', 'QC_COMPLETED', 'COMPLETED', "COMPLETE", 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'];
 
 export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "COMPLETED", "ASSIGNED", "JOB_IN_PROGRESS"];
 
