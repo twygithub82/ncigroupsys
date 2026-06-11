@@ -315,25 +315,74 @@ namespace IDMS.FileManagement.Service
 
                 var zipStream = new MemoryStream();
                 var _httpClient = new HttpClient();
+                var usedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, leaveOpen: true))
                 {
                     foreach (var file in files)
                     {
-                        string url = file.Url;
-                        // Extract file extension
-                        string extension = Path.GetExtension(url.Split('?')[0]); // strips query params if any
+                        //string url = file.Url;
+                        //// Extract file extension
+                        //string extension = Path.GetExtension(url.Split('?')[0]); // strips query params if any
 
-                        string targetFileName = $"{file.Description}{extension}";
+                        //string targetFileName = $"{file.Description}{extension}";
 
-                        if (extension.EqualsIgnore("pdf"))
-                            targetFileName = $"{file.Description}_{zipFileRequest.TankNo}{extension}";
+                        //if (extension.EqualsIgnore("pdf"))
+                        //    targetFileName = $"{file.Description}_{zipFileRequest.TankNo}{extension}";
+
+                        //try
+                        //{
+                        //    byte[] imageBytes = await _httpClient.GetByteArrayAsync(url);
+
+                        //    var zipEntry = archive.CreateEntry(targetFileName, CompressionLevel.Optimal);
+
+                        //    using (var entryStream = zipEntry.Open())
+                        //    {
+                        //        await entryStream.WriteAsync(imageBytes, 0, imageBytes.Length);
+                        //    }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //   _logger.LogError($"Failed to download or add file from {url}: {ex.Message}");
+                        //    // Optionally: skip or throw depending on your use case
+                        //}
+
+
+
+                        // Remove query string before extracting extension
+                        string extension = Path.GetExtension(file.Url.Split('?')[0]);
+
+                        // Fallback when URL has no extension
+                        if (string.IsNullOrWhiteSpace(extension))
+                        {
+                            extension = ".bin";
+                        }
+
+                        // Sanitize file name
+                        string description = file.Description ?? "File";
+
+                        foreach (char invalidChar in Path.GetInvalidFileNameChars())
+                        {
+                            description = description.Replace(invalidChar, '_');
+                        }
+
+                        string baseFileName = extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase)
+                                                ? $"{description}_{zipFileRequest.TankNo}"
+                                                : description;
+
+                        string targetFileName = $"{baseFileName}{extension}";
+                        // Ensure unique ZIP entry name
+                        int counter = 1;
+                        while (!usedFileNames.Add(targetFileName))
+                        {
+                            targetFileName = $"{baseFileName}_{counter++}{extension}";
+                        }
 
                         try
                         {
-                            byte[] imageBytes = await _httpClient.GetByteArrayAsync(url);
+                            byte[] imageBytes = await _httpClient.GetByteArrayAsync(file.Url);
 
-                            var zipEntry = archive.CreateEntry(targetFileName, CompressionLevel.NoCompression);
+                            var zipEntry = archive.CreateEntry(targetFileName, CompressionLevel.Optimal);
 
                             using (var entryStream = zipEntry.Open())
                             {
@@ -342,7 +391,7 @@ namespace IDMS.FileManagement.Service
                         }
                         catch (Exception ex)
                         {
-                           _logger.LogError($"Failed to download or add file from {url}: {ex.Message}");
+                            _logger.LogError($"Failed to download or add file from {file.Url}: {ex.Message}");
                             // Optionally: skip or throw depending on your use case
                         }
                     }

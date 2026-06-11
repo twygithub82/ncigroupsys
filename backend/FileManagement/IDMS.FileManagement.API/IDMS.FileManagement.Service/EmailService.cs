@@ -327,6 +327,8 @@ namespace IDMS.Email.Service
                                 var ccAddress = JsonSerializer.Deserialize<List<string>>(emJob.cc_addresses ?? "[]");
                                 var bccAddress = JsonSerializer.Deserialize<List<string>>(emJob.bcc_addresses ?? "[]");
 
+                                double sizeInMB = zipStream.Length / 1024d / 1024d;
+                                _logger.LogInformation($"Email attachment size {sizeInMB} MB");
 
                                 bool sent = await SendEmailWithZipAttachmentAsync(toAddress, ccAddress, bccAddress, subject, htmlBody, zipBytes, $"{emJob.tank_no}.zip");
                                 if (sent)
