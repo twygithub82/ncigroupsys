@@ -1172,7 +1172,8 @@
                                 {{translatedLangText.DAMAGE_PHOTOS}}
                                 <div class="m-l-10">
                                   <button mat-mini-fab class="bg-purple msr-2 smaller-btn"
-                                    (click)="triggerFileInputIfAllowed(fileInput)">
+                                    (click)="triggerFileInputIfAllowed(fileInput)"
+                                    [disabled]="dmgImages().length >= MAX_DMG_PHOTOS">
                                     <i class="material-icons">attach_file</i>
                                   </button>
                                   <input type="file" #fileInput class="default d-none" multiple accept="image/*"

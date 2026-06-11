@@ -252,6 +252,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
   private destroy$ = new Subject<void>();
 
+  readonly MAX_DMG_PHOTOS = 10;
+
   out_gate_guid: string | null | undefined;
   ro_sot_guid: string | null | undefined;
   out_gate: OutGateItem | null | undefined;
@@ -1954,7 +1956,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach(async file => {
+      const remaining = this.MAX_DMG_PHOTOS - this.dmgImages().length;
+      Array.from(input.files).slice(0, remaining).forEach(async file => {
         const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
