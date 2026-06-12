@@ -30,6 +30,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -89,7 +90,8 @@ import { ExportDialogComponent } from './dialogs/export-dialog/export-dialog.com
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    NumericTextDirective
+    NumericTextDirective,
+    ErrorDialogComponent
   ]
 })
 export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -207,10 +209,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
+    MAX_REPAIR_PHOTOS: 'COMMON-FORM.MAX-REPAIR-PHOTOS',
     PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
     REVERT: 'COMMON-FORM.REVERT',
     BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
+
+  readonly MAX_REPAIR_PHOTOS = 40;
 
   clean_statusList: CodeValuesItem[] = [];
 
@@ -1516,6 +1521,11 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+      if (this.repairImages().length + input.files.length > this.MAX_REPAIR_PHOTOS) {
+        this.errorDialog(this.translatedLangText.MAX_REPAIR_PHOTOS);
+        input.value = '';
+        return;
+      }
       Array.from(input.files).forEach(async file => {
         const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
@@ -1526,6 +1536,19 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       });
     }
     input.value = '';
+  }
+
+  errorDialog(errMessage?: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.dialog.open(ErrorDialogComponent, {
+      data: { messageText: errMessage, action: 'error' },
+      direction: tempDirection
+    });
   }
 
   repairImages(): UntypedFormArray {

@@ -63,6 +63,7 @@ import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 import { EmailApiService } from '@core/service/email-api.service';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 
 @Component({
@@ -223,6 +224,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     SIDES: 'COMMON-FORM.SIDES',
     SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
     DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    MAX_DAMAGE_PHOTOS: 'COMMON-FORM.MAX-DAMAGE-PHOTOS',
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
@@ -2083,8 +2085,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      const remaining = this.MAX_DMG_PHOTOS - this.dmgImages().length;
-      Array.from(input.files).slice(0, remaining).forEach(async file => {
+      if (this.dmgImages().length + input.files.length > this.MAX_DMG_PHOTOS) {
+        this.errorDialog(this.translatedLangText.MAX_DAMAGE_PHOTOS);
+        input.value = '';
+        return;
+      }
+      Array.from(input.files).forEach(async file => {
         const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
         reader.onload = () => {
@@ -2541,6 +2547,24 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.router.navigate([this.router.url]);
         }
       }
+    });
+  }
+
+  errorDialog(errMessage?: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      data: {
+        messageText: errMessage || this.translatedLangText.FAILED_TO_LOGIN,
+        action: 'error',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
 }
