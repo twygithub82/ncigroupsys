@@ -218,10 +218,10 @@ namespace IDMS.FileManagement.API.Controllers
             try
             {
                 var res = await _emailService.ScheduleEirEmailTask(int.Parse(EirType));
-                var type = EirType == "1" ? "In_Gate" : "Out_Gate";
+                //var type = EirType == "1" ? "In_Gate" : "Out_Gate";
 
-                _logger.LogInformation($"[{type} - Eir Email Job Started]");
-                return Ok(new { Message = $"{type} - Eir Email Job Started" });
+                _logger.LogInformation("Email Job Started]");
+                return Ok(new { Message = "Eir Email Job Started" });
             }
             catch (Exception ex)
             {

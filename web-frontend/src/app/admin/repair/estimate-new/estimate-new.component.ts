@@ -25,11 +25,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EmailApiService } from '@core/service/email-api.service';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -89,7 +91,8 @@ import { ExportDialogComponent } from './dialogs/export-dialog/export-dialog.com
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    NumericTextDirective
+    NumericTextDirective,
+    ErrorDialogComponent
   ]
 })
 export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -207,10 +210,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     PHOTOS: 'COMMON-FORM.PHOTOS',
+    MAX_REPAIR_PHOTOS: 'COMMON-FORM.MAX-REPAIR-PHOTOS',
     PLAIN_TEMPLATE: 'COMMON-FORM.PLAIN-TEMPLATE',
     REVERT: 'COMMON-FORM.REVERT',
     BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
   }
+
+  readonly MAX_REPAIR_PHOTOS = 40;
 
   clean_statusList: CodeValuesItem[] = [];
 
@@ -271,6 +277,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     private router: Router,
     private translate: TranslateService,
     private fileManagerService: FileManagerService,
+    private emailApiService: EmailApiService,
     public modulePackageService: ModulePackageService
   ) {
     super();
@@ -932,69 +939,27 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   ExportDialogDmgImg(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-
-    // const url = imgForm.get('preview')?.value;
-
+    event.preventDefault();
     if (!this.isOwner) {
       this.onExport(event, 3);
       return;
     }
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
     const dialogRef = this.dialog.open(ExportDialogComponent, {
       width: '250px',
       height: '180px',
-      data: {
-        action: 'EXPORT',
-        langText: this.translatedLangText
-
-      },
-      direction: tempDirection
+      data: { action: 'EXPORT', langText: this.translatedLangText },
+      direction: this.getDirection()
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === "confirmed") {
-        var filter = result.result;
-        this.onExport(event, filter);
+      if (result.action === 'confirmed') {
+        this.onExport(event, result.result);
       }
     });
   }
 
   onExport(event: Event, filter: number) {
     this.preventDefault(event);
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
-      width: '794px',
-      height: '80vh',
-      data: {
-        type: this.sotItem?.purpose_repair_cv,
-        repair_guid: this.repairItem?.guid,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-        estimate_no: this.repairItem?.estimate_no,
-        repairEstimatePdf: this.repairEstimatePdf,
-        filter: filter
-      },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-    this.isExportingPDF = true;
-    dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isExportingPDF = false;
-    });
+    this.openRepairPdfDialog(this.repairItem?.guid!, filter, false);
   }
 
   onFormSubmit() {
@@ -1067,10 +1032,17 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         } else {
           this.repairDS.addRepair(re, cc).subscribe(result => {
             console.log(result)
-            const record = result.data.addRepair
-            this.uploadImages(record.guid[0], true);
-            // this.handleSaveSuccess(result?.data?.addRepair);
-            // this.router.navigate(['/admin/repair/estimate']);
+            const guid = result.data.addRepair.guid[0];
+            this.uploadImages(guid, false, () => {
+              this.openRepairPdfDialog(guid, 3, true, () => {
+                this.subs.sink = this.emailApiService
+                  .email(this.sotItem?.tank_no!, guid, this.getEmails(), 'REPAIR')
+                  .subscribe({
+                    next: () => this.router.navigate(['/admin/repair/estimate']),
+                    error: () => this.router.navigate(['/admin/repair/estimate'])
+                  });
+              });
+            });
           });
         }
       }
@@ -1160,6 +1132,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  private getDirection(): Direction {
+    return localStorage.getItem('isRtl') === 'true' ? 'rtl' : 'ltr';
   }
 
   canToggleOwner() {
@@ -1516,6 +1492,11 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+      if (this.repairImages().length + input.files.length > this.MAX_REPAIR_PHOTOS) {
+        this.errorDialog(this.translatedLangText.MAX_REPAIR_PHOTOS);
+        input.value = '';
+        return;
+      }
       Array.from(input.files).forEach(async file => {
         const compressed = await Utility.compressImage(file);
         const reader = new FileReader();
@@ -1526,6 +1507,19 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       });
     }
     input.value = '';
+  }
+
+  errorDialog(errMessage?: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.dialog.open(ErrorDialogComponent, {
+      data: { messageText: errMessage, action: 'error' },
+      direction: tempDirection
+    });
   }
 
   repairImages(): UntypedFormArray {
@@ -1616,25 +1610,24 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     return images;
   }
 
-  uploadImages(guid: string, redirect: boolean) {
+  uploadImages(guid: string, redirect: boolean, onComplete?: () => void) {
     const repairImages = this.repairImages().controls
       .filter(preview => preview.get('file')?.value)
       .map(preview => {
         const file = preview.get('file')?.value;
         return {
-          file: file, // The actual file object
+          file: file,
           metadata: {
             TableName: 'repair',
             FileType: 'img',
             GroupGuid: guid,
-            Description: 'REPAIR_DMG' // Use the file name or custom description
+            Description: 'REPAIR_DMG'
           }
         };
       });
-    const allImages = repairImages;
-    // Call the FileManagerService to upload files
-    if (allImages.length) {
-      this.fileManagerService.uploadFiles(allImages).subscribe({
+      
+    if (repairImages.length) {
+      this.fileManagerService.uploadFiles(repairImages).subscribe({
         next: (response) => {
           console.log('Files uploaded successfully:', response);
           this.handleSaveSuccess(1);
@@ -1648,6 +1641,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         },
         complete: () => {
           console.log('Upload process completed.');
+          onComplete?.();
         }
       });
     } else {
@@ -1655,7 +1649,33 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       if (redirect) {
         this.router.navigate(['/admin/repair/estimate']);
       }
+      onComplete?.();
     }
+  }
+
+  private openRepairPdfDialog(repairGuid: string, filter: number, toUpload: boolean, onUploaded?: () => void) {
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        repair_guid: repairGuid,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+        estimate_no: this.repairItem?.estimate_no,
+        repairEstimatePdf: this.repairEstimatePdf,
+        retrieveFile: false,
+        filter: filter,
+        toUpload: toUpload
+      },
+      direction: this.getDirection()
+    });
+    this.isExportingPDF = true;
+    dialogRef.updatePosition({ top: '-9999px', left: '-9999px' });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+      if (result?.uploaded) {
+        onUploaded?.();
+      }
+    });
   }
 
   populateImages(files: any[]) {
@@ -1674,5 +1694,15 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_ADD']);
+  }
+
+  getEmails(): string[] {
+    const emails: string[] = [];
+    const cc = this.sotItem?.storing_order?.customer_company;
+    if (cc?.email) emails.push(cc.email);
+    cc?.cc_contact_person?.forEach(cp => {
+      if (cp?.email && !emails.includes(cp.email)) emails.push(cp.email);
+    });
+    return emails;
   }
 }

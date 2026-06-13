@@ -40,6 +40,7 @@ export interface DialogData {
   estimate_no?: string;
   retrieveFile: boolean;
   filter?: number;
+  toUpload?: boolean;
 }
 
 @Component({
@@ -227,24 +228,24 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     OF: 'COMMON-FORM.OF',
     REPAIR_ESTIMATE: 'COMMON-FORM.REPAIR-ESTIMATE',
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
-    ESTIMATE_TOTAL:'COMMON-FORM.ESTIMATE-TOTAL',
-    APPROVED_TOTAL:'COMMON-FORM.APPROVED-TOTAL',
-    MATERIAL_COST$:'COMMON-FORM.MATERIAL-COST$',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    TOTAL:'COMMON-FORM.TOTAL',
-    LESSEE:'COMMON-FORM.LESSEE',
-    PREPARED_BY:'COMMON-FORM.PREPARED-BY',
-    REPAIR_DISCLAIMER:'COMMON-FORM.REPAIR-DISCLAIMER',
-    APPROVED_BY:'COMMON-FORM.APPROVED-BY',
-    EQUIVALENT:'COMMON-FORM.EQUIVALENT',
-    AMOUNT:'COMMON-FORM.AMOUNT',
-    HRS:'COMMON-FORM.HRS',
-    SUMMARY_COST:'COMMON-FORM.SUMMARY-COST',
-    NOTE:'COMMON-FORM.NOTE',
+    ESTIMATE_TOTAL: 'COMMON-FORM.ESTIMATE-TOTAL',
+    APPROVED_TOTAL: 'COMMON-FORM.APPROVED-TOTAL',
+    MATERIAL_COST$: 'COMMON-FORM.MATERIAL-COST$',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    LESSEE: 'COMMON-FORM.LESSEE',
+    PREPARED_BY: 'COMMON-FORM.PREPARED-BY',
+    REPAIR_DISCLAIMER: 'COMMON-FORM.REPAIR-DISCLAIMER',
+    APPROVED_BY: 'COMMON-FORM.APPROVED-BY',
+    EQUIVALENT: 'COMMON-FORM.EQUIVALENT',
+    AMOUNT: 'COMMON-FORM.AMOUNT',
+    HRS: 'COMMON-FORM.HRS',
+    SUMMARY_COST: 'COMMON-FORM.SUMMARY-COST',
+    NOTE: 'COMMON-FORM.NOTE',
     S_N: 'COMMON-FORM.S_N',
-    
-    
+
+
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
 
@@ -294,6 +295,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   filter?: number = 3;
+  toUpload = false;
 
   constructor(
     public dialogRef: MatDialogRef<RepairEstimatePdfComponent>,
@@ -314,7 +316,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repair_guid = data.repair_guid;
     this.customer_company_guid = data.customer_company_guid;
     this.repairEstimatePdf = data.repairEstimatePdf;
-    this.filter=data.filter;
+    this.filter = data.filter;
+    this.toUpload = data.toUpload ?? false;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -329,19 +332,18 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]);
     if (data?.length > 0) {
       this.repairItem = data[0];
-      
+
       this.estimate_no = this.repairItem?.estimate_no;
       var isRepEst = this.repairItem?.storing_order_tank?.purpose_repair_cv === "REPAIR" ? true : false;
-      this.pdfTitle =isRepEst ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-      if(isRepEst)
-      {
-        if(this.filter==1 ){
+      this.pdfTitle = isRepEst ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
+      if (isRepEst) {
+        if (this.filter == 1) {
           this.pdfTitle = `${this.translatedLangText.IN_SERVICE_ESTIMATE} - ${this.translatedLangText.LESSEE}`
         }
-        else if(this.filter==2){
+        else if (this.filter == 2) {
           this.pdfTitle = `${this.translatedLangText.IN_SERVICE_ESTIMATE} - ${this.translatedLangText.OWNER}`
         }
-      } 
+      }
       await this.getCodeValuesData();
       this.updateData(this.repairItem?.repair_part);
       this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
@@ -354,11 +356,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
-  
+
 
   async generatePDF(): Promise<void> {
     await this.exportToPDF_r2();
-   
+
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
@@ -534,14 +536,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
-  
+
     if (newData?.length) {
-        if(this.filter==1){
-          newData=newData.filter(x=>x.owner===false || x.owner===null);
-        }
-        else if(this.filter==2){
-           newData=newData.filter(x=>x.owner===true);
-        }
+      if (this.filter == 1) {
+        newData = newData.filter(x => x.owner === false || x.owner === null);
+      }
+      else if (this.filter == 2) {
+        newData = newData.filter(x => x.owner === true);
+      }
 
 
       newData = newData.map((row) => ({
@@ -670,7 +672,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   calculateCost() {
-   // this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
+    // this.repairCost = this.repairDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
     this.repairCost = this.repairDS.calculateCostWithRoundUp(this.repairItem, this.repairItem?.repair_part);
     console.log(this.repairCost)
   }
@@ -911,11 +913,18 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     startY += 52;
     this.createRepairEstimateDetail(pdf, startY, leftMargin, rightMargin, pageWidth);
     this.createSummaryTable(pdf, leftMargin, rightMargin, pageWidth, pageHeight);
-    this.downloadFile(pdf.output('blob'), this.getReportTitle())
-    // this.generatedPDF = pdf.output('blob');
-    // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
-    // this.generatingPdfLoadingSubject.next(false);
-    this.dialogRef.close();
+    const pdfBlob = pdf.output('blob');
+    if (this.toUpload) {
+      const pdfFile = new File([pdfBlob], `${this.getReportTitle()}.pdf`, { type: 'application/pdf' });
+      await firstValueFrom(this.fileManagerService.uploadFiles([{
+        file: pdfFile,
+        metadata: { TableName: 'repair', FileType: 'pdf', GroupGuid: this.repair_guid, Description: 'REPAIR_ESTIMATE' }
+      }]));
+      this.dialogRef.close({ uploaded: true });
+    } else {
+      this.downloadFile(pdfBlob, this.getReportTitle());
+      this.dialogRef.close();
+    }
   }
 
   createOffhireEstimate(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
@@ -1254,7 +1263,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const reportTitle = '';
 
-    
+
 
     let currentY = topMargin;
     let scale = this.scale;
@@ -1267,58 +1276,64 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
     var item = this.repairItem;
     var cc = item.storing_order_tank?.storing_order?.customer_company;
-    
-     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
-       this.translate, this.pdfTitle, '');
-       startY +=  6;
+
+    startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+      this.translate, this.pdfTitle, '');
+    startY += 6;
     // startY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
     //  this.AddCustomerInfoTable(pdf, pageWidth, leftMargin, rightMargin,startY);
-   
-    var offhireCodeHeight=49;
-    
-    var totalCostTableHeight=45;
-    var bufferY=58;
-     startY = lastTableFinalY + bufferY+offhireCodeHeight;
-    var bufferHeight=10;
-    var repairDetailLastRowY=this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth,bottomMargin,pagePositions,bufferHeight);
-    
+
+    var offhireCodeHeight = 49;
+
+    var totalCostTableHeight = 45;
+    var bufferY = 58;
+    startY = lastTableFinalY + bufferY + offhireCodeHeight;
+    var bufferHeight = 10;
+    var repairDetailLastRowY = this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth, bottomMargin, pagePositions, bufferHeight);
+
     // var TotalCostStartY=topMargin+bottomMargin+repairDetailLastRowY+totalCostTableHeight;
 
-    var buffer=pageHeight/3.8;
-    if((repairDetailLastRowY+buffer)>=pageHeight)
-    {
-       pdf.addPage();
-       const pageCount = pdf.getNumberOfPages();
+    var buffer = pageHeight / 3.8;
+    if ((repairDetailLastRowY + buffer) >= pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
 
-       pagePositions.push({ page: pageCount, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+      pagePositions.push({ page: pageCount, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     }
 
-  await this.addFooterCompanyLogo_Portrait(pdf,pageWidth,pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions,offhireCodeHeight);
+    await this.addFooterCompanyLogo_Portrait(pdf, pageWidth, pageHeight, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions, offhireCodeHeight);
 
 
-    this.downloadFile(pdf.output('blob'), this.getReportTitle())
-    this.dialogRef.close();
+    const pdfBlob = pdf.output('blob');
+    if (this.toUpload) {
+      const pdfFile = new File([pdfBlob], `${this.getReportTitle()}.pdf`, { type: 'application/pdf' });
+      await firstValueFrom(this.fileManagerService.uploadFiles([{
+        file: pdfFile,
+        metadata: { TableName: 'repair', FileType: 'pdf', GroupGuid: this.repair_guid, Description: 'REPAIR_ESTIMATE' }
+      }]));
+      this.dialogRef.close({ uploaded: true });
+    } else {
+      this.downloadFile(pdfBlob, this.getReportTitle());
+      this.dialogRef.close();
+    }
   }
 
-
-
-  async AddCustomerInfoTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number,posY:number)
-  {
+  async AddCustomerInfoTable(pdf: jsPDF, pageWidth: number, leftMargin: number, rightMargin: number, posY: number) {
 
     const lColor = 0;
-    var grayColor=255;
-     const contentWidth = pageWidth - leftMargin - rightMargin;
-     let minHeightHeaderCol = 3;
+    var grayColor = 255;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    let minHeightHeaderCol = 3;
     let minHeightBodyCell = 7;
     let fontSz = 8.5;
     //  let lastTableFinalY = posY;
 
-    let startY = posY ; // Start table 20mm below the customer name
+    let startY = posY; // Start table 20mm below the customer name
     var item = this.repairItem;
     var cc = item.storing_order_tank?.storing_order?.customer_company;
-    
-    
-     const comStyles: any = {
+
+
+    const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
       1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
@@ -1326,7 +1341,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
     };
 
-    
+
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [grayColor, grayColor, grayColor], // Background color
@@ -1335,12 +1350,12 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: [lColor, lColor, lColor],
-       lineWidth: 0.1
+      lineWidth: 0.1
     };
 
-    var cust=`${item?.storing_order_tank?.storing_order?.customer_company?.name}` ;
-    if(this.filter===2) cust =`${item?.storing_order_tank?.customer_company?.name}` ;
-    
+    var cust = `${item?.storing_order_tank?.storing_order?.customer_company?.name}`;
+    if (this.filter === 2) cust = `${item?.storing_order_tank?.customer_company?.name}`;
+
     var data: any[][] = [
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
@@ -1376,14 +1391,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       // ],
     ];
 
-     var offhireCodeHeight=49;
-     var lastTableFinalY =posY;
+    var offhireCodeHeight = 49;
+    var lastTableFinalY = posY;
 
     autoTable(pdf, {
       body: data,
-       startY: startY, // Start table at the current startY value
+      startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin},
+      margin: { left: leftMargin },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1391,13 +1406,13 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         // lineWidth:0.1,
         // lineColor: [lColor, lColor, lColor], // black
       },
-       headStyles: headStyles,
+      headStyles: headStyles,
       tableWidth: contentWidth,
       columnStyles: {
-        0: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        1: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        2: { cellWidth: 35,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], },
-        3: { cellWidth: 61,lineWidth: 0.1,lineColor: [lColor, lColor, lColor], }
+        0: { cellWidth: 35, lineWidth: 0.1, lineColor: [lColor, lColor, lColor], },
+        1: { cellWidth: 61, lineWidth: 0.1, lineColor: [lColor, lColor, lColor], },
+        2: { cellWidth: 35, lineWidth: 0.1, lineColor: [lColor, lColor, lColor], },
+        3: { cellWidth: 61, lineWidth: 0.1, lineColor: [lColor, lColor, lColor], }
       },
       // headStyles: headStyles, // Custom header styles
       bodyStyles: {
@@ -1413,89 +1428,85 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       //    doc.setLineWidth(0.1);
       //   },
       didDrawPage: (data: any) => {
-      
+
         const pageCount = pdf.getNumberOfPages();
         lastTableFinalY = data.cursor.y;
 
       },
     });
 
-  
-     return lastTableFinalY;
+
+    return lastTableFinalY;
 
   }
 
-  async addFooterCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, pageHeight:number, topMargin: number, bottomMargin: number,
-      leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[], offhirecoreheight:number=50) {
-      var fontSize = 8
-      var totalPages = pdf.getNumberOfPages();
-       var offhireCodeHeight=offhirecoreheight;
-       var totalCostTableHeight=54;
-       var  dmgCodeRprCodePosBuffer=72;
-       var  dmgCodeRprCodePosY = dmgCodeRprCodePosBuffer ;
-      //  pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      //   pdf.setFontSize(fontSize);
+  async addFooterCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, pageHeight: number, topMargin: number, bottomMargin: number,
+    leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[], offhirecoreheight: number = 50) {
+    var fontSize = 8
+    var totalPages = pdf.getNumberOfPages();
+    var offhireCodeHeight = offhirecoreheight;
+    var totalCostTableHeight = 54;
+    var dmgCodeRprCodePosBuffer = 72;
+    var dmgCodeRprCodePosY = dmgCodeRprCodePosBuffer;
+    //  pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(fontSize);
 
-      for (const { page, x, y } of pagePositions) {
-       
-        pdf.setPage(page);
-  
-        const lineBuffer = 6;
-        const repDisclaimerPosBuffer=8;
-        const fontSize=6;
-        // pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-       
-        var repDisclaimerPosY =  pdf.internal.pageSize.height - repDisclaimerPosBuffer;
-        var maxW = pageWidth+1 -rightMargin-leftMargin;
-        var note =  PDFUtility.FormatColon(this.translatedLangText.NOTE, '');
-        var bufferFontSize =1.25;
-        PDFUtility.addText(pdf, `${note}`, repDisclaimerPosY, leftMargin, 7, true,undefined,undefined,maxW);
-        PDFUtility.addText(pdf, this.translatedLangText.REPAIR_DISCLAIMER, repDisclaimerPosY, leftMargin + 8, 7, false,undefined,undefined,maxW);
-      
-        var lineY=pageHeight-bottomMargin-lineBuffer;
-        pdf.line(leftMargin, lineY, pageWidth+2 - rightMargin, lineY);
+    for (const { page, x, y } of pagePositions) {
 
-         // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-             var posY= PDFUtility.addReportTitle_Portrait(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin);
-            posY+=6;
-            //  posY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
-             posY= await this.AddCustomerInfoTable(pdf, pageWidth,leftMargin,rightMargin,posY);
-             var dmgCodeRprCodePosY=posY+2;
-             this.createOffhireEstimate_r1(pdf, dmgCodeRprCodePosY, leftMargin, rightMargin, pageWidth);
-        if (page==1)
-        {
-             pdf.setDrawColor(0, 0, 0); // black line color
-             pdf.setLineWidth(0.1);
-             lineY=dmgCodeRprCodePosY+offhireCodeHeight-(lineBuffer*2);
-             pdf.line(leftMargin, lineY, pageWidth+2 - rightMargin, lineY);
-        }
-        else if (page > 1) {
-          // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-           await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
-           this.translate, this.pdfTitle, '');
+      pdf.setPage(page);
 
+      const lineBuffer = 6;
+      const repDisclaimerPosBuffer = 8;
+      const fontSize = 6;
+      // pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+
+      var repDisclaimerPosY = pdf.internal.pageSize.height - repDisclaimerPosBuffer;
+      var maxW = pageWidth + 1 - rightMargin - leftMargin;
+      var note = PDFUtility.FormatColon(this.translatedLangText.NOTE, '');
+      var bufferFontSize = 1.25;
+      PDFUtility.addText(pdf, `${note}`, repDisclaimerPosY, leftMargin, 7, true, undefined, undefined, maxW);
+      PDFUtility.addText(pdf, this.translatedLangText.REPAIR_DISCLAIMER, repDisclaimerPosY, leftMargin + 8, 7, false, undefined, undefined, maxW);
+
+      var lineY = pageHeight - bottomMargin - lineBuffer;
+      pdf.line(leftMargin, lineY, pageWidth + 2 - rightMargin, lineY);
+
+      // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+      var posY = PDFUtility.addReportTitle_Portrait(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin);
+      posY += 6;
+      //  posY+=(PDFUtility.GapBetweenSubTitleAndTable_Portrait()*2) - PDFUtility.GapBetweenLeftTitleAndTable();
+      posY = await this.AddCustomerInfoTable(pdf, pageWidth, leftMargin, rightMargin, posY);
+      var dmgCodeRprCodePosY = posY + 2;
+      this.createOffhireEstimate_r1(pdf, dmgCodeRprCodePosY, leftMargin, rightMargin, pageWidth);
+      if (page == 1) {
+        pdf.setDrawColor(0, 0, 0); // black line color
+        pdf.setLineWidth(0.1);
+        lineY = dmgCodeRprCodePosY + offhireCodeHeight - (lineBuffer * 2);
+        pdf.line(leftMargin, lineY, pageWidth + 2 - rightMargin, lineY);
+      }
+      else if (page > 1) {
+        // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+        await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+          this.translate, this.pdfTitle, '');
+
+      }
+      if (page == totalPages) {
+
+        if (this.repairItem.owner_enable) {
+          var buffer = 3;
+          var totalTableStartY = pageHeight - (totalCostTableHeight + buffer + bottomMargin);
+          this.createRepairEstimateTotalTable_r6(pdf, totalTableStartY, leftMargin, rightMargin, pageWidth);
         }
-         if(page==totalPages)
-          {
-           
-          if(this.repairItem.owner_enable)
-          {
-           var buffer=3;
-           var totalTableStartY=pageHeight-(totalCostTableHeight+buffer+bottomMargin);
-            this.createRepairEstimateTotalTable_r6(pdf, totalTableStartY, leftMargin, rightMargin, pageWidth);
-          }
-          else
-          {
-            var buffer=-1;
-            var totalTableStartY=pageHeight-(totalCostTableHeight+buffer+bottomMargin);
-            this.createRepairEstimateTotalTable_r5(pdf, totalTableStartY, leftMargin, rightMargin, pageWidth);
-          }
-           this.addSurveyorInfoTable(pdf, pageWidth, pageHeight, leftMargin, rightMargin,topMargin,bottomMargin);
+        else {
+          var buffer = -1;
+          var totalTableStartY = pageHeight - (totalCostTableHeight + buffer + bottomMargin);
+          this.createRepairEstimateTotalTable_r5(pdf, totalTableStartY, leftMargin, rightMargin, pageWidth);
         }
-      }// Add Second Page, Add For Loop
-    }
+        this.addSurveyorInfoTable(pdf, pageWidth, pageHeight, leftMargin, rightMargin, topMargin, bottomMargin);
+      }
+    }// Add Second Page, Add For Loop
+  }
 
   createOffhireEstimate_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
 
@@ -1538,12 +1549,12 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         {
           content: this.translatedLangText.DAMAGE_CODE,
           colSpan: 3,
-          styles: { fontStyle: 'bold', fontSize: (fontSz+1.5), halign: 'left', valign: vAlign,lineColor:lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1}
+          styles: { fontStyle: 'bold', fontSize: (fontSz + 1.5), halign: 'left', valign: vAlign, lineColor: lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
         },
         {
           content: this.translatedLangText.REPAIR_CODE,
           colSpan: 3,
-          styles: { fontStyle: 'bold',fontSize: (fontSz+1.5), halign: 'left', valign: vAlign, lineColor: lColor,fillColor: [255, 255, 255],  lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
+          styles: { fontStyle: 'bold', fontSize: (fontSz + 1.5), halign: 'left', valign: vAlign, lineColor: lColor, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 1 }
         }
 
       ]
@@ -1565,8 +1576,8 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     //   ]
     // ];
 
-    
-    const gapTopBottom=0.3;
+
+    const gapTopBottom = 0.3;
     const cellHeight = 2;
     autoTable(pdf, {
       head: headers,
@@ -1574,53 +1585,53 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         const rRow = toColumns(repairCodes)[i] || ['', '', ''];
         return [...dRow, ...rRow];
       }),
-       startY: startY, // Start table at the current startY value
+      startY: startY, // Start table at the current startY value
       styles: {
         cellPadding: { left: 2, right: 2, top: gapTopBottom, bottom: gapTopBottom }, // Reduce padding
         fontSize: 6,
         lineWidth: 0 // remove all borders initially
-        
+
       },
       theme: 'plain',
-       margin: { left: leftMargin},
+      margin: { left: leftMargin },
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: 0,
         fontStyle: 'normal',
-         lineWidth: 0 // keep outer border for header
+        lineWidth: 0 // keep outer border for header
       },
       columnStyles: {
-        0: { cellWidth: 32,lineWidth: 0 },
-        1: { cellWidth: 32 ,lineWidth: 0},
-        2: { cellWidth: 32 ,lineWidth: 0},
-        3: { cellWidth: 32 ,lineWidth: 0},
-        4: { cellWidth: 32 ,lineWidth: 0},
-        5: { cellWidth: 32 ,lineWidth: 0},
+        0: { cellWidth: 32, lineWidth: 0 },
+        1: { cellWidth: 32, lineWidth: 0 },
+        2: { cellWidth: 32, lineWidth: 0 },
+        3: { cellWidth: 32, lineWidth: 0 },
+        4: { cellWidth: 32, lineWidth: 0 },
+        5: { cellWidth: 32, lineWidth: 0 },
       },
       bodyStyles: {
         fillColor: [255, 255, 255],
-        
-        lineWidth:0,
+
+        lineWidth: 0,
       },
       didDrawCell: function (data) {
         const lineWidth = 0;
         const doc = data.doc;
         doc.setDrawColor(lColor, lColor, lColor);
-         doc.setLineWidth(0.1);
+        doc.setLineWidth(0.1);
         const isLastRow = data.row.index === data.table.body.length - 1;
 
         if (data.column.index === 0 || data.column.index === 3) {
-         
+
           doc.line(data.cell.x, data.cell.y, data.cell.x, data.cell.y + data.cell.height); // left line
 
         }
         else if (data.column.index === 5) {
-         
+
           doc.line(data.cell.x + data.cell.width, data.cell.y, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // right line
         }
 
         if (isLastRow) {
-         
+
           doc.line(
             data.cell.x,
             data.cell.y + data.cell.height,
@@ -1633,7 +1644,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   createRepairEstimateDetail_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number,
-    bottomMargin: number, pagePositions: { page: number, x: number, y: number }[],bufferHeight:number):number {
+    bottomMargin: number, pagePositions: { page: number, x: number, y: number }[], bufferHeight: number): number {
     const fontSz = 7;
     const vAlign = "bottom";
     const backgroundColor_header = 250
@@ -1651,7 +1662,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
         },
         {
-          
+
           content: this.translatedLangText.DAMAGE_CODE,
           rowSpan: 2,
           styles: {
@@ -1746,7 +1757,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       ]
     ];
 
-    var LastLabelPosY=0;
+    var LastLabelPosY = 0;
     var repData: RowInput[] = [];
     const grpFontSz = 7;
     this.repList?.forEach((rep, index) => {
@@ -1759,11 +1770,11 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
-      
+
       repData.push([
         rep.index + 1, this.displayDamageRepairCode(rep.rp_damage_repair, 0), this.displayDamageRepairCode(rep.rp_damage_repair, 1),
         rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
-        rep.approve_qty, rep.approve_hour, rep.approve_part === true ? this.parse2Decimal(rep.approve_cost) :0
+        rep.approve_qty, rep.approve_hour, rep.approve_part === true ? this.parse2Decimal(rep.approve_cost) : 0
       ])
     });
 
@@ -1777,7 +1788,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         lineWidth: lineWidth // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin, top: startY,bottom:bottomMargin+bufferHeight, right: rightMargin  },
+      margin: { left: leftMargin, top: startY, bottom: bottomMargin + bufferHeight, right: rightMargin },
       headStyles: {
         fillColor: lineColor,
         textColor: 0,
@@ -1801,47 +1812,47 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         const doc = data.doc;
 
         const isLastRow = (data.row.index === data.table.body.length - 1);
-       
+
         if (isLastRow && data.section === "body" && data.column.index === 0) {
-          
-              doc.setLineWidth(0.1);
-              doc.setDrawColor(0, 0, 0);
-              doc.line(
-                data.cell.x,
-                data.cell.y + data.cell.height + bufferY,
-                pageWidth + 1 - rightMargin,
-                data.cell.y + data.cell.height + bufferY
-              );
-           
+
+          doc.setLineWidth(0.1);
+          doc.setDrawColor(0, 0, 0);
+          doc.line(
+            data.cell.x,
+            data.cell.y + data.cell.height + bufferY,
+            pageWidth + 1 - rightMargin,
+            data.cell.y + data.cell.height + bufferY
+          );
+
         }
 
         if (data.section === "body" && data.column.index === 6) {
-            var lineColor=backgroundColor_header-30;
-            doc.setDrawColor(lineColor, lineColor, lineColor);
-            doc.setLineWidth(0.01);
+          var lineColor = backgroundColor_header - 30;
+          doc.setDrawColor(lineColor, lineColor, lineColor);
+          doc.setLineWidth(0.01);
 
-            doc.line(
-              data.cell.x + data.cell.width,
-              data.cell.y,
-              data.cell.x + data.cell.width,
-              data.cell.y + data.cell.height
-            );
-          }
+          doc.line(
+            data.cell.x + data.cell.width,
+            data.cell.y,
+            data.cell.x + data.cell.width,
+            data.cell.y + data.cell.height
+          );
+        }
       },
       didDrawPage: (data: any) => {
-        
-        // startY = data.cursor.y;
-         const pageCount = pdf.getNumberOfPages();
 
-          
-           
-          
-         LastLabelPosY = data.cursor.y;
+        // startY = data.cursor.y;
+        const pageCount = pdf.getNumberOfPages();
+
+
+
+
+        LastLabelPosY = data.cursor.y;
         var pg = pagePositions.find(p => p.page == pageCount);
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           // if (pageCount == 1)
-            
+
         }
       }
     });
@@ -1853,25 +1864,24 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     PDFUtility.addText(pdf, remarks, LastLabelPosY, leftMargin, fontSz, false, undefined, undefined, 0, false);
     LastLabelPosY += 5;
     PDFUtility.addText(pdf, remarksValue, LastLabelPosY, leftMargin, fontSz);
-   
-    
+
+
     return LastLabelPosY;
   }
 
-   createRepairEstimateTotalTable_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
+  createRepairEstimateTotalTable_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
 
-      const grayColor=250;
-      const minHeightBodyCell = 5;
-        const vAlign = "bottom";
-        const headers:RowInput[] = [[
-     { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.LABOUR,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.TOTAL,  styles: { halign: 'center', valign: vAlign } }
+    const grayColor = 250;
+    const minHeightBodyCell = 5;
+    const vAlign = "bottom";
+    const headers: RowInput[] = [[
+      { content: this.translatedLangText.DESCRIPTION, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.TOTAL, styles: { halign: 'center', valign: vAlign } }
     ]];
 
-    
+
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -1879,19 +1889,19 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       1: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
-      
+
     };
-    
-     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
+    var totalCellWidth = Object.values(comStyles)
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
 
     const rows: any[][] = [];
-    const fontStyle='normal';
+    const fontStyle = 'normal';
     const fontSz = 7;
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
     rows.push([
@@ -1906,105 +1916,104 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: '', styles: { halign: 'center', fontStyle:fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
-      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+    rows.push([
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle, fontSize: (fontSz + 1) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
+      { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle, fontSize: (fontSz + 1) } }
     ]);
 
-     if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var netCost = Number(this.getNetCost().replace(",",""));
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var netCost = Number(this.getNetCost().replace(",", ""));
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle,fontSize:(fontSz+1) } },
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle, fontSize: (fontSz + 1) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle,fontSize:(fontSz+1) } }
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle, fontSize: (fontSz + 1) } }
       ]);
-      startY-=3;
+      startY -= 3;
     }
 
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
     autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: fontSz,
-        },
-        theme: 'plain',
-        margin: { left: leftMargin},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        didDrawCell: function (data) {
-          const { cell, doc } = data;
-          if (!cell) return;
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: fontSz,
+      },
+      theme: 'plain',
+      margin: { left: leftMargin },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      didDrawCell: function (data) {
+        const { cell, doc } = data;
+        if (!cell) return;
 
-          const startX = cell.x;
-          const endX = cell.x + cell.width;
-          const yTop = cell.y;
-          const yBottom = cell.y + cell.height;
+        const startX = cell.x;
+        const endX = cell.x + cell.width;
+        const yTop = cell.y;
+        const yBottom = cell.y + cell.height;
 
         //  doc.setDrawColor(0);   // black
         //  doc.setLineWidth(0.1); // thickness
 
-         
 
-          // Draw bottom border for the last row
-           if (data.section === 'body') {
-            const lastRowIndex = data.table.body.length - 1;
-            // Only draw bottom border for the last row
-            if (data.row.index === lastRowIndex) {
-              // doc.line(startX, yBottom, endX, yBottom);
-            }
+
+        // Draw bottom border for the last row
+        if (data.section === 'body') {
+          const lastRowIndex = data.table.body.length - 1;
+          // Only draw bottom border for the last row
+          if (data.row.index === lastRowIndex) {
+            // doc.line(startX, yBottom, endX, yBottom);
           }
+        }
 
-          // Always draw top border for header
-          if (data.section === 'head') {
-            doc.line(startX, yBottom, endX, yBottom);
+        // Always draw top border for header
+        if (data.section === 'head') {
+          doc.line(startX, yBottom, endX, yBottom);
           //  doc.line(startX, yTop, endX, yTop);
-          }
-        },
-      });
-     var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
-      tableEndY-=1;
-      const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-      PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
-    }
+        }
+      },
+    });
+    var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+    tableEndY -= 1;
+    const surveyorInfo = PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+    PDFUtility.addText(pdf, surveyorInfo, tableEndY, leftMargin, 9, false);
+  }
 
-  createRepairEstimateTotalTable_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
+  createRepairEstimateTotalTable_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
 
-      const minHeightBodyCell = 6;
-      const vAlign = "bottom";
-      const grayColor=245;
-     
-      const headers: RowInput[] = [[
-      { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
+    const minHeightBodyCell = 6;
+    const vAlign = "bottom";
+    const grayColor = 245;
+
+    const headers: RowInput[] = [[
+      { content: this.translatedLangText.DESCRIPTION, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.LESSEE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.LABOUR,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.TOTAL,  styles: { halign: 'center', valign: vAlign } }
+      { content: this.translatedLangText.LABOUR, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.TOTAL, styles: { halign: 'center', valign: vAlign } }
     ]];
 
     const comStyles: any = {
@@ -2017,20 +2026,20 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
-      
+
     };
 
     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
-   
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
     const rows: any[][] = [];
-     const fontStyle='normal';
+    const fontStyle = 'normal';
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getLesseeLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalLabourHour(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } }
@@ -2039,7 +2048,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeTotalMaterialCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2047,49 +2056,49 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]);
     rows.push([
       { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeNetCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getNetCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
 
-    if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var netCost = Number(this.getNetCost().replace(",",""));
-      var ownerNetCost = Number(this.getOwnerNetCost().replace(",",""));
-      var lesseeNetCost = Number(this.getLesseeNetCost().replace(",",""));
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var netCost = Number(this.getNetCost().replace(",", ""));
+      var ownerNetCost = Number(this.getOwnerNetCost().replace(",", ""));
+      var lesseeNetCost = Number(this.getLesseeNetCost().replace(",", ""));
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       var foreignOwnerNetCost = ownerNetCost * rate;
@@ -2098,79 +2107,78 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
-      startY-=3;
+      startY -= 3;
     }
 
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
     autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: 7,
-        },
-        theme: 'plain',
-        margin: { left: buffer},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        didDrawCell: function (data) {
-          const { cell, doc } = data;
-          if (!cell) return;
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: 7,
+      },
+      theme: 'plain',
+      margin: { left: buffer },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      didDrawCell: function (data) {
+        const { cell, doc } = data;
+        if (!cell) return;
 
-          const startX = cell.x;
-          const endX = cell.x + cell.width;
-          const yTop = cell.y;
-          const yBottom = cell.y + cell.height;
+        const startX = cell.x;
+        const endX = cell.x + cell.width;
+        const yTop = cell.y;
+        const yBottom = cell.y + cell.height;
 
-          // doc.setDrawColor(0);   // black
-          // doc.setLineWidth(0.2); // thin line
+        // doc.setDrawColor(0);   // black
+        // doc.setLineWidth(0.2); // thin line
 
-          // ===== HEADER SECTION =====
-          if (data.section === 'head') {
-            // Draw top and bottom borders for the header
-            // doc.line(startX, yTop, endX, yTop);       // Top line
-            doc.line(startX, yBottom, endX, yBottom); // Bottom line
+        // ===== HEADER SECTION =====
+        if (data.section === 'head') {
+          // Draw top and bottom borders for the header
+          // doc.line(startX, yTop, endX, yTop);       // Top line
+          doc.line(startX, yBottom, endX, yBottom); // Bottom line
+        }
+
+        // ===== BODY SECTION =====
+        if (data.section === 'body') {
+          const lastRowIndex = data.table.body.length - 1;
+          // Only draw bottom border for the last row
+          if (data.row.index === lastRowIndex) {
+            // doc.line(startX, yBottom, endX, yBottom);
           }
+        }
+      },
+    });
+    var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+    tableEndY -= 1;
+    const surveyorInfo = PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+    PDFUtility.addText(pdf, surveyorInfo, tableEndY, leftMargin, 9, false);
+  }
 
-          // ===== BODY SECTION =====
-          if (data.section === 'body') {
-            const lastRowIndex = data.table.body.length - 1;
-            // Only draw bottom border for the last row
-            if (data.row.index === lastRowIndex) {
-              // doc.line(startX, yBottom, endX, yBottom);
-            }
-          }
-        },
-      });
-      var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
-      tableEndY-=1;
-      const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-     PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
-    }
+  createRepairEstimateTotalTable_r3(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
 
-    createRepairEstimateTotalTable_r3(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
-
-      const grayColor=255;
-      const minHeightBodyCell = 5;
-        const vAlign = "bottom";
-         const headers: RowInput[] = [
+    const grayColor = 255;
+    const minHeightBodyCell = 5;
+    const vAlign = "bottom";
+    const headers: RowInput[] = [
       [
-      
+
         {
           content: this.translatedLangText.APPROVED_COST,
-           rowSpan:3,
+          rowSpan: 3,
           // colSpan:5,
           styles: { halign: 'left', valign: 'top' }
         },
@@ -2190,186 +2198,184 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         },
         {
           content: this.translatedLangText.ESTIMATE_COST, // Changed from duplicate MAINTENANCE_DETAILS
-          colSpan:2,
+          colSpan: 2,
           styles: { halign: 'center', valign: vAlign }
         },
         {
           content: this.translatedLangText.APPROVED_COST, // Changed from duplicate MAINTENANCE_DETAILS
-          colSpan:2,
+          colSpan: 2,
           styles: { halign: 'center', valign: vAlign }
         },
       ],
-      
+
     ];
 
 
-    var cellWPerUnit = (pageWidth-leftMargin-rightMargin)/19;
-    
+    var cellWPerUnit = (pageWidth - leftMargin - rightMargin) / 19;
+
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*5), minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth:(cellWPerUnit*2), minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*4), minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 5), minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2) + 2, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 4), minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
     };
-    
-     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
+    var totalCellWidth = Object.values(comStyles)
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
 
     const rows: any[][] = [];
-    const fontStyle='normal';
+    const fontStyle = 'normal';
     const fontSz = 6.8;
     rows.push([
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.translatedLangText.LABOUR, styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLabourRate(), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalLabourHour(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalLabourCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalLabourHour(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalLabourCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      
+      { content: this.getLabourRate(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourHour(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+
     ]);
 
     rows.push([
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.translatedLangText.MATERIAL, styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalMaterialCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalMaterialCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalMaterialCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+
     ]);
 
     rows.push([
-        { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan:4, styles: { halign: 'left', valign:'bottom', fontStyle: 'bold' } },
-        { content: "",colSpan:7, styles: { halign: 'center', fontStyle: fontStyle } },
-      ]);
+      { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan: 4, styles: { halign: 'left', valign: 'bottom', fontStyle: 'bold' } },
+      { content: "", colSpan: 7, styles: { halign: 'center', fontStyle: fontStyle } },
+    ]);
 
-      rows.push([
+    rows.push([
       // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
       { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getDiscountAmount(), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      
+      { content: this.getDiscountAmount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getNetCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+
     ]);
 
- if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var estTotalCost = Number(this.getNetCost(false).replace(",","")||0);
-      var apvTotalCost = Number(this.getNetCost(true).replace(",","")||0);
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var estTotalCost = Number(this.getNetCost(false).replace(",", "") || 0);
+      var apvTotalCost = Number(this.getNetCost(true).replace(",", "") || 0);
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
-      var foreignNetCostEst = (estTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estTotalCost * rate));
-      var foreignNetCosApv = (apvTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvTotalCost * rate));
-    
+      var foreignNetCostEst = (estTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estTotalCost * rate));
+      var foreignNetCosApv = (apvTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvTotalCost * rate));
+
       rows.push([
         { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:foreignNetCostEst, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: foreignNetCostEst, styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: foreignNetCosApv, styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
-       rows.push([
-        { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
+      rows.push([
+        { content: ``, rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
       // startY-=3;
     }
-    else
-    {
-       rows.push([
+    else {
+      rows.push([
         { content: ``, styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
-       rows.push([
-        { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
+      rows.push([
+        { content: ``, rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
     }
 
-     const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-     
-     rows.push([
-        { content: `${surveyorInfo}`, styles: { halign: 'left', fontStyle: 'bold' } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
-      ]);
+    const surveyorInfo = PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
 
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
+    rows.push([
+      { content: `${surveyorInfo}`, styles: { halign: 'left', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
+    ]);
+
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
     autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: fontSz,
-        },
-        theme: 'grid',
-        margin: { left: leftMargin,bottom:10},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          lineWidth: 0.1,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        bodyStyles: {
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: fontSz,
+      },
+      theme: 'grid',
+      margin: { left: leftMargin, bottom: 10 },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        lineWidth: 0.1,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      bodyStyles: {
         fillColor: [255, 255, 255],
         lineWidth: 0.1,
-        },
+      },
 
-       
-      });
-     var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
-      tableEndY-=1;
-   
-    }
 
-     createRepairEstimateTotalTable_r4(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
+    });
+    var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+    tableEndY -= 1;
 
-      const minHeightBodyCell = 5;
-      const vAlign = "bottom";
-      const grayColor=255;
-      const fontSz=6.8;
-       const headers: RowInput[] = [
+  }
+
+  createRepairEstimateTotalTable_r4(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+
+    const minHeightBodyCell = 5;
+    const vAlign = "bottom";
+    const grayColor = 255;
+    const fontSz = 6.8;
+    const headers: RowInput[] = [
       [
-      
+
         {
           content: this.translatedLangText.APPROVED_COST,
-           rowSpan:4,
+          rowSpan: 4,
           // colSpan:5,
           styles: { halign: 'left', valign: 'top' }
         },
@@ -2384,57 +2390,57 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         },
         {
           content: this.translatedLangText.OWNER,
-          colSpan:4,
+          colSpan: 4,
           styles: { halign: 'center', valign: vAlign }
         },
         {
           content: this.translatedLangText.LESSEE, // Changed from duplicate MAINTENANCE_DETAILS
-          colSpan:4,
+          colSpan: 4,
           styles: { halign: 'center', valign: vAlign }
         },
       ],
-      
+
     ];
 
-    var cellWPerUnit = (pageWidth-leftMargin-rightMargin)/19;
-      const comStyles: any = {
+    var cellWPerUnit = (pageWidth - leftMargin - rightMargin) / 19;
+    const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*3), minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit*2)+2, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth:(cellWPerUnit), minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*2),  minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  cellWidth: (cellWPerUnit*1.25), minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle',   cellWidth: (cellWPerUnit*2),minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 3), minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2) + 2, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit), minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 1.25), minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 1.25), minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 1.25), minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 1.25), minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: (cellWPerUnit * 2), minCellHeight: minHeightBodyCell },
     };
 
-   
+
     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
-   
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
     const rows: any[][] = [];
-     const fontStyle='normal';
-     const fontStyleBold='bold';
+    const fontStyle = 'normal';
+    const fontStyleBold = 'bold';
     rows.push([
-       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.translatedLangText.ITEM, styles: { halign: 'right', fontStyle: fontStyleBold } },
       { content: this.translatedLangText.RATE, styles: { halign: 'center', fontStyle: fontStyleBold } },
-      { content: this.translatedLangText.ESTIMATE_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } },
-      { content: this.translatedLangText.APPROVED_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } } ,
-      { content: this.translatedLangText.ESTIMATE_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } },
-      { content: this.translatedLangText.APPROVED_COST,colSpan:2, styles: { halign: 'center', fontStyle: fontStyleBold } } ,
+      { content: this.translatedLangText.ESTIMATE_COST, colSpan: 2, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.APPROVED_COST, colSpan: 2, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.ESTIMATE_COST, colSpan: 2, styles: { halign: 'center', fontStyle: fontStyleBold } },
+      { content: this.translatedLangText.APPROVED_COST, colSpan: 2, styles: { halign: 'center', fontStyle: fontStyleBold } },
     ]);
     rows.push([
-       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourCost(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourHour(false), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerLabourHour(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourHour(true), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourHour(false), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2442,7 +2448,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: this.getLesseeLabourCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
     ]);
     rows.push([
-       { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.translatedLangText.MATERIAL, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
@@ -2456,187 +2462,185 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]);
 
 
-     rows.push([
-        { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan:4, styles: { halign: 'left', valign:'bottom', fontStyle: 'bold' } },
-        { content: "",colSpan:10, styles: { halign: 'center', fontStyle: fontStyle } },
-      ]);
-
-      rows.push([
-      // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerDiscountAmount(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerDiscountAmount(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getOwnerNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-       { content: this.getLesseeDiscountAmount(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeNetCost(false), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeDiscountAmount(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeNetCost(true), styles: {  halign: 'center', fontStyle: fontStyle } },
-      
+    rows.push([
+      { content: this.repairItem.storing_order_tank.customer_company.name, rowSpan: 4, styles: { halign: 'left', valign: 'bottom', fontStyle: 'bold' } },
+      { content: "", colSpan: 10, styles: { halign: 'center', fontStyle: fontStyle } },
     ]);
 
-  if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-        var estOwnerTotalCost = Number(this.getOwnerNetCost(false).replace(",","")||0);
-        var apvOwnerTotalCost = Number(this.getOwnerNetCost(true).replace(",","")||0);
-        var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
-        var foreignOwnerNetCostEst = (estOwnerTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estOwnerTotalCost * rate));
-        var foreignOwnerNetCosApv = (apvOwnerTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvOwnerTotalCost * rate));
+    rows.push([
+      // { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.translatedLangText.TOTAL}(${systemCurrencyCode})`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerDiscountAmount(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerNetCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerDiscountAmount(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerNetCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeDiscountAmount(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeNetCost(false), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeDiscountAmount(true), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLesseeNetCost(true), styles: { halign: 'center', fontStyle: fontStyle } },
 
-        var estLesseeTotalCost = Number(this.getLesseeNetCost(false).replace(",","")||0);
-        var apvLesseeTotalCost = Number(this.getLesseeNetCost(true).replace(",","")||0);
-         var foreignLesseeNetCostEst = (estLesseeTotalCost==0) ?"":  Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estLesseeTotalCost * rate));
-        var foreignLesseeNetCosApv = (apvLesseeTotalCost==0) ?"": Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvLesseeTotalCost * rate));
-      
-        rows.push([
-          { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: foreignOwnerNetCostEst, styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content: foreignOwnerNetCosApv, styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content:foreignLesseeNetCostEst, styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content: "", styles: {  halign: 'center', fontStyle: fontStyle } },
-          { content: foreignLesseeNetCosApv, styles: {  halign: 'center', fontStyle: fontStyle } },
-        ]);
-        rows.push([
-          { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
-        ]);
-        // startY-=3;
-      }
-      else
-      {
-        rows.push([
-          { content: ``, styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
-        ]);
-        rows.push([
-         { content: ``, rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content:'',  rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } },
-          { content: '', rowSpan:2,styles: { halign: 'center', fontStyle: fontStyle } }
-        ]);
-      }
+    ]);
 
-     const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-     
-     rows.push([
-        { content: `${surveyorInfo}`, styles: { halign: 'left', fontStyle: 'bold' } },
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var estOwnerTotalCost = Number(this.getOwnerNetCost(false).replace(",", "") || 0);
+      var apvOwnerTotalCost = Number(this.getOwnerNetCost(true).replace(",", "") || 0);
+      var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
+      var foreignOwnerNetCostEst = (estOwnerTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estOwnerTotalCost * rate));
+      var foreignOwnerNetCosApv = (apvOwnerTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvOwnerTotalCost * rate));
+
+      var estLesseeTotalCost = Number(this.getLesseeNetCost(false).replace(",", "") || 0);
+      var apvLesseeTotalCost = Number(this.getLesseeNetCost(true).replace(",", "") || 0);
+      var foreignLesseeNetCostEst = (estLesseeTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(estLesseeTotalCost * rate));
+      var foreignLesseeNetCosApv = (apvLesseeTotalCost == 0) ? "" : Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(apvLesseeTotalCost * rate));
+
+      rows.push([
+        { content: `${this.translatedLangText.TOTAL}(${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: foreignOwnerNetCostEst, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: foreignOwnerNetCosApv, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: foreignLesseeNetCostEst, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: "", styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: foreignLesseeNetCosApv, styles: { halign: 'center', fontStyle: fontStyle } },
+      ]);
+      rows.push([
+        { content: ``, rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } }
+      ]);
+      // startY-=3;
+    }
+    else {
+      rows.push([
+        { content: ``, styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:'', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
-
-   
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
-    autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-         fontSize: fontSz,
-        },
-        theme: 'grid',
-        margin: { left: leftMargin, bottom:10 },
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          lineWidth: 0.1,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        bodyStyles: {
-        fillColor: [255, 255, 255],
-        lineWidth: 0.1,
-        },
-      
-      });
-      var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
-      tableEndY-=1;
-    //   const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-    //  PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
+      rows.push([
+        { content: ``, rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } },
+        { content: '', rowSpan: 2, styles: { halign: 'center', fontStyle: fontStyle } }
+      ]);
     }
 
-    createRepairEstimateTotalTable_r5(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
+    const surveyorInfo = PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
 
-      const grayColor=245;
-      const minHeightBodyCell = 5;
-        const vAlign = "bottom";
-        const AmountSGD =  `${this.translatedLangText.AMOUNT} (${systemCurrencyCode})`;
-        const headers:RowInput[] = [[
-     { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.QTY,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
-      { content: AmountSGD,  styles: { halign: 'center', valign: vAlign } }
+    rows.push([
+      { content: `${surveyorInfo}`, styles: { halign: 'left', fontStyle: 'bold' } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } }
+    ]);
+
+
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
+    autoTable(pdf, {
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: fontSz,
+      },
+      theme: 'grid',
+      margin: { left: leftMargin, bottom: 10 },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        lineWidth: 0.1,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        lineWidth: 0.1,
+      },
+
+    });
+    var tableEndY = (pdf as any).lastAutoTable.finalY || startY;
+    tableEndY -= 1;
+    //   const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+    //  PDFUtility.addText(pdf,surveyorInfo,tableEndY,leftMargin,9,false);
+  }
+
+  createRepairEstimateTotalTable_r5(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+
+    const grayColor = 245;
+    const minHeightBodyCell = 5;
+    const vAlign = "bottom";
+    const AmountSGD = `${this.translatedLangText.AMOUNT} (${systemCurrencyCode})`;
+    const headers: RowInput[] = [[
+      { content: this.translatedLangText.DESCRIPTION, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.QTY, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE, styles: { halign: 'center', valign: vAlign } },
+      { content: AmountSGD, styles: { halign: 'center', valign: vAlign } }
     ]];
 
-    
-    const WidthperCell = (pageWidth-rightMargin-leftMargin)/6;
-     const comStyles: any = {
+
+    const WidthperCell = (pageWidth - rightMargin - leftMargin) / 6;
+    const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell*2)+1, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell * 2) + 1, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: WidthperCell, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: WidthperCell, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell*2)+1, minCellHeight: minHeightBodyCell },
-      
+      3: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell * 2) + 1, minCellHeight: minHeightBodyCell },
+
     };
-    
+
     // const comStyles: any = {
     //   // Set columns 0 to 16 to be center aligned
     //   0: { halign: 'center', valign: 'middle', cellWidth: 38, minCellHeight: minHeightBodyCell },
     //   1: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
     //   2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
     //   3: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
-      
+
     // };
-    
-     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
+    var totalCellWidth = Object.values(comStyles)
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
 
     const rows: any[][] = [];
-    const fontStyle='normal';
+    const fontStyle = 'normal';
     const fontSz = 7;
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
-      { content: `${this.getTotalLabourHour_Table()||"-"}`, styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getLabourCost_Table()||"-" , styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalLabourCost_Table()||"-", styles: { halign: 'center', fontStyle: fontStyle } }
+      { content: `${this.getTotalLabourHour_Table() || "-"}`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLabourCost_Table() || "-", styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getTotalLabourCost_Table() || "-", styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
     rows.push([
       { content: this.translatedLangText.MATERIAL, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '----', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '----', styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getTotalMaterialCost_Table()||"-", styles: { halign: 'center', fontStyle: fontStyle } }
+      { content: this.getTotalMaterialCost_Table() || "-", styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
     rows.push([
       { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: fontStyle } },
@@ -2644,826 +2648,754 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getTotalCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: '', styles: { halign: 'center', fontStyle:fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLabourDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getMaterialDiscountCost(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
-      { content: `${this.translatedLangText.TOTAL} (${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+    rows.push([
+      { content: `${this.translatedLangText.TOTAL} (${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold', fontSize: (fontSz) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } }
+      { content: this.getNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } }
     ]);
 
-     if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var netCost = Number(this.getNetCost_Table().replace(",",""));
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var netCost = Number(this.getNetCost_Table().replace(",", ""));
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.TOTAL} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: `${this.translatedLangText.TOTAL} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold', fontSize: (fontSz) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } }
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } }
       ]);
-      startY-=4;
+      startY -= 4;
     }
 
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
-    var tabletLeftPos = (pageWidth/2) - (Number(totalCellWidth||0)/2);
-    var bufferSum=10;
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
+    var tabletLeftPos = (pageWidth / 2) - (Number(totalCellWidth || 0) / 2);
+    var bufferSum = 10;
     // var SumLabelLeftPos = tabletLeftPos - bufferSum;
     var SumLabelLeftPos = leftMargin;
     // Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
     autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: fontSz,
-          lineWidth: 0.1
-        },
-        theme: 'plain',
-        margin: { left: leftMargin},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        didDrawCell: function (data) {
-          const { cell, doc } = data;
-          if (!cell) return;
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: fontSz,
+        lineWidth: 0.1
+      },
+      theme: 'plain',
+      margin: { left: leftMargin },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      didDrawCell: function (data) {
+        const { cell, doc } = data;
+        if (!cell) return;
 
-          const startX = cell.x;
-          const endX = cell.x + cell.width;
-          const yTop = cell.y;
-          const yBottom = cell.y + cell.height;
+        const startX = cell.x;
+        const endX = cell.x + cell.width;
+        const yTop = cell.y;
+        const yBottom = cell.y + cell.height;
 
-          // Draw bottom border for the last row
-           if (data.section === 'body') {
-            const lastRowIndex = data.table.body.length - 1;
-            // Only draw bottom border for the last row
-            if (data.row.index === lastRowIndex) {
-              // doc.line(startX, yBottom, endX, yBottom);
-            }
+        // Draw bottom border for the last row
+        if (data.section === 'body') {
+          const lastRowIndex = data.table.body.length - 1;
+          // Only draw bottom border for the last row
+          if (data.row.index === lastRowIndex) {
+            // doc.line(startX, yBottom, endX, yBottom);
           }
+        }
 
-          // Always draw top border for header
-          if (data.section === 'head') {
-            doc.line(startX, yBottom, endX, yBottom);
+        // Always draw top border for header
+        if (data.section === 'head') {
+          doc.line(startX, yBottom, endX, yBottom);
           //  doc.line(startX, yTop, endX, yTop);
-          }
-        },
-      });
-   
-    }
+        }
+      },
+    });
 
-    createRepairEstimateTotalTable_r6(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) 
-    {
+  }
 
-     const minHeightBodyCell = 6;
-      const vAlign = "bottom";
-      const grayColor=245;
-       const fontSz = 7;
-     
-      const headers: RowInput[] = [[
-      { content: this.translatedLangText.DESCRIPTION,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.RATE,  styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.QTY,  styles: { halign: 'center', valign: vAlign } },
+  createRepairEstimateTotalTable_r6(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+
+    const minHeightBodyCell = 6;
+    const vAlign = "bottom";
+    const grayColor = 245;
+    const fontSz = 7;
+
+    const headers: RowInput[] = [[
+      { content: this.translatedLangText.DESCRIPTION, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.RATE, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.QTY, styles: { halign: 'center', valign: vAlign } },
       { content: `${this.translatedLangText.OWNER}`, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.QTY,  styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.QTY, styles: { halign: 'center', valign: vAlign } },
       { content: `${this.translatedLangText.LESSEE}`, styles: { halign: 'center', valign: vAlign } },
     ]];
 
-    const WidthperCell = (pageWidth-rightMargin-leftMargin)/8;
-     const comStyles: any = {
+    const WidthperCell = (pageWidth - rightMargin - leftMargin) / 8;
+    const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell*2), minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell * 2), minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: WidthperCell, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: WidthperCell+1, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell*1.5), minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: WidthperCell + 1, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell * 1.5), minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: WidthperCell, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell*1.5)+1, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: (WidthperCell * 1.5) + 1, minCellHeight: minHeightBodyCell },
     };
 
-   
+
     var totalCellWidth = Object.values(comStyles)
-  .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
-   
+      .reduce((sum, col: any) => sum + (col.cellWidth || 0), 0);
+
     const rows: any[][] = [];
-     const fontStyle='normal';
+    const fontStyle = 'normal';
     rows.push([
       { content: this.translatedLangText.LABOUR, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: this.getLabourRate(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: `${this.getOwnerLabourHour_Table()}`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getOwnerLabourCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: `${this.getLesseeLabourHour_Table()} ${this.translatedLangText.HRS}`, styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: `${this.getLesseeLabourHour_Table()} ${this.translatedLangText.HRS}`, styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
     ]);
     rows.push([
       { content: this.translatedLangText.MATERIAL_COST$, styles: { halign: 'right', fontStyle: fontStyle } },
       { content: '---', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '---', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerTotalMaterialCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalMaterialCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '--', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeTotalMaterialCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
     ]);
     rows.push([
       { content: this.translatedLangText.TOTAL_COST, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerTotalCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerTotalCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeTotalCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } }
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.LABOUR_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getLabourDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerLabourDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerLabourDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeLabourDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } }
-      
+
     ]);
-     rows.push([
+    rows.push([
       { content: `${this.translatedLangText.MATERIAL_DISCOUNT} (${this.translatedLangText.PERCENTAGE_SYMBOL})`, styles: { halign: 'right', fontStyle: fontStyle } },
-     { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getMaterialDiscount(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerMaterialDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
+      { content: this.getOwnerMaterialDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: this.getLesseeMaterialDiscountCost_Table(), styles: { halign: 'center', fontStyle: fontStyle } },
-      
+
     ]);
-     rows.push([
-      { content: `${this.translatedLangText.TOTAL} (${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold' ,fontSize:(fontSz)} },
+    rows.push([
+      { content: `${this.translatedLangText.TOTAL} (${systemCurrencyCode})`, styles: { halign: 'right', fontStyle: 'bold', fontSize: (fontSz) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-       { content: this.getOwnerNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold', fontSize:(fontSz) } },
+      { content: this.getOwnerNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } },
       { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-      { content: this.getLesseeNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } },
+      { content: this.getLesseeNetCost_Table(), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } },
     ]);
 
-    if(this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode){
-      var netCost = Number(this.getNetCost_Table().replace(",",""));
-      var ownerNetCost = Number(this.getOwnerNetCost_Table().replace(",",""));
-      var lesseeNetCost = Number(this.getLesseeNetCost_Table().replace(",",""));
+    if (this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code != systemCurrencyCode) {
+      var netCost = Number(this.getNetCost_Table().replace(",", ""));
+      var ownerNetCost = Number(this.getOwnerNetCost_Table().replace(",", ""));
+      var lesseeNetCost = Number(this.getLesseeNetCost_Table().replace(",", ""));
       var rate = this.repairItem.storing_order_tank?.customer_company?.currency?.rate || 1;
       var foreignNetCost = netCost * rate;
       var foreignOwnerNetCost = ownerNetCost * rate;
       var foreignLesseeNetCost = lesseeNetCost * rate;
       rows.push([
-        { content: `${this.translatedLangText.TOTAL} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: `${this.translatedLangText.TOTAL} (${this.repairItem.storing_order_tank?.customer_company?.currency?.currency_code})`, styles: { halign: 'right', fontStyle: 'bold', fontSize: (fontSz) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-         { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignOwnerNetCost)), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } },
         { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
-        { content:Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: 'bold',fontSize:(fontSz) } },
+        { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignLesseeNetCost)), styles: { halign: 'center', fontStyle: 'bold', fontSize: (fontSz) } },
         // { content: '', styles: { halign: 'center', fontStyle: fontStyle } },
         // { content: Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(foreignNetCost)), styles: { halign: 'center', fontStyle: fontStyle } }
       ]);
-      startY-=6;
+      startY -= 6;
     }
 
-    var buffer=pageWidth-rightMargin-Number(totalCellWidth||0)+2;
-    var tabletLeftPos = (pageWidth/2) - (Number(totalCellWidth||0)/2) ;
-    var bufferSum=10;
+    var buffer = pageWidth - rightMargin - Number(totalCellWidth || 0) + 2;
+    var tabletLeftPos = (pageWidth / 2) - (Number(totalCellWidth || 0) / 2);
+    var bufferSum = 10;
     // var SumLabelLeftPos = tabletLeftPos - bufferSum;
-    var SumLabelLeftPos =leftMargin;
+    var SumLabelLeftPos = leftMargin;
     // Utility.addText(pdf, this.translatedLangText.SUMMARY_COST, startY-(fontSz/2.5), SumLabelLeftPos, 8,true);
     autoTable(pdf, {
-        head: headers,
-        body: rows,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: 7,
-          lineWidth:0.1
-        },
-        theme: 'plain',
-        margin: { left: leftMargin},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          fontStyle: 'bold',
-        },
-        columnStyles: comStyles,
-        didDrawCell: function (data) {
-          const { cell, doc } = data;
-          if (!cell) return;
+      head: headers,
+      body: rows,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: 7,
+        lineWidth: 0.1
+      },
+      theme: 'plain',
+      margin: { left: leftMargin },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        fontStyle: 'bold',
+      },
+      columnStyles: comStyles,
+      didDrawCell: function (data) {
+        const { cell, doc } = data;
+        if (!cell) return;
 
-          const startX = cell.x;
-          const endX = cell.x + cell.width;
-          const yTop = cell.y;
-          const yBottom = cell.y + cell.height;
+        const startX = cell.x;
+        const endX = cell.x + cell.width;
+        const yTop = cell.y;
+        const yBottom = cell.y + cell.height;
 
-          // doc.setDrawColor(0);   // black
-          // doc.setLineWidth(0.2); // thin line
+        // doc.setDrawColor(0);   // black
+        // doc.setLineWidth(0.2); // thin line
 
-          // ===== HEADER SECTION =====
-          if (data.section === 'head') {
-            // Draw top and bottom borders for the header
-            // doc.line(startX, yTop, endX, yTop);       // Top line
-            doc.line(startX, yBottom, endX, yBottom); // Bottom line
+        // ===== HEADER SECTION =====
+        if (data.section === 'head') {
+          // Draw top and bottom borders for the header
+          // doc.line(startX, yTop, endX, yTop);       // Top line
+          doc.line(startX, yBottom, endX, yBottom); // Bottom line
+        }
+
+        // ===== BODY SECTION =====
+        if (data.section === 'body') {
+          const lastRowIndex = data.table.body.length - 1;
+          // Only draw bottom border for the last row
+          if (data.row.index === lastRowIndex) {
+            // doc.line(startX, yBottom, endX, yBottom);
           }
+        }
+      },
+    });
+  }
 
-          // ===== BODY SECTION =====
-          if (data.section === 'body') {
-            const lastRowIndex = data.table.body.length - 1;
-            // Only draw bottom border for the last row
-            if (data.row.index === lastRowIndex) {
-              // doc.line(startX, yBottom, endX, yBottom);
-            }
-          }
-        },
-      });
-    }
-
-    addSurveyorInfoTable(pdf: jsPDF, pageWidth: number, pageHeight: number, leftMargin: number, rightMargin: number,topMargin:number,bottomMargin:number){
-       const grayColor=255;
-      const minHeightBodyCell = 8;
-      const contentWidth=pageWidth-leftMargin;
-        const vAlign = "bottom";
-        const hAlign ="left";
-         const surveyorInfo =  PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
-          var cellWPerUnit = (pageWidth-leftMargin-rightMargin)/2;
-           const appBy =  PDFUtility.FormatColon(this.translatedLangText.APPROVED_BY, "______________________________");
-         const headers: RowInput[] = [
+  addSurveyorInfoTable(pdf: jsPDF, pageWidth: number, pageHeight: number, leftMargin: number, rightMargin: number, topMargin: number, bottomMargin: number) {
+    const grayColor = 255;
+    const minHeightBodyCell = 8;
+    const contentWidth = pageWidth - leftMargin;
+    const vAlign = "bottom";
+    const hAlign = "left";
+    const surveyorInfo = PDFUtility.FormatColon(this.translatedLangText.PREPARED_BY, this.getSurveyorName());
+    var cellWPerUnit = (pageWidth - leftMargin - rightMargin) / 2;
+    const appBy = PDFUtility.FormatColon(this.translatedLangText.APPROVED_BY, "______________________________");
+    const headers: RowInput[] = [
       [
-      
+
         {
           content: surveyorInfo,
-          styles: { halign: hAlign, valign: vAlign,cellWidth:cellWPerUnit+1 , minCellHeight: minHeightBodyCell },
+          styles: { halign: hAlign, valign: vAlign, cellWidth: cellWPerUnit + 1, minCellHeight: minHeightBodyCell },
         },
         {
           content: appBy,
           // colSpan:2,
-          styles: { halign: hAlign, valign: vAlign,cellWidth:cellWPerUnit+1,minCellHeight: minHeightBodyCell }
+          styles: { halign: hAlign, valign: vAlign, cellWidth: cellWPerUnit + 1, minCellHeight: minHeightBodyCell }
         }
-       
+
       ],
-      
+
     ];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: vAlign,  minCellWidth: (cellWPerUnit)+2,  },
-      1: { halign: 'center', valign: vAlign, minCellWidth: (cellWPerUnit)+2, },
-     
+      0: { halign: 'center', valign: vAlign, minCellWidth: (cellWPerUnit) + 2, },
+      1: { halign: 'center', valign: vAlign, minCellWidth: (cellWPerUnit) + 2, },
+
     };
-    var bufferY =16;
-    var startY = pageHeight-bottomMargin - bufferY;
-    var fontSz=7;
+    var bufferY = 16;
+    var startY = pageHeight - bottomMargin - bufferY;
+    var fontSz = 7;
     autoTable(pdf, {
-        head: headers,
-        startY: startY,
-        styles: {
-          cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
-          fontSize: fontSz,
-        },
-        theme: 'grid',
-        margin: { left: leftMargin,bottom:10},
-        headStyles: {
-           fillColor: [grayColor, grayColor, grayColor],
-          textColor: 0,
-          lineWidth: 0.1,
-          fontStyle: 'normal',
-        },
-        
-        columnStyles: comStyles,
-        bodyStyles: {
+      head: headers,
+      startY: startY,
+      styles: {
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 },
+        fontSize: fontSz,
+      },
+      theme: 'grid',
+      margin: { left: leftMargin, bottom: 10 },
+      headStyles: {
+        fillColor: [grayColor, grayColor, grayColor],
+        textColor: 0,
+        lineWidth: 0.1,
+        fontStyle: 'normal',
+      },
+
+      columnStyles: comStyles,
+      bodyStyles: {
         fillColor: [255, 255, 255],
         lineWidth: 0.1,
-        },
+      },
 
-       
-      });
+
+    });
+  }
+
+  getLabourCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairItem?.labour_cost));
+    }
+    else {
+      return '';
     }
 
-    getLabourCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairItem?.labour_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      
+  }
+
+  getTotalLabourHour(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_hour_table));
+    }
+    else {
+      return '';
     }
 
-     getTotalLabourHour(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_hour_table));
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-     
-    
-      getTotalLabourCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-    //  getTotalLabourCost(): string{
-    //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
-    // }
+  }
 
-     getLabourDiscount(): string{
-      return this.repairItem?.labour_cost_discount;
+
+  getTotalLabourCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
+    }
+    else {
+      return '';
     }
 
-    getMaterialDiscount(): string{
-      return this.repairItem?.material_cost_discount;
+  }
+  //  getTotalLabourCost(): string{
+  //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
+  // }
+
+  getLabourDiscount(): string {
+    return this.repairItem?.labour_cost_discount;
+  }
+
+  getMaterialDiscount(): string {
+    return this.repairItem?.material_cost_discount;
+  }
+
+  // getNetCost(): string{
+  //   var netCost = Number(this.getTotalCost().replace(",",""))+Number(this.getMaterialDiscountCost().replace(",",""))+Number(this.getLabourDiscountCost().replace(",",""));
+  //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+  // }
+
+  getMaterialDiscountCost(): string {
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_cost))}`;
+  }
+
+  getLabourDiscountCost(): string {
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_cost))}`;
+  }
+
+  getTotalMaterialCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
+    }
+    else {
+      return '';
+    }
+  }
+
+  // getTotalMaterialCost(): string{
+  //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
+  // }
+
+  getNetCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_cost));
+    }
+    else {
+      return '';
     }
 
-    // getNetCost(): string{
-    //   var netCost = Number(this.getTotalCost().replace(",",""))+Number(this.getMaterialDiscountCost().replace(",",""))+Number(this.getLabourDiscountCost().replace(",",""));
-    //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-    // }
+  }
 
-    getMaterialDiscountCost(): string{
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_cost))}` ;
+  getTotalLabourHour_Table(): string {
+
+    return String(BusinessLogicUtil.roundUpCost(this.repairCost?.total_hour_table));
+  }
+
+
+  getTotalLabourCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
+
+
+  }
+
+
+  getLabourCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairItem?.labour_cost));
+  }
+
+  getTotalMaterialCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
+
+  }
+
+  getNetCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_cost));
+
+
+  }
+
+  getTotalCost_Table(): string {
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
+  }
+
+  getDiscountAmount(): string {
+    var totalDiscount = Number(this.repairCost?.discount_labour_cost) + Number(this.repairCost?.discount_mat_cost);
+
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+  }
+  getTotalCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
+    }
+    else {
+      return '';
     }
 
-     getLabourDiscountCost(): string{
-      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_cost))}` ;
+  }
+
+  // getTotalCost(): string{
+  //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
+  // }
+
+  getOwnerDiscountAmount(ApprovedValue: boolean = false): string {
+    var totalDiscount = Number(this.repairCost?.discount_labour_owner_cost) + Number(this.repairCost?.discount_mat_owner_cost);
+
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+    }
+    else {
+      return '';
     }
 
-    getTotalMaterialCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
-       }
-       else 
-       {
-          return '';
-       }
-   }
+    //  return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+  }
 
-    // getTotalMaterialCost(): string{
-    //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
-    // }
-
-     getNetCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      
+  getOwnerLabourCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+    }
+    else {
+      return '';
     }
 
-    getTotalLabourHour_Table(): string{
-      
-         return String(BusinessLogicUtil.roundUpCost(this.repairCost?.total_hour_table));
+    // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+  }
+
+  getOwnerLabourHour(ApprovedValue: boolean = false): string {
+
+    var labourHour = Number(this.getTotalLabourHour().replace(",", "")) - Number(this.repairCost?.total_lessee_hour);
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(labourHour);
     }
-     
-    
-    getTotalLabourCost_Table(): string{
-       
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_labour_cost));
-     
-      
+    else {
+      return '';
     }
+    // return Utility.formatNumberDisplay(labourHour);
+  }
 
 
-    getLabourCost_Table(): string{
-       
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairItem?.labour_cost));
+  getOwnerMaterialDiscountCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
+    }
+    else {
+      return '';
     }
 
-    getTotalMaterialCost_Table(): string{
-       
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_mat_cost));
-     
-   }
+  }
 
-     getNetCost_Table(): string{
-      
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_cost));
-      
-      
+  getOwnerLabourDiscountCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
+    }
+    else {
+      return '';
     }
 
-    getTotalCost_Table(): string{
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
+  }
+  getOwnerTotalCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
+    }
+    else {
+      return '';
     }
 
-    getDiscountAmount(): string{
-      var totalDiscount = Number(this.repairCost?.discount_labour_cost)+Number(this.repairCost?.discount_mat_cost);
-
-       return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+  }
+  getOwnerTotalMaterialCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      //  var discMaterialCost = Number(this.repairCost?.total_owner_mat_cost) - Number(this.repairCost?.discount_mat_owner_cost);
+      //  return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(discMaterialCost));
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
     }
-     getTotalCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
-       }
-       else 
-       {
-          return '';
-       }
-      
+    else {
+      return '';
     }
 
-    // getTotalCost(): string{
-    //   return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_cost_table));
-    // }
+  }
 
-     getOwnerDiscountAmount(ApprovedValue:boolean=false): string{
-      var totalDiscount = Number(this.repairCost?.discount_labour_owner_cost)+Number(this.repairCost?.discount_mat_owner_cost);
-
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
-       }
-       else
-       {
-          return '';
-       }
-
-      //  return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+  getOwnerNetCost(ApprovedValue: boolean = false): string {
+    var netCost = this.repairCost?.net_owner_cost;
+    // var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
     }
-
-    getOwnerLabourCost(ApprovedValue:boolean=false): string{
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
-       }
-       else 
-       {
-          return '';
-       }
-    
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
-    }
-
-    getOwnerLabourHour(ApprovedValue:boolean=false): string{
-
-      var labourHour = Number(this.getTotalLabourHour().replace(",",""))-Number(this.repairCost?.total_lessee_hour);
-       var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(labourHour);
-       }
-       else 
-       {
-          return '';
-       }
-      // return Utility.formatNumberDisplay(labourHour);
-    }
-
-    
-    getOwnerMaterialDiscountCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-
-    getOwnerLabourDiscountCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-     getOwnerTotalCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-    getOwnerTotalMaterialCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        //  var discMaterialCost = Number(this.repairCost?.total_owner_mat_cost) - Number(this.repairCost?.discount_mat_owner_cost);
-        //  return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(discMaterialCost));
-         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-
-    getOwnerNetCost(ApprovedValue:boolean=false): string
-    {
-      var netCost =this.repairCost?.net_owner_cost;
-      // var netCost = Number(this.getOwnerTotalCost().replace(",",""))+Number(this.getOwnerMaterialDiscountCost().replace(",",""))+Number(this.getOwnerLabourDiscountCost().replace(",",""));
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-       }
-       else 
-       {
-          return '';
-       }
-      
-      
-    }
-   
-
-    getLesseeLabourCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
-    }
-     
-    getLesseeDiscountAmount(ApprovedValue:boolean=false): string{
-      var totalDiscount = Number(this.repairCost?.discount_labour_lessee_cost)+Number(this.repairCost?.discount_mat_lessee_cost);
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
-       }
-       else
-       {
-          return '';
-       }
-    }
-    getLesseeLabourHour(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
-       }
-       else 
-       {
-          return '';
-       }
-      // return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
-    }
-
-    getLesseeTotalCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_lessee_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
-    }
-    getLesseeTotalMaterialCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
-       }
-       else 
-       {
-          return '';
-       }
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
-    }
-
-    getLesseeMaterialDiscountCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return `- ${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
-       }
-       else 
-       {
-          return '';
-       }
-      
-    }
-    getLesseeLabourDiscountCost(ApprovedValue:boolean=false): string
-    {
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
-       }
-       else 
-       {
-          return '';
-       }
-      
+    else {
+      return '';
     }
 
 
-     getLesseeNetCost(ApprovedValue:boolean=false): string
-    {
-      var netCost =this.repairCost?.net_lessee_cost;
-      // /var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
-      var isApproved= BusinessLogicUtil.isEstimateApproved(this.repairItem);
-       if((isApproved && ApprovedValue)||(!isApproved && !ApprovedValue))
-       {
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-       }
-       else 
-       {
-          return '';
-       }
-       
-      // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-    }
-
-   
-    
-    displayApproveQty(rep: RepairPartItem) {
-        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
-          return 0;
-        }
-        return rep.approve_part === true ? rep.approve_qty : rep.quantity;
-      }
-    
-      displayApproveHour(rep: RepairPartItem) {
-        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
-          return 0;
-        }
-        return rep.approve_part === true ? rep.approve_hour : rep.hour;
-      }
-    
-      displayApproveCost(rep: RepairPartItem) {
-        if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
-          return Utility.convertNumber(0, 2);
-        }
-        
-        const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
-        return Utility.convertNumber(cost, 2);
-      }
-
-      getSurveyorName()
-      {
-        return this.repairItem?.aspnetsuser?.userName||'';
-      }
-
-      getLabourRate()
-      {
-        return  Utility.formatNumberDisplay(this.repairItem?.labour_cost||0);
-      }
-
-      getOwnerDiscountAmount_Table(): string{
-       var totalDiscount = Number(this.repairCost?.discount_labour_owner_cost)+Number(this.repairCost?.discount_mat_owner_cost);
-       return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
-      
-      }
-
-    getOwnerLabourCost_Table(): string{
-      
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
-      
-    }
-
-    getOwnerLabourHour_Table(): string{
-
-      var labourHour = Number(this.getTotalLabourHour_Table().replace(",",""))-Number(this.repairCost?.total_lessee_hour);
-       if(labourHour>0) return String(labourHour);
-       else return '0';
-    }
-
-    
-    getOwnerMaterialDiscountCost_Table(): string
-    {
-     
-          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
-     
-    }
-
-    getOwnerLabourDiscountCost_Table(): string
-    {
-      
-         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
-      
-      
-    }
-     getOwnerTotalCost_Table(): string
-    {
-      
-         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
-      
-      
-    }
-    getOwnerTotalMaterialCost_Table(): string
-    {
-         return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
-    }
-
-    getOwnerNetCost_Table(): string
-    {
-      var netCost =this.repairCost?.net_owner_cost;
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-    }
-   
-
-    getLesseeLabourCost_Table(): string
-    {
-      
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
-      
-    }
-     
-    getLesseeDiscountAmount_Table(): string{
-      var totalDiscount = Number(this.repairCost?.discount_labour_lessee_cost)+Number(this.repairCost?.discount_mat_lessee_cost);
-         return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
-    }
-    getLesseeLabourHour_Table(): string
-    {
-      
-          return String(this.repairCost?.total_lessee_hour).replace(".00","");
-      
-    }
-
-    getLesseeTotalCost_Table(): string
-    {
-      
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
-      
-    }
-    getLesseeTotalMaterialCost_Table(): string
-    {
-          return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
-    }
-
-    getLesseeMaterialDiscountCost_Table(): string
-    {
-          return `- ${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
-    }
-    getLesseeLabourDiscountCost_Table(): string
-    {
-          return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
-    }
+  }
 
 
-     getLesseeNetCost_Table(): string
-    {
-      var netCost =this.repairCost?.net_lessee_cost;
-      
-        return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
-      
+  getLesseeLabourCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+    }
+    else {
+      return '';
+    }
+    // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+  }
+
+  getLesseeDiscountAmount(ApprovedValue: boolean = false): string {
+    var totalDiscount = Number(this.repairCost?.discount_labour_lessee_cost) + Number(this.repairCost?.discount_mat_lessee_cost);
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+    }
+    else {
+      return '';
+    }
+  }
+  getLesseeLabourHour(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
+    }
+    else {
+      return '';
+    }
+    // return Utility.formatNumberDisplay(this.repairCost?.total_lessee_hour);
+  }
+
+  getLesseeTotalCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.net_lessee_cost));
+    }
+    else {
+      return '';
+    }
+    // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+  }
+  getLesseeTotalMaterialCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
+    }
+    else {
+      return '';
+    }
+    // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
+  }
+
+  getLesseeMaterialDiscountCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `- ${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
+    }
+    else {
+      return '';
     }
 
+  }
+  getLesseeLabourDiscountCost(ApprovedValue: boolean = false): string {
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
+    }
+    else {
+      return '';
+    }
+
+  }
+
+
+  getLesseeNetCost(ApprovedValue: boolean = false): string {
+    var netCost = this.repairCost?.net_lessee_cost;
+    // /var netCost = Number(this.getLesseeTotalCost().replace(",",""))+Number(this.getLesseeMaterialDiscountCost().replace(",",""))+Number(this.getLesseeLabourDiscountCost().replace(",",""));
+    var isApproved = BusinessLogicUtil.isEstimateApproved(this.repairItem);
+    if ((isApproved && ApprovedValue) || (!isApproved && !ApprovedValue)) {
+      return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+    }
+    else {
+      return '';
+    }
+
+    // return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+  }
+
+
+
+  displayApproveQty(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_qty : rep.quantity;
+  }
+
+  displayApproveHour(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_hour : rep.hour;
+  }
+
+  displayApproveCost(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return Utility.convertNumber(0, 2);
+    }
+
+    const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
+    return Utility.convertNumber(cost, 2);
+  }
+
+  getSurveyorName() {
+    return this.repairItem?.aspnetsuser?.userName || '';
+  }
+
+  getLabourRate() {
+    return Utility.formatNumberDisplay(this.repairItem?.labour_cost || 0);
+  }
+
+  getOwnerDiscountAmount_Table(): string {
+    var totalDiscount = Number(this.repairCost?.discount_labour_owner_cost) + Number(this.repairCost?.discount_mat_owner_cost);
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+
+  }
+
+  getOwnerLabourCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_labour_cost));
+
+  }
+
+  getOwnerLabourHour_Table(): string {
+
+    var labourHour = Number(this.getTotalLabourHour_Table().replace(",", "")) - Number(this.repairCost?.total_lessee_hour);
+    if (labourHour > 0) return String(labourHour);
+    else return '0';
+  }
+
+
+  getOwnerMaterialDiscountCost_Table(): string {
+
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_owner_cost))}`;
+
+  }
+
+  getOwnerLabourDiscountCost_Table(): string {
+
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_owner_cost))}`;
+
+
+  }
+  getOwnerTotalCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_cost));
+
+
+  }
+  getOwnerTotalMaterialCost_Table(): string {
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_owner_mat_cost));
+  }
+
+  getOwnerNetCost_Table(): string {
+    var netCost = this.repairCost?.net_owner_cost;
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+  }
+
+
+  getLesseeLabourCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_labour_cost));
+
+  }
+
+  getLesseeDiscountAmount_Table(): string {
+    var totalDiscount = Number(this.repairCost?.discount_labour_lessee_cost) + Number(this.repairCost?.discount_mat_lessee_cost);
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(totalDiscount))}`;
+  }
+  getLesseeLabourHour_Table(): string {
+
+    return String(this.repairCost?.total_lessee_hour).replace(".00", "");
+
+  }
+
+  getLesseeTotalCost_Table(): string {
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_cost));
+
+  }
+  getLesseeTotalMaterialCost_Table(): string {
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.total_lessee_mat_cost));
+  }
+
+  getLesseeMaterialDiscountCost_Table(): string {
+    return `- ${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_mat_lessee_cost))}`;
+  }
+  getLesseeLabourDiscountCost_Table(): string {
+    return `-${Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(this.repairCost?.discount_labour_lessee_cost))}`;
+  }
+
+
+  getLesseeNetCost_Table(): string {
+    var netCost = this.repairCost?.net_lessee_cost;
+
+    return Utility.formatNumberDisplay(BusinessLogicUtil.roundUpCost(netCost));
+
+  }
 }

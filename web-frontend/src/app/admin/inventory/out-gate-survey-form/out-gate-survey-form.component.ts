@@ -34,6 +34,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
@@ -101,7 +102,8 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
     MatButtonToggleModule,
     ExclusiveToggleDirective,
     GlobalMaxCharDirective,
-    NumericTextDirective
+    NumericTextDirective,
+    ErrorDialogComponent
   ],
   providers: [
     {
@@ -223,6 +225,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     SIDES: 'COMMON-FORM.SIDES',
     SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
     DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    MAX_DAMAGE_PHOTOS: 'COMMON-FORM.MAX-DAMAGE-PHOTOS',
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
@@ -251,6 +254,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL'
   }
   private destroy$ = new Subject<void>();
+
+  readonly MAX_DMG_PHOTOS = 10;
 
   out_gate_guid: string | null | undefined;
   ro_sot_guid: string | null | undefined;
@@ -1738,6 +1743,19 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     ComponentUtil.showNotification('snackbar-error', successMsg, 'top', 'center', this.snackBar);
   }
 
+  errorDialog(errMessage?: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    this.dialog.open(ErrorDialogComponent, {
+      data: { messageText: errMessage, action: 'error' },
+      direction: tempDirection
+    });
+  }
+
   handleDeleteSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.DELETE_SUCCESS;
@@ -1954,6 +1972,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
+      if (this.dmgImages().length + input.files.length > this.MAX_DMG_PHOTOS) {
+        this.errorDialog(this.translatedLangText.MAX_DAMAGE_PHOTOS);
+        input.value = '';
+        return;
+      }
       Array.from(input.files).forEach(async file => {
         const compressed = await Utility.compressImage(file);
         const reader = new FileReader();

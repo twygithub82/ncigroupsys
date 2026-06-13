@@ -2362,7 +2362,11 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
             guid
             name
             def_template_guid
+            email
             delete_dt
+            cc_contact_person {
+              email
+            }
           }
         }
         customer_company {
