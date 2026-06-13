@@ -1438,7 +1438,9 @@
     "SO": "SO",
     "RO": "RO",
     "COMPLETE": "Complete",
-    "SAVE-ERROR": "Error"
+    "SAVE-ERROR": "Error",
+    "MAX-DAMAGE-PHOTOS": "Maximum 10 damage photos allowed.",
+    "MAX-REPAIR-PHOTOS": "Maximum 40 repair photos allowed."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

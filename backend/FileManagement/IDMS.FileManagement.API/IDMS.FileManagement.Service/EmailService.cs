@@ -208,7 +208,7 @@ namespace IDMS.Email.Service
                 await _context.email_job.AddAsync(newEmailJob);
                 var res = await _context.SaveChangesAsync();
 
-                if (emailJob.type.EqualsIgnore("IN_GATE") || emailJob.type.EqualsIgnore("RESIDUE"))
+                if (emailJob.type.EqualsIgnore("IN_GATE") || emailJob.type.EqualsIgnore("RESIDUE") || emailJob.type.EqualsIgnore("REPAIR"))
                     Task.Run(() => EirEmailThread(new List<email_job>() { newEmailJob }));
                 //Task.Run(() => InGateEmailThread(emailJob.eir_group_guid, emailJob.tank_no, newEmailJob.guid,
                 //    emailJob.to_addresses, emailJob.cc_addresses, emailJob.bcc_addresses));
@@ -327,6 +327,8 @@ namespace IDMS.Email.Service
                                 var ccAddress = JsonSerializer.Deserialize<List<string>>(emJob.cc_addresses ?? "[]");
                                 var bccAddress = JsonSerializer.Deserialize<List<string>>(emJob.bcc_addresses ?? "[]");
 
+                                double sizeInMB = zipStream.Length / 1024d / 1024d;
+                                _logger.LogInformation($"Email attachment size {sizeInMB} MB");
 
                                 bool sent = await SendEmailWithZipAttachmentAsync(toAddress, ccAddress, bccAddress, subject, htmlBody, zipBytes, $"{emJob.tank_no}.zip");
                                 if (sent)
