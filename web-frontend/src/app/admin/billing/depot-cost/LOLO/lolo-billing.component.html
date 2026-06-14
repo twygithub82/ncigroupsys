@@ -279,10 +279,10 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="cost">
-          <mat-header-cell mat-header-cell *matHeaderCellDef  [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.COST}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row"  [ngClass]="''">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
             <span class="mobile-label">{{translatedLangText.COST}}:</span>{{DisplayCost(row)}}
           </mat-cell>
         </ng-container>
