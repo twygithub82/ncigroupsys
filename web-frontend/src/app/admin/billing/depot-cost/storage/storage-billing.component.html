@@ -240,24 +240,24 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="cutoff_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.CUTOFF_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.CUTOFF_DATE}}:</span>{{DisplayCutOff(row.storing_order_tank)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.DAYS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getStorageDays(row)}}
           </mat-cell>
         </ng-container>
           <ng-container matColumnDef="free-days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.FREE_STORAGE}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" class="">
