@@ -255,10 +255,10 @@
         </ng-container>
         <ng-container matColumnDef="customer">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="' justify-content-center'">
+            [ngClass]="''">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
               matTooltip={{getCustomerName(row)}}>{{getCustomerCode(row)}}</span>
           </mat-cell>
