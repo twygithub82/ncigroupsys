@@ -204,7 +204,7 @@
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'ttbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
@@ -265,10 +265,10 @@
           </mat-cell>
         </ng-container>
           <ng-container matColumnDef="release-date">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.RELEASE_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" class="">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span class="mobile-label">{{translatedLangText.RELEASE_DATE}}:</span>{{getReleaseDate(row)}}
           </mat-cell>
         </ng-container>
@@ -298,7 +298,7 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.INVOICE_DATE}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
