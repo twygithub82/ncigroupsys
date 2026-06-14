@@ -1,8 +1,8 @@
 import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { firstValueFrom, Observable, of } from 'rxjs';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { BillingItem } from './billing';
 import { CustomerCompanyItem } from './customer-company';
@@ -865,6 +865,43 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       );
   }
 
+ searchAll(
+  where?: any,
+  order?: any,
+  batchSize: number = 100
+): Observable<InGateCleaningItem[]> {
+
+  const allItems: InGateCleaningItem[] = [];
+  let after: string | undefined;
+
+  this.loadingSubject.next(true);
+
+  const loadBatch = (): Observable<InGateCleaningItem[]> => {
+    return this.search(
+      where,
+      order,
+      batchSize,
+      after
+    ).pipe(
+      switchMap(items => {
+        allItems.push(...items);
+
+        if (this.pageInfo?.hasNextPage) {
+          after = this.pageInfo.endCursor;
+          return loadBatch();
+        }
+
+        return of(allItems);
+      })
+    );
+  };
+
+  return loadBatch().pipe(
+    finalize(() => {
+      this.loadingSubject.next(false);
+    })
+  );
+}
   getCleaningForMovement(sot_guid?: any): Observable<InGateCleaningItem[]> {
     this.loadingSubject.next(true);
     const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid }, status_cv: { in: ["NO_ACTION", "APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] } })

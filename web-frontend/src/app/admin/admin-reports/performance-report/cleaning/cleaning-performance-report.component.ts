@@ -34,6 +34,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { CleanerPerformance, ReportDS } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
@@ -41,7 +42,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { UserDS } from 'app/data-sources/user';
+import { UserDS, UserItem } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { CleanerPerformanceDetailExcelComponent } from 'app/document-template/excel/admin-reports/performance/cleaner/cleaner-detail-excel.component';
 import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
@@ -174,7 +175,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     CARGO: "COMMON-FORM.CARGO",
     CLEANER: "COMMON-FORM.CLEANER",
     CLEANING_BAY: "COMMON-FORM.BAY",
-     WARNING: 'COMMON-FORM.WARNING',
+    WARNING: 'COMMON-FORM.WARNING',
     NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
   }
 
@@ -202,6 +203,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
+  cleanerTeamList: UserItem[] = [];
   cleanTeamList: TeamItem[] = [];
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
@@ -213,6 +215,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   repairTypeCvList: CodeValuesItem[] = [];
+  cleanDS: InGateCleaningDS;
 
   cleanProcessList: CleaningMethodItem[] = [];
   cargoList: TariffCleaningItem[] = [];
@@ -263,6 +266,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.reportDS = new ReportDS(this.apollo);
     this.clnPrcsDS = new CleaningMethodDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
+    this.cleanDS = new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -369,13 +373,27 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           searchCriteria = value;
         }
 
-        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_CLEANING' } } } } }] },
-          { userName: 'ASC' }).subscribe(data => {
-            this.cleanerList = data
-              .map(u => u.userName)
-              .filter((name): name is string => name !== undefined);
+        // this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_CLEANING' } } } } }] },
+        //  this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { team_user: { some: { team: { department_cv: { eq: 'CLEANING' } } } } }] },
+        //   { userName: 'ASC' }).subscribe(data => {
+        //     this.cleanerList = data
+        //       .map(u => u.userName)
+        //       .filter((name): name is string => name !== undefined);
 
-          });
+        //   });
+
+        this.subs.sink = this.cleanDS.searchAll(
+          { and: [{ complete_by: { contains: searchCriteria } }] },
+          { complete_by: 'ASC' }
+        ).subscribe(data => {
+
+          this.cleanerList = [...new Set(
+            data
+              .map(u => u.complete_by)
+              .filter((name): name is string => !!name)
+          )];
+
+        });
       })
     ).subscribe();
   }
@@ -809,24 +827,24 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     });
   }
 
-   ShowWarningMessage() {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ErrorDialogComponent, {
-          disableClose: true,
-          data: {
-            headerText: this.translatedLangText.WARNING,
-            messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
-            act: "warn"
-          },
-          direction: tempDirection
-        });
-        dialogRef.afterClosed().subscribe(result => {
-        });
-      }
-  
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_REPORT_AVAILABLE],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
+
 }
