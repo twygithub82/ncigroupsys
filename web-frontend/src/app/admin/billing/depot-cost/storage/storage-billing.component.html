@@ -16,7 +16,7 @@
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
-          </mat-panel-description>
+          </mat-panel-description> 
         </mat-expansion-panel-header>
         <button type="submit" style="display: none;">Submit</button>
         <div class="row">
@@ -216,7 +216,7 @@
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-            <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span 
+            <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
               matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
           </mat-cell>
         </ng-container>

@@ -346,7 +346,7 @@
       @if (billDS.loading$ | async) {
       <div class="tbl-spinner">
         <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-        </mat-progress-spinner>
+        </mat-progress-spinner> 
       </div>
       }
       <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
