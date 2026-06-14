@@ -16,7 +16,7 @@
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
-          </mat-panel-description>
+          </mat-panel-description> 
         </mat-expansion-panel-header>
         <button type="submit" style="display: none;">Submit</button>
         <div class="row">
@@ -207,57 +207,57 @@
           <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'ttbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="customer">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
               matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="eir_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span
               class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="cutoff_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.CUTOFF_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span
               class="mobile-label">{{translatedLangText.CUTOFF_DATE}}:</span>{{DisplayCutOff(row.storing_order_tank)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.DAYS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getStorageDays(row)}}
           </mat-cell>
         </ng-container>
           <ng-container matColumnDef="free-days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.FREE_STORAGE}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" class="">
@@ -265,7 +265,7 @@
           </mat-cell>
         </ng-container>
           <ng-container matColumnDef="release-date">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.RELEASE_DATE}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" class="">
@@ -273,18 +273,18 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="cost">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.COST}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.COST}}:</span>{{displayNumber(row.storage_cost)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
             {{translatedLangText.INVOICE_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <!-- @if(row.invoiced)
                 { -->
             <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>
@@ -298,10 +298,10 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.INVOICE_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <!-- @if(row.invoiced)
                 { -->
             <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
