@@ -246,10 +246,10 @@
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
           </mat-cell>
         </ng-container>
@@ -276,28 +276,28 @@
         </ng-container>
 
         <ng-container matColumnDef="eir_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_status_cv">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.STATUS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
           </mat-cell>
@@ -322,18 +322,18 @@
               </mat-cell>
             </ng-container> -->
         <ng-container matColumnDef="cost">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.COST}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.COST}}:</span>{{ this.parse2Decimal(row.total_cost) }}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.INVOICE_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             @if(row.invoiced)
             {
             <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>
@@ -347,10 +347,10 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="invoice_date">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.INVOICE_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             @if(row.invoiced)
             {
             <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
