@@ -328,7 +328,7 @@
                                   <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
-                                @if (isAllowExport() && modulePackageService.AllowPdfReport()) {
+                                @if (isAllowExport(steamRow) && modulePackageService.AllowPdfReport()) {
                                 <button mat-menu-item (click)="onExport($event,steamRow)">
                                   <i class="fas fa-file-export"></i>
                                     {{translatedLangText.EXPORT}}

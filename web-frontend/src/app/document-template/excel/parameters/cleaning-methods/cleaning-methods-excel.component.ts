@@ -369,7 +369,7 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
         index+1,
          item.name || "-",
         item.description || "-",
-        item.cleaning_category?.description || "-",
+        item.cleaning_category?.name || "-",
         this.displayLastUpdated(item) || "-",
 
       ];
@@ -397,23 +397,7 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
     const totalColumns = head[0].length;
     var fileName ="CleaningProcess.xlsx";
     Utility.saveExcel(rows, fileName, totalColumns);
-    // const rows: (string | number)[][] = [
-    //   ...head,
-    //   ...data
-    // ];
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-    //  worksheet['!cols'] = rows[0].map((_, colIndex) => {
-    //   const maxLength = rows.reduce((max, row) => {
-    //     const cell = row[colIndex];
-    //     return Math.max(max, cell ? cell.toString().length : 0);
-    //   }, 10);
-    //   return { wch: maxLength + 2 };
-    // });
-    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-    // XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-    // XLSX.writeFile(workbook, "CleaningProcess.xlsx");
+   
     this.dialogRef.close();
   }
 

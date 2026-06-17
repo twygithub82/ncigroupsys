@@ -403,7 +403,7 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
              index++, // increment index for each item
              item.name || "-",
              item.description || "-",
-            item.cleaning_category?.description || "-",
+            item.cleaning_category?.name || "-",
             this.displayLastUpdated(item) || "-"
            ];
  
