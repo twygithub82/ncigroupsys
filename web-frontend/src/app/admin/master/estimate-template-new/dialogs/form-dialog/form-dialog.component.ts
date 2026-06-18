@@ -380,7 +380,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               subgroupName?.enable();
             }
             if ((this.subgroupNameCvList?.length ?? 0) > 1) {
-              this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList,this.data.translatedLangText.ALL, '');
+               this.subgroupNameCvList = this.subgroupNameCvList?.sort((a, b) => a.description!.localeCompare(b.description!));
+              // this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList,this.data.translatedLangText.ALL, '');
             } else {
               subgroupName?.disable();
             }

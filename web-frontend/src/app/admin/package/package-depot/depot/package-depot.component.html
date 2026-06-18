@@ -152,10 +152,10 @@
             </ng-container> -->
             <ng-container matColumnDef="customer">
               <mat-header-cell *matHeaderCellDef mat-sort-header="customer" disableClear
-                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 {{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>
@@ -204,6 +204,15 @@
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.FREE_DAYS}}:</span>
                 {{row.free_storage}}</mat-cell>
+            </ng-container>
+             <ng-container matColumnDef="storage_calc">
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.STORAGE_CALCULATE_BY
+                }}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                <span class="mobile-label">{{this.translatedLangText.STORAGE_CALCULATE_BY}}:</span>
+                {{row.storage_calc}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update">
               <mat-header-cell *matHeaderCellDef mat-sort-header="last_update" disableClear

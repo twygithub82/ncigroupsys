@@ -25,12 +25,12 @@
                       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
-                          <input matInput formControlName="cargo_name" required maxlength="255">
-                          <!-- @if (tcForm?.get('cargo_name')?.hasError('required')) {
+                          <input matInput formControlName="cargo_name" required maxlength="255" (blur)="checkCargoNameExists()">
+                          @if (tcForm?.get('cargo_name')?.hasError('exists')) {
                           <mat-error>
-                            {{langText.CARGO_NAME | translate}} {{langText.CARGO_REQUIRED | translate}}
+                            {{langText.RECORD_EXISTS | translate}} 
                           </mat-error>
-                          } -->
+                          }
                         </mat-form-field>
                       </div>
 

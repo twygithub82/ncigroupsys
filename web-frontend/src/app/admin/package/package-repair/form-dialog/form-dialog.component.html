@@ -80,11 +80,11 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_CODE
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  '"
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  '"
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                         }}:</span>{{row.package_repair.customer_company.code}}</mat-cell>
@@ -102,11 +102,11 @@
                   </ng-container>
                   <ng-container matColumnDef="email">
                     <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-3_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matHeaderCellDef>{{translatedLangText.PART_NAME
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-3_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.PART_NAME
                         }}:</span>{{row.package_repair.tariff_repair?.part_name}}</mat-cell>

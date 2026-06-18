@@ -111,7 +111,8 @@
                     <input matInput formControlName="email" required>
                     @if (ccForm?.get('email')?.hasError('email')) {
                     <mat-error>
-                      {{this.translatedLangText.EMAIL}} {{this.translatedLangText.INVALID_FORMAT}}
+                      <!-- {{this.translatedLangText.EMAIL}}  -->
+                      {{this.translatedLangText.INVALID_FORMAT}}
                     </mat-error>
                   }
                   </mat-form-field>
@@ -321,21 +322,7 @@
                         </mat-cell>
                       </ng-container>
 
-                      <!-- <ng-container matColumnDef="actions">
-                        <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
-                          <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="handleDelete($event, row, i)">
-                              <mat-icon>delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
-                            </button>
-                          </mat-menu>
-                        </mat-cell>
-                      </ng-container> -->
+                    
 
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0"

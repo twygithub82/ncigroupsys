@@ -33,10 +33,10 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{translatedLangText.CUSTOMER
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{translatedLangText.CUSTOMER
                       }}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER
                         }}:</span>{{row.customer_company.code}}</mat-cell>
                   </ng-container>
@@ -51,10 +51,10 @@
                   </ng-container>
                   <ng-container matColumnDef="description">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.RESIDUE_TYPE
+                      [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.RESIDUE_TYPE
                       }}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.RESIDUE_TYPE
                         }}:</span>{{row.tariff_residue?.description}}</mat-cell>
                   </ng-container>
