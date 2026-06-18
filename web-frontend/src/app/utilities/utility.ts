@@ -35,73 +35,73 @@ import { Q } from "@angular/cdk/keycodes";
 export class Utility {
 
   static compressImageByMP(
-  file: File,
-  targetMP = 1.2,
-  quality = 0.75
-): Promise<File> {
-  return new Promise((resolve) => {
-    if (!file.type.startsWith('image/')) {
-      resolve(file);
-      return;
-    }
-
-    // Restrict target MP to 0.1 ~ 1.2
-    targetMP = Math.max(0.1, Math.min(1.2, targetMP));
-
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-
-      let width = img.width;
-      let height = img.height;
-
-      const currentPixels = width * height;
-      const targetPixels = targetMP * 1_000_000;
-
-      // Resize only when current image exceeds target MP
-      if (currentPixels > targetPixels) {
-        const scaleFactor = Math.sqrt(targetPixels / currentPixels);
-
-        width = Math.round(width * scaleFactor);
-        height = Math.round(height * scaleFactor);
+    file: File,
+    targetMP = 1.2,
+    quality = 0.75
+  ): Promise<File> {
+    return new Promise((resolve) => {
+      if (!file.type.startsWith('image/')) {
+        resolve(file);
+        return;
       }
 
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
+      // Restrict target MP to 0.1 ~ 1.2
+      targetMP = Math.max(0.1, Math.min(1.2, targetMP));
 
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0, width, height);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
 
-      canvas.toBlob(
-        (blob) => {
-          resolve(
-            blob
-              ? new File([blob], file.name, {
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+
+        let width = img.width;
+        let height = img.height;
+
+        const currentPixels = width * height;
+        const targetPixels = targetMP * 1_000_000;
+
+        // Resize only when current image exceeds target MP
+        if (currentPixels > targetPixels) {
+          const scaleFactor = Math.sqrt(targetPixels / currentPixels);
+
+          width = Math.round(width * scaleFactor);
+          height = Math.round(height * scaleFactor);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            resolve(
+              blob
+                ? new File([blob], file.name, {
                   type: 'image/jpeg',
                   lastModified: Date.now(),
                 })
-              : file
-          );
-        },
-        'image/jpeg',
-        quality
-      );
-    };
+                : file
+            );
+          },
+          'image/jpeg',
+          quality
+        );
+      };
 
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(file);
-    };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
 
-    img.src = url;
-  });
-}
+      img.src = url;
+    });
+  }
 
-   static async compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.75): Promise<File> {
-    var compressed =UploadImageResolution;
+  static async compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.75): Promise<File> {
+    var compressed = UploadImageResolution;
     return await this.compressImageByMP(file, compressed, quality);
   }
 
@@ -778,6 +778,12 @@ export class Utility {
   static onAlphaOnly(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    form?.setValue(input.value, { emitEvent: false });
+  }
+
+  static onAlphaOnlyName(event: Event, form: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^\p{L}\s]/gu, '');
     form?.setValue(input.value, { emitEvent: false });
   }
 
