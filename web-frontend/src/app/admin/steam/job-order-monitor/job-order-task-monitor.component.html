@@ -334,20 +334,20 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="remarks">
-                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                           {{translatedLangText.REMARKS}}
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" class="">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{row.remarks}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                          <mat-icon class="me-3">more_vert</mat-icon>
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-center'">
+                          <!-- <mat-icon class="me-3">more_vert</mat-icon> -->
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.DELETE}}:</span>
                           <button mat-icon-button (click)="stopEventTrigger($event)"
                             (click)="deleteEstDetail($event,row)" color="warn">

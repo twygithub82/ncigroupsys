@@ -315,11 +315,21 @@
                         {{displayCurrency(row.package_repair?.material_cost)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_update">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header="last_update"
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="last_update" [ngClass]="'tbl-col-width-per-1-xl'"
                         disableClear>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                         {{this.displayLastUpdated(row)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="handled_item">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" 
+                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
+                        {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')}}
+                      </mat-cell>
                     </ng-container>
                     <!-- actions -->
                     <ng-container matColumnDef="actions">

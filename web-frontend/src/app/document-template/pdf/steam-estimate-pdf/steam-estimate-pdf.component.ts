@@ -264,7 +264,11 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       Promise.resolve(null)
     ]);
     if (data?.length > 0) {
-      data[0].steaming_part = data[0].steaming_part.filter((data: any) => !data.delete_dt);
+       data[0].steaming_part= data[0].steaming_part
+        .filter((x: any) => !x.delete_dt)
+        .sort((a:any, b:any) => (a.create_dt ?? 0) - (b.create_dt ?? 0));
+      
+      // data[0].steaming_part = data[0].steaming_part.filter((data: any) => !data.delete_dt);
       this.steamItem = data[0];
       this.isNoAction = (this.steamItem.status_cv === 'NO_ACTION');
       this.steamItem.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
@@ -1024,7 +1028,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       this.createSteamEstimateDetail_steam_r1(pdf, startY, leftMargin, rightMargin, pageWidth);
     }
     else {
-      this.createSteamEstimateDetail_repair_r2(pdf, startY, leftMargin, rightMargin, pageWidth);
+      this.createSteamEstimateDetail_repair_r2(pdf, startY, leftMargin, rightMargin, pageWidth,pageHeight);
       const pageCount = pdf.getNumberOfPages();
       if (pageCount > 1) {
         for (let i = 2; i <= pageCount; i++) {
@@ -1334,7 +1338,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-  createSteamEstimateDetail_repair_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+  createSteamEstimateDetail_repair_r2(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number ,pageHeight: number) {
     var rightPadding_cost = 4;
     const fontSz = 8;
     const vAlign = "bottom";
@@ -1382,11 +1386,12 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     var repData: RowInput[] = [];
     var items = this.steamPartList;
-    var index = 1;
+    var indx = 1;
     const grpFontSz = 7;
     var estTotalLbr = 0;
     var estTotalCost = 0;
     var isNoAct = this.isNoAction;
+    var defTop = startY;
     items?.forEach((item, index) => {
 
       item.approve_part = item.approve_part ?? true;
@@ -1408,8 +1413,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       
       //item.approve_cost = item.approve_part?item.cost:0;
       var app = ((item.approve_part === null) || item.approve_part) ? "O" : "X";
+      if(qty===0 && !isNoAct) return;
       repData.push([
-        item.index + 1, item.description,
+        indx++, item.description,
         `${qty}`,
         this.parse2Decimal(cost),
         `${this.parse2Decimal(labour)}`,
@@ -1505,6 +1511,14 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     };
 
     var yPos = startY + 5;
+    var buffer =15;
+    var  bal = pageHeight-yPos-buffer;
+    if(bal<0)
+    {
+       pdf.addPage();
+        startY =  defTop;
+      }
+
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -1783,6 +1797,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     });
 
     var yPos = startY + 5;
+    
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);

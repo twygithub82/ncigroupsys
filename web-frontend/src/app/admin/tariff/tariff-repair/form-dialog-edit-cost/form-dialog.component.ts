@@ -323,6 +323,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+      if (this.groupNameCvList) {
+        this.groupNameCvList = [...this.groupNameCvList].sort((a, b) => a.description!.localeCompare(b.description!));
+      }
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -343,21 +346,59 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       }
     });
 
+    //  this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
+    //   console.log('Selected value:', value);
+    //   var aliasName = value?.child_code;
+    //   if (aliasName === undefined) return;
+    //   const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
+
+    //   this.cvDS.getCodeValuesByType(subqueries);
+    //   this.cvDS.connectAlias(aliasName).subscribe(data => {
+    //     this.isSubGroupEmpty = data.length == 0;
+    //     data = [...data].sort((a, b) => a.description!.localeCompare(b.description!));
+    //     this.subGroupNameCvList = data;
+    //     if (this.selectedItems.length == 1) {
+    //       var rec = this.selectedItems[0];
+    //       var subgroupNameCodeValue = this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList);
+    //       this.subGroupNameControl.setValue(subgroupNameCodeValue);
+    //     }
+    //   });
+    // });
+
+    // this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
+    //   console.log('Selected value:', value);
+    //   var aliasName = value.child_code;
+    //   const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
+    //   this.cvDS.getCodeValuesByType(subqueries);
+    //   this.cvDS.connectAlias(aliasName).subscribe(data => {
+    //     data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
+    //     this.subGroupNameCvList = data;
+    //    this.partNameControl.reset('');
+    //     const groupName = this.pcForm?.get('group_name_cv')?.value;
+    //     this.trfRepairDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
+    //       this.partNameControl.reset('');
+    //       this.dimensionControl.reset('');
+    //       this.dimensionList = [];
+    //         this.lengthControl.reset('');
+    //         this.lengthList = [];
+    //       this.partNameList = data;
+    //       this.partNameFilteredList = data
+          
+    //       this.updateValidators(this.partNameControl, this.partNameList);
+    //   });
+    //   // Handle value changes here
+    // });
+
+
     this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
-      console.log('Selected value:', value);
+        console.log('Selected value:', value);
       var aliasName = value.child_code;
-      if (aliasName === undefined) return;
-      const subGroupForm = this.pcForm?.get('group_name_cv');
       const subqueries: any[] = [{ alias: aliasName, codeValType: aliasName }];
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
+        data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
-        // if (this.selectedItems.length == 1) {
-        //   var rec : any = this.selectedItems[0];
-        //   var subgroupNameCodeValue = this.GetCodeValue(rec.tariff_repair?.subgroup_name_cv!, this.subGroupNameCvList);
-        //   subGroupForm?.setValue(subgroupNameCodeValue);
-        // }
-        this.partNameControl.reset('');
+       this.partNameControl.reset('');
         const groupName = this.pcForm?.get('group_name_cv')?.value;
         this.trfRepairDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
           this.partNameControl.reset('');
@@ -369,9 +410,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
           this.partNameFilteredList = data
           
           this.updateValidators(this.partNameControl, this.partNameList);
-        });
       });
     });
+  });
+
     this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),

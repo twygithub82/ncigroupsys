@@ -240,6 +240,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
     PROFILES_SELECTED: 'COMMON-FORM.SELECTED',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
+    // STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
   }
 
 
@@ -282,7 +283,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.displayColumnChanged();
     this.translateLangText();
-    this.search();
+    // this.search();
   }
 
   initializeFilterCustomerCompany() {
@@ -334,6 +335,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         'lolo_cost',
         'storage_cost',
         'free_days',
+        'storage_calc',
         'last_update',
       ];
     } else {
@@ -346,6 +348,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         'lolo_cost',
         'storage_cost',
         'free_days',
+        'storage_calc',
         'last_update',
       ];
     }
@@ -519,6 +522,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.lastSearchCriteria = where;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.packDepotItems = data;
+      this.packDepotItems.forEach((element:any) => {
+        element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
+      })
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
@@ -602,6 +608,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where, order, first, after, last, before).subscribe(data => {
       this.packDepotItems = data;
+      this.packDepotItems.forEach((element:any) => {
+        element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
+      })
       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
@@ -650,8 +659,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
+    
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList = data;
+      this.search();
     });
 
 
@@ -999,6 +1010,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const order = this.lastOrderBy;
     this.packDepotDS.SearchAllPackageDepot(where, order).subscribe(res => {
       var prcList: PackageDepotItem[] = res;
+      prcList.forEach((element:any) => {
+        element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
+      })
       this.exportExcelReport(prcList);
     })
     
@@ -1049,6 +1063,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const order = this.lastOrderBy;
     this.packDepotDS.SearchAllPackageDepot(where, order).subscribe(res => {
       var prcList: PackageDepotItem[] = res;
+      prcList.forEach((element:any) => {
+        element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
+      })
       this.exportPdfReport(prcList);
     })
     
@@ -1094,6 +1111,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
    getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
     const centerClass = isCenter ? 'justify-content-center' : '';
     return `${baseClasses} ${centerClass}`.trim();
+  }
+
+  getStorageCalcDescription(storageCalcValue:string)
+  {
+    return this.CodeValuesDS?.getCodeDescription(storageCalcValue, this.storageCalCvList);
   }
 }
 

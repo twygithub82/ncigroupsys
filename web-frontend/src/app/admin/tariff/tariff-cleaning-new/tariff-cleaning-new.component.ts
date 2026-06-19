@@ -190,7 +190,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     SDS_FILE: "COMMON-FORM.SDS-FILE",
     DUPLICATE_CARGO_FOUND: 'COMMON-FORM.DUPLICATE-CARGO-FOUND',
     WARNING: 'COMMON-FORM.WARNING',
-    PREVIEW: 'COMMON-FORM.PREVIEW'
+    PREVIEW: 'COMMON-FORM.PREVIEW',
+    RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
   }
 
   historyState: any = {};
@@ -923,22 +924,24 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
-    this.tcForm?.get("cargo_name")?.setErrors({ required: true });
-    const dialogRef = this.dialog.open(ErrorDialogComponent, {
-      //width: '380px',
-      //autoFocus: false,
-      disableClose: true,
-      data: {
-        headerText: this.translatedLangText.WARNING,
-        messageText: [this.translatedLangText.DUPLICATE_CARGO_FOUND],
-        act: "warn"
-      },
-      direction: tempDirection
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      this.trfCleaningSubmitting = false;
+    this.tcForm?.get("cargo_name")?.setErrors({ exists: true });
+    this.trfCleaningSubmitting = false;
       this.submitForSaving.next(this.trfCleaningSubmitting);
-    });
+    // const dialogRef = this.dialog.open(ErrorDialogComponent, {
+    //   //width: '380px',
+    //   //autoFocus: false,
+    //   disableClose: true,
+    //   data: {
+    //     headerText: this.translatedLangText.WARNING,
+    //     messageText: [this.translatedLangText.DUPLICATE_CARGO_FOUND],
+    //     act: "warn"
+    //   },
+    //   direction: tempDirection
+    // });
+    // dialogRef.afterClosed().subscribe(result => {
+    //   this.trfCleaningSubmitting = false;
+    //   this.submitForSaving.next(this.trfCleaningSubmitting);
+    // });
   }
 
   isLoadingSdsFile(): Boolean {
@@ -974,7 +977,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     else return false;
   }
 
+  async checkCargoNameExists()
+  {
+    var cargo_name = this.tcForm?.get("cargo_name")?.value || '';
 
+    if (cargo_name === '') return;
+     var cargo_guid = await this.getTariffCleaningGuid(cargo_name);
+        if (cargo_guid != "") {
+          if(cargo_guid != this.tc_guid)this.ShowDuplicateCargoMessage();
+        }
+  }
 
 }
 

@@ -258,6 +258,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.updateView(window.innerWidth);
     });
     this.selectedItems = data.selectedItems;
+
     this.pcForm = this.createPackageCleaning();
     this.igCleanDS = new InGateCleaningDS(this.apollo);
     this.packageDepotDS = new PackageDepotDS(this.apollo);
@@ -424,6 +425,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.storageCalCvList = data;
       if (this.selectedItems.length == 1) {
         this.selectedItem = this.selectedItems[0]
+        // this.selectedItem.job_order.update_by= this.toPascalCaseFirstLetter(this.selectedItem.job_order.update_by);
         var inGateClnItem = this.selectedItem;
         this.pcForm.patchValue({
           tank_no: inGateClnItem.storing_order_tank?.tank_no,
@@ -929,4 +931,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
+   toPascalCaseFirstLetter(value: string): string {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
 }

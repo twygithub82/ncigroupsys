@@ -179,10 +179,10 @@
                     <div class="d-flex align-items-center custom-padding-left-12">
                       <div class="flex-grow-1">
                         <div class="row align-items-center">
-                          <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 col-xs-6 m-b-0">
+                          <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 col-xs-6 m-b-0 m-l-5">
                             <span class="header-label font-bold">{{ item.tank_no }}</span>
                           </div>
-                          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0 d-none d-md-block custom-padding-left-56">
+                          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0 d-none d-md-block custom-padding-left-52">
                             <span class="header-label font-bold">{{ translatedLangText.CUSTOMER }}:</span>
                             <span class="value-label">{{ item.storing_order?.customer_company?.name }}</span>
                           </div>
@@ -314,7 +314,7 @@
                                   <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
-                                @if (isAllowExport() && modulePackageService.AllowPdfReport()) {
+                                @if (isAllowExport(steamRow) && modulePackageService.AllowPdfReport()) {
                                 <button mat-menu-item (click)="onExport($event,steamRow)">
                                   <i class="fas fa-file-export"></i>
                                     {{translatedLangText.EXPORT}}

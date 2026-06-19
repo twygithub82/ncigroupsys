@@ -200,6 +200,8 @@ export class PackageDepotCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     PACKAGE_DEPOT_COST: 'COMMON-FORM.PACKAGE-DEPOT-COST',
     IN_SURCHARGE_COST: 'COMMON-FORM.IN-SURCHARGE-COST',
     OUT_SURCHARGE_COST: 'COMMON-FORM.OUT-SURCHARGE-COST',
+    GATE_IN_COST:'COMMON-FORM.GATE-IN',
+    GATE_OUT_COST:'COMMON-FORM.GATE-OUT',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -426,6 +428,7 @@ export class PackageDepotCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     var items = this.repData!;
     var index = 1;
     const data: any[][] = items.map((item, index) => {
+      var itm:any =item;
       const row = [
         index + 1,
         item.customer_company?.name || "-",
@@ -436,6 +439,7 @@ export class PackageDepotCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         this.parse2Decimal(item.lolo_cost || 0) || "-",
         this.parse2Decimal(item.storage_cost || 0) || "-",
         (item.free_storage || 0) || "-",
+        itm.storage_calc|| "-",
         this.displayLastUpdated(item) || "-",
       ];
       return row;
@@ -449,27 +453,31 @@ export class PackageDepotCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.PROFILE_NAME,
-      this.translatedLangText.IN_SURCHARGE_COST,
-      this.translatedLangText.OUT_SURCHARGE_COST,
+      `${this.translatedLangText.GATE_IN_COST} $`,
+     `${this.translatedLangText.GATE_OUT_COST} $`,
+      // this.translatedLangText.IN_SURCHARGE_COST,
+      // this.translatedLangText.OUT_SURCHARGE_COST,
       this.translatedLangText.PREINSPECTION_COST,
       this.translatedLangText.LOLO_COST,
       this.translatedLangText.STORAGE_COST,
       this.translatedLangText.FREE_DAYS,
+      this.translatedLangText.STORAGE_CALCULATE_BY,
       this.translatedLangText.LAST_UPDATED_DT
 
     ]];
 
     const comStyles: any = {
       0: { cellWidth: 12, valign: 'middle', halign: 'center' },    // "No."
-      1: { cellWidth: 52, valign: 'middle', halign: 'left' },   // "NAME"
-      2: { cellWidth: 28, valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
-      3: { cellWidth: 28, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
-      4: { cellWidth: 28, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
+      1: { cellWidth: 50, valign: 'middle', halign: 'left' },   // "NAME"
+      2: { cellWidth: 28, valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },  // "CARGO_CLASS"
+      3: { cellWidth: 20, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      4: { cellWidth: 20, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
       5: { cellWidth: 28, valign: 'middle', halign: 'center' },   // "CARGO_CATEGORY"
       6: { cellWidth: 28, valign: 'middle', halign: 'center' },   // "NAME"
       7: { valign: 'middle', halign: 'center' },  // "CARGO_CLASS"
-      8: { cellWidth: 23, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
-      9: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
+      8: { cellWidth: 18, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      9: { cellWidth: 32, valign: 'middle', halign: 'center' },  // "CARGO_UN_NO"
+      10: { cellWidth: 21, valign: 'middle', halign: 'center' },   // "CARGO_METHOD "
 
     };
 
