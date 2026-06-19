@@ -248,7 +248,7 @@
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}}</span>
+                                  <span></span><span>{{this.pcForm.get('update_by')?.value?toPascalCaseFirstLetter(this.pcForm.get('update_by')?.value??''):'-'}}</span>
                                   <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
@@ -259,7 +259,8 @@
                                     selectedItem?.status_cv === 'APPROVED'
                                     ? '-'
                                     : this.selectedItem?.job_order?.update_dt
-                                    ?selectedItem.job_order?.update_by:"-"
+                                    ?toPascalCaseFirstLetter(this.selectedItem.job_order.update_by??'')
+                                    :"-"
                                     
                                     }}
                                   </span>
@@ -272,7 +273,7 @@
                                     this.selectedItem?.status_cv === 'APPROVED'
                                     ? '-'
                                     : this.selectedItem?.job_order?.complete_dt
-                                    ? this.selectedItem.job_order.update_by
+                                    ? toPascalCaseFirstLetter(this.selectedItem.job_order.update_by??'')
                                     : '-'
                                     }}
                                     <!-- {{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}} -->
@@ -303,7 +304,7 @@
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.pcForm.get('update_on')?.value?this.pcForm.get('update_on')?.value:'-'}}</span>
+                                  <span></span><span>{{this.pcForm.get('update_on')?.value?toPascalCaseFirstLetter(this.pcForm.get('update_on')?.value??''):'-'}}</span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">

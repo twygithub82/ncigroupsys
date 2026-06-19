@@ -283,7 +283,7 @@
             }
             <div class="row">
               <div class="responsive_table">
-                <table mat-table [dataSource]="deList" matSort
+                <table mat-table [dataSource]="filteredDeList()" matSort
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">

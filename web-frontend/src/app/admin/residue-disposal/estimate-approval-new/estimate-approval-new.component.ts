@@ -1914,5 +1914,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     return this.residueItem?.status_cv == "APPROVED";
   }
 
- 
+  filteredDeList() {
+    return this.deList.filter(x => !x.delete_dt);
+  }
 }
