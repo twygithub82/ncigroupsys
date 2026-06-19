@@ -54,6 +54,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
+import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,
@@ -1454,6 +1455,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         this.steamDS.updateSteamStatus(stmStatus).subscribe(result => {
           if (result.data.updateSteamingStatus > 0) {
             console.log(result);
+            this.steamHeatingLogPDFDialog(event, steaming);
             this.handleSaveSuccess(result.data.updateSteamingStatus);
           }
         });
@@ -1499,4 +1501,37 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     if (anyEqual) return 0;
     return 0; // Mixed cases
   }
+
+  getViewDirection() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    return tempDirection;
+  }
+  
+  steamHeatingLogPDFDialog(event: Event, steam: SteamItem) {
+      this.preventDefault(event);
+      this.stopPropagation(event);
+      let tempDirection: Direction = this.getViewDirection();
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
+        position: { top: '-1999px', left: '-1999px' },
+        width: '794px',
+        maxHeight: '80vh',
+        data: {
+          steam_guid: steam?.guid,
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      });
+    }
 }

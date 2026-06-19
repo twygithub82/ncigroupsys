@@ -417,13 +417,13 @@ export class SteamHeatingPdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     startY += headerHeight;
     startY += 7;
-
+    var eir_no = this.steamItem?.storing_order_tank?.in_gate?.[0]?.eir_no||"-";
     var tankData: any[][] = [
       [
         { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
         { content: `${item?.storing_order_tank?.tank_no}` },
-        { content: `${this.translatedLangText.ESTIMATE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-        { content: `${this.steamItem?.estimate_no}` }
+        { content: `${this.translatedLangText.EIR_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${eir_no}` }
       ],
       [
         { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },

@@ -432,7 +432,7 @@ export class PackageSteamingCostPdfComponent extends UnsubscribeOnDestroyAdapter
       const row = [
          index+1,
         itm.customer_company?.name || "-",
-        itm.tariff_steaming?.temp_min || "-",
+        itm.tariff_steaming?.temp_min || "0",
         itm.tariff_steaming?.temp_max  || "-",
         this.parse2Decimal(itm.cost!) || "-",
         this.parse2Decimal(itm.labour!) || "-",

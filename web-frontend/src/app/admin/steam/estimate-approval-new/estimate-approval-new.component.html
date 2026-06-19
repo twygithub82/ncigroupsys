@@ -330,18 +330,18 @@
                           @if(isSteamRepair) {
                           @if(IsApproved()) {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" appNumericText
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            (change)="updateAction(row);" [allowDecimal]="false" [disabled]="isDisabled()" (focus)="selectText($event)"
                             type="text" [min]="0">
                           }
                           @else {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity" appNumericText
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
-                            type="text" [min]="0">
+                            (change)="updateAction(row);" [allowDecimal]="false" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0"  >
                           }
                           }
                           @else {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="labourHour" appNumericText
-                            (change)="updateAction(row);" [disabled]="true" (focus)="selectText($event)" type="text"
+                            (change)="updateAction(row);" [allowDecimal]="false" [disabled]="true" (focus)="selectText($event)" type="text"
                             [min]="0">
                           }
                         </mat-form-field>

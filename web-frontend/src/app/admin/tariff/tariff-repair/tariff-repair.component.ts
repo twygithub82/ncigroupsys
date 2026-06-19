@@ -250,6 +250,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.SELECTED',
     EXPORT: 'COMMON-FORM.EXPORT',
+    HANDLED: 'COMMON-FORM.HANDLED',
+    NON_HANDLED:'COMMON-FORM.NON-HANDLED',
   }
 
   isGeneratingReport = false;
@@ -1379,4 +1381,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
 
   }
+
+ 
 }

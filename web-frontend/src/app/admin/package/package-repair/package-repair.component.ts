@@ -341,6 +341,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         'labour_hour',
         'material_cost',
         'last_update',
+        'handled_item'
       ];
     } else {
       this.displayedColumns = [
@@ -351,6 +352,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         'labour_hour',
         'material_cost',
         'last_update',
+        'handled_item'
       ];
     }
   };
@@ -1312,7 +1314,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         };
         prcList.push(c);
       });
-      this.exportExcelReport(prcList);
+      this.exportPdfReport(prcList);
     })
 
    
@@ -1354,4 +1356,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     });
 
   }
+
+ 
 }
