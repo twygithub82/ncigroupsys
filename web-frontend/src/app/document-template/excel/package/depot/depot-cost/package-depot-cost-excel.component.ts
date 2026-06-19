@@ -193,6 +193,8 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
     PACKAGE_DEPOT_COST:'COMMON-FORM.PACKAGE-DEPOT-COST',
     IN_SURCHARGE_COST: 'COMMON-FORM.IN-SURCHARGE-COST',
     OUT_SURCHARGE_COST: 'COMMON-FORM.OUT-SURCHARGE-COST',
+    GATE_IN_COST:'COMMON-FORM.GATE-IN',
+    GATE_OUT_COST:'COMMON-FORM.GATE-OUT',
 
   }
 
@@ -520,6 +522,7 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
         this.parse2Decimal(item.lolo_cost || 0) || "-",
         this.parse2Decimal(item.storage_cost || 0) || "-",
         (item.free_storage || 0) || "-",
+        itm.storage_calc || "-",
         this.displayLastUpdated(item) || "-",
 
       ];
@@ -530,12 +533,15 @@ export class PackageDepotCostExcelComponent extends UnsubscribeOnDestroyAdapter 
       this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.PROFILE_NAME,
-      this.translatedLangText.IN_SURCHARGE_COST,
-      this.translatedLangText.OUT_SURCHARGE_COST,
+       `${this.translatedLangText.GATE_IN_COST} $`,
+     `${this.translatedLangText.GATE_OUT_COST} $`,
+      // this.translatedLangText.IN_SURCHARGE_COST,
+      // this.translatedLangText.OUT_SURCHARGE_COST,
       this.translatedLangText.PREINSPECTION_COST,
       this.translatedLangText.LOLO_COST,
       this.translatedLangText.STORAGE_COST,
       this.translatedLangText.FREE_DAYS,
+      this.translatedLangText.STORAGE_CALCULATE_BY,
       this.translatedLangText.LAST_UPDATED_DT
     ]];
 

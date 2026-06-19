@@ -1422,7 +1422,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (bRetval) return bRetval;
     bRetval = this.isAllowDelete() && this.steamDS.canCancel(steamRow);
     if (bRetval) return bRetval;
-    bRetval = this.isAllowExport()
+    bRetval = this.isAllowExport(steamRow)
     if (bRetval) return bRetval;
 
     return bRetval;
@@ -1454,8 +1454,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
   }
 
-  isAllowExport() {
-    return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
+  isAllowExport(steamRow: any) {
+    var bRetval: boolean = this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
+    if(bRetval)
+    {
+      bRetval = steamRow?.status_cv !== 'NO_ACTION' 
+    }
+    return bRetval;
   }
 
 

@@ -206,7 +206,7 @@
                         {{translatedLangText.CATEGORY }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                        <span class="mobile-label">{{translatedLangText.CATEGORY}}:</span>{{ row.cleaning_category?.description || '-' }}
+                        <span class="mobile-label">{{translatedLangText.CATEGORY}}:</span>{{ row.cleaning_category?.name || '-' }}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">

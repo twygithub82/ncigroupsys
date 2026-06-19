@@ -57,6 +57,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { isDirty } from 'environments/environment';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 @Component({
   selector: 'app-estimate-new',
@@ -90,7 +91,9 @@ import { isDirty } from 'environments/environment';
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective,
+    
   ]
 })
 export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
@@ -1911,5 +1914,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     return this.residueItem?.status_cv == "APPROVED";
   }
 
- 
+  filteredDeList() {
+    return this.deList.filter(x => !x.delete_dt);
+  }
 }

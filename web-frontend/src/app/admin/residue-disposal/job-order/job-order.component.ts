@@ -162,6 +162,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     CONFIRM_TEAM_UNASSIGN: "COMMON-FORM.CONFIRM-TEAM-UNASSIGN",
     ROLLBACK_SUCCESS: "COMMON-FORM.ROLLBACK-SUCCESS",
     SEARCH: 'COMMON-FORM.SEARCH',
+    ALLOCATE_DATE: "COMMON-FORM.ALLOCATE-DATE",
   }
 
   filterResidueForm?: UntypedFormGroup;

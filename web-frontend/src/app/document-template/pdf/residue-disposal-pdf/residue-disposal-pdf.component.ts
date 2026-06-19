@@ -985,7 +985,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         {
           content: this.translatedLangText.PRICE,
 
-          styles: { fontSize: fontSz, halign: 'right', valign: vAlign, cellPadding: 2 }
+          styles: { fontSize: fontSz, halign: 'right', valign: vAlign, cellPadding: {top: 2,bottom: 2,left: 0,right: 5 } }
         },
         {
           content: this.translatedLangText.TOTAL_COST,
@@ -1028,6 +1028,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       }
       var totalCost = qty * cost;
       if(isNoActionEst || !item.approve_part)totalCost=0;
+      if(!isNoActionEst && totalCost===0) return;
       if (item.approve_part) estTotalCost += totalCost;
       repData.push([
         (++index), item.description, `${qty} ${item.qty_unit_type_cv}`,
@@ -1047,8 +1048,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     const comStyles: any = {
       0: { cellWidth: 11, halign: 'center', valign: 'middle' },
-      1: { cellWidth: 112, halign: 'left', valign: 'middle' },
-      2: { cellWidth: 15, halign: 'right', valign: 'middle' },
+      1: { cellWidth: 102, halign: 'left', valign: 'middle' },
+      2: { cellWidth: 25, halign: 'center', valign: 'middle' },
       3: { cellWidth: 25, halign: 'center', valign: 'middle' },
       4: { halign: 'right', valign: 'middle' },
       // 5: { halign: 'center', valign: 'middle'},
