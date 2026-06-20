@@ -1485,7 +1485,14 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   canExport(): boolean {
-    return !!this.residueItem?.guid;
+    var bRetval =!!this.residueItem?.guid;
+    if(bRetval)
+    {
+      var exclusive_status=['NO_ACTION','PENDING'];
+      bRetval= !exclusive_status.includes(this.residueItem?.status_cv!);
+      
+    }
+    return bRetval;
   }
 
   getLabourCost(): number | undefined {

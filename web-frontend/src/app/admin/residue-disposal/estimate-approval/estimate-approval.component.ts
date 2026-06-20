@@ -1252,7 +1252,13 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
   }
   canExport(row: ResidueItem): boolean {
-    return !!row?.guid;
+    var bRetval=!!row?.guid;
+    if(bRetval)
+    {
+      var exclusive_status=['NO_ACTION','PENDING'];
+      bRetval= !exclusive_status.includes(row?.status_cv!);
+    }
+    return bRetval;
   }
 
 }
