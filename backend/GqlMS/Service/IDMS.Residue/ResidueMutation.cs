@@ -358,11 +358,10 @@ namespace IDMS.Residue.GqlTypes
 
                             foreach (var part in residuePart)
                             {
-                                //var estPart = new repair_est_part() { guid = part.guid }; 
-                                //context.repair_est_part.Attach(estPart);
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
-                                part.cost = packageResidue.Where(r => r.tariff_residue_guid == part.tariff_residue_guid).Select(r => r.cost).First();
+                                var newCost = packageResidue.Where(r => r.tariff_residue_guid == part.tariff_residue_guid).Select(r => r.cost).FirstOrDefault();
+                                part.cost = newCost ?? part.cost;
                             }
 
                             _logger.LogInformation("RollbackResidue: Residue parts for residue guid {Guid} rolled back to estimated state", item.guid);
