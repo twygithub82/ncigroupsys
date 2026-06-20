@@ -1275,13 +1275,15 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canNoAction(re: SteamItem): boolean {
-    return re?.status_cv === 'APPROVED';
+    //  const validStatus = ['APPROVED','PENDING']
+    const validStatus = ['PENDING']
+    return validStatus.includes(re?.status_cv!);
   }
 
   canRollbackEstimate(re: SteamItem): boolean {
-    const validStatus = ['NO_ACTION']
+    const validStatus = ['NO_ACTION','APPROVED']
     // NOTE:: note sure why previously added this to not allow auto steaming to reinstate from steaming estimate approval. Now commented it
-    // if (BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
+    if (BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
     // return validStatus.includes(re?.status_cv!);
      var allowed = validStatus.includes(re?.status_cv ? re?.status_cv : '');
     if(allowed)

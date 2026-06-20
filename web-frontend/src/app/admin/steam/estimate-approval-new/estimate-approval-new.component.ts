@@ -1343,7 +1343,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canExport(): boolean {
-    return !!this.steam_guid;
+    var bRetval =!!this.steam_guid;
+     if(bRetval)
+    {
+      bRetval =  this.steamItem?.status_cv !== 'NO_ACTION' 
+    }
+    return bRetval;
   }
 
   getPackageSteamAlias(alias?: string) {

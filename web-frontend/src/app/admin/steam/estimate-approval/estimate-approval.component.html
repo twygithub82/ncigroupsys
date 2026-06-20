@@ -328,6 +328,12 @@
                                   <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
+                                @if (isAllowNoAction() && steamDS.canNoAction(steamRow)) {
+                                <button mat-menu-item (click)="onNoAction($event,steamRow)">
+                                  <mat-icon>close</mat-icon>
+                                  <span>{{translatedLangText.NO_ACTION}}</span>
+                                </button>
+                                }
                                 @if (isAllowExport(steamRow) && modulePackageService.AllowPdfReport()) {
                                 <button mat-menu-item (click)="onExport($event,steamRow)">
                                   <i class="fas fa-file-export"></i>

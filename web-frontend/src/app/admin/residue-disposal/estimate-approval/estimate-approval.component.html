@@ -425,12 +425,12 @@
                               </button>
 
                               <mat-menu #menu="matMenu">
-                                @if (residueDS.canApprove(residueRow)) {
+                                <!-- @if (residueDS.canApprove(residueRow)) {
                                 <button mat-menu-item (click)="approveRow($event,residueRow)">
                                   <mat-icon>check</mat-icon>
                                   <span>{{translatedLangText.APPROVE}}</span>
                                 </button>
-                                }
+                                } -->
                                 @if (residueDS.canCopy(residueRow)) {
                                 <button mat-menu-item (click)="copyResidueEst(residueRow)">
                                   <mat-icon>content_copy</mat-icon>
@@ -449,12 +449,12 @@
                                   <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
-                                <!-- @if (residueDS.canNoAction(residueRow)) {
+                                @if (residueDS.canNoAction(residueRow)) {
                                 <button mat-menu-item (click)="onNoAction($event,residueRow)">
                                   <mat-icon>close</mat-icon>
                                   <span>{{translatedLangText.NO_ACTION}}</span>
                                 </button>
-                                } -->
+                                }
                                  @if (canExport(residueRow) && modulePackageService.AllowPdfReport()) {
                                 <button mat-menu-item (click)="onExport($event,residueRow)">
                                   <i class="fas fa-file-export"></i>

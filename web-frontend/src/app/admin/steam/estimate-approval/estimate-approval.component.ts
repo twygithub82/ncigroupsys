@@ -38,7 +38,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamDS, SteamItem, SteamPartRequest, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -160,7 +160,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
   }
 
   availableTankStatus: string[] = [
@@ -411,7 +413,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             customer_guid: item?.storing_order_tank?.storing_order?.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
-            remarks: item.remarks,
+            remarks: result.remarks,
             sot_guid: item.sot_guid,
             is_approved: item?.status_cv == "APPROVED"
           }
@@ -1330,6 +1332,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
   }
 
+  isAllowNoAction() {
+    // return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_NO_ACTION']);
+    return true;
+  }
+
   isAllowExport(steamRow: any) {
     var bRetval: boolean = this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
     if(bRetval)
@@ -1381,6 +1388,47 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   }
 
+
+  onNoAction(event: Event,item: any) {
+      this.preventDefault(event);
+      // console.log(this.sotItem)
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+          translatedLangText: this.translatedLangText,
+          allowRemarks: true
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+          steamStatus.action = "NA";
+          steamStatus.guid = item?.guid;
+          steamStatus.sot_guid = item?.sot_guid;
+          steamStatus.remarks = result?.remarks;
+          steamStatus.steamingPartRequests = [];
+          item?.steaming_part?.forEach((d: any) => {
+            var stmPart: SteamPartRequest = new SteamPartRequest();
+            stmPart.guid = d.guid;
+            stmPart.approve_part = false;
+            steamStatus.steamingPartRequests?.push(stmPart);
+          });
+          this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
+  
+            this.handleCancelSuccess(result?.data?.updateSteamingStatus);
+            this.performSearch(this.pageSize, 0, this.pageSize);
+          });
+        }
+      });
+    }
 
 
 

@@ -41,7 +41,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
+import { ResidueDS, ResidueGO, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -158,7 +158,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
-    DELETE: 'COMMON-FORM.DELETE'
+    DELETE: 'COMMON-FORM.DELETE',
+    ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
   }
 
   availableTankStatus: string[] = [
@@ -1097,28 +1098,28 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.onApprove(event, row);
   }
 
-  onNoAction(event: Event, row: ResidueItem) {
-    this.preventDefault(event);
+  // onNoAction(event: Event, row: ResidueItem) {
+  //   this.preventDefault(event);
 
 
-    let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
-    residueStatus.action = "NA";
-    residueStatus.guid = row?.guid;
-    residueStatus.sot_guid = row?.sot_guid;
-    residueStatus.remarks = '';
-    residueStatus.residuePartRequests = [];
-    row.residue_part?.forEach(d => {
-      var resPart: ResiduePartRequest = new ResiduePartRequest();
-      resPart.guid = d.guid;
-      resPart.approve_part = false;
-      residueStatus.residuePartRequests?.push(resPart);
-    });
-    this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+  //   let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+  //   residueStatus.action = "NA";
+  //   residueStatus.guid = row?.guid;
+  //   residueStatus.sot_guid = row?.sot_guid;
+  //   residueStatus.remarks = '';
+  //   residueStatus.residuePartRequests = [];
+  //   row.residue_part?.forEach(d => {
+  //     var resPart: ResiduePartRequest = new ResiduePartRequest();
+  //     resPart.guid = d.guid;
+  //     resPart.approve_part = false;
+  //     residueStatus.residuePartRequests?.push(resPart);
+  //   });
+  //   this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
 
-      console.log(result)
-      this.search();
-    });
-  }
+  //     console.log(result)
+  //     this.search();
+  //   });
+  // }
 
   onApprove(event: Event, row: ResidueItem) {
     event.preventDefault();
@@ -1159,8 +1160,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   IsEnable3Dots(residueRow: any): boolean {
     var bRetval: boolean = false;
 
-    bRetval = this.residueDS.canApprove(residueRow);
-    if (bRetval) return bRetval;
+    // bRetval = this.residueDS.canApprove(residueRow);
+    // if (bRetval) return bRetval;
     bRetval = this.residueDS.canCopy(residueRow);
     if (bRetval) return bRetval;
     bRetval = this.residueDS.canRollback(residueRow);
@@ -1168,6 +1169,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     bRetval = this.residueDS.canCancel(residueRow);
     if (bRetval) return bRetval;
     bRetval = this.residueDS.canNoAction(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.canExport(residueRow);
     if (bRetval) return bRetval;
 
     return bRetval;
@@ -1255,10 +1258,61 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     var bRetval=!!row?.guid;
     if(bRetval)
     {
-      var exclusive_status=['NO_ACTION','PENDING'];
+      var exclusive_status=['NO_ACTION'];
       bRetval= !exclusive_status.includes(row?.status_cv!);
     }
     return bRetval;
   }
+
+  onNoAction(event: Event, row: ResidueItem) {
+      this.preventDefault(event);
+      
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+        allowRemarks: true,
+      },
+      direction: tempDirection
+    });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          // const reList = result.item.map((item: ResidueItem) => new ResidueGO(row));
+          const reList =[ new ResidueGO(row)];
+          console.log(reList);
+  
+          let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+          residueStatus.action = "NA";
+          residueStatus.guid = row?.guid;
+          residueStatus.sot_guid = row?.sot_guid;
+          residueStatus.remarks = result.remarks;
+          residueStatus.residuePartRequests = [];
+          row.residue_part?.forEach(d => {
+            var resPart: ResiduePartRequest = new ResiduePartRequest();
+            resPart.guid = d.guid;
+            resPart.approve_part = false;
+            residueStatus.residuePartRequests?.push(resPart);
+          });
+          this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+  
+            this.handleCancelSuccess(result?.data?.updateResidueStatus);
+            this.performSearch(this.pageSize, 0, this.pageSize);
+            
+          });
+          // this.residueDS.cancelResidue(reList).subscribe(result => {
+          //   this.handleCancelSuccess(result?.data?.cancelResidue)
+          // });
+        }
+      });
+  
+  
+      
+    }
 
 }

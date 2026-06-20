@@ -613,7 +613,7 @@
                 {{translatedLangText.DELETE}}
               </button>
               } -->
-              <!-- @if (residueDS.canNoAction(residueItem!)) {
+              @if (residueDS.canNoAction(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onNoAction($event,residueItem!)">
                 <mat-icon>
@@ -623,9 +623,9 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.ABORT}}
+                {{translatedLangText.NO_ACTION}}
               </button>
-              } -->
+              }
             </div>
           </div>
         </div>
