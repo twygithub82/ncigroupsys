@@ -376,7 +376,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
-      this.purposeOptionCvList = [{ code_val: "NO_REPAIR", description: "No Repair" }, ...this.purposeOptionCvList];
+      // this.purposeOptionCvList = [{ code_val: "NO_REPAIR", description: "No Repair" }, ...this.purposeOptionCvList];
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);

@@ -231,6 +231,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     TYPE: 'COMMON-FORM.TYPE',
     APPROVED: 'COMMON-FORM.APPROVED',
     FLATE_RATE: 'COMMON-FORM.FLATE-RATE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
+     ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
   }
 
   newDesc = new FormControl(null, [Validators.required]);
@@ -1485,7 +1487,14 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   canExport(): boolean {
-    return !!this.residueItem?.guid;
+    var bRetval =!!this.residueItem?.guid;
+    if(bRetval)
+    {
+      var exclusive_status=['NO_ACTION','PENDING'];
+      bRetval= !exclusive_status.includes(this.residueItem?.status_cv!);
+      
+    }
+    return bRetval;
   }
 
   getLabourCost(): number | undefined {
@@ -1839,26 +1848,35 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   width: '380px',
+    //   data: {
+    //     action: 'cancel',
+    //     dialogTitle: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+    //     item: [row],
+    //     translatedLangText: this.translatedLangText
+    //   },
+    //   direction: tempDirection
+    // });
+     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
-        item: [this.residueItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+        allowRemarks: true,
       },
       direction: tempDirection
     });
+
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+        // const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+        const reList = [new ResidueGO(row)]
         console.log(reList);
 
         let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
         residueStatus.action = "NA";
         residueStatus.guid = this.residueItem?.guid;
         residueStatus.sot_guid = this.residueItem?.sot_guid;
-        residueStatus.remarks = reList[0].remarks;
+        residueStatus.remarks = result.remarks;
         residueStatus.residuePartRequests = [];
         row.residue_part?.forEach(d => {
           var resPart: ResiduePartRequest = new ResiduePartRequest();

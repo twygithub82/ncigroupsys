@@ -425,12 +425,12 @@
                               </button>
 
                               <mat-menu #menu="matMenu">
-                                @if (residueDS.canApprove(residueRow)) {
+                                <!-- @if (residueDS.canApprove(residueRow)) {
                                 <button mat-menu-item (click)="approveRow($event,residueRow)">
                                   <mat-icon>check</mat-icon>
                                   <span>{{translatedLangText.APPROVE}}</span>
                                 </button>
-                                }
+                                } -->
                                 @if (residueDS.canCopy(residueRow)) {
                                 <button mat-menu-item (click)="copyResidueEst(residueRow)">
                                   <mat-icon>content_copy</mat-icon>
