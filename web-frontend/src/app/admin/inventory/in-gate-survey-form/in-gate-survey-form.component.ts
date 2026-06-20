@@ -1085,23 +1085,23 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
-      this.manufacturerCvList = addDefaultSelectOption(data, "NA");
+      this.manufacturerCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
-      this.claddingCvList = addDefaultSelectOption(data, "NA");
+      this.claddingCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
-      this.maxGrossWeightCvList = addDefaultSelectOption(data, "NA");
+      this.maxGrossWeightCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
-      this.tankHeightCvList = addDefaultSelectOption(data, "NA");
+      this.tankHeightCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
-      this.walkwayCvList = addDefaultSelectOption(data, "NA");
+      this.walkwayCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
