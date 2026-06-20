@@ -31,7 +31,7 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirSubject_InGate(string tankNumber)
         {
-            return $"EIR IN_Tank Number: {tankNumber}_Photos";
+            return $"EIR IN_{tankNumber}";
         }
 
         /// <summary>
@@ -39,22 +39,22 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirSubject_OutGate(string tankNumber)
         {
-            return $"EIR OUT_Tank Number: {tankNumber}_Photos";
+            return $"EIR OUT_{tankNumber}";
         }
 
         public static string GetResidueSubject(string tankNumber)
         {
-            return $"Tank Number: {tankNumber}_Residue Quotation";
+            return $"Residue Estimate_{tankNumber}";
         }
 
         public static string GetRepairSubject(string tankNumber)
         {
-            return $"Tank Number: {tankNumber}_Repair Quotation";
+            return $"Repair Estimate_{tankNumber}";
         }
 
         public static string GetDefaultSubject(string tankNumber)
         {
-            return $"Tank Number: {tankNumber}_Quotation";
+            return $"Estimate_{tankNumber}";
         }
 
         public static string GetTankActivitySubject(string customerName)
