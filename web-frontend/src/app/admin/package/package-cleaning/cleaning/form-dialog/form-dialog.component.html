@@ -72,7 +72,10 @@
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span>
-                        {{row.cleaning_category.name}}</mat-cell>
+                        <span class="ellipsis-text">
+                          {{ row.cleaning_category.name }}
+                        </span>
+                      </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gender">
                       <mat-header-cell *matHeaderCellDef
