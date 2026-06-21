@@ -295,11 +295,13 @@
                           <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 col-xs-6 m-b-0 m-r-40">
                             <span class="header-label font-bold">{{ item.tank_no }}</span>
                           </div>
-                          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0 d-none d-md-block m-r-45">
+                          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0 d-none d-md-block ">
                             <span class="header-label font-bold">{{ translatedLangText.CUSTOMER }}:</span>
-                            <span class="value-label">{{ item.storing_order?.customer_company?.name }}</span>
+                            <span class="value-label text-overflow" >
+                              {{ item.storing_order?.customer_company?.name }}
+                            </span>
                           </div>
-                          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-0 d-none d-md-block custom-padding-left-58">
                             <span class="header-label font-bold">{{ translatedLangText.EIR_DATE }}:</span>
                             <span class="value-label">{{ displayDate(igDS.getInGateItem(item.in_gate)?.eir_dt) }}</span>
                           </div>

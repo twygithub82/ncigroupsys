@@ -57,3 +57,18 @@
     /* Critical: limits to viewport width */
     box-sizing: border-box;
 }
+
+@for $i from 1 through 150 {
+  .custom-padding-left-#{$i} {
+    padding-left: #{$i}px;
+  }
+}
+
+.text-overflow {
+  display: inline-block;
+  max-width: 202px; /* adjust as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
