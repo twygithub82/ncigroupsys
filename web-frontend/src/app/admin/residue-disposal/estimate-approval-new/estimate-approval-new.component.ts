@@ -1507,7 +1507,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     where.customer_company_guid = { eq: custCompanyGuid };
 
     this.packResidueDS.SearchPackageResidue(where, {}).subscribe(data => {
-      this.packResidueList = data.filter(x => x.delete_dt===null);
+      this.packResidueList =data.filter(x => !x.delete_dt) || [];
       this.displayPackResidueList = data;
       this.populateResiduePartList(this.residueItem!);
     });

@@ -1358,7 +1358,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     where.and.push({ customer_company_guid: { eq: custCompanyGuid } });
     if (alias) where.and.push({ tariff_repair: { alias: { contains: alias } } });
     this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
-      this.displayPackSteamList = data.filter(x => x.delete_dt===null);
+      this.displayPackSteamList = data.filter(x => !x.delete_dt) || [];
     });
   }
 
@@ -1367,8 +1367,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
     where.customer_company_guid = { eq: custCompanyGuid };
     this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
-      this.packSteamList = data.filter(x => x.delete_dt===null);
-      
+      this.packSteamList = data.filter(x => !x.delete_dt) || [];
       this.displayPackSteamList = this.packSteamList;
       this.populateSteamPartList(this.steamItem!);
     });
