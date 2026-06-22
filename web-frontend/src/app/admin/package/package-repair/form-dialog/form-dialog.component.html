@@ -84,7 +84,7 @@
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_CODE
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="getColumnClasses_center('pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm ',!isMobile,!isMobile)"
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" 
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                         }}:</span>{{row.package_repair.customer_company.code}}</mat-cell>

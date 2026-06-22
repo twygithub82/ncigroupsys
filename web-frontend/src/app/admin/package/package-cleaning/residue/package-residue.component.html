@@ -174,7 +174,7 @@
             </ng-container>
             <ng-container matColumnDef="customer_cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 {{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="getColumnClasses('tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
@@ -183,7 +183,7 @@
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="getColumnClasses('tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
                 {{this.translatedLangText.TARIFF_COST}} $</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="getColumnClasses('tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
