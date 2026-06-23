@@ -562,16 +562,17 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   resetForm() {
-    this.searchForm?.patchValue({
-      tank_no: '',
-      eir_no: '',
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      process: ['']
+    // this.searchForm?.patchValue({
+    //   tank_no: '',
+    //   eir_no: '',
+    //   eir_dt_start: [''],
+    //   eir_dt_end: [''],
+    //   process: ['']
 
-    });
+    // });
 
-    this.searchForm?.get('approval_status')?.setValue([]);
+    // this.searchForm?.get('approval_status')?.setValue([]);
+    this.initSearchForm();
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
     this.name_removeAllSelected();
