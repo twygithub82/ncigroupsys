@@ -981,7 +981,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       0
     ) ?? 0;
   }
-    }
+    
     getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
         const centerClass = isCenter ? 'justify-content-center' : '';
         return `${baseClasses} ${centerClass}`.trim();
