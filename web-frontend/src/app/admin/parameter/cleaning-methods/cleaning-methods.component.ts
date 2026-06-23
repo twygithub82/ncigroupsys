@@ -185,7 +185,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.initSearchForm();
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.mthAutoCompleteDS = new CleaningMethodDS(this.apollo);
-    this.catAutoCompleteDS= new CleaningCategoryDS(this.apollo);
+    this.catAutoCompleteDS = new CleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -222,7 +222,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       })
     ).subscribe();
 
-     this.categoryControl!.valueChanges.pipe(
+    this.categoryControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -237,7 +237,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.searchForm = this.fb.group({
       name: [''],
       description: [''],
-      category:[''],
+      category: [''],
       processName: this.processNameControl
     });
   }
@@ -313,9 +313,9 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       where.description = { in: this.selectedDescs };
     }
 
-    if(this.selectedCategories.length > 0) {
-      
-      where.cleaning_category = {description:{ in: this.selectedCategories }};
+    if (this.selectedCategories.length > 0) {
+
+      where.cleaning_category = { description: { in: this.selectedCategories } };
     }
     // if (this.processNameControl?.value) {
     //   where.name = { contains: this.processNameControl?.value };
@@ -509,7 +509,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.searchForm?.patchValue({
       description: '',
       processName: '',
-      category:'',
+      category: '',
     });
     this.name_removeAllSelected();
     this.description_removeAllSelected();
@@ -725,7 +725,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     cnt?.setValue(null);
   }
 
-@ViewChild('descInput', { static: true })
+  @ViewChild('descInput', { static: true })
   categoryInput?: ElementRef<HTMLInputElement>;
   selectedCategories: any[] = [];
   category_itemSelected(row: any): boolean {
@@ -800,7 +800,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     cnt?.setValue(null);
   }
-  
+
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_EDIT']);
@@ -864,17 +864,24 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
 
-  export_report(){
-   this.isGeneratingReport = true;
+  export_report() {
+    this.isGeneratingReport = true;
     const where = { delete_dt: { eq: null } };
     this.mthDS.loadAllItems(where).subscribe(res => {
       var prcList: CleaningMethodItem[] = res;
+      prcList.forEach((method: any) => {
+        method.total_duration = method.cleaning_method_formula?.reduce(
+          (sum: any, formula: any) => sum + (formula.cleaning_formula?.duration ?? 0),
+          0
+        ) ?? 0;
+
+      });
       this.exportPdfReport(prcList);
 
     })
   }
 
-    exportPdfReport(repData: any) {
+  exportPdfReport(repData: any) {
 
     //this.preventDefault(event);
     let cut_off_dt = new Date();
@@ -916,12 +923,21 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const where = { delete_dt: { eq: null } };
     this.mthDS.loadAllItems(where).subscribe(res => {
       var prcList: CleaningMethodItem[] = res;
+
+      prcList.forEach((method: any) => {
+        method.total_duration = method.cleaning_method_formula?.reduce(
+          (sum: any, formula: any) => sum + (formula.cleaning_formula?.duration ?? 0),
+          0
+        ) ?? 0;
+
+      });
       this.exportExcelReport(prcList);
 
     })
 
 
   }
+
   exportExcelReport(repData: any) {
 
     //this.preventDefault(event);
@@ -957,6 +973,14 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       this.isGeneratingReport = false;
     });
 
+  }
+
+  getTotalDuration(method: CleaningMethodItem): number {
+    return method.cleaning_method_formula?.reduce(
+      (total, item) => total + (item.cleaning_formula?.duration ?? 0),
+      0
+    ) ?? 0;
+  }
     }
     getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
         const centerClass = isCenter ? 'justify-content-center' : '';

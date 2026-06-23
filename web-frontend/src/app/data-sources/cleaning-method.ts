@@ -153,11 +153,11 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
 //   }
 // }
 
-export class CleaningPriceList{
-  Descripton:string="";
-  Unit:string="";
-  ManHour:string="-" ;
-  Material:string="";
+export class CleaningPriceList {
+  Descripton: string = "";
+  Unit: string = "";
+  ManHour: string = "-";
+  Material: string = "";
 }
 
 export class CleaningMethodItem {
@@ -198,50 +198,51 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
     super();
   }
 
- loadAllItems(
-  where?: any, 
-  order?: any, 
-  batchSize: number = 100
-): Observable<CleaningMethodItem[]> {
-  let allItems: CleaningMethodItem[] = [];
-  let after: string | undefined;
-  let totalCount: number = 0;
-    
- const loadBatch = (): Observable<CleaningCategoryItem[]> => {
-    return this.loadItems(
-      where,
-      order,
-      batchSize
-    ).pipe(
-      switchMap(items => {
-        allItems = [...allItems, ...items];
-        
-        if (this.pageInfo?.hasNextPage) {
-          after = this.pageInfo.endCursor;
-          return loadBatch();
-        }
-        
-        return of(allItems);
+  loadAllItems(
+    where?: any,
+    order?: any,
+    batchSize: number = 100
+  ): Observable<CleaningMethodItem[]> {
+    let allItems: CleaningMethodItem[] = [];
+    let after: string | undefined;
+    let totalCount: number = 0;
+
+    const loadBatch = (): Observable<CleaningCategoryItem[]> => {
+      return this.loadItems(
+        where,
+        order,
+        batchSize
+      ).pipe(
+        switchMap(items => {
+          allItems = [...allItems, ...items];
+
+          if (this.pageInfo?.hasNextPage) {
+            after = this.pageInfo.endCursor;
+            return loadBatch();
+          }
+
+          return of(allItems);
+        })
+      );
+    };
+
+    this.loadingSubject.next(true);
+    return loadBatch().pipe(
+      finalize(() => {
+        this.loadingSubject.next(false);
+        this.totalCount = allItems.length;
       })
     );
-  };
+  }
 
-  this.loadingSubject.next(true);
-  return loadBatch().pipe(
-    finalize(() => {
-      this.loadingSubject.next(false);
-      this.totalCount = allItems.length;
-    })
-  );
-}
-
-  loadItems(where?: any, order?: any, first?: any,after?:any): Observable<CleaningMethodItem[]> {
-    if(!first)first=100;
+  loadItems(where?: any, order?: any, first?: any, after?: any): Observable<CleaningMethodItem[]> {
+    if (!first) first = 100;
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_CLEANING_METHOD_QUERY,
-        variables: { where, order, first,after },
+        // query: GET_CLEANING_METHOD_QUERY,
+        query: SEARCH_CLEANING_METHOD_QUERY,
+        variables: { where, order, first, after },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -253,6 +254,13 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
+          rst.nodes.forEach((method:any) => {
+            if (method.cleaning_method_formula?.length) {
+              method.cleaning_method_formula.sort(
+                (a:any, b:any) => a.sequence - b.sequence
+              );
+            }
+          });
           this.itemsSubjects.next(rst.nodes);
           this.pageInfo = rst.pageInfo;
           this.totalCount = rst.totalCount;
@@ -290,40 +298,40 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
   }
 
   searchAllCleaningMethods(where?: any, order?: any): Observable<CleaningMethodItem[]> {
-  this.loadingSubject.next(true);
+    this.loadingSubject.next(true);
 
-  const fetchPage = (after?: string, accumulated: CleaningMethodItem[] = []): Observable<CleaningMethodItem[]> => {
-    return this.apollo.query<any>({
-      query: SEARCH_CLEANING_METHOD_QUERY,
-      variables: { where, order, first: 100, after }, // fetch 100 per page
-      fetchPolicy: 'no-cache'
-    }).pipe(
-      map(result => result.data.queryCleaningMethod || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
-      switchMap(rst => {
-        const newAccumulated = [...accumulated, ...rst.nodes];
-        this.totalCount = rst.totalCount;
+    const fetchPage = (after?: string, accumulated: CleaningMethodItem[] = []): Observable<CleaningMethodItem[]> => {
+      return this.apollo.query<any>({
+        query: SEARCH_CLEANING_METHOD_QUERY,
+        variables: { where, order, first: 100, after }, // fetch 100 per page
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data.queryCleaningMethod || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 }),
+        switchMap(rst => {
+          const newAccumulated = [...accumulated, ...rst.nodes];
+          this.totalCount = rst.totalCount;
 
-        if (rst.pageInfo?.hasNextPage && rst.pageInfo.endCursor) {
-          // recursively fetch next page
-          return fetchPage(rst.pageInfo.endCursor, newAccumulated);
-        } else {
-          // done, push into subject and return all
-          this.itemsSubjects.next(newAccumulated);
-          this.pageInfo = rst.pageInfo;
-          return of(newAccumulated);
-        }
-      }),
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of([] as CleaningMethodItem[]);
-      })
+          if (rst.pageInfo?.hasNextPage && rst.pageInfo.endCursor) {
+            // recursively fetch next page
+            return fetchPage(rst.pageInfo.endCursor, newAccumulated);
+          } else {
+            // done, push into subject and return all
+            this.itemsSubjects.next(newAccumulated);
+            this.pageInfo = rst.pageInfo;
+            return of(newAccumulated);
+          }
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleaningMethodItem[]);
+        })
+      );
+    };
+
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false))
     );
-  };
-
-  return fetchPage().pipe(
-    finalize(() => this.loadingSubject.next(false))
-  );
-}
+  }
 
   addCleaningMethod(cc: any): Observable<any> {
     return this.apollo.mutate({
