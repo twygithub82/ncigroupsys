@@ -240,9 +240,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
-  isMobile: boolean = false;
   defDiscThd: number = defaultDiscountThreshold;
   isBillingBranchEmpty: boolean = true;
+
+  isMobile : boolean = false;
+  
   isDirty: boolean = isDirty;
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -1391,16 +1393,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return (!row?.so_count && !row?.sot_count && !row?.tank_info_count);
   }
 
-  canAddBillingBranch() {
-    let retval = false;
-    if (this.repList) {
-      retval = this.repList.data.length > 0;
-    }
-    return retval;
-  }
-  
-  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, PaddingLeft: boolean = false,
-    isEnd: boolean = false, PaddingRight: boolean = false, PaddingBottom: boolean = false, PaddingBottom2: boolean = false): string {
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
+    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
     if (isStart) centerClass = 'justify-content-start ';
     if (isEnd) centerClass = 'justify-content-end ';
@@ -1411,4 +1405,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return `${baseClasses} ${centerClass}`.trim();
   }
 
+  canAddBillingBranch()
+  {
+    let retval=false;
+    if(this.repList)
+    {
+      retval=this.repList.data.length>0;
+    }
+    return retval;
+  }
 }

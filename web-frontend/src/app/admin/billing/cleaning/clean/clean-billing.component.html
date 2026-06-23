@@ -274,19 +274,19 @@
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="' '">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="' '">
             <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="customer">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="''">
+            [ngClass]="'justify-content-center'">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
               matTooltip={{row.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
           </mat-cell>

@@ -217,9 +217,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     DUPLICATE_ESTIMATION_DETECTED: "COMMON-FORM.DUPLICATE-ESTIMATION-DETECTED",
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
-    FILTER: 'COMMON-FORM.DESCRIPTION',
     S_N: 'COMMON-FORM.S_N',
     ID: 'COMMON-FORM.ID',
+    FILTER: 'COMMON-FORM.DESCRIPTION',
     ALL: 'COMMON-FORM.ALL',
   }
 
@@ -269,8 +269,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
-    isDirty: boolean = isDirty;
-    isMobile: boolean = false;
+  isDirty: boolean = isDirty;
+  
+  isMobile : boolean = false;
   @ViewChild('custInput', { static: false }) custInput?: ElementRef<HTMLInputElement>;
 
   constructor(

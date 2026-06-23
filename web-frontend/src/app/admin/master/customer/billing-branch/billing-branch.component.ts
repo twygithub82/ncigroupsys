@@ -826,74 +826,77 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true, isStart: boolean = false, Padding: boolean = false, isEnd: boolean = false): string {
+  export_excel()
+      {
+        this.isGeneratingReport=true;
+        // const where: any = {};
+        //  where.and = [
+        //     { type_cv: { in: ["BRANCH"] } } ,
+        //    { delete_dt: { eq: null } } 
+        // ];
+        const filters=this.lastSearchCriteria.and||[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
+        var where: any= {};
+        if (filters.length>0){
+           where.and=filters.map((item:any) => item.customer_company);
+        }
+        else
+        {
+          where=[{ type_cv: { in: ["BRANCH"] } } ,{ delete_dt: { eq: null } }];
+        }
+        
+        // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
+        this.ccDS.searchAll(where).subscribe(res=>{
+              var prcList:CustomerCompanyItem[]=res;
+              this.exportExcelReport(prcList);
+    
+          })
+    
+          
+      }
+      exportExcelReport(repData:any) {
+          
+             //this.preventDefault(event);
+              let cut_off_dt = new Date();
+          
+          
+              let tempDirection: Direction;
+              if (localStorage.getItem('isRtl') === 'true') {
+                tempDirection = 'rtl';
+              } else {
+                tempDirection = 'ltr';
+              }
+          
+              const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
+                width: reportPreviewWindowDimension.portrait_width_rate,
+                maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+                maxHeight: reportPreviewWindowDimension.report_maxHeight,
+                
+                data: {
+                  repData: repData
+                },
+          
+                // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+                direction: tempDirection
+              });
+          
+                dialogRef.updatePosition({
+                top: '-90vh',  // Move far above the screen
+                left: '0px'  // Move far to the left of the screen
+              });
+          
+              this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+                this.isGeneratingReport = false;
+              });
+      
+        }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,Padding:boolean=false,isEnd:boolean=false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
-    if (isStart) centerClass = 'justify-content-start ';
-    if (isEnd) centerClass = 'justify-content- ';
-    if (Padding) centerClass += 'left-padding-cell ';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content- ' ;
+    if(Padding) centerClass +=  'left-padding-cell ' ;
     return `${baseClasses} ${centerClass}`.trim();
   }
 
-  export_excel() {
-    this.isGeneratingReport = true;
-    // const where: any = {};
-    //  where.and = [
-    //     { type_cv: { in: ["BRANCH"] } } ,
-    //    { delete_dt: { eq: null } } 
-    // ];
-    const filters = this.lastSearchCriteria.and || [{ type_cv: { in: ["BRANCH"] } }, { delete_dt: { eq: null } }];
-    var where: any = {};
-    if (filters.length > 0) {
-      where.and = filters.map((item: any) => item.customer_company);
-    }
-    else {
-      where = [{ type_cv: { in: ["BRANCH"] } }, { delete_dt: { eq: null } }];
-    }
-
-    // const where=this.lastSearchCriteria.customer_company||{ delete_dt: { eq: null } };
-    this.ccDS.searchAll(where).subscribe(res => {
-      var prcList: CustomerCompanyItem[] = res;
-      this.exportExcelReport(prcList);
-
-    })
-
-
-  }
-  exportExcelReport(repData: any) {
-
-    //this.preventDefault(event);
-    let cut_off_dt = new Date();
-
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(BilingBranchExcelComponent, {
-      width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-      maxHeight: reportPreviewWindowDimension.report_maxHeight,
-
-      data: {
-        repData: repData
-      },
-
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-      direction: tempDirection
-    });
-
-    dialogRef.updatePosition({
-      top: '-90vh',  // Move far above the screen
-      left: '0px'  // Move far to the left of the screen
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport = false;
-    });
-
-  }
 }
 

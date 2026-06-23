@@ -132,8 +132,10 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
     PROCESS_DESCRIPTION_SELECTED: 'COMMON-FORM.SELECTED',
     PROCESS_NAME_SELECTED: 'COMMON-FORM.SELECTED',
     S_N: 'COMMON-FORM.S_N',
-    CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
-    CATEGORY:'COMMON-FORM.CATEGORY',
+    CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
+    CATEGORY: 'COMMON-FORM.CATEGORY',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    MINUTES: 'COMMON-FORM.MINUTES',
 
   }
 
@@ -364,40 +366,76 @@ export class CleaningMethodsExcelComponent extends UnsubscribeOnDestroyAdapter i
     const startX = leftMargin;
     let index = 1;
 
-    const data: any[][] = items.map((item,index) => {
-      const row = [
-        index+1,
-         item.name || "-",
+    // const data: any[][] = items.map((item,index) => {
+    //   var itm:any=item;
+    //   var row = [
+    //     index+1,
+    //      item.name || "-",
+    //     item.description || "-",
+    //     item.cleaning_category?.name || "-",
+    //     itm.total_duration || "-",
+    //     this.displayLastUpdated(item) || "-",
+
+    //   ];
+    //   item.cleaning_method_formula?.forEach((formula) => {
+    //     var content = `${formula.cleaning_formula?.description} - ${formula.cleaning_formula?.duration} ${this.translatedLangText.MINUTES}`;
+    //     row.push(["","","","",content,""]);
+    //   })
+    //   return row;
+    // });
+    const data: any[][] = [];
+
+    items.forEach((item, index) => {
+
+      const itm: any = item;
+
+      // Main method row
+      data.push([
+        index + 1,
+        item.name || "-",
         item.description || "-",
         item.cleaning_category?.name || "-",
-        this.displayLastUpdated(item) || "-",
+        itm.total_duration || 0,
+        this.displayLastUpdated(item) || "-"
+      ]);
 
-      ];
-      return row;
+      // Formula rows
+      item.cleaning_method_formula?.forEach(formula => {
+        data.push([
+          "",
+          "",
+          "",
+          "",
+          `${formula.cleaning_formula?.description || " "} - ${formula.cleaning_formula?.duration || 0} ${this.translatedLangText.MINUTES}`,
+          ""
+        ]);
+      });
     });
+    const filteredData = data.filter((row): row is any[] => row !== null);
     var sysCurrencyCode = Utility.GetSystemCurrencyCode();
     const head: (string | number)[][] = [[
       this.translatedLangText.S_N,
       this.translatedLangText.PROCESS_NAME,
       this.translatedLangText.DESCRIPTION,
       this.translatedLangText.CATEGORY,
+      this.translatedLangText.TOTAL_DURATION,
       this.translatedLangText.LAST_UPDATED
     ]];
 
     const reportTitle: (string | number)[][] = [
       [`${this.translatedLangText.CLEANING_PROCESS}`],
     ];
-   const rows: (string | number)[][] = [
+    const rows: (string | number)[][] = [
       ...reportTitle,
       [], // empty row after title
       ...head,
-      ...data
+      ...filteredData
     ];
 
     const totalColumns = head[0].length;
-    var fileName ="CleaningProcess.xlsx";
+    var fileName = "CleaningProcess.xlsx";
     Utility.saveExcel(rows, fileName, totalColumns);
-   
+
     this.dialogRef.close();
   }
 

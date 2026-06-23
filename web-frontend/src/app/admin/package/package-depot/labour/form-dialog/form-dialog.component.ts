@@ -92,7 +92,7 @@ export class FormDialogComponent {
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
   packLabourDS: PackageLabourDS;
-  isDirty: boolean = isDirty;
+    isDirty: boolean = isDirty;
     isMobile: boolean = false;
   translatedLangText: any = {};
   langText = {

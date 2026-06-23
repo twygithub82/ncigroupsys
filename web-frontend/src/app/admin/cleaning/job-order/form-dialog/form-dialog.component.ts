@@ -932,7 +932,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
    toPascalCaseFirstLetter(value: string): string {
-    if (!value) return value;
-    return value.charAt(0).toUpperCase() + value.slice(1);
+    return BusinessLogicUtil.toPascalCaseFirstLetter(value);
   }
 }

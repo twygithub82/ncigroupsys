@@ -194,7 +194,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  isMobile : boolean = false;
+  isMobile: boolean = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -1883,11 +1883,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       this.search();
     }
   }
-   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-  
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+    const centerClass = isCenter ? 'justify-content-center' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
   getCustomerCode(item: any) {
     var itm = item?.customer_company;

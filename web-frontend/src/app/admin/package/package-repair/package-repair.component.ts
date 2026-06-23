@@ -1221,11 +1221,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return Utility.formatNumberDisplay(amount);
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true, ExtraPadding: boolean = true): string {
-    let centerClass = isCenter ? 'justify-content-center ' : '';
-    centerClass += ExtraPadding ? 'extra-left-padding' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
+  getColumnClasses(baseClasses: string, isCenter: boolean = true,ExtraPadding: boolean = true): string {
+      let centerClass = isCenter ? 'justify-content-center ' : '';
+      centerClass += ExtraPadding ? 'extra-left-padding' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

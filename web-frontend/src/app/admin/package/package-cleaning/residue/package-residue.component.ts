@@ -1000,11 +1000,6 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-  
-      getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-        const centerClass = isCenter ? 'justify-content-center' : '';
-        return `${baseClasses} ${centerClass}`.trim();
-      }
   export_excel() {
     this.isGeneratingReport = true;
     // const where = { and: [{ delete_dt: { eq: null } }, { customer_company: { delete_dt: { eq: null } } }] };
@@ -1103,5 +1098,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       });
   
     }
+  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+ 
 }
 

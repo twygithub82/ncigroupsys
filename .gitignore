@@ -27,3 +27,4 @@ backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishPr
 /backend/FileManagement/IDMS.FileManagement.API/IDMS.FileManagement.API/appsettings.json
 /backend/GqlMS/Master/IDMS.MasterMS/IDMS.MasterMS/appsettings.Development.json
 backend/GqlMS/Parameter/IDMS.Parameter.CategoryMethod/Properties/PublishProfiles/tlx-idms-parameter-v1 - Web Deploy.pubxml.user
+/web-frontend/src/app/admin/reports/tank-activity/cleaning/TankActivitiyCleaningReportComponent.ts

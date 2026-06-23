@@ -86,8 +86,9 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-    isDirty: boolean = isDirty;
-    isMobile: boolean = false;
+  isDirty: boolean = isDirty;
+  isMobile: boolean=false;
+  
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',

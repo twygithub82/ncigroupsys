@@ -1418,18 +1418,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
   }
 
-   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
-    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
-    let centerClass = isCenter ? 'justify-content-center ' : '';
-    if(isStart) centerClass =  'justify-content-start ' ;
-    if(isEnd) centerClass =  'justify-content-end ' ;
-    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
-    if(PaddingRight) centerClass +=  'p-r-0 ' ;
-    if(PaddingBottom) centerClass +=  'mb-0 ' ;
-    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
-    return `${baseClasses} ${centerClass}`.trim();
-  }
-
   checkBranchCodeExists(): void {
     const where: any = {};
     var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
@@ -1441,5 +1429,17 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }
 
     });
+  }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
+    isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content-end ' ;
+    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
+    if(PaddingRight) centerClass +=  'p-r-0 ' ;
+    if(PaddingBottom) centerClass +=  'mb-0 ' ;
+    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
+    return `${baseClasses} ${centerClass}`.trim();
   }
 }

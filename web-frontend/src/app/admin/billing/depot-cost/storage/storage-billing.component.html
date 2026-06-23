@@ -40,7 +40,7 @@
               </mat-autocomplete>
             </mat-form-field>
           </div>
-          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
               <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
@@ -225,34 +225,34 @@
           <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+          <mat-cell mat-cell *matCellDef="let row" class="">
             <span
               class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.EIR_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="cutoff_dt">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.CUTOFF_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
               class="mobile-label">{{translatedLangText.CUTOFF_DATE}}:</span>{{DisplayCutOff(row.storing_order_tank)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="days">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
             {{translatedLangText.DAYS}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="getColumnClasses('',!isMobile)">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span class="mobile-label">{{translatedLangText.DAYS}}:</span>{{getStorageDays(row)}}
           </mat-cell>
         </ng-container>

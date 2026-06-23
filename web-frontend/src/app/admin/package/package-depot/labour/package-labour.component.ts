@@ -864,10 +864,10 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     return Utility.formatNumberDisplay(amount);
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-    const centerClass = isCenter ? 'justify-content-center' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

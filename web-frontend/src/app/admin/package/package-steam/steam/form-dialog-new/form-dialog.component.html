@@ -69,7 +69,7 @@
               class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
               <ng-container matColumnDef="fName">
                 <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center extra-left-padding'">{{translatedLangText.CUSTOMER_CODE
+                  [ngClass]="getColumnClasses_center('tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile,!isMobile)">{{translatedLangText.CUSTOMER_CODE
                   }}</mat-header-cell>
                 <mat-cell *matCellDef="let row"
                   [ngClass]="getColumnClasses_center('tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile,!isMobile)">

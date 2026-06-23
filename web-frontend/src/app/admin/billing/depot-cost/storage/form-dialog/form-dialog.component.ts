@@ -218,8 +218,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
 
   selectedItem: BillingSOTItem;
-  isMobile: boolean = false;
   result :number=0;
+  isMobile: boolean = false;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -529,6 +529,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return diffInDays;
   }
 
+   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
+      const centerClass = Padding ? 'px-3' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
+  getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+     getColumnClasses_Right(baseClasses: string, isRight: boolean = true): string {
+      const centerClass = isRight ? 'align-right' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
+
   isShowDeleteIcon(row :any,i:number){
     if(i==0){
       return true;
@@ -569,18 +583,4 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
-
-   getColumnClasses(baseClasses: string, Padding: boolean = true): string {
-      const centerClass = Padding ? 'px-3' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-
-  getColumnClasses_Center(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
-     getColumnClasses_Right(baseClasses: string, isRight: boolean = true): string {
-      const centerClass = isRight ? 'align-right' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
 }

@@ -900,10 +900,10 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     return `${baseClasses} ${centerClass}`.trim();
   }
 
-  getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
-    let centerClass = isEnd ? 'justify-content-end ' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
+     getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
+      let centerClass = isEnd ? 'justify-content-end ' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 
   export_excel() {
 

@@ -63,3 +63,12 @@
     padding-left: #{$i}px;
   }
 }
+
+.text-overflow {
+  display: inline-block;
+  max-width: 220px; /* adjust as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}

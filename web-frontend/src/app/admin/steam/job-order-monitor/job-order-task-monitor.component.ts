@@ -1401,6 +1401,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
               this.steamDS.updateSteamStatus(stmStatus).subscribe(result => {
                 if (result.data.updateSteamingStatus > 0) {
                   console.log(result);
+                  this.steamHeatingLogPDFDialog(event, steaming);
                   this.handleSaveSuccess(result.data.updateSteamingStatus);
                 }
               });

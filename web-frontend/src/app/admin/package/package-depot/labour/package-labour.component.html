@@ -164,10 +164,10 @@
             </ng-container>
             <ng-container matColumnDef="customerCost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'justify-content-center'">{{this.translatedLangText.LABOUR_COST}}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.LABOUR_COST}}:</span>
+                [ngClass]="getColumnClasses('tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm',!isMobile)">
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST}}:</span>
                 {{displayCurrency(row.cost)}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="bDate">

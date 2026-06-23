@@ -1082,4 +1082,5 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     const centerClass = isCenter ? 'justify-content-center' : '';
     return `${baseClasses} ${centerClass}`.trim();
   }
+
 }

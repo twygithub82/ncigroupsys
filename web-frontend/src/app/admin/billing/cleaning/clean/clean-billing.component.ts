@@ -1070,11 +1070,6 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
-
-   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      const centerClass = isCenter ? 'justify-content-center' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
    getCustomerCode(item:any)
   {
     var itm =item?.storing_order_tank?.storing_order?.customer_company;
@@ -1093,4 +1088,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
     return "-";
   }
+
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+      const centerClass = isCenter ? 'justify-content-center' : '';
+      return `${baseClasses} ${centerClass}`.trim();
+    }
 }
