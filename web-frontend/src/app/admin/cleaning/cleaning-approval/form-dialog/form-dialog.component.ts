@@ -775,4 +775,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     return retval;
   }
+
+   toPascalCaseFirstLetter(value: string): string {
+    return BusinessLogicUtil.toPascalCaseFirstLetter(value);
+  }
 }

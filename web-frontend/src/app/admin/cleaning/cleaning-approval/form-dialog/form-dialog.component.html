@@ -284,7 +284,7 @@
                                     {{
                                     this.pcForm.get('status_cv')?.value === 'KIV'
                                     ? '-'
-                                    : (this.pcForm.get('update_by')?.value || '-')
+                                    : toPascalCaseFirstLetter(this.pcForm.get('update_by')?.value || '-')
                                     }}
                                   </span>
                                   <!-- <span></span><span>+</span> -->
@@ -297,7 +297,7 @@
                                     selectedItem?.status_cv === 'APPROVED'
                                     ? '-'
                                     : this.selectedItem?.job_order?.update_dt
-                                    ?selectedItem.job_order?.update_by:"-"
+                                    ? toPascalCaseFirstLetter(this.selectedItem.job_order.update_by??'') :"-"
                                     
                                     }}
                                   </span>

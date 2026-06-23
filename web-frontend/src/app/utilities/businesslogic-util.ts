@@ -47,7 +47,7 @@ export class BusinessLogicUtil {
         return modulePackage === "growth"
     }
 
-   
+
     static isCustomizedPackage() {
         return modulePackage === "customized"
     }
@@ -264,6 +264,11 @@ export class BusinessLogicUtil {
     static isThermometerMandatory(spec_cv?: string[]): boolean {
         const required = ['MISSING', 'BROKEN'];
         return !!spec_cv?.length && required.some(item => spec_cv.includes(item));
+    }
+
+    static toPascalCaseFirstLetter(value: string): string {
+        if (!value) return value;
+        return value.charAt(0).toUpperCase() + value.slice(1);
     }
 }
 
