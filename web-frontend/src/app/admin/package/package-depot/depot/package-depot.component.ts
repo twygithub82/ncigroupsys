@@ -1113,10 +1113,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     return `${baseClasses} ${centerClass}`.trim();
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-    const centerClass = isCenter ? 'justify-content-center' : '';
-    return `${baseClasses} ${centerClass}`.trim();
-  }
 
   getStorageCalcDescription(storageCalcValue:string)
   {
