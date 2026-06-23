@@ -96,6 +96,9 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
     S_N: 'COMMON-FORM.S_N',
     CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
     CATEGORY:'COMMON-FORM.CATEGORY',
+    TOTAL_DURATION: 'COMMON-FORM.TOTAL-DURATION',
+    MINUTES: 'COMMON-FORM.MINUTES',
+
   }
 
   type?: string | null;
@@ -396,21 +399,50 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
  
      var items = this.repData!;
      var index = 1;
-     const data: any[][] = items
-         .map((item) => {
+    //  const data: any[][] = items
+    //      .map((item:any) => {
           
-           const row = [
-             index++, // increment index for each item
-             item.name || "-",
-             item.description || "-",
-            item.cleaning_category?.name || "-",
-            this.displayLastUpdated(item) || "-"
-           ];
+    //        const row = [
+    //          index++, // increment index for each item
+    //          item.name || "-",
+    //          item.description || "-",
+    //         item.cleaning_category?.name || "-",
+    //         item.total_duration || "-",
+    //         this.displayLastUpdated(item) || "-"
+    //        ];
  
-           return row;
-         })
-     .filter((row): row is any[] => row !== null);
- 
+    //        return row;
+    //      })
+    //  .filter((row): row is any[] => row !== null);
+       const data: any[][] = [];
+
+    items.forEach((item, index) => {
+
+      const itm: any = item;
+
+      // Main method row
+      data.push([
+        index + 1,
+        item.name || "-",
+        item.description || "-",
+        item.cleaning_category?.name || "-",
+        itm.total_duration || 0,
+        this.displayLastUpdated(item) || "-"
+      ]);
+
+      // Formula rows
+      item.cleaning_method_formula?.forEach(formula => {
+        data.push([
+          "",
+          "",
+          "",
+          "",
+          `${formula.cleaning_formula?.description || " "} - ${formula.cleaning_formula?.duration || 0} ${this.translatedLangText.MINUTES}`,
+          ""
+        ]);
+      });
+    });
+     const filteredData = data.filter((row): row is any[] => row !== null);
      const pagePositions: { page: number; x: number; y: number }[] = [];
      // const progressValue = 100 / cardElements.length;
      var sysCurrencyCode = Utility.GetSystemCurrencyCode();
@@ -420,6 +452,7 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
       this.translatedLangText.PROCESS_NAME,
       this.translatedLangText.DESCRIPTION,
       this.translatedLangText.CATEGORY,
+      this.translatedLangText.TOTAL_DURATION,
       this.translatedLangText.LAST_UPDATED
        
      ]];
@@ -428,8 +461,9 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
        0: { cellWidth: 12,valign: 'middle', halign: 'center' },    // "S_N."
        1: { cellWidth: 50 ,valign: 'middle', halign: 'center'},   // "PROCESS_NAME"
        2: {  valign: 'middle', halign: 'center' },  // "DESCRIPTION"
-       3: { cellWidth: 40, valign: 'middle', halign: 'center' },  // "CATEGORY"
-       4: { cellWidth: 30, valign: 'middle', halign: 'center' },   // "LAST_UPDATED "
+       3: { cellWidth: 30, valign: 'middle', halign: 'center' },  // "CATEGORY"
+       4: { cellWidth: 50, valign: 'middle', halign: 'center' },  // "CATEGORY"
+       5: { cellWidth: 30, valign: 'middle', halign: 'center' },   // "LAST_UPDATED "
      };
  
      // Define headStyles with valid fontStyle
@@ -469,7 +503,7 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
  
        autoTable(pdf, {
          head: headers,
-         body: data,
+         body: filteredData,
          //startY: startY, // Start table at the current startY value
          theme: 'grid',
          margin: { top:startY, horizontal: leftMargin},
