@@ -667,14 +667,6 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    // pdf.setFontSize(8);
-    // pdf.setTextColor(0, 0, 0); // Black text
-
-    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
-    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-    //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
-    // const data: any[][] = [];
     var item = this.cleaningItem;
     var data: any[][] = [
       [

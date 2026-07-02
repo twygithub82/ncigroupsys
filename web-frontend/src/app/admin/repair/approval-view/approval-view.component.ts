@@ -1400,9 +1400,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   populateImages(files: any[]) {
-    files.forEach(dmgFile => {
-      this.repairImages.push(this.createImageForm(dmgFile.description, dmgFile.url, undefined));
-    });
+    files
+      .filter(dmgFile => dmgFile.description !== 'REPAIR_ESTIMATE')
+      .forEach(dmgFile => {
+        this.repairImages.push(this.createImageForm(dmgFile.description, dmgFile.url, undefined));
+      });
   }
 
   createImageForm(side: string, preview: string | ArrayBuffer, file: File | undefined) {

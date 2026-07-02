@@ -42,7 +42,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 import { FormDialogComponent_View } from './form-dialog-view/form-dialog.component';
 import { TariffDepotCostExcelComponent } from 'app/document-template/excel/tariff/depot/depot-cost/tariff-depot-cost-excel.component';
 import { reportPreviewWindowDimension, systemCurrencyCode } from 'environments/environment';
-import {CurrencyDS, CurrencyItem} from 'app/data-sources/currency';
+import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 import { sequence } from '@angular/animations';
 
 @Component({
@@ -84,12 +84,12 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     'lName',
     'rate',
     'mobile',
-     'actions',
+    'actions',
   ];
 
   unit_type_control = new UntypedFormControl();
 
-  
+
   currencyDS: CurrencyDS;
 
   currencyItemList: CurrencyItem[] = [];
@@ -102,7 +102,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { sequence:  "DESC" } ;
+  lastOrderBy: any = { sequence: "DESC" };
   defaultSortDirection: 'asc' | 'desc' = 'asc';
   defaultSortField = 'fName';
   endCursor: string | undefined = undefined;
@@ -163,11 +163,12 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     CLEANING_LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
-    CODE:'COMMON-FORM.CODE',
-    RATE:'COMMON-FORM.RATE',
-    SYSTEM_CURRENCY:'COMMON-FORM.SYSTEM-CURRENCY',
+    CODE: 'COMMON-FORM.CODE',
+    RATE: 'COMMON-FORM.RATE',
+    SYSTEM_CURRENCY: 'COMMON-FORM.SYSTEM-CURRENCY',
+
   }
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -192,7 +193,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     this.loadData();
     this.translateLangText();
   }
@@ -254,7 +255,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
         }
         this.subs.sink = this.currencyDS.search({ or: [{ currency_code: { contains: searchCriteria } }] }, [{ sequence: 'ASC' }]).subscribe(data => {
           this.currencyList = data.filter(item => item.currency_code !== systemCurrencyCode);
-          
+
           this.search();
         });
       })
@@ -330,7 +331,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
       and: [
         {
           is_active: {
-              eq: true
+            eq: true
           }
         },
         {
@@ -359,7 +360,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
       let name = this.tdForm!.value["code"];
       // where.profile_name = { contains: name }
       // const tariff_depot: any = { currency_code: { contains: name } }
-      where.and.push({ currency_code: { contains: name }  })
+      where.and.push({ currency_code: { contains: name } })
     }
 
     this.lastSearchCriteria = where;
@@ -456,9 +457,9 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
-    const where = {is_active:{eq:true}};
-    const order={sequence:'ASC'};
-    this.subs.sink = this.currencyDS.search(where,order,100).subscribe(data => {
+    const where = { is_active: { eq: true } };
+    const order = { sequence: 'ASC' };
+    this.subs.sink = this.currencyDS.search(where, order, 100).subscribe(data => {
       this.currencyList = data;
     });
 
@@ -592,8 +593,8 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   deleteCurrencyRate(selectedItem: CurrencyItem) {
-     var curItem :any= new CurrencyItem(selectedItem);
-     delete curItem.customer_company;
+    var curItem: any = new CurrencyItem(selectedItem);
+    delete curItem.customer_company;
     this.currencyDS.deleteCurrency(curItem).subscribe(d => {
       let count = d.data.deleteCurrency;
       if (count > 0) {
@@ -639,7 +640,7 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   resetForm() {
     this.tdForm?.patchValue({
       code: '',
-      
+
     });
     this.unit_type_control.reset();
   }
@@ -658,13 +659,13 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   isAllowDelete() {
-     return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_DELETE']);
+    return this.modulePackageService.hasFunctions(['MASTER_CURRENCY_DELETE']);
   }
 
   isAllowDeleteRow(row: any) {
-    
-    var count = row.customer_company?.length||0;
-    return count==0;
+
+    var count = row.customer_company?.length || 0;
+    return count == 0;
   }
 
   onSortChange(event: Sort): void {
@@ -683,18 +684,13 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
     switch (field) {
       case 'mobile':
         this.lastOrderBy = {
-          tariff_depot: {
-            update_dt: dirEnum,
-            create_dt: dirEnum,
-          },
+         currency_code : dirEnum
         };
         break;
 
       case 'fName':
         this.lastOrderBy = {
-          tariff_depot: {
-            profile_name: dirEnum
-          },
+          currency_code : dirEnum
         };
         break;
       default:
@@ -710,77 +706,74 @@ export class CurrencyExchangeComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getAllUnitTypes(t: TariffDepotItem): string {
-  if (!t?.tanks?.length) {
-    return '';
+    if (!t?.tanks?.length) {
+      return '';
+    }
+
+    return t.tanks
+      .map((tank: TankItem) => tank.unit_type)
+      .filter(Boolean)              // remove null / undefined / empty
+      .join(', ');
+  }
+  export_excel() {
+
+    if (this.tariffDepotItems) {
+      this.isGeneratingReport = true;
+      var prcList: TariffDepotItem[] = [];
+      this.tariffDepotItems.forEach((item) => {
+        var itm: any = item;
+        const c: TariffDepotItem = {
+          ...itm.tariff_depot,
+          unit_types: this.getAllUnitTypes(itm.tariff_depot)
+        };
+        prcList.push(c);
+      });
+      this.exportExcelReport(prcList);
+    }
+
   }
 
-  return t.tanks
-    .map((tank: TankItem) => tank.unit_type)
-    .filter(Boolean)              // remove null / undefined / empty
-    .join(', ');
-}
-  export_excel()
-        {
-          
-         if(this.tariffDepotItems)
-         {
-          this.isGeneratingReport=true;
-          var prcList:TariffDepotItem[]=[];
-              this.tariffDepotItems.forEach((item)=>{
-                var itm:any = item;
-               const c: TariffDepotItem = {
-                  ...itm.tariff_depot,
-                  unit_types:this.getAllUnitTypes(itm.tariff_depot)
-                };
-                prcList.push(c);
-              });
-          this.exportExcelReport(prcList);
-         }
-      
-        }
-    
-         exportExcelReport(repData:any) {
-              
-                 //this.preventDefault(event);
-                  let cut_off_dt = new Date();
-              
-              
-                  let tempDirection: Direction;
-                  if (localStorage.getItem('isRtl') === 'true') {
-                    tempDirection = 'rtl';
-                  } else {
-                    tempDirection = 'ltr';
-                  }
-              
-                  const dialogRef = this.dialog.open(TariffDepotCostExcelComponent, {
-                    width: reportPreviewWindowDimension.portrait_width_rate,
-                    maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
-                    maxHeight: reportPreviewWindowDimension.report_maxHeight,
-                    
-                    data: {
-                      repData: repData
-                    },
-              
-                    // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-                    direction: tempDirection
-                  });
-              
-                    dialogRef.updatePosition({
-                    top: '-90vh',  // Move far above the screen
-                    left: '0px'  // Move far to the left of the screen
-                  });
-              
-                  this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-                    this.isGeneratingReport = false;
-                  });
-          
-            }
-          GetSystemCurrency()
-          {
-            return this.translatedLangText.SYSTEM_CURRENCY + ' : ' + systemCurrencyCode;
-          }
+  exportExcelReport(repData: any) {
 
-          convertNumber(input: string | number | boolean | undefined, decimals: number = 0):string {
-            return Utility.convertNumber(input, decimals).toFixed(decimals);
-          }
+    //this.preventDefault(event);
+    let cut_off_dt = new Date();
+
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(TariffDepotCostExcelComponent, {
+      width: reportPreviewWindowDimension.portrait_width_rate,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
+
+      data: {
+        repData: repData
+      },
+
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+
+    dialogRef.updatePosition({
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isGeneratingReport = false;
+    });
+
+  }
+  GetSystemCurrency() {
+    return this.translatedLangText.SYSTEM_CURRENCY + ' : ' + systemCurrencyCode;
+  }
+
+  convertNumber(input: string | number | boolean | undefined, decimals: number = 0): string {
+    return Utility.convertNumber(input, decimals).toFixed(decimals);
+  }
 }
