@@ -817,9 +817,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
-    // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
-
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 0;
 
@@ -827,11 +824,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
-    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-    //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
-    // const data: any[][] = [];
 
     var data: any[][] = [
       [
