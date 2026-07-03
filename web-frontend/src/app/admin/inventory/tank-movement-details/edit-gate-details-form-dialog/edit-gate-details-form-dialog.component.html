@@ -14,6 +14,17 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.EIR_DATE}}</mat-label>
+            <input matInput formControlName="eir_dt" [matDatepicker]="manufacturer_eir_picker" [max]="maxEirDt"
+              required>
+            <mat-datepicker-toggle matSuffix [for]="manufacturer_eir_picker"></mat-datepicker-toggle>
+            <mat-datepicker #manufacturer_eir_picker [startAt]="overwriteForm.get('eir_dt')?.value || maxEirDt"></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
             <input matInput formControlName="job_no" required>
           </mat-form-field>

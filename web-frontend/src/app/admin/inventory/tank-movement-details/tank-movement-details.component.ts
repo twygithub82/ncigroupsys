@@ -1785,7 +1785,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             guid: gateItem?.guid,
             remarks: result?.remarks,
             vehicle_no: result?.vehicle_no,
-            driver_name: result?.driver_name
+            driver_name: result?.driver_name,
+            eir_dt: result?.eir_dt
           },
           orderInfo: {
             guid: this.sot?.storing_order?.guid,
