@@ -47,6 +47,7 @@ namespace IDMS.Inventory.GqlTypes.LocalModel
         public string? vehicle_no { get; set; }
         public string? driver_name { get; set; }
         public string? remarks { get; set; }
+        public long? eir_dt { get; set; }
     }
 
     [NotMapped]

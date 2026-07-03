@@ -1033,6 +1033,8 @@ namespace IDMS.Inventory.GqlTypes
                             ingate.driver_name = gateDetailRequest.InGateDetail?.GateInfo?.driver_name;
                         if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.GateInfo?.remarks))
                             ingate.remarks = gateDetailRequest.InGateDetail?.GateInfo?.remarks;
+                        if (gateDetailRequest.InGateDetail?.GateInfo?.eir_dt != null && gateDetailRequest.InGateDetail?.GateInfo?.eir_dt > 0)
+                            ingate.eir_dt = gateDetailRequest.InGateDetail?.GateInfo?.eir_dt;
                         ingate.update_by = user;
                         ingate.update_dt = currentDateTime;
                     }
@@ -1077,6 +1079,8 @@ namespace IDMS.Inventory.GqlTypes
                             outgate.driver_name = gateDetailRequest.OutGateDetail?.GateInfo?.driver_name;
                         if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.GateInfo?.remarks))
                             outgate.remarks = gateDetailRequest.OutGateDetail?.GateInfo?.remarks;
+                        if (gateDetailRequest.OutGateDetail?.GateInfo?.eir_dt != null && gateDetailRequest.OutGateDetail?.GateInfo?.eir_dt > 0)
+                            outgate.eir_dt = gateDetailRequest.OutGateDetail?.GateInfo?.eir_dt;
                         outgate.update_by = user;
                         outgate.update_dt = currentDateTime;
                     }
