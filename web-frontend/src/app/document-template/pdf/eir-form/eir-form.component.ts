@@ -502,7 +502,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
-    const cutoffDate = `${this.tankTakeInDateLabel}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.tankTakeInDateLabel}: ${this.displayDate(this.getGate()?.eir_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);

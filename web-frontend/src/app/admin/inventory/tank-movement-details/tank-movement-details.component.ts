@@ -1182,7 +1182,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         const tankPurposeRequest = {
           guid: this.sot?.guid,
           job_no: result.job_no,
-          in_gate_dt: this.ig?.create_dt,
+          in_gate_dt: this.ig?.eir_dt,
           tank_comp_guid: this.igs?.tank_comp_guid,
           purpose_changes: [
             {
