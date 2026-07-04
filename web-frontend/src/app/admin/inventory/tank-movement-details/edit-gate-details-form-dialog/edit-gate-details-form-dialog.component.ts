@@ -70,6 +70,7 @@ export class EditGateDetailsFormDialogComponent {
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
   valueChangesDisabled: boolean = false;
+  maxEirDt: Date = new Date();
   constructor(
     public dialogRef: MatDialogRef<EditGateDetailsFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -86,6 +87,7 @@ export class EditGateDetailsFormDialogComponent {
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
+      eir_dt: Utility.convertDate(this.gateItem?.eir_dt),
       job_no: this.action === 'in' ? this.sot?.job_no : this.sot?.release_job_no,
       haulier: this.sot?.storing_order?.haulier,
       vehicle_no: this.gateItem?.vehicle_no,
@@ -98,6 +100,7 @@ export class EditGateDetailsFormDialogComponent {
   submit() {
     if (this.overwriteForm?.valid) {
       const returnDialog: any = {
+        eir_dt: Utility.convertDate(this.overwriteForm.get('eir_dt')?.value, false, true),
         job_no: this.overwriteForm.get('job_no')?.value,
         haulier: this.overwriteForm.get('haulier')?.value?.toUpperCase(),
         vehicle_no: this.overwriteForm.get('vehicle_no')?.value?.toUpperCase(),
