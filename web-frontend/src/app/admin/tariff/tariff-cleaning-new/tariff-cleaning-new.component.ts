@@ -292,7 +292,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         var mth = this.cMethodList.find(m => m.guid === searchCriteria);
 
         this.tcForm?.patchValue({
-          category: mth?.category_guid
+          category: mth?.cleaning_category?.guid||'',
         });
         // this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
         //   this.cleanFormulaList = data
