@@ -236,7 +236,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.pcForm = this.createTariffRepair();
-
+    this.subGroupNameControl.disable();
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
@@ -321,6 +321,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         data=[...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
         this.isSubGroupEmpty = this.subGroupNameCvList.length == 0;
+        this.subGroupNameControl.enable();
+        if(this.subGroupNameCvList.length == 0) {
+          this.subGroupNameControl.disable();
+        }
         if (this.selectedItem) {
           var rec = this.selectedItem;
           this.subGroupNameControl.setValue(this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList));
