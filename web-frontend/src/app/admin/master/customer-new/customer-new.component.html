@@ -223,9 +223,11 @@
                     <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode" [readonly]="!(canEdit() && canEditBillingBranch())">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
-                      <mat-option [value]="cc">
-                        {{displayCompanyName(cc)}}
-                      </mat-option>
+                        @if ((cc.main_customer_company?.guid===null)) {
+                          <mat-option [value]="cc">
+                            {{displayCompanyName(cc)}}
+                          </mat-option>
+                        }
                       }
                     </mat-autocomplete>
                   </mat-form-field>

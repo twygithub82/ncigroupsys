@@ -1442,7 +1442,8 @@
     "MAX-DAMAGE-PHOTOS": "Maximum 10 damage photos allowed.",
     "MAX-REPAIR-PHOTOS": "Maximum 40 repair photos allowed.",
     "HANDLED": "Handled",
-    "NON-HANDLED": "Non-Handled"
+    "NON-HANDLED": "Non-Handled",
+    "DELETE-BILLING-BRANCH": "This billing branch will be permanently deleted. Do you want to continue?"
 
   },
   "CLEAN-PROCEDURES": {

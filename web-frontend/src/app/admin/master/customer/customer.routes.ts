@@ -4,6 +4,7 @@ import { AuthGuard } from "@core/guard/auth.guard";
 import { MainCustomerComponent } from "./main-customer.component";
 import { CustomerNewComponent } from "../customer-new/customer-new.component";
 import { BillingBranchNewComponent } from "../billing-branch-new/billing-branch-new.component";
+import { CanDeactivateGuard } from "@core/guard/can-deactivate.guard";
 
 export const CUSTOMER_ROUTES: Routes = [
   {
@@ -27,6 +28,7 @@ export const CUSTOMER_ROUTES: Routes = [
     path: "new/:id",
     component: CustomerNewComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [CanDeactivateGuard],
     data: {
       expectedFunctions: [
         "MASTER_CUSTOMER_ADD",
