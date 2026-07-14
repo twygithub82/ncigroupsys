@@ -443,6 +443,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         this.isSubGroupEmpty = data.length == 0;
         data = [...data].sort((a, b) => a.description!.localeCompare(b.description!));
         this.subGroupNameCvList = data;
+        this.subGroupNameControl.enable();
+        if(this.subGroupNameCvList.length == 0) {
+          this.subGroupNameControl.disable();
+        }
         if (this.selectedItems.length == 1) {
           var rec = this.selectedItems[0];
           var subgroupNameCodeValue = this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList);

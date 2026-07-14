@@ -240,7 +240,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         delimiter = '-';
       }
 
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ?? ''} ${delimiter} ${rep.tariff_repair?.part_name ?? ''} ${rep.tariff_repair?.length ?? ''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ?? ''} ${delimiter} ${rep.tariff_repair?.part_name ?? ''} ${rep.tariff_repair?.length==0 ? '' : rep.tariff_repair?.length ?? ''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
