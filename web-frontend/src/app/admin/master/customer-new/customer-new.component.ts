@@ -45,10 +45,13 @@ import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { debounceTime, map, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { defaultDiscountThreshold, isDirty } from 'environments/environment';
+import { firstValueFrom } from 'rxjs';
+import { CanComponentDeactivate } from '@core/guard/can-deactivate.guard';
+
 
 @Component({
   selector: 'app-customer-new',
@@ -83,7 +86,7 @@ import { defaultDiscountThreshold, isDirty } from 'environments/environment';
     MatCardModule,
   ]
 })
-export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
+export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit, CanComponentDeactivate {
   tabIndex = 0;
   displayedColumns = [
     'index',
@@ -185,6 +188,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     ONLY_ALPHA_NUMERIC: 'COMMON-FORM.ONLY-ALPHA-NUMERIC',
     S_N: 'COMMON-FORM.S_N',
     MAX_DISCOUNT: 'COMMON-FORM.MAX-DISCOUNT',
+    DELETE_BILLING_BRANCH: 'COMMON-FORM.DELETE-BILLING-BRANCH',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -240,14 +244,15 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   countryCodes: any = [];
   countryCodesFiltered: any = [];
   currentBillingBranch: any = undefined;
+  selectedBillingBranch: any = undefined;
   defDiscThd: number = defaultDiscountThreshold;
   isBillingBranchEmpty: boolean = true;
   isDirty: boolean = isDirty;
   starterPackageNotAllowCustomerType = [
     "BRANCH"
   ]
-  isInitialized:boolean = false;
-
+  isInitialized: boolean = false;
+  existBillingBranch?: CustomerCompanyItem;
   @ViewChild('countrySelect') countrySelect!: MatSelect;
 
   constructor(
@@ -297,6 +302,24 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     // });
   }
 
+  async canDeactivate(): Promise<boolean> {
+    console.log('canDeactivate called');
+    var confirmed = this.isCurrentBillingBranchEmpty();
+
+    if (!confirmed) {
+      confirmed = !(this.selectedCustomerCmp === null || this.selectedCustomerCmp === undefined);
+    }
+
+    if (!confirmed) {
+      console.log('opening cancelItem dialog...');
+      confirmed = await this.cancelItem(this.currentBillingBranch);
+      console.log('dialog resolved with:', confirmed);
+    }
+
+    console.log('canDeactivate resolving as:', confirmed);
+    return confirmed;
+  }
+
   initializeValueChange() {
     this.ccForm?.get('country_code')?.valueChanges.subscribe(value => {
       if (typeof value === 'string') {
@@ -327,51 +350,51 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   }
 
- initCCForm() {
+  initCCForm() {
 
-  const initDelayMs = 2000; // ✅ interval variable
+    const initDelayMs = 2000; // ✅ interval variable
 
-  this.ccForm = this.fb.group({
-    guid: [''],
-    customer_company_guid: [''],
-    customer_code: ['', [
-      Validators.required,
-      Validators.minLength(3),
-      Validators.maxLength(6),
-      Validators.pattern('^[A-Za-z]+$')
-    ]],
-    customer_name: [''],
-    customer_type: [''],
-    billing_branches: [''],
-    country_code: [''],
-    phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
-    email: ['', [Validators.required, Validators.email]],
-    web: [''],
-    currency: [''],
-    default_profile: [''],
-    address1: [''],
-    address2: [''],
-    postal_code: [''],
-    city_name: [''],
-    country: [''],
-    remarks: [''],
-    repList: [],
-    approval_threshold: []
-  });
+    this.ccForm = this.fb.group({
+      guid: [''],
+      customer_company_guid: [''],
+      customer_code: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(6),
+        Validators.pattern('^[A-Za-z]+$')
+      ]],
+      customer_name: [''],
+      customer_type: [''],
+      billing_branches: [''],
+      country_code: [''],
+      phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]],
+      email: ['', [Validators.required, Validators.email]],
+      web: [''],
+      currency: [''],
+      default_profile: [''],
+      address1: [''],
+      address2: [''],
+      postal_code: [''],
+      city_name: [''],
+      country: [''],
+      remarks: [''],
+      repList: [],
+      approval_threshold: []
+    });
 
-  
 
-  this.ccForm.valueChanges.subscribe(() => {
-    if (this.isInitialized) {
-       this.isDirty = true;
-    }
-  });
 
-  setTimeout(() => {
-    
-    this.isInitialized = true;
-  }, initDelayMs);
-}
+    this.ccForm.valueChanges.subscribe(() => {
+      if (this.isInitialized) {
+        this.isDirty = true;
+      }
+    });
+
+    setTimeout(() => {
+
+      this.isInitialized = true;
+    }, initDelayMs);
+  }
 
   SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
     var retval: TemplateEstPartItem[] = items.sort((a, b) => b.create_dt! - a.create_dt!);
@@ -445,7 +468,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           remarks: this.selectedCustomerCmp?.remarks,
           approval_threshold: this.selectedCustomerCmp?.approval_threshold
         });
-       
+
         var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
           ...row,
           action: ''
@@ -714,7 +737,62 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     // Add any additional logic if needed
   }
 
-  onCustomerFormSubmit() {
+
+
+  async onCustomerFormSubmit() {
+    this.ccForm!.get('repList')?.setErrors(null);
+
+    if (!this.ccForm?.valid) {
+      console.log('Invalid soForm', this.ccForm?.value);
+      return;
+    }
+
+    if (!this.repList.data.length) {
+      this.ccForm.get('repList')?.setErrors({ required: true });
+      return;
+    }
+
+    const customerCode = this.ccForm.get('customer_code')?.value?.toUpperCase();
+    const where: any = {};
+    where.code = { eq: customerCode };
+    where.delete_dt = { eq: null };
+
+
+
+    const result = await firstValueFrom(this.ccDS.search(where));
+
+    var confirmed = this.ignoreDeleteBillingBranch();
+
+    var currentBillingBranch = this.currentBillingBranch
+    var selectedBillingBranch = this.selectedBillingBranch
+
+
+    if (!confirmed) {
+      confirmed = await this.cancelItem(selectedBillingBranch);
+
+      if (!confirmed) {
+        this.currentBillingBranch = { ...selectedBillingBranch };
+        this.ccForm.get('billing_branches')?.setValue(this.currentBillingBranch);
+        return;
+      }
+    }
+
+    if (result.length == 0 && this.customer_guid == undefined) {
+      this.insertNewCustomer();
+    } else if (result.length > 0) {
+      if (this.customer_guid == undefined) {
+        this.ccForm.get('customer_code')?.setErrors({ existed: true });
+      } else {
+        this.updateExistCustomer();
+      }
+    } else if (result.length == 0 && this.selectedTempEst != undefined) {
+      this.updateExistCustomer();
+    } else if (result.length == 0 && this.customer_guid != undefined) {
+      this.updateExistCustomer();
+    }
+  }
+
+  onCustomerFormSubmit1() {
     this.ccForm!.get('repList')?.setErrors(null);
     if (this.ccForm?.valid) {
       if (!this.repList.data.length) {
@@ -722,9 +800,21 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       } else {
         var customerCode = this.ccForm?.get("customer_code")?.value?.toUpperCase();
         const where: any = {};
+        const selBillingBranch = { ...this.selectedBillingBranch };
         where.code = { eq: customerCode };
         where.delete_dt = { eq: null };
-        this.ccDS.search(where).subscribe(result => {
+        this.ccDS.search(where).subscribe(async result => {
+
+
+          const confirmed = await this.cancelItem(selBillingBranch);
+
+          if (!confirmed) {
+            this.currentBillingBranch = { ...this.selectedBillingBranch };
+            this.ccForm?.get('billing_branches')?.setValue(this.currentBillingBranch);
+            return;
+          }
+
+
           if (result.length == 0 && this.customer_guid == undefined) {
             this.insertNewCustomer();
           } else if (result.length > 0) {
@@ -1010,8 +1100,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.ccForm?.get('repList')?.setErrors(null);
-     if (this.isInitialized) {
-        this.isDirty = true;
+    if (this.isInitialized) {
+      this.isDirty = true;
     }
     // this.isDirty=true;
   }
@@ -1115,11 +1205,27 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return Utility.convertDateToStr(input);
   }
 
-  addBillingBranch(event: Event) {
+  async addBillingBranch(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
 
+
+
     if (!this.ccForm?.get("customer_code")?.value!) {
+      return;
+    }
+
+    var confirmed = this.isCurrentBillingBranchEmpty();
+
+    if (!confirmed) {
+      var currentBillingBranch = this.currentBillingBranch;
+      confirmed = currentBillingBranch.customer_company?.type_cv !== 'BRANCH';
+      if (!confirmed) {
+        confirmed = await this.cancelItem(this.currentBillingBranch);
+      }
+    }
+
+    if (!confirmed) {
       return;
     }
 
@@ -1173,9 +1279,22 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  GoBackPrevious(event: Event) {
+  async GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
+    var confirmed = this.isCurrentBillingBranchEmpty();
+
+    if (!confirmed) {
+      confirmed = !(this.selectedCustomerCmp === null || this.selectedCustomerCmp === undefined)
+    }
+
+    if (!confirmed) {
+      confirmed = await this.cancelItem(this.currentBillingBranch);
+    }
+    if (!confirmed) {
+      return;
+    }
+
     this.router.navigate(['/admin/master/customer'], {
       state: this.historyState,
       queryParams: { tabIndex: this.tabIndex }
@@ -1284,7 +1403,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(cond, { customer_company: { code: 'ASC' } }).subscribe(data => {
           let currentCustCode = this.ccForm!.get('customer_code')!.value;
           let result: any[] = data;
-          this.customer_companyList = result.filter(d => d.customer_company?.code != currentCustCode);
+          this.customer_companyList = result.filter(d => d.customer_company?.code != currentCustCode &&
+            (((d.customer_company?.main_customer_guid || '') == '') || ((d.customer_company?.main_customer_guid || '') == this.selectedCustomerCmp?.guid)));
         });
       })
     ).subscribe();
@@ -1319,8 +1439,14 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.ccForm?.patchValue({
             billing_branches: this.getBillingBranches(selGuid),
           });
-          this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
-           this.isBillingBranchEmpty=(this.currentBillingBranch ?false:true);
+          // this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
+          this.currentBillingBranch = {
+            ...this.ccForm?.get('billing_branches')?.value
+          };
+          this.selectedBillingBranch = {
+            ...this.ccForm?.get('billing_branches')?.value
+          };
+          this.isBillingBranchEmpty = (this.currentBillingBranch ? false : true);
         }
       }
     });
@@ -1360,8 +1486,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   canEditBillingBranch() {
     this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
     var result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
-    if(!result)
-    {
+    if (!result) {
       result = this.isBillingBranchEmpty; // allow reselect if the billing branch is empty by default
     }
 
@@ -1389,13 +1514,111 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     return (!row?.so_count && !row?.sot_count && !row?.tank_info_count);
   }
 
-  canAddBillingBranch()
-  {
-    let retval=false;
-    if(this.repList)
-    {
-      retval=this.repList.data.length>0;
+  canAddBillingBranch() {
+    let retval = false;
+    if (this.repList) {
+      retval = this.repList.data.length > 0;
     }
     return retval;
   }
+
+
+
+  async cancelItem(row: any): Promise<boolean> {
+    const tempDirection: Direction =
+      localStorage.getItem('isRtl') === 'true' ? 'rtl' : 'ltr';
+
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: `${this.translatedLangText.DELETE} ${this.translatedLangText.BILLING_BRANCH}?`,
+        messageText: `${this.translatedLangText.DELETE_BILLING_BRANCH}`,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+
+    try {
+      const result = await firstValueFrom(dialogRef.afterClosed());
+
+      if (result?.action !== 'confirmed') {
+        return false;
+      }
+
+      const response = await firstValueFrom(
+
+        this.deleteCustomerAndBillingBranch(row.customer_company?.guid!)
+      );
+
+      // const count = response.data.deleteCustomerCompany;
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  deleteCustomerAndBillingBranch(customerGuid: string) {
+    return this.ccDS.DeleteCustomerCompany([customerGuid]);
+  }
+
+  ignoreDeleteBillingBranch() {
+    var selBillingBranch = { ...this.selectedBillingBranch };
+    var curBillingBranch = { ...this.currentBillingBranch };
+    if ((selBillingBranch?.customer_company?.guid || '') === '') {
+      return true;
+    }
+    else if (selBillingBranch?.customer_company?.type_cv !== 'BRANCH') {
+      return true;
+    }
+    else if (selBillingBranch?.customer_company?.guid === curBillingBranch?.customer_company?.guid) {
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
+
+  isCurrentBillingBranchEmpty(): boolean {
+    var retval = this.currentBillingBranch === undefined || this.currentBillingBranch === null || this.currentBillingBranch === "";
+    return retval;
+  }
+
+
+
+  //  cancelItem(row: CustomerCompanyItem) {
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  //     data: {
+  //       headerText: this.translatedLangText.CONFIRM_DELETE,
+  //       action: 'new',
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result.action === 'confirmed') {
+  //       this.deleteCustomerAndBillingBranch(row.guid!);
+  //     }
+  //   });
+  // }
+
+  // deleteCustomerAndBillingBranch(customerGuid: string) {
+  //   this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
+  //     let count = d.data.deleteCustomerCompany;
+  //     // if (count > 0) {
+  //     //   this.handleSaveSuccess(count);
+  //     //   this.refreshTable();
+  //     //   //this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+  //     // }
+  //   });
+  // }
+
+
 }
