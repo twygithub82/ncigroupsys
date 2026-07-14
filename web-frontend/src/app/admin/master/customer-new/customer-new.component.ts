@@ -1589,6 +1589,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   isCurrentBillingBranchEmpty(): boolean {
     var retval = this.currentBillingBranch === undefined || this.currentBillingBranch === null || this.currentBillingBranch === "";
+    return retval;
+  }
   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
     isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
@@ -1600,16 +1602,17 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     if(PaddingBottom2) centerClass +=  'mb-3 ' ;
     return `${baseClasses} ${centerClass}`.trim();
   }
+  
 
-  canAddBillingBranch()
-  {
-    let retval=false;
-    if(this.repList)
-    {
-      retval=this.repList.data.length>0;
-    }
-    return retval;
-  }
+  // canAddBillingBranch()
+  // {
+  //   let retval=false;
+  //   if(this.repList)
+  //   {
+  //     retval=this.repList.data.length>0;
+  //   }
+  //   return retval;
+  // }
 
 
 
