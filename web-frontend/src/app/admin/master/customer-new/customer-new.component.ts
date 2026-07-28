@@ -1474,6 +1474,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     Utility.onAlphaNumericWithSpace(event, this.ccForm?.get(controlName)!);
   }
 
+  onAlphaNumericWithSpaceUnicode(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpaceUnicode(event, this.ccForm?.get(controlName)!);
+  }
+
   BillingBranchReadOnly(): boolean {
     var retval = false;
 

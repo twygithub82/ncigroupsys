@@ -1252,7 +1252,6 @@ export class YardDetailExcelComponent extends UnsubscribeOnDestroyAdapter implem
 
   DisplayTakeInRef(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    //return sot.in_gate?.[0]?.in_gate_survey?.take_in_reference || '';
     return sot.job_no || '';
 
 
