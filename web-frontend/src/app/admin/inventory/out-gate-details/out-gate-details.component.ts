@@ -496,4 +496,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   onAlphaNumericOnly(event: Event, controlName: string): void {
     Utility.onAlphaNumericOnly(event, this.outGateForm?.get(controlName)!);
   }
+
+    onAlphaOnlyUnicode(event: Event, controlName: string): void {
+    Utility.onAlphaOnlyUnicode(event, this.outGateForm?.get(controlName)!);
+  }
 }

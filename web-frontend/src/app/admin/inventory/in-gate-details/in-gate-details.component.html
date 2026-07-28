@@ -323,7 +323,8 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" class="text-uppercase" required
-                                    (input)="onAlphaOnly($event, 'haulier')">
+                                    (input)="onAlphaOnlyUnicode($event, 'haulier')">
+                                    <!-- (input)="onAlphaOnly($event, 'haulier')"> -->
                                   <!-- @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
@@ -352,7 +353,9 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" class="text-uppercase" required
-                                    (input)="onAlphaNumericOnly($event, 'vehicle_no')">
+                                    (input)="onAlphaOnlyUnicode($event, 'vehicle_no')">
+                                    <!-- (input)="onAlphaNumericOnly($event, 'vehicle_no')"> -->
+                                    
                                   <!-- @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
@@ -422,7 +425,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" class="text-uppercase" required
-                                    (input)="onAlphaOnly($event, 'driver_name')">
+                                    (input)="onAlphaOnlyUnicode($event, 'driver_name')">
                                   <!-- @if (inGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}

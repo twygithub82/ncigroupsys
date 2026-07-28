@@ -781,7 +781,7 @@ export class Utility {
     form?.setValue(input.value, { emitEvent: false });
   }
 
-  static onAlphaOnlyName(event: Event, form: any): void {
+  static onAlphaOnlyUnicode(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^\p{L}\s]/gu, '');
     form?.setValue(input.value, { emitEvent: false });
@@ -798,6 +798,12 @@ export class Utility {
     input.value = input.value.replace(/[^a-zA-Z0-9\s]/g, ''); // Allow letters and digits only
     form?.setValue(input.value, { emitEvent: false });
   }
+
+  static onAlphaNumericWithSpaceUnicode(event: Event, form: any): void {
+  const input = event.target as HTMLInputElement;
+  input.value = input.value.replace(/[^\p{L}\p{N}\s]/gu, '');
+  form?.setValue(input.value, { emitEvent: false });
+}
 
   static getCountryCodes(orderBy: 'country' | 'code' = 'country', emptyCountry: boolean = false): any[] {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
