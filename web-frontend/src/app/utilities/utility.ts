@@ -801,7 +801,7 @@ export class Utility {
 
   static onAlphaNumericWithSpaceUnicode(event: Event, form: any): void {
   const input = event.target as HTMLInputElement;
-  input.value = input.value.replace(/[^\p{L}\p{N}\s]/gu, '');
+  input.value = input.value.replace(/[^\p{L}\p{Nd}0-9\s]/gu, '');
   form?.setValue(input.value, { emitEvent: false });
 }
 
