@@ -1113,6 +1113,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
               }
               net_cost = this.displayNumber((stm?.total_hour || 0) * (stm?.rate || 0))
             }
+            else
+            {
+              net_cost = this.displayNumber(stm?.total_cost || 0);
+            }
+
           }
           else {
             // var isApproved = true;
