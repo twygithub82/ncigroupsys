@@ -1704,10 +1704,12 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       // if (!item.approve_part) return;
       var qty = "-";
       // var cost = this.steamItem.rate;
-      var cost = this.packageLabourCost;
+      var cost = isFlat? this.steamItem.total_cost: this.packageLabourCost;
       var labour = this.isEstimateApproved ? this.steamItem.total_hour : this.steamItem.est_hour;
-      var totalCost = isFlat ? cost : (item.approve_part ? (labour * cost) : '-');
+      // var totalCost = isFlat ? cost : (item.approve_part ? (labour * cost) : '-');
+      var totalCost = this.steamItem.total_cost
 
+      
       if (item.approve_part) {
         //estTotalLbr+=Number(labour);
         estTotalCost += Number(totalCost);
