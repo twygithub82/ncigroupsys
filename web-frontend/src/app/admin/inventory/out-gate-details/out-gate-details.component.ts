@@ -500,4 +500,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     onAlphaOnlyUnicode(event: Event, controlName: string): void {
     Utility.onAlphaOnlyUnicode(event, this.outGateForm?.get(controlName)!);
   }
+
+    onAlphaNumericWithSpaceUnicode(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpaceUnicode(event, this.outGateForm?.get(controlName)!);
+  }
 }

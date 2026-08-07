@@ -264,7 +264,7 @@
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                               <input matInput formControlName="vehicle_no" class="text-uppercase"
-                                (input)="onAlphaOnlyUnicode($event, 'vehicle_no')" required>
+                                (input)="onAlphaNumericWithSpaceUnicode($event, 'vehicle_no')" required>
                                 <!-- (input)="onAlphaNumericOnly($event, 'vehicle_no')" required> -->
                               <!-- @if (outGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>

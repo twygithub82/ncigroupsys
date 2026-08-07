@@ -595,6 +595,10 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.onAlphaNumericOnly(event, this.inGateForm?.get(controlName)!);
   }
 
+  onAlphaNumericWithSpaceUnicode(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpaceUnicode(event, this.inGateForm?.get(controlName)!);
+  }
+
   getBackgroundColorFromNature() {
     return Utility.getBackgroundColorFromNature(this.storingOrderTankItem?.tariff_cleaning?.nature_cv?.toUpperCase());
   }
