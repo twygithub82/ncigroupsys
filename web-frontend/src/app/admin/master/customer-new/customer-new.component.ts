@@ -1593,18 +1593,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     var retval = this.currentBillingBranch === undefined || this.currentBillingBranch === null || this.currentBillingBranch === "";
     return retval;
   }
-
   getColumnClasses(baseClasses: string, isCenter: boolean = true,isStart:boolean=false,PaddingLeft:boolean=false,
     isEnd:boolean=false,PaddingRight:boolean=false , PaddingBottom:boolean=false,PaddingBottom2:boolean=false): string {
     let centerClass = isCenter ? 'justify-content-center ' : '';
-    if (isStart) centerClass = 'justify-content-start ';
-    if (isEnd) centerClass = 'justify-content-end ';
-    if (PaddingLeft) centerClass += 'p-l-1 ';
-    if (PaddingRight) centerClass += 'p-r-0 ';
-    if (PaddingBottom) centerClass += 'mb-0 ';
-    if (PaddingBottom2) centerClass += 'mb-3 ';
+    if(isStart) centerClass =  'justify-content-start ' ;
+    if(isEnd) centerClass =  'justify-content-end ' ;
+    if(PaddingLeft) centerClass +=  'p-l-1 ' ;
+    if(PaddingRight) centerClass +=  'p-r-0 ' ;
+    if(PaddingBottom) centerClass +=  'mb-0 ' ;
+    if(PaddingBottom2) centerClass +=  'mb-3 ' ;
     return `${baseClasses} ${centerClass}`.trim();
   }
+  
 
   // canAddBillingBranch()
   // {
@@ -1615,7 +1615,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   //   }
   //   return retval;
   // }
-
 
 
   //  cancelItem(row: CustomerCompanyItem) {
