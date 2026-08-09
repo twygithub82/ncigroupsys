@@ -2134,10 +2134,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return true;
   }
 
+  isRepairPart4X(rpDmgRepair: any[] | undefined): boolean {
+    return !!rpDmgRepair?.some((item: any) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x');
+  }
+
   getTotal(repairPartList: any[] | undefined): any {
     const totalSums = repairPartList?.filter(data => !data.delete_dt && (data.approve_part ?? true))?.reduce((totals: any, part) => {
+      const is4X = this.isRepairPart4X(part.rp_damage_repair);
       return {
-        hour: totals.hour + (part.approve_hour !== null && part.approve_hour !== undefined ? Utility.convertNumber(part.approve_hour,2) : Utility.convertNumber(part.hour,2) ?? 0),
+        hour: totals.hour + (is4X ? 0 : (part.approve_hour !== null && part.approve_hour !== undefined ? Utility.convertNumber(part.approve_hour,2) : Utility.convertNumber(part.hour,2) ?? 0)),
         total_mat_cost: totals.total_mat_cost + (((part.approve_qty !== null && part.approve_qty !== undefined ? Utility.convertNumber(part.approve_qty) : Utility.convertNumber(part.quantity) ?? 0) * (part.approve_cost !== null && part.approve_cost !== undefined ? Utility.convertNumber(part.approve_cost, 2) : Utility.convertNumber(part.material_cost, 2) ?? 0)))
       };
     }, { hour: 0, total_mat_cost: 0 }) || { hour: 0, total_mat_cost: 0 };
@@ -2150,8 +2155,9 @@ export class RepairDS extends BaseDataSource<RepairItem> {
 
   getTotalEst(repairPartList: any[] | undefined): any {
     const totalSums = repairPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+      const is4X = this.isRepairPart4X(owner.rp_damage_repair);
       return {
-        hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        hour: (totals.hour ?? 0) + (is4X ? 0 : (owner.hour ?? 0)),
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
       };
     }, { hour: 0, total_mat_cost: 0 }) || 0;
