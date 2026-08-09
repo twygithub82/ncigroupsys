@@ -1679,7 +1679,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   populateImages(files: any[]) {
-    files.forEach(dmgFile => {
+    files
+      .filter(dmgFile => dmgFile.description !== 'REPAIR_ESTIMATE')
+      .forEach(dmgFile => {
       this.repairImages().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
     });
   }
