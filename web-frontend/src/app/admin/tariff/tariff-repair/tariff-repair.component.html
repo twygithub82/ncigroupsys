@@ -254,11 +254,11 @@
                     </ng-container>
                     <ng-container matColumnDef="bDate">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
+                        [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" 
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
-                        <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
+                        <span class="mobile-label">{{this.translatedLangText.MATERIAL}}:</span>
                         <div>
                           <span>{{parse2Decimal(row.tariff_repair?.material_cost)}}</span>
                         </div>

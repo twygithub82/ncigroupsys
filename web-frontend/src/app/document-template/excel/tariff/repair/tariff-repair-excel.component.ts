@@ -184,7 +184,7 @@ export class TariffRepairExcelComponent extends UnsubscribeOnDestroyAdapter impl
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION: "COMMON-FORM.DIMENSION",
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
-    MATERIAL$: "COMMON-FORM.MATERIAL$",
+    MATERIAL: "COMMON-FORM.MATERIAL",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SEARCH: 'COMMON-FORM.SEARCH',
     ADD: 'COMMON-FORM.ADD',
@@ -565,33 +565,6 @@ async exportExcel(items: TariffRepairItem[]) {
  const totalColumns = head[0].length;
     var fileName ="RepairTariff.xlsx";
     Utility.saveExcel(rows, fileName, totalColumns);
-//    const head: (string | number)[][] = [[
-//   this.translatedLangText.PART_NAME,
-//   this.translatedLangText.GROUP_NAME,
-//   this.translatedLangText.SUB_GROUP_NAME,
-//   this.translatedLangText.LABOUR_HOUR,
-//   this.translatedLangText.MATERIAL$,
-//   this.translatedLangText.LAST_UPDATED,
-//   this.translatedLangText.HANDLED_ITEM,
-// ]];
-
-//     const rows: (string | number)[][] = [
-//       ...head,
-//       ...data
-//     ];
-//    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
-//     worksheet['!cols'] = rows[0].map((_, colIndex) => {
-//       const maxLength = rows.reduce((max, row) => {
-//         const cell = row[colIndex];
-//         return Math.max(max, cell ? cell.toString().length : 0);
-//       }, 10);
-//       return { wch: maxLength + 2 };
-//     });
-//     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-//     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-//     XLSX.writeFile(workbook, "RepairTariff.xlsx");
     this.dialogRef.close();
 }
 
