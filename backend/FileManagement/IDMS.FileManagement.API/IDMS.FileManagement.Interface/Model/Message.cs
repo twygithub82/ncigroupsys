@@ -67,9 +67,9 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirBody_InGate()
         {
-            return @"<p>Dear All,</p>
+            return BuildEmailBody(@"<p>Dear All,</p>
                  <p>Please find attached EIR IN for your reference.</p>
-                 <p>Thank you!</p>";
+                 <p>Thank you!</p>");
         }
 
         /// <summary>
@@ -77,37 +77,50 @@ namespace IDMS.FileManagement.Interface.Model
         /// </summary>
         public static string GetEirBody_OutGate()
         {
-            return @"<p>Dear All,</p>
+            return BuildEmailBody(@"<p>Dear All,</p>
                  <p>Please find attached EIR OUT for your reference.</p>
-                 <p>Thank you!</p>";
+                 <p>Thank you!</p>");
         }
 
         public static string GetDefaultBody()
         {
-            return @"<p>Dear All,</p>
-                 <p>Please find attached Quotation for your reference.</p>
-                 <p>Thank you!</p>";
+            return BuildEmailBody(@"<p>Dear All,</p>
+                 <p>Please find attached Estimate for your reference.</p>
+                 <p>Thank you!</p>");
         }
 
         public static string GetResidueBody()
         {
-            return @"<p>Dear All,</p>
-                 <p>Please find attached Residue Disposal Quotation for your reference.</p>
-                 <p>Thank you!</p>";
+            return BuildEmailBody(@"<p>Dear All,</p>
+                 <p>Please find attached Residue Disposal Estimate for your reference.</p>
+                 <p>Thank you!</p>");
         }
 
         public static string GetRepairBody()
         {
-            return @"<p>Dear All,</p>
-                 <p>Please find attached Repair Quotation for your reference.</p>
-                 <p>Thank you!</p>";
+            return BuildEmailBody(@"<p>Dear All,</p>
+                 <p>Please find attached Repair Estimate for your reference.</p>
+                 <p>Thank you!</p>");
         }
 
         public static string GetTankActivityBody()
         {
-            return @"<p>Dear All,</p>
+            return BuildEmailBody(@"<p>Dear All,</p>
                  <p>Please find attached Tank Activity Report for your reference.</p>
-                 <p>Thank you!</p>";
+                 <p>Thank you!</p>");
+        }
+
+
+        private const string EmailDisclaimer = @"
+            <p style='font-size: 10px; color: #666666; margin-top: 20px;'>
+                Please note that this email is sent on behalf of the depot from a no-reply email address.<br />
+                Should you have any questions or require further assistance, please contact the depot directly.<br />
+                Kindly note that any replies to this email will not be monitored or forwarded to the depot.
+            </p>";
+
+        private static string BuildEmailBody(string body)
+        {
+            return body + EmailDisclaimer;
         }
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IDMS.FileManagement.API</name>
+    </assembly>
+    <members>
+        <member name="M:IDMS.FileManagement.API.Controllers.AzureBlobController.UploadFiles(System.Collections.Generic.IList{Microsoft.AspNetCore.Http.IFormFile},System.Collections.Generic.IList{System.String})">
+            <remarks>
+            metadata format:
+              {"TableName":"in-gate", "FileType":"img", "GroupGuid":"abc124bsda2342","Description":"Top View"},
+            </remarks>
+        </member>
+    </members>
+</doc>
