@@ -532,7 +532,9 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packBuffDS.SearchPackageBuffer(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packBufferItems = data;
+      this.packBufferItems =  data.filter(
+        x => x.customer_company != null
+      );
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.packBuffDS.pageInfo?.endCursor;
@@ -616,7 +618,9 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.packBuffDS.SearchPackageBuffer(where, order, first, after, last, before).subscribe(data => {
-      this.packBufferItems = data;
+      this.packBufferItems = data.filter(
+        x => x.customer_company != null
+      );
       this.endCursor = this.packBuffDS.pageInfo?.endCursor;
       this.startCursor = this.packBuffDS.pageInfo?.startCursor;
       this.hasNextPage = this.packBuffDS.pageInfo?.hasNextPage ?? false;

@@ -32,7 +32,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstimateCustomerItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
@@ -575,7 +575,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       this.testClassCvList = data;
     });
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = data;
+      
+      this.partLocationCvList = addDefaultSelectOption(data, '');
+      
     });
     this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
       this.damageCodeCvList = data;

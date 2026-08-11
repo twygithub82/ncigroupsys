@@ -565,7 +565,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamDS.SearchPackageSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packageSteamItems = data;
+      this.packageSteamItems =  data.filter(
+        x => x.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.packSteamDS.pageInfo?.endCursor;
       this.startCursor = this.packSteamDS.pageInfo?.startCursor;
