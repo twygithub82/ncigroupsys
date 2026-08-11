@@ -459,10 +459,10 @@ export class CleaningMethodPdfComponent extends UnsubscribeOnDestroyAdapter impl
  
      const comStyles: any = {
        0: { cellWidth: 12,valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },    // "S_N."
-       1: { cellWidth: 45 ,valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize'},   // "PROCESS_NAME"
+       1: { cellWidth: 35 ,valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize'},   // "PROCESS_NAME"
        2: {  valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },  // "DESCRIPTION"
        3: { cellWidth: 30, valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },  // "CATEGORY"
-       4: { cellWidth: 45, valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },  // "CATEGORY"
+       4: { cellWidth: 55, valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },  // "CATEGORY"
        5: { cellWidth: 30, valign: 'middle', halign: 'center',minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },   // "LAST_UPDATED "
      };
  

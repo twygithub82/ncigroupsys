@@ -38,7 +38,7 @@ import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sour
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, firstValueFrom, Observable, startWith, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
@@ -175,7 +175,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_REQUIRED: 'COMMON-FORM.REQUIRED',
     CARGO_ALERT: 'COMMON-FORM.IN-GATE-ALERT',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
     CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
@@ -192,6 +192,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     WARNING: 'COMMON-FORM.WARNING',
     PREVIEW: 'COMMON-FORM.PREVIEW',
     RECORD_EXISTS: 'COMMON-FORM.RECORD-EXISTS',
+    SELECT_TO: 'COMMON-FORM.SELECT-TO',
   }
 
   historyState: any = {};
@@ -264,6 +265,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ) {
     super();
     this.translateLangText();
+
     // this.loadData();
     this.initTcForm();
     this.soDS = new StoringOrderDS(this.apollo);
@@ -292,7 +294,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         var mth = this.cMethodList.find(m => m.guid === searchCriteria);
 
         this.tcForm?.patchValue({
-          category: mth?.cleaning_category?.guid||'',
+          category: mth?.cleaning_category?.guid || '',
         });
         // this.fmlDS.search({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
         //   this.cleanFormulaList = data
@@ -348,20 +350,21 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
 
     this.tcForm.valueChanges.subscribe(() => {
-    if (this.isInitialized) {
-      this.isDirty = true;
-    }
-  });
+      if (this.isInitialized) {
+        this.isDirty = true;
+      }
+    });
 
-  // After all initial values / patchValue done
-  setTimeout(() => {
-    this.isInitialized = true;
-  },1000);
+    // After all initial values / patchValue done
+    setTimeout(() => {
+      this.isInitialized = true;
+    }, 1000);
 
     // this.classNoControl.setValue("NA");
   }
 
   ngOnInit() {
+    // this.translateLangText();
     this.isMobile = Utility.isMobile();
     //this.initializeFilter();
     this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
@@ -375,7 +378,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       // }
       this.CheckUnNoValidity();
     });
-    this.loadData();
+    
+      this.loadData();
+    
+  }
+
+ 
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 
   populatetcForm(tc: TariffCleaningItem): void {
@@ -401,7 +413,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   public loadData() {
-    this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+    this.cCategoryDS.loadItems({ name: { neq: null } }, { name: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = data;
       }
@@ -433,7 +445,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.classNoCvList = data;
     });
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
-      this.banTypeCvList = addDefaultSelectOption(data, "--Select--");;
+
+      this.banTypeCvList = addDefaultSelectOption(data, this.translatedLangText.SELECT_TO);;
     });
     this.cvDS.connectAlias('openGateCv').subscribe(data => {
       this.openGateCvList = data;
@@ -459,16 +472,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
           this.initializeValueChanges();
           this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-            
+
             this.CheckUnNoValidity();
           });
           this.CheckUnNoValidity();
-          
+
         }
       });
     } else {
       this.initializeValueChanges();
-       
+
     }
 
     if (!this.canEdit()) {
@@ -488,7 +501,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.hazardLevelControl.disable();
       this.banTypeControl.disable();
       this.openGateControl.disable();
-      
+
     }
   }
 
@@ -520,11 +533,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     event.preventDefault(); // Prevents the form submission
   }
 
-  translateLangText() {
-    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-      this.translatedLangText = translations;
-    });
-  }
+
 
   async onTCFormSubmit() {
     var fileSize = Number(this.tcForm!.get("file_size")?.value);
@@ -926,7 +935,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
     this.tcForm?.get("cargo_name")?.setErrors({ exists: true });
     this.trfCleaningSubmitting = false;
-      this.submitForSaving.next(this.trfCleaningSubmitting);
+    this.submitForSaving.next(this.trfCleaningSubmitting);
     // const dialogRef = this.dialog.open(ErrorDialogComponent, {
     //   //width: '380px',
     //   //autoFocus: false,
@@ -977,15 +986,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     else return false;
   }
 
-  async checkCargoNameExists()
-  {
+  async checkCargoNameExists() {
     var cargo_name = this.tcForm?.get("cargo_name")?.value || '';
 
     if (cargo_name === '') return;
-     var cargo_guid = await this.getTariffCleaningGuid(cargo_name);
-        if (cargo_guid != "") {
-          if(cargo_guid != this.tc_guid)this.ShowDuplicateCargoMessage();
-        }
+    var cargo_guid = await this.getTariffCleaningGuid(cargo_name);
+    if (cargo_guid != "") {
+      if (cargo_guid != this.tc_guid) this.ShowDuplicateCargoMessage();
+    }
   }
 
 }

@@ -529,7 +529,9 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packageSteamItems = data;
+      this.packageSteamItems =  data.filter(
+        x => x.package_steaming?.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.packSteamExclDS.pageInfo?.endCursor;
       this.startCursor = this.packSteamExclDS.pageInfo?.startCursor;

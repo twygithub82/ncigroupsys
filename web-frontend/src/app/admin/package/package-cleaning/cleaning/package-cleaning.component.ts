@@ -555,7 +555,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = this.custCompClnCatDS.addDeleteDtCriteria(where);
     this.subs.sink = this.custCompClnCatDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.custCompClnCatItems = data;
+      this.custCompClnCatItems =  data.filter(
+        x => x.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;

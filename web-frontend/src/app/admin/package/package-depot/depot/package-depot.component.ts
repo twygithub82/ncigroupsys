@@ -521,7 +521,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packDepotItems = data;
+      this.packDepotItems =  data.filter(
+        x => x.customer_company != null
+      );
       this.packDepotItems.forEach((element:any) => {
         element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
       })

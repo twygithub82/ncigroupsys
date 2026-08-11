@@ -543,7 +543,9 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packResidueDS.SearchPackageResidue(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packResidueItems = data;
+      this.packResidueItems =  data.filter(
+        x => x.customer_company != null
+      );
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.packResidueDS.pageInfo?.endCursor;

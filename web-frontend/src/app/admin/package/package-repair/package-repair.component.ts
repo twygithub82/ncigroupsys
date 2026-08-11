@@ -716,7 +716,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.lastSearchCriteria = where;
     //this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => 
     this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packRepairItems = data;
+      this.packRepairItems =  data.filter(
+        x => x.package_repair?.customer_company != null
+      );;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.packRepairDS.pageInfo?.endCursor;
