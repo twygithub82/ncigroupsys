@@ -84,6 +84,17 @@
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                          <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
+                            <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                            <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                          </mat-date-range-input>
+                          <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
+                          <mat-date-range-picker #est_picker></mat-date-range-picker>
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                           <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
                             <input matStartDate placeholder="Start date" formControlName="est_dt_start">
@@ -92,7 +103,7 @@
                           <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
                           <mat-date-range-picker #est_picker></mat-date-range-picker>
                         </mat-form-field>
-                      </div>
+                      </div> -->
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>

@@ -232,7 +232,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                  <input class="text-end" tlxFormInput matInput  [formControl]="newQty" type="text" min="0" required="true" [allowDecimal]="false" appNumericText >
+                  <input  tlxFormInput matInput  [formControl]="newQty" type="text" min="0" required="true" [allowDecimal]="false" appNumericText >
                   <mat-error *ngIf="newQty.hasError('required')">
                   </mat-error>
                 </mat-form-field>
