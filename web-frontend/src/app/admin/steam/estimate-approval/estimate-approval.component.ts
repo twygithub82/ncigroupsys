@@ -1461,6 +1461,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
   }
 
+  isAllowApprove(){
+     return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_VIEW']);
+  }
   isAllowNoAction() {
     // return this.modulePackageService.hasFunctions(['STEAMING_ESTIMATE_APPROVAL_NO_ACTION']);
     return true;
@@ -1558,6 +1561,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         }
       });
     }
+
+    
 
 
 

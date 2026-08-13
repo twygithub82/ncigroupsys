@@ -865,7 +865,7 @@ async exportToPDF_r2(groups: TariffRepairGroup[],fileName: string = 'document.pd
       let subtitle= group.group_name_desc || group.group_name_cv;
       lastTableFinalY+= PDFUtility.GapBetweenLeftTitleAndTable();
       // subtitle+= ' - ' + itm.subgroup_name_desc;
-       await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+       await Utility.AddTextAtLeftCornerPage(pdf,subtitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize()+1,true);
         lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
         // startY= startPostY+ PDFUtility.GapBetweenLeftTitleAndTable();
        startY = lastTableFinalY;

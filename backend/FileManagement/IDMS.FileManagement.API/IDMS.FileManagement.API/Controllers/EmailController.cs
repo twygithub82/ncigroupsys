@@ -85,7 +85,7 @@ namespace IDMS.FileManagement.API.Controllers
 
 
                 // Run email task in background (non-blocking)
-                Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
                     try
                     {

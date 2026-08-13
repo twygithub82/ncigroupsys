@@ -638,7 +638,7 @@
     "PREFIX-DESC": "Prefix Description",
     "ADDITIONAL-DIMENSION-AND-LENGTH": "Additional Dimension & Length",
     "IQ": "IQ",
-    "SUBGROUP-NAME": "Subgroup Name",
+    "SUBGROUP-NAME": "Sub group Name",
     "ESTIMATE-DETAILS": "Estimate Details",
     "ESTIMATE-SUMMARY": "Estimate Summary",
     "MARKED-UP-OVER": "has marked up over",
@@ -1443,7 +1443,9 @@
     "MAX-REPAIR-PHOTOS": "Maximum 40 repair photos allowed.",
     "HANDLED": "Handled",
     "NON-HANDLED": "Non-Handled",
-    "DELETE-BILLING-BRANCH": "This billing branch will be permanently deleted. Do you want to continue?"
+    "DELETE-BILLING-BRANCH": "This billing branch will be permanently deleted. Do you want to continue?",
+    "SELECT-TO": "--Select--To-",
+    "REQUIRED": "Required"
 
   },
   "CLEAN-PROCEDURES": {

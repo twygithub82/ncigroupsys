@@ -1975,7 +1975,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       autoFocus: false,
       disableClose: true,
       width: '56vw',
-      height: '80vh',
       data: {
         sot: this.sot,
         cleaning: this.cleaningItem,
@@ -2805,6 +2804,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteRepairQC(row: RepairItem) {
+    return false; // Celest asked to remove this option in tank movement
     const allowOverwriteStatus = ['QC_COMPLETED'];
     return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }

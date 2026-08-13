@@ -17,6 +17,7 @@ export class ResidueGO {
   public bill_to_guid?: string;
   public complete_by?: string;
   public complete_dt?: number;
+  public na_dt?: number;
   public guid?: string;
   public job_no?: string;
   public remarks?: string;
@@ -44,6 +45,7 @@ export class ResidueGO {
     this.approve_dt = item.approve_dt;
     this.complete_by = item.complete_by;
     this.complete_dt = item.complete_dt;
+    this.na_dt = item.na_dt;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.bill_to_guid = item.bill_to_guid;
@@ -564,6 +566,7 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
         update_dt
         customer_billing_guid
         owner_billing_guid
+        na_dt
         residue_part(where: {delete_dt:  {eq: null}}) {
           action
           approve_part
@@ -1036,7 +1039,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canAmend(re: ResidueItem): boolean {
     if (!re?.status_cv) return true;
-    const validStatus = ['PENDING']
+    const validStatus = ['PENDING','APPROVED']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
@@ -1183,22 +1186,42 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       return undefined;
     }
 
-    const beginDate = this.getResidueBeginDate(residue);
-    const completeDate = this.getResidueCompleteDate(residue);
+    const actionedResidue = residue.filter(item => item.status_cv !== 'NO_ACTION');
+
+    const beginDate = this.getResidueBeginDate(actionedResidue);
+    const completeDate = this.getResidueCompleteDate(actionedResidue);
 
     if (!beginDate || !completeDate) {
       return undefined;
     }
 
-    const timeTakenMs = completeDate - beginDate;
+    const timeTakenSec = completeDate - beginDate;
 
-    if (timeTakenMs === undefined || timeTakenMs < 0) {
+    if (timeTakenSec === undefined || timeTakenSec < 0) {
       return "Invalid time data";
     }
 
-    const days = Math.ceil(timeTakenMs / (3600 * 24));
+    let days = Math.floor(timeTakenSec / (3600 * 24));
+    let remainingSecs = timeTakenSec % (3600 * 24);
 
-    return `${days}`;
+    let hours = Math.floor(remainingSecs / 3600);
+    remainingSecs %= 3600;
+
+    let minutes = Math.ceil(remainingSecs / 60); // Always round up minutes
+
+    // Ensure that if minutes are rounded up to 60, we increase hours
+    if (minutes === 60) {
+      minutes = 0;
+      hours += 1;
+    }
+
+    // Ensure that if hours are rounded up to 24, we increase days
+    if (hours === 24) {
+      hours = 0;
+      days += 1;
+    }
+
+    return `${days} day${days !== 1 ? 's' : ''} ${hours} hr${hours !== 1 ? 's' : ''} ${minutes} min${minutes !== 1 ? 's' : ''}`;
   }
 
   abortResidue(residueJobOrder: any): Observable<any> {

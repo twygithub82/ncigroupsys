@@ -23,4 +23,8 @@
     <ProjectReference Include="..\IDMS.Billing.GqlTypes\IDMS.Billing.GqlTypes.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="publish\" />
+  </ItemGroup>
+
 </Project>

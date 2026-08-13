@@ -1439,6 +1439,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
     // window.open(url, '_blank');
 
+    
+
     //   this.preventDefault(event);
       
     // // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;

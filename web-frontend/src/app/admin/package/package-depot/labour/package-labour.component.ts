@@ -497,7 +497,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packLabourDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.pack_labourList = data;
+      this.pack_labourList =  data.filter(
+        x => x.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.packLabourDS.pageInfo?.endCursor;
       this.startCursor = this.packLabourDS.pageInfo?.startCursor;

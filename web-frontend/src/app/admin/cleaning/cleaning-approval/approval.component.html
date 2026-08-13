@@ -96,7 +96,7 @@
                             </mat-chip-row>
                             }
                             <input #nameInput [formControl]="processNameControl" [matAutocomplete]="processName"
-                              formControlName="processName" [matChipInputFor]="name_chipGrid"
+                              [matChipInputFor]="name_chipGrid"
                               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                               (matChipInputTokenEnd)="name_add($event)">
                             <mat-autocomplete #processName="matAutocomplete" (optionSelected)="name_selected($event)">
