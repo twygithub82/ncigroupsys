@@ -1206,16 +1206,16 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         var residuePart: ResiduePartItem = new ResiduePartItem(data);
         residuePart.approve_cost = Utility.convertNumber(residuePart.approve_cost, 2);
         residuePart.approve_qty = Utility.convertNumber(residuePart.approve_qty, 0);
-        if(updResidueItem.status_cv=='APPROVED')
-        {
-           residuePart.cost = Utility.convertNumber(residuePart.approve_cost, 2);
-           residuePart.quantity = Utility.convertNumber(residuePart.approve_qty, 0);
-        }
-        else
-        {
+        // if(updResidueItem.status_cv=='APPROVED')
+        // {
+        //    residuePart.cost = Utility.convertNumber(residuePart.approve_cost, 2);
+        //    residuePart.quantity = Utility.convertNumber(residuePart.approve_qty, 0);
+        // }
+        // else
+        // {
            residuePart.cost = Utility.convertNumber(residuePart.cost, 2);
            residuePart.quantity = Utility.convertNumber(residuePart.quantity, 0);
-        }
+        // }
         if (typeof residuePart.qty_unit_type_cv == 'object') {
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
@@ -1500,7 +1500,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     var bRetval =!!this.residueItem?.guid;
     if(bRetval)
     {
-      var exclusive_status=['NO_ACTION','PENDING'];
+      var exclusive_status=['NO_ACTION'];
       bRetval= !exclusive_status.includes(this.residueItem?.status_cv!);
       
     }

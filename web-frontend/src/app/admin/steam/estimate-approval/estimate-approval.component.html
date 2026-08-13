@@ -310,16 +310,23 @@
                                   <span>{{translatedLangText.ROLLBACK}}</span>
                                 </button>
                                 }
-                                @if (isAllowDelete() && steamDS.canCancel(steamRow)) {
-                                <button mat-menu-item (click)="cancelRow(steamRow)">
-                                  <mat-icon>delete_forever</mat-icon>
-                                  <span>{{translatedLangText.DELETE}}</span>
+                                
+                                 @if (isAllowApprove()&& steamDS.canApprove(steamRow)) {
+                                <button mat-menu-item (click)="approveRow($event,steamRow)">
+                                  <mat-icon>check</mat-icon>
+                                  <span>{{translatedLangText.APPROVE}}</span>
                                 </button>
-                                }
+                                } 
                                 @if (isAllowNoAction() && steamDS.canNoAction(steamRow)) {
                                 <button mat-menu-item (click)="onNoAction($event,steamRow)">
                                   <mat-icon>close</mat-icon>
                                   <span>{{translatedLangText.NO_ACTION}}</span>
+                                </button>
+                                }
+                                @if (isAllowDelete() && steamDS.canCancel(steamRow)) {
+                                <button mat-menu-item (click)="cancelRow(steamRow)">
+                                  <mat-icon>delete_forever</mat-icon>
+                                  <span>{{translatedLangText.DELETE}}</span>
                                 </button>
                                 }
                                 @if (isAllowExport(steamRow) && modulePackageService.AllowPdfReport()) {
