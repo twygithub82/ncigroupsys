@@ -17,7 +17,13 @@
 }
 
 .job-order-task-button {
+   
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.job-order-task-button mat-icon {
+  margin-right: 10px;
+}
+

@@ -207,19 +207,19 @@
             </ng-container>
              <ng-container matColumnDef="storage_calc">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.STORAGE_CALCULATE_BY
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.STORAGE_CALCULATE_BY
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.STORAGE_CALCULATE_BY}}:</span>
                 {{row.storage_calc}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update">
               <mat-header-cell *matHeaderCellDef mat-sort-header="last_update" disableClear
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>

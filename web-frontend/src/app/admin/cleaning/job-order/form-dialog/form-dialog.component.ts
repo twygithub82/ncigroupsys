@@ -551,27 +551,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (selItem.job_order) {
       newJobOrderReq.guid = selItem.job_order.guid;
-      // var joGuids:string[]=[];
-      // joGuids.push(selItem.job_order.guid);
-      // this.jobOrderDS?.deleteJobOrder(joGuids).subscribe(result=>{
-      //   console.log(result);
-      // });
     }
 
     this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result => {
       if (result.data.assignJobOrder > 0) {
-
-
-        // let cleanGuid =selItem.guid;
-        // let process_status="ASSIGN";
-        // this.updateJobProcessStatus(cleanGuid,job_type,process_status);
-
-
-        var cleanItem: InGateCleaningItem = new InGateCleaningItem();
-        cleanItem.guid = selItem.guid;
+        var cleanItem: InGateCleaningItem = new InGateCleaningItem(selItem);
         cleanItem.action = "ASSIGN";
         cleanItem.job_no = selItem.job_no;
         cleanItem.remarks = selItem.remarks;
+        delete cleanItem.storing_order_tank;
+        delete cleanItem.job_order;
+        delete cleanItem.customer_company;
         this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result => {
           if (result.data.updateCleaning > 0) {
             this.startCleaningJobOrder(selItem.guid);
@@ -931,7 +921,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-   toPascalCaseFirstLetter(value: string): string {
+  toPascalCaseFirstLetter(value: string): string {
     return BusinessLogicUtil.toPascalCaseFirstLetter(value);
   }
 }

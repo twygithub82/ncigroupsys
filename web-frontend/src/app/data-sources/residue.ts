@@ -1036,7 +1036,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canAmend(re: ResidueItem): boolean {
     if (!re?.status_cv) return true;
-    const validStatus = ['PENDING']
+    const validStatus = ['PENDING','APPROVED']
     return validStatus.includes(re?.status_cv ? re?.status_cv : '');
   }
 
@@ -1190,15 +1190,33 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       return undefined;
     }
 
-    const timeTakenMs = completeDate - beginDate;
+    const timeTakenSec = completeDate - beginDate;
 
-    if (timeTakenMs === undefined || timeTakenMs < 0) {
+    if (timeTakenSec === undefined || timeTakenSec < 0) {
       return "Invalid time data";
     }
 
-    const days = Math.ceil(timeTakenMs / (3600 * 24));
+    let days = Math.floor(timeTakenSec / (3600 * 24));
+    let remainingSecs = timeTakenSec % (3600 * 24);
 
-    return `${days}`;
+    let hours = Math.floor(remainingSecs / 3600);
+    remainingSecs %= 3600;
+
+    let minutes = Math.ceil(remainingSecs / 60); // Always round up minutes
+
+    // Ensure that if minutes are rounded up to 60, we increase hours
+    if (minutes === 60) {
+      minutes = 0;
+      hours += 1;
+    }
+
+    // Ensure that if hours are rounded up to 24, we increase days
+    if (hours === 24) {
+      hours = 0;
+      days += 1;
+    }
+
+    return `${days} day${days !== 1 ? 's' : ''} ${hours} hr${hours !== 1 ? 's' : ''} ${minutes} min${minutes !== 1 ? 's' : ''}`;
   }
 
   abortResidue(residueJobOrder: any): Observable<any> {

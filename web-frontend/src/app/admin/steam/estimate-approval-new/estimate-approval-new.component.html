@@ -408,11 +408,11 @@
                   <ng-container matColumnDef="unit_price">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                      {{translatedLangText.FLAT_RATE}}
+                      {{translatedLangText.PRICE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.FLAT_RATE}}:</span>
+                      <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                       @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>

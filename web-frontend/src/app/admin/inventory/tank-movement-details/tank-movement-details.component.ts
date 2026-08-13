@@ -1975,7 +1975,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       autoFocus: false,
       disableClose: true,
       width: '56vw',
-      height: '80vh',
       data: {
         sot: this.sot,
         cleaning: this.cleaningItem,
