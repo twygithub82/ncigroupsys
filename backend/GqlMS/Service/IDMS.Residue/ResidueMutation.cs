@@ -156,9 +156,20 @@ namespace IDMS.Residue.GqlTypes
 
                         part.update_by = user;
                         part.update_dt = currentDateTime;
-                        part.quantity = item.quantity;
+                        if (item.quantity != null)
+                            part.quantity = item.quantity;
+                        
+                        if(item.approve_qty != null)
+                            part.approve_qty = item.approve_qty;  
+
                         part.qty_unit_type_cv = item.qty_unit_type_cv;
-                        part.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
+                        
+                        if(item.cost != null)
+                            part.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
+
+                        if(item.approve_cost != null)
+                            part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
+
                         part.description = item.description;
                         part.tariff_residue_guid = item.tariff_residue_guid;
 
