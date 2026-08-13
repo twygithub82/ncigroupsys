@@ -69,7 +69,7 @@ export class UpdateCleanSealNoFormDialogComponent {
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
   valueChangesDisabled: boolean = false;
-  cleaningDs:InGateCleaningDS ;
+  cleaningDs: InGateCleaningDS;
   constructor(
     public dialogRef: MatDialogRef<UpdateCleanSealNoFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -79,7 +79,7 @@ export class UpdateCleanSealNoFormDialogComponent {
   ) {
     // Set the defaults
     this.dialogTitle = data.translatedLangText?.SEAL_NO || 'Seal No';
-    this.cleaningDs=new InGateCleaningDS(this.apollo);
+    this.cleaningDs = new InGateCleaningDS(this.apollo);
     this.cleanItem = data.selectedItem!;
     this.overwriteForm = this.createForm();
   }
@@ -87,20 +87,20 @@ export class UpdateCleanSealNoFormDialogComponent {
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
       clean_seal_no: this.cleanItem?.seal_no,
-      clean_remarks: this.cleanItem?.remarks
+      // clean_remarks: this.cleanItem?.remarks
     });
     return formGroup;
   }
 
   submit() {
     if (this.overwriteForm?.valid) {
-    
-      var clean:any= this.cleanItem;
+
+      var clean: any = this.cleanItem;
       delete clean.job_order;
-      clean.seal_no=this.overwriteForm.get('clean_seal_no')?.value;
-      clean.remarks=this.overwriteForm.get('clean_remarks')?.value;
-      var cleanSurvey:any=null;
-      this.cleaningDs.updateInGateCleaning(clean,cleanSurvey).subscribe((res: any) => { 
+      clean.seal_no = this.overwriteForm.get('clean_seal_no')?.value;
+      // clean.remarks = this.overwriteForm.get('clean_remarks')?.value;
+      var cleanSurvey: any = null;
+      this.cleaningDs.updateInGateCleaning(clean, cleanSurvey).subscribe((res: any) => {
         this.dialogRef.close(res);
 
       });
