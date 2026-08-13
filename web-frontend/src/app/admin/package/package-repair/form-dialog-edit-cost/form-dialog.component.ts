@@ -231,7 +231,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     this.selectedItems = data.selectedItems;
     this.trDS = new TariffRepairDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);

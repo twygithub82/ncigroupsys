@@ -79,7 +79,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-            <input matInput formControlName="height_diameter" type="text" min="0" appNumericText [allowDecimal]="false"
+            <input matInput formControlName="height_diameter" type="text" min="0" appNumericText [allowDecimal]="true"
               (focus)="selectAll($event)" [required]="isRequired('height_diameter_unit_cv')">
             <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
                 <mat-error>
@@ -106,7 +106,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-            <input matInput formControlName="width_diameter" type="text" min="0" appNumericText [allowDecimal]="false"
+            <input matInput formControlName="width_diameter" type="text" min="0" appNumericText [allowDecimal]="true"
               (focus)="selectAll($event)" [required]="isRequired('width_diameter_unit_cv')">
             <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
                 <mat-error>
@@ -136,7 +136,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
             <input matInput formControlName="thickness" type="text" min="0" appNumericText (focus)="selectAll($event)"
-              [allowDecimal]="false" [required]="isRequired('thickness_unit_cv')">
+              [allowDecimal]="true" [required]="isRequired('thickness_unit_cv')">
             @if (pcForm.get('length')?.hasError('existed')) {
             <mat-error>
               {{translatedLangText.PART }} {{translatedLangText.EXISTED }}
@@ -162,7 +162,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-            <input matInput formControlName="length" type="text" min="0" appNumericText [allowDecimal]="false"
+            <input matInput formControlName="length" type="text" min="0" appNumericText [allowDecimal]="true"
               [required]="isRequired('length_unit_cv')" (focus)="selectAll($event)">
           </mat-form-field>
           <!-- @if (pcForm.get('length')?.hasError('existed')) {

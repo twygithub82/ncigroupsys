@@ -398,7 +398,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-        width: this.isMobile?'600px':'60vw',
+      width: this.isMobile ? '600px' : '60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -430,7 +430,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-       width: this.isMobile?'600px':'60vw',
+      width: this.isMobile ? '600px' : '60vw',
       //height: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -521,7 +521,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packDepotItems = data;
+      this.packDepotItems =  data.filter(
+        x => x.customer_company != null
+      );
       this.packDepotItems.forEach((element:any) => {
         element.storage_calc= this.getStorageCalcDescription(element.storage_cal_cv!);
       })
@@ -1108,10 +1110,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
+   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
     const centerClass = isCenter ? 'justify-content-center' : '';
     return `${baseClasses} ${centerClass}`.trim();
   }
+
 
   getStorageCalcDescription(storageCalcValue:string)
   {

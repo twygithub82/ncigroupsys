@@ -383,8 +383,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         'seq',
         'desc',
         'qty',
-        'unit_price',
         'hour',
+        'unit_price',
         'cost',
         'approve_part'
       ]
@@ -393,8 +393,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         'seq',
         'desc',
         'qty',
-        'unit_price',
         'hour',
+        'unit_price',
         'cost',
         'approve_part',
         'actions'

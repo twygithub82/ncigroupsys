@@ -312,7 +312,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       //height: 'auto',
@@ -371,7 +371,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -405,7 +405,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       //width: '600px',
-      width: this.isMobile?MOBILE_DIALOG_WIDTH: '55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       height: 'auto',
       autoFocus: false,
       disableClose: true,
@@ -529,7 +529,9 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packageSteamItems = data;
+      this.packageSteamItems =  data.filter(
+        x => x.package_steaming?.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.packSteamExclDS.pageInfo?.endCursor;
       this.startCursor = this.packSteamExclDS.pageInfo?.startCursor;
@@ -896,9 +898,9 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getColumnClasses(baseClasses: string, isCenter: boolean = true): string {
-      let centerClass = isCenter ? 'justify-content-center ' : '';
-      return `${baseClasses} ${centerClass}`.trim();
-    }
+    let centerClass = isCenter ? 'justify-content-center ' : '';
+    return `${baseClasses} ${centerClass}`.trim();
+  }
 
      getColumnClasses_end(baseClasses: string, isEnd: boolean = true): string {
       let centerClass = isEnd ? 'justify-content-end ' : '';

@@ -245,7 +245,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     this.initPlForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.packLabourDS = new PackageLabourDS(this.apollo);
@@ -357,7 +357,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?'600px':'60vw',
+      width: this.isMobile ? '600px' : '60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -391,7 +391,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageLabourItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-       width: this.isMobile?'600px':'60vw',
+      width: this.isMobile ? '600px' : '60vw',
       maxHeight: '80vh',
       autoFocus: false,
       disableClose: true,
@@ -497,7 +497,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packLabourDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.pack_labourList = data;
+      this.pack_labourList =  data.filter(
+        x => x.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.packLabourDS.pageInfo?.endCursor;
       this.startCursor = this.packLabourDS.pageInfo?.startCursor;

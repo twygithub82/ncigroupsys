@@ -429,7 +429,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'80vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '80vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -460,7 +460,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -494,7 +494,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItemWithCount[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'65vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '65vw',
       autoFocus: false,
       disableClose: true,
       //height: '80vh',
@@ -716,7 +716,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.lastSearchCriteria = where;
     //this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => 
     this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.packRepairItems = data;
+      this.packRepairItems =  data.filter(
+        x => x.package_repair?.customer_company != null
+      );;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
       this.endCursor = this.packRepairDS.pageInfo?.endCursor;

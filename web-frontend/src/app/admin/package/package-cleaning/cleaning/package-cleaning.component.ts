@@ -269,7 +269,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
-    this.isMobile=Utility.isMobile();
+    this.isMobile = Utility.isMobile();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
@@ -387,7 +387,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -418,7 +418,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-     width: this.isMobile?MOBILE_DIALOG_WIDTH:'55vw',
+      width: this.isMobile ? MOBILE_DIALOG_WIDTH : '55vw',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -555,7 +555,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = this.custCompClnCatDS.addDeleteDtCriteria(where);
     this.subs.sink = this.custCompClnCatDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.custCompClnCatItems = data;
+      this.custCompClnCatItems =  data.filter(
+        x => x.customer_company != null
+      );
       this.previous_endCursor = undefined;
       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;

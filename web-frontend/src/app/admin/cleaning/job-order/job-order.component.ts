@@ -838,17 +838,13 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
     const where: any = {
       and: []
     };
 
-
     where.and.push({
       guid: { eq: clean_guid }
     });
-
 
     this.subs.sink = this.cleanDS.search(where)
       .subscribe(data => {
@@ -860,11 +856,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
           delete rep.job_order;
           delete rep.customer_company;
           this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-
             console.log(result);
-
           });
-          //  this.clnDS.
         }
       });
   }

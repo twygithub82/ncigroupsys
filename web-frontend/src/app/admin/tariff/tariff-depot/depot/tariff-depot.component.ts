@@ -160,7 +160,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     REFRESH: 'COMMON-FORM.REFRESH',
     CLEANING_LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED'
   }
-  isGeneratingReport: boolean=false;
+  isGeneratingReport: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -186,6 +186,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isMobile = Utility.isMobile();
     this.loadData();
     this.translateLangText();
   }
@@ -695,9 +696,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getAllUnitTypes(t: TariffDepotItem): string {
-  if (!t?.tanks?.length) {
-    return '';
-  }
+    if (!t?.tanks?.length) {
+      return '';
+    }
 
   return t.tanks
     .map((tank: TankItem) => tank.unit_type)
