@@ -1805,7 +1805,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   isDisabled(): boolean {
-    const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
+    const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS', 'NO_ACTION']
     return validStatus.includes(this.residueItem?.status_cv!);
   }
 
