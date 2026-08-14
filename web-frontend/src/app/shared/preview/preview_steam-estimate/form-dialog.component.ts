@@ -478,7 +478,7 @@ export class SteamEstimateFormDialogComponent_View {
   }
 
   getResultTable_HourText(): string {
-    var retval = `${this.translatedLangText.HOUR_RATE}`;
+    var retval = `${this.translatedLangText.HOURLY}`;
     if (this.isSteamRepair) {
       retval = `${this.translatedLangText.HOUR}`;
     }
