@@ -290,6 +290,17 @@ export class SteamEstimateFormDialogComponent_View {
     if (BusinessLogicUtil.isEstimateApproved(this.selectedItem!)) {
       this.labourHour = this.selectedItem?.total_hour || 1;
     }
+    if (!BusinessLogicUtil.isAutoApproveSteaming(this.selectedItem)) {
+      this.displayedColumns = [
+        'seq',
+        'desc',
+        'qty',
+        'hour',
+        'unit_price',
+        'cost',
+        'approve_part'
+      ];
+    }
     this.loadData();
   }
 
