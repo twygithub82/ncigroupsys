@@ -506,7 +506,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-    this.search_summary();
+    // this.search_summary();
   }
 
   resetForm() {
