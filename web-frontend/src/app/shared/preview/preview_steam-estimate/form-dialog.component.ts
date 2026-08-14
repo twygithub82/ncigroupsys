@@ -290,7 +290,7 @@ export class SteamEstimateFormDialogComponent_View {
     if (BusinessLogicUtil.isEstimateApproved(this.selectedItem!)) {
       this.labourHour = this.selectedItem?.total_hour || 1;
     }
-    if (!BusinessLogicUtil.isAutoApproveSteaming(this.selectedItem)) {
+    if (!this.isAutoApproveSteaming()) {
       this.displayedColumns = [
         'seq',
         'desc',
@@ -624,5 +624,9 @@ export class SteamEstimateFormDialogComponent_View {
 
   roundUpCost(cost: any) {
     return BusinessLogicUtil.roundUpCost(cost);
+  }
+
+  isAutoApproveSteaming() {
+    return BusinessLogicUtil.isAutoApproveSteaming(this.selectedItem);
   }
 }
