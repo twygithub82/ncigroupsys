@@ -1250,7 +1250,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       disableClose: true,
       width: '600px',
       data: {
-        tankNote: this.sot?.tank_note,
+        tankNote: this.sot?.tank_note || this.ig?.remarks,
         releaseNote: this.sot?.release_note,
         action: 'edit',
         translatedLangText: this.translatedLangText,
