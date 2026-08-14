@@ -383,7 +383,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   getResultTable_HourText(): string {
-    var retval = `${this.data.translatedLangText.HOUR_RATE}`;
+    var retval = `${this.data.translatedLangText.HOURLY}`;
     if (this.isSteamRepair) {
       retval = `${this.data.translatedLangText.HOUR}`;
     }
