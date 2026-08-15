@@ -578,6 +578,16 @@ namespace IDMS.Repair.GqlTypes
                         rollbackRepair.labour_cost_discount = 0;
                         rollbackRepair.remarks = item.remarks;
 
+                        //newly added values
+                        if (item.total_cost != null && item.total_cost.HasValue)
+                            rollbackRepair.total_cost = item.total_cost;
+                        if (item.total_hour != null && item.total_hour.HasValue)
+                            rollbackRepair.total_hour = item.total_hour;
+                        if (item.total_material_cost != null && item.total_material_cost.HasValue)
+                            rollbackRepair.total_material_cost = item.total_material_cost;
+                        if (item.total_labour_cost != null && item.total_labour_cost.HasValue)
+                            rollbackRepair.total_labour_cost = item.total_labour_cost;
+
                         needTankMovementCheck = true;
                         linkSotGuid = rollbackRepair.sot_guid;
 

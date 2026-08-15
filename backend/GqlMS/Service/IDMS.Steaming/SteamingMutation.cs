@@ -345,6 +345,16 @@ namespace IDMS.Steaming.GqlTypes
                             rollbackSteaming.remarks = item.remarks;
                             linkSotGuid = rollbackSteaming.sot_guid;
 
+                            //newly added rollback values
+                            if (item.total_cost != null && item.total_cost.HasValue)
+                                rollbackSteaming.total_cost = item.total_cost;
+                            if (item.total_hour != null && item.total_hour.HasValue)
+                                rollbackSteaming.total_hour = item.total_hour;
+                            if (item.total_material_cost != null && item.total_material_cost.HasValue)
+                                rollbackSteaming.total_material_cost = item.total_material_cost;
+                            if (item.total_labour_cost != null && item.total_labour_cost.HasValue)
+                                rollbackSteaming.total_labour_cost = item.total_labour_cost;
+
                             if (rollbackSteaming.create_by.EqualsIgnore("system") || rollbackSteaming.estimate_no.StartsWith("SE"))
                             {
                                 rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;

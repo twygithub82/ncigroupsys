@@ -338,6 +338,10 @@ namespace IDMS.Residue.GqlTypes
                         rollbackResidue.status_cv = CurrentServiceStatus.PENDING;
                         rollbackResidue.remarks = item.remarks;
 
+                        //newly added rollback value
+                        if(item.total_cost != null && item.total_cost.HasValue)
+                            rollbackResidue.total_cost = item.total_cost;
+
                         if (string.IsNullOrEmpty(item.customer_guid))
                         {
                             _logger.LogError("RollbackResidue failed: Customer company guid is null or empty for residue guid {Guid}", item.guid);
