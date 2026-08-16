@@ -44,7 +44,7 @@ import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/sta
 import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -471,7 +471,7 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     //this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
     this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport_r1(this.lastSearchCriteria)
       .subscribe(data => {
-        this.sotList = data;
+        this.sotList = data.filter(sot => TANK_STATUS_IN_YARD.includes(sot.tank_status_cv!));
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;

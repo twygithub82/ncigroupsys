@@ -164,6 +164,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
     NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
     WARNING: 'COMMON-FORM.WARNING',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   invForm?: UntypedFormGroup;
@@ -411,7 +412,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
         ]
       },
       //  { repair: { any: false } },
-       { tank_status_cv: { in: ["REPAIR"] } }
+      { tank_status_cv: { in: ["REPAIR"] } }
 
     ]
     if (this.searchForm!.get('tank_no')?.value) {
@@ -564,14 +565,19 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
           (x.cleaning?.length || 0) === 0 ||
           x.cleaning?.some(c => c.complete_dt != null)
         );
-        this.sotList = filteredList;
+        // this.sotList = filteredList;
+        this.sotList = filteredList.sort((a, b) => {
+          const dateA = a.in_gate?.[0]?.eir_dt ?? 0;
+          const dateB = b.in_gate?.[0]?.eir_dt ?? 0;
+
+          return dateA - dateB;
+        });
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
 
-        if(this.sotList.length==0)
-        {
+        if (this.sotList.length == 0) {
           this.isGeneratingReport = false;
           this.ShowWarningMessage();
           return;

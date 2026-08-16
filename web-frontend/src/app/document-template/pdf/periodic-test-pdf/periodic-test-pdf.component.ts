@@ -613,10 +613,10 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       2: { halign: 'center', valign: 'middle', cellWidth: 19, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell,overflow: 'ellipsize' },
-      5: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
@@ -688,7 +688,9 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
           data.push([
             (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "", this.DisplayEIRDate(itm) || "",
             this.DisplayOwner(itm) || "", this.DisplayLastTest(itm) || "", this.DisplayLastTestDate(itm) || "",
-            this.DisplayClass(itm) || "", this.DisplayNextTest(itm) || "", this.DisplayNextTestDate(itm) || "",
+            // this.DisplayClass(itm) || "", 
+            itm.class_cv || "",
+            this.DisplayNextTest(itm) || "", this.DisplayNextTestDate(itm) || "",
             this.DisplayDueDays(itm) || "0", this.DisplayDueType(itm) || ""
           ]);
         }
