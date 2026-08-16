@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -579,14 +580,14 @@ namespace IDMS.Repair.GqlTypes
                         rollbackRepair.remarks = item.remarks;
 
                         //newly added values
-                        if (item.total_cost != null && item.total_cost.HasValue)
-                            rollbackRepair.total_cost = item.total_cost;
-                        if (item.total_hour != null && item.total_hour.HasValue)
-                            rollbackRepair.total_hour = item.total_hour;
-                        if (item.total_material_cost != null && item.total_material_cost.HasValue)
-                            rollbackRepair.total_material_cost = item.total_material_cost;
-                        if (item.total_labour_cost != null && item.total_labour_cost.HasValue)
-                            rollbackRepair.total_labour_cost = item.total_labour_cost;
+                        //if (item.total_cost != null && item.total_cost.HasValue)
+                        //    rollbackRepair.total_cost = item.total_cost;
+                        //if (item.total_hour != null && item.total_hour.HasValue)
+                        //    rollbackRepair.total_hour = item.total_hour;
+                        //if (item.total_material_cost != null && item.total_material_cost.HasValue)
+                        //    rollbackRepair.total_material_cost = item.total_material_cost;
+                        //if (item.total_labour_cost != null && item.total_labour_cost.HasValue)
+                        //    rollbackRepair.total_labour_cost = item.total_labour_cost;
 
                         needTankMovementCheck = true;
                         linkSotGuid = rollbackRepair.sot_guid;
@@ -632,6 +633,12 @@ namespace IDMS.Repair.GqlTypes
                 var res = await context.SaveChangesAsync();
                 _logger.LogInformation("RollbackRepair completed for repair guids: {RepairGuids}", string.Join(", ", repair.Select(r => r.guid)));
 
+                foreach(var item in repair)
+                {
+                    await CalculateCost(context, item.guid);
+                    _logger.LogInformation("Recalculate cost for rollback repair : {RepairGuids}", string.Join(", ", repair.Select(r => r.guid)));
+                }
+              
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, linkSotGuid, "");
 
                 return res;
@@ -1106,138 +1113,133 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
-        //public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, List<repair> repair)
-        //{
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
-        //        foreach (var item in repair)
-        //        {
-        //            if (item != null && !string.IsNullOrEmpty(item.guid))
-        //            {
-        //                var cancelRepair = new repair() { guid = item.guid };
-        //                context.Attach(cancelRepair);
+        private async Task CalculateCost(ApplicationServiceDBContext context, string repairGuid)
+        {
+            var rollbackRepair = await context.repair.FindAsync(repairGuid);
+            var repParts = await context.repair_part.Where(r => r.repair_guid == repairGuid && (r.approve_part == null || r.approve_part == true) &&
+                (r.delete_dt == null || r.delete_dt == 0) &&
+                !r.rp_damage_repair.Any(d => (d.delete_dt == null || d.delete_dt == 0) 
+                && d.code_type == 1 && d.code_cv.ToLower() == "4x"))
+                .AsNoTracking().ToListAsync();
 
-        //                cancelRepair.update_by = user;
-        //                cancelRepair.update_dt = currentDateTime;
-        //                cancelRepair.status_cv = CurrentServiceStatus.CANCELED;
-        //                cancelRepair.remarks = item.remarks;
-        //            }
-        //        }
+            var ownerPartList = repParts.Where(x => x.owner == true).ToList();
+            var lesseePartList = repParts.Where(x => x.owner != true).ToList();
 
-        //        var res = await context.SaveChangesAsync();
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
+            // Get labour rate.
+            //var labourCost = await GetLabourCostAsync(repairId);
+            var labourCost = rollbackRepair.labour_cost ?? 0.0;
+            var labourDiscount = 0.0;
+            var materialDiscount = 0.0;
 
-        //private async Task<bool> StatusChangeConditionCheck(ApplicationServiceDBContext context, string processGuid, string newStatus)
-        //{
-        //    try
-        //    {
-        //        var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
-        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+            var owner = CalculatePartyCost(ownerPartList, labourCost, labourDiscount, materialDiscount);
+            var lessee = CalculatePartyCost(lesseePartList, labourCost, labourDiscount, materialDiscount);
 
-        //        if (repair != null)
-        //        {
-        //            var jobOrderList = repair?.repair_part?.Where(p => p.approve_part == true && (p.delete_dt == null || p.delete_dt == 0))
-        //                                                    .Select(p => p.job_order).ToList();
-        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
-        //            {
-        //                bool allValid = false;
-        //                if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
-        //                {
-        //                    allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
-        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
-        //                }
-        //                else if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_COMPLETED))
-        //                {
-        //                    allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
-        //                        jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
-        //                }
+            // Equivalent to the Angular accumulation.
+            var result = new RepairCostResultDto
+            {
+                Owner = owner,
+                Lessee = lessee,
+                TotalHour = owner.TotalHour + lessee.TotalHour,
+                TotalLabourCost = owner.TotalLabourCost + lessee.TotalLabourCost,
+                TotalMatCost = owner.TotalMatCost + lessee.TotalMatCost,
+                TotalCost = owner.TotalCost + lessee.TotalCost,
+                DiscountLabourCost = owner.DiscountLabourCost + lessee.DiscountLabourCost,
+                DiscountMatCost = owner.DiscountMatCost + lessee.DiscountMatCost,
+                NetCost = owner.NetCost + lessee.NetCost
+            };
 
-        //                return allValid;
-        //            }
-        //        }
-        //        return false;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //private async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
-        //{
-        //    string tableName = processType;
-
-        //    //var sqlQuery = $@"SELECT guid FROM {tableName} 
-        //    //                WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
-        //    //                '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-        //    //                AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+            rollbackRepair.total_hour = result.TotalHour;
+            rollbackRepair.total_labour_cost = result.TotalLabourCost;
+            rollbackRepair.total_material_cost = result.TotalMatCost;
+            rollbackRepair.total_cost = result.TotalCost;
+            await context.SaveChangesAsync();
+        }
 
 
-        //    var sqlQuery = $@"SELECT guid FROM {tableName} 
-        //                    WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
-        //                    '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-        //                    AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
-        //    var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+        private RepairPartyCostDto CalculatePartyCost(List<repair_part> repParts, double labourCost, double? labourDiscount, double? materialDiscount)
+        {
+            // Equivalent to:
+            //
+            // const totalOwner = this.repairDS.getTotal(ownerList);
+            var totalHour = repParts.Sum(x => x.hour) ?? 1.0;
+            var totalMatCost = repParts.Sum(x => x.material_cost) ?? 1.0;
 
-        //    if (result.Count > 0)
-        //        return true;
-        //    else
-        //        return false;
-        //    //}
-        //}
+            // Equivalent to:
+            // BusinessLogicUtil.roundUpHour(totalOwner.hour)
+            totalHour = RoundUpHour(totalHour);
 
-        //private async Task JobOrderHandling(ApplicationServiceDBContext context, string user, long currentDateTime, string action, string? processGuid = "", List<job_order>? jobOrders = null)
-        //{
-        //    try
-        //    {
-        //        if (ObjectAction.APPROVE.EqualsIgnore(action))
-        //        {
-        //            var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
-        //                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
-        //            if (repair != null)
-        //            {
-        //                var jobOrderList = repair?.repair_part?.Select(p => p.job_order).ToList();
-        //                foreach (var item in jobOrderList)
-        //                {
-        //                    if (item != null && JobStatus.CANCELED.EqualsIgnore(item.status_cv))
-        //                    {
-        //                        item.status_cv = JobStatus.PENDING;
-        //                        item.update_by = user;
-        //                        item.update_dt = currentDateTime;
-        //                    }
-        //                }
-        //            }
-        //        }
+            // Equivalent to:
+            // getTotalLabourCost(total_hour, getLabourCost())
+            double totalLabourCost = totalHour * labourCost;
+            totalLabourCost = RoundUpCost(totalLabourCost);
 
-        //        if (ObjectAction.CANCEL.EqualsIgnore(action))
-        //        {
-        //            foreach (var item in jobOrders)
-        //            {
-        //                var job_order = new job_order() { guid = item.guid };
-        //                context.job_order.Attach(job_order);
-        //                if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-        //                {
-        //                    job_order.status_cv = JobStatus.CANCELED;
-        //                    job_order.update_by = user;
-        //                    job_order.update_dt = currentDateTime;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
+            // Equivalent to:
+            // roundUpCost(totalOwner.total_mat_cost)
+            totalMatCost = RoundUpCost(totalMatCost);
+
+            // Equivalent to:
+            // getTotalCost(labourCost, matCost)
+            var totalCost = totalLabourCost + totalMatCost;
+            totalCost = RoundUpCost(totalCost);
+
+            // Labour discount
+            var discountLabourCost = GetDiscountCost(labourDiscount, totalLabourCost);
+            discountLabourCost = RoundUpCost(discountLabourCost);
+
+            // Material discount
+            var discountMatCost = GetDiscountCost(materialDiscount, totalMatCost);
+            discountMatCost = RoundUpCost(discountMatCost);
+
+            // Net cost
+            var netCost = totalCost - discountLabourCost - discountMatCost;
+            netCost = RoundUpCost(netCost);
+
+            return new RepairPartyCostDto
+            {
+                TotalHour = totalHour,
+                TotalLabourCost = totalLabourCost,
+                TotalMatCost = totalMatCost,
+                TotalCost = totalCost,
+                DiscountLabourCost = discountLabourCost,
+                DiscountMatCost = discountMatCost,
+                NetCost = netCost
+            };
+        }
+
+        private double GetDiscountCost(double? discount, double totalCost)
+        {
+            double discountValue = discount ?? 0;
+            return (discountValue * totalCost) / 100;
+        }
+
+
+        private double RoundUpCost(double netCost)
+        {
+            var remainder = netCost % 0.05;
+            double result = remainder == 0
+                ? netCost
+                : Math.Ceiling(netCost / 0.05) * 0.05;
+
+            return Math.Round(
+                result * 100,
+                MidpointRounding.AwayFromZero
+            ) / 100;
+        }
+
+        private double RoundUpHour(double hour)
+        {
+            var value = hour;
+            var remainder = value % 0.25;
+
+            var result = remainder == 0
+                ? value
+                : Math.Ceiling(value / 0.25) * 0.25;
+
+            return Math.Round(
+                result * 100,
+                MidpointRounding.AwayFromZero
+            ) / 100;
+        }
     }
 }
