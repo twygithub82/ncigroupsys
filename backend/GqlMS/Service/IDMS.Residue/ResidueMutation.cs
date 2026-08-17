@@ -349,6 +349,7 @@ namespace IDMS.Residue.GqlTypes
                     if (item != null && !string.IsNullOrEmpty(item.guid))
                     {
                         var rollbackResidue = new residue() { guid = item.guid };
+                        //var rollbackResidue = await context.residue.FindAsync(item.guid);
                         context.residue.Attach(rollbackResidue);
 
                         rollbackResidue.update_by = user;
@@ -368,7 +369,7 @@ namespace IDMS.Residue.GqlTypes
 
                         var customerGuid = item.customer_guid;
                         var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid &&
-                                                                            (!string.IsNullOrEmpty(r.tariff_residue_guid)) &&
+                                                                            //(!string.IsNullOrEmpty(r.tariff_residue_guid)) &&
                                                                             (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
                         if (item.is_approved)
@@ -378,6 +379,7 @@ namespace IDMS.Residue.GqlTypes
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
                                 part.approve_part = null;
+                                context.Entry(part).Property(e => e.approve_part).IsModified = true;
                                 part.approve_cost = part.cost;
                                 part.approve_qty = part.quantity;
                             }

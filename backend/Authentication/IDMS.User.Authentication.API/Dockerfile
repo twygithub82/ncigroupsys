@@ -27,3 +27,21 @@
 #WORKDIR /app
 #COPY --from=publish /app/publish .
 #ENTRYPOINT ["dotnet", "IDMS.User.Authentication.API.dll"]
+
+
+# Use ASP.NET Core runtime only (no SDK)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# Copy prebuilt publish folder into container
+COPY ./publish/ ./
+
+ENV ASPNETCORE_URLS=http://+:8080
+
+# Optional: use non-root user depending on your base image config
+USER app
+
+ENTRYPOINT ["dotnet", "IDMS.User.Authentication.API.dll"]
