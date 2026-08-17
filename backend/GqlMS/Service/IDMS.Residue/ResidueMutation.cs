@@ -170,6 +170,12 @@ namespace IDMS.Residue.GqlTypes
                         if(item.approve_cost != null)
                             part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
 
+                        if (item.approve_part != null)
+                        {
+                            part.approve_part = item.approve_part;
+                            context.Entry(part).Property(e => e.approve_part).IsModified = true;
+                        }
+                          
                         part.description = item.description;
                         part.tariff_residue_guid = item.tariff_residue_guid;
 
@@ -179,6 +185,13 @@ namespace IDMS.Residue.GqlTypes
                     {
                         var part = new residue_part() { guid = item.guid };
                         context.residue_part.Attach(part);
+
+                        if (item.approve_part != null)
+                        {
+                            part.approve_part = item.approve_part;
+                            context.Entry(part).Property(e => e.approve_part).IsModified = true;
+                        }
+
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
@@ -192,7 +205,12 @@ namespace IDMS.Residue.GqlTypes
 
                         part.update_by = user;
                         part.update_dt = currentDateTime;
-                        part.approve_part = item.approve_part;
+                        if (item.approve_part != null)
+                        {
+                            part.approve_part = item.approve_part;
+                            context.Entry(part).Property(e => e.approve_part).IsModified = true;
+                        }
+                        
                         part.approve_qty = item.approve_qty;
                         part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         part.qty_unit_type_cv = item.qty_unit_type_cv;
@@ -337,6 +355,10 @@ namespace IDMS.Residue.GqlTypes
                         rollbackResidue.update_dt = currentDateTime;
                         rollbackResidue.status_cv = CurrentServiceStatus.PENDING;
                         rollbackResidue.remarks = item.remarks;
+
+                        //newly added rollback value
+                        if(item.total_cost != null && item.total_cost.HasValue)
+                            rollbackResidue.total_cost = item.total_cost;
 
                         if (string.IsNullOrEmpty(item.customer_guid))
                         {

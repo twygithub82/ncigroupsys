@@ -909,7 +909,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
 
     var TankInYards = report_customer_tank_acts.filter(c => (c.in_yard_storing_order_tank?.length||0) > 0);
-    if (TankInYards.length === 0) {
+    var TankReleased = report_customer_tank_acts.filter(c => (c.released_storing_order_tank?.length||0) > 0);
+    if (TankInYards.length === 0 && TankReleased.length === 0) {
       this.isGeneratingReport = false;
       this.ShowWarningMessage();
       return;

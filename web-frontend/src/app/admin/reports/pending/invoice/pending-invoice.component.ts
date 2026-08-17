@@ -409,6 +409,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetailsAll(this.lastSearchCriteria, this.lastOrderBy)
       .subscribe(data => {
         this.sotList = data.filter(sot => (sot.tank_status_cv ?? '') !== '');
+        
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -751,7 +752,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       }
 
       // var storageCost=this.calculateStorageCostTotal(sot);
-      var result = this.calculateTotalCost_R1([sot]);
+      var result = this.calculateTotalCost_R1([sot],epochSeconds);
       // let packDepotItm: PackageDepotItem = new PackageDepotItem();
       // packDepotItm.storage_cal_cv = item.storage_cal_cv;
 
@@ -1090,7 +1091,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       repCustomers = repCustomers.filter(c => c.guid === this.searchForm!.get('customer_code')?.value.guid);
     }
 
-    repCustomers.forEach(r => {
+   
+     repCustomers.forEach(r => {
       r.items?.sort((a, b) =>
         (a.in_date || '').localeCompare(b.in_date || '')
       );
@@ -1294,14 +1296,15 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
   }
 
-  calculateTotalCost_R1(items: StoringOrderTankItem[]) {
+  calculateTotalCost_R1(items: StoringOrderTankItem[],cutoff_dt:any=0) {
     var invalidItm: any[] = [];
 
     const result = items.reduce((accumulator, s) => {
 
       var itm: BillingSOTItem = s.billing_sot || new BillingSOTItem();
 
-      var billableDays = this.getStorageDays(s, itm.storage_cal_cv) || 0;
+      var billableDays = this.getStorageDays(s, itm.storage_cal_cv,cutoff_dt) || 0;
+      if(itm.storage_cal_cv==="FLAT_RATE" && billableDays>0) billableDays=1;
       var storageCost = itm.storage_cost || 0;
 
       var total_cost = billableDays * storageCost;
@@ -1464,13 +1467,19 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     return Utility.formatNumberDisplay(value);
   }
 
-  getStorageDays(sot: StoringOrderTankItem, storage_cal_cv: any) {
+  getStorageDays(sot: StoringOrderTankItem, storage_cal_cv: any , cutoff_dt:any=0) {
     var retval: String = "-";
     let packDepotItm: PackageDepotItem = new PackageDepotItem();
     packDepotItm.storage_cal_cv = storage_cal_cv;
     var storageDetail = sot?.storage_detail?.[0];
+
+    var free_storage=storageDetail?.remaining_free_storage || 0;
+    if(storageDetail==null)
+    {
+      free_storage=sot?.billing_sot?.free_storage||0;
+    }
     let daysDifference: number = Number(this.pdDS.getStorageDays(sot,
-      packDepotItm, storageDetail?.remaining_free_storage));
+      packDepotItm,free_storage,cutoff_dt));
 
 
     return daysDifference; //Utility.formatNumberDisplay(daysDifference) ;

@@ -10,6 +10,7 @@ namespace IDMS.Residue.GqlTypes.LocalModel
         public string? estimate_no { get; set; }
         public string remarks { get; set; }
         public string customer_guid { get; set; }
+        public double? total_cost { get; set; } 
         public bool is_approved { get; set; } = false;
     }
 

@@ -354,8 +354,8 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
       // this.surveyTypeCvList = data;
       this.surveyTypeCvList = [...data].sort((a, b) => {
-        const indexA = this.selectListSurveyTypes.indexOf(a.code_val || "");
-        const indexB = this.selectListSurveyTypes.indexOf(b.code_val || "");
+        const indexA = this.selectListSurveyTypes.indexOf(a.description || "");
+        const indexB = this.selectListSurveyTypes.indexOf(b.description || "");
         // Put unmatched items at the end
         const safeIndexA = indexA === -1 ? Number.MAX_SAFE_INTEGER : indexA;
         const safeIndexB = indexB === -1 ? Number.MAX_SAFE_INTEGER : indexB;

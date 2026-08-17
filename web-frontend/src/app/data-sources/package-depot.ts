@@ -302,7 +302,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
   }
 
   getStorageStartDate(sotItem: StoringOrderTankItem, storage_cal_cv?: string): Date {
-    if (storage_cal_cv === 'TANK_IN_DATE') {
+    if (storage_cal_cv === 'TANK_IN_DATE' || storage_cal_cv==='FLAT_RATE') {
       sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
       if (sotItem?.in_gate?.[0]?.eir_dt) {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;

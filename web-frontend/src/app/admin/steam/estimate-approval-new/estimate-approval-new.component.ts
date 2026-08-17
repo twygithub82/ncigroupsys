@@ -1065,10 +1065,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         ...row,
         index: index
       }));
-      if(this.steamItem?.status_cv === 'NO_ACTION')
-      {
+      if (this.steamItem?.status_cv === 'NO_ACTION') {
         this.deList.forEach((data) => {
-          data.approve_part=false;
+          data.approve_part = false;
         });
       }
       if (!this.isSteamRepair) this.onFlatRateChanged(false);
@@ -1343,10 +1342,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canExport(): boolean {
-    var bRetval =!!this.steam_guid;
-     if(bRetval)
-    {
-      bRetval =  this.steamItem?.status_cv !== 'NO_ACTION' 
+    var bRetval = !!this.steam_guid;
+    if (bRetval) {
+      bRetval = this.steamItem?.status_cv !== 'NO_ACTION'
     }
     return bRetval;
   }
@@ -1417,17 +1415,17 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       // this.steamItem = this.historyState.selectedSteam;
       this.steamItem = { ...this.historyState.selectedSteam };
 
-      
 
-      if(this.steamItem) {
-      const parts = this.steamItem?.steaming_part ?? [];
-      
-      this.steamItem.steaming_part = parts
-        .filter(x => !x.delete_dt)
-        .sort((a, b) => (a.create_dt ?? 0) - (b.create_dt ?? 0));
+
+      if (this.steamItem) {
+        const parts = this.steamItem?.steaming_part ?? [];
+
+        this.steamItem.steaming_part = parts
+          .filter(x => !x.delete_dt)
+          .sort((a, b) => (a.create_dt ?? 0) - (b.create_dt ?? 0));
       }
 
-     
+
       this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
       console.log(this.steamItem)
       this.labourHour = this.steamItem?.est_hour || 1;
@@ -1949,7 +1947,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       else {
-         var lst = this.filteredDeList();
+        var lst = this.filteredDeList();
         if (this.IsApproved()) {
           return Number(lst?.[0]?.approve_cost || 0);
           // return Number(this.steamItem?.steaming_part?.[0]?.approve_cost || 0);

@@ -166,6 +166,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     YARD_SUMMARY_REPORT: 'COMMON-FORM.YARD-SUMMARY-REPORT',
     WARNING: 'COMMON-FORM.WARNING',
     NO_REPORT_AVAILABLE: 'COMMON-FORM.NO-REPORT-AVAILABLE',
+    TYPE: 'COMMON-FORM.TYPE',
   }
 
   invForm?: UntypedFormGroup;

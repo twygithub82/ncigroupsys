@@ -233,9 +233,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     DATE_OUT: 'COMMON-FORM.DATE-OUT',
     TOTAL: 'COMMON-FORM.TOTAL',
     DAYS: 'COMMON-FORM.DAYS',
-    CLEAN_COST: 'COMMON-FORM.TARIFF-CLEANING',
+    CLEAN_COST: 'COMMON-FORM.CLEAN',
     REPAIR_COST: 'COMMON-FORM.REPAIR',
-    PREINSP_COST: 'COMMON-FORM.PREINSPECTION',
+    PREINSP_COST: 'COMMON-FORM.PREINSPECTION-S',
     STORAGE_COST: 'COMMON-FORM.STORAGE',
     REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE-DETAIL',//'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
@@ -246,7 +246,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     S_N: 'COMMON-FORM.S_N',
     GATE_IN: 'COMMON-FORM.GATE-IN',
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
-
+    
   }
 
   cut_off_dt: string;
@@ -1063,7 +1063,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
           8: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-          9: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+          9: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
           10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
           11: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
           12: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
