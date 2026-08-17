@@ -90,7 +90,7 @@
           <div class="card modal-card">
             <div class="header header-custom-padding">
               <h2>
-                {{data.translatedLangText.OVERWRITE_DATA}}
+                {{data.translatedLangText.BILLING_PROFILE}}
               </h2>
             </div>
             <div class="body">
@@ -100,7 +100,7 @@
                     <div class="row">
                       <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{data.translatedLangText.BILLING_TO}}</mat-label>
+                          <mat-label>{{data.translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="billing_to">
                             @for (item of data.populateData.billingBranchList; track item) {
                             <mat-option [value]="item">
@@ -112,7 +112,7 @@
                       </div>
                       <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+                          <mat-label>{{data.translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no">
                         </mat-form-field>
                       </div>
@@ -133,12 +133,12 @@
     </form>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card modal-card">
+        <!-- <div class="card modal-card">
           <div class="header header-custom-padding">
             <h2>
               {{data.translatedLangText.ESTIMATE_DETAILS}}
             </h2>
-          </div>
+          </div> -->
           <div class="body">
             <div class="responsive_table">
               <table mat-table [dataSource]="spList" matSort
@@ -231,11 +231,11 @@
                 <ng-container matColumnDef="unit_price">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{data.translatedLangText.PRICE}}
+                    {{data.translatedLangText.FLAT}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span><tlx-form-field
+                    <span class="mobile-label">{{data.translatedLangText.FLAT}}:</span><tlx-form-field
                       customClass="mat-table-form-txt-40px">
                       <mat-form-field>
                         @if(isApproved())
@@ -374,7 +374,7 @@
                 <ng-container matColumnDef="totalSummaryUnitPrice">
                   <mat-footer-cell *matFooterCellDef
                     class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
-                    {{data.translatedLangText.TOTAL_COST}}
+                    {{data.translatedLangText.TOTAL_COST}}:
                   </mat-footer-cell>
                 </ng-container>
                 <ng-container matColumnDef="totalSummaryHrs">
@@ -420,7 +420,7 @@
                   </div> -->
             </div>
           </div>
-        </div>
+        <!-- </div> -->
       </div>
     </div>
     <!-- <div class="row m-1 mt-3">

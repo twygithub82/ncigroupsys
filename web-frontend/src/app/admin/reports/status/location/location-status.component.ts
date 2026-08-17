@@ -402,7 +402,7 @@ export class LocationStatusReportComponent extends UnsubscribeOnDestroyAdapter i
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksLocationStatusSummary(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data;
+        this.sotList = data.filter(sot => TANK_STATUS_IN_YARD.includes(sot.tank_status_cv!));
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;

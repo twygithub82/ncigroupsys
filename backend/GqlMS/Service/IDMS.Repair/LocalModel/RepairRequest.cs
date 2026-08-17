@@ -19,6 +19,10 @@ namespace IDMS.Repair.GqlTypes.LocalModel
         public string? estimate_no { get; set; }
         public string remarks { get; set; }
         public string customer_guid { get; set; }
+        public double? total_cost { get; set; }
+        public double? total_material_cost { get; set; }
+        public double? total_labour_cost { get; set; }
+        public double? total_hour { get; set; }
         public bool is_approved { get; set; } = false;
     }
 
@@ -36,7 +40,7 @@ namespace IDMS.Repair.GqlTypes.LocalModel
     {
         public string guid { get; set; }
         public string sot_guid { get; set; }
-        public string? remarks { get; set; }
+        public string? remarks { get; set; }    
         public string action { get; set; }
         public List<RepairPartRequest?>? repairPartRequests { get; set; }
 
@@ -46,5 +50,30 @@ namespace IDMS.Repair.GqlTypes.LocalModel
     {
         public string guid { get; set; }
         public bool approve_part { get; set; }
+    }
+
+    public class RepairPartyCostDto
+    {
+        public double TotalHour { get; set; }
+        public double TotalLabourCost { get; set; }
+        public double TotalMatCost { get; set; }
+        public double TotalCost { get; set; }
+        public double DiscountLabourCost { get; set; }
+        public double DiscountMatCost { get; set; }
+        public double NetCost { get; set; }
+    }
+
+    public class RepairCostResultDto
+    {
+        public double TotalHour { get; set; }
+        public double TotalLabourCost { get; set; }
+        public double TotalMatCost { get; set; }
+        public double TotalCost { get; set; }
+        public double DiscountLabourCost { get; set; }
+        public double DiscountMatCost { get; set; }
+        public double NetCost { get; set; }
+
+        public RepairPartyCostDto Owner { get; set; } = new();
+        public RepairPartyCostDto Lessee { get; set; } = new();
     }
 }

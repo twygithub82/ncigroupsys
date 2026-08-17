@@ -14,6 +14,10 @@ namespace IDMS.Steaming.GqlTypes.LocalModel
         public string? estimate_no { get; set; }
         public string remarks { get; set; }
         public string customer_guid { get; set; }
+        public double? total_cost { get; set; }
+        public double? total_material_cost { get; set; }
+        public double? total_labour_cost { get; set; }
+        public double? total_hour { get; set; }
         public bool is_approved { get; set; } = false;
     }
 

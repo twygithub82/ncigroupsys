@@ -290,6 +290,17 @@ export class SteamEstimateFormDialogComponent_View {
     if (BusinessLogicUtil.isEstimateApproved(this.selectedItem!)) {
       this.labourHour = this.selectedItem?.total_hour || 1;
     }
+    if (!this.isAutoApproveSteaming()) {
+      this.displayedColumns = [
+        'seq',
+        'desc',
+        'qty',
+        'hour',
+        'unit_price',
+        'cost',
+        'approve_part'
+      ];
+    }
     this.loadData();
   }
 
@@ -467,7 +478,7 @@ export class SteamEstimateFormDialogComponent_View {
   }
 
   getResultTable_HourText(): string {
-    var retval = `${this.translatedLangText.HOUR_RATE}`;
+    var retval = `${this.translatedLangText.HOURLY}`;
     if (this.isSteamRepair) {
       retval = `${this.translatedLangText.HOUR}`;
     }
@@ -613,5 +624,9 @@ export class SteamEstimateFormDialogComponent_View {
 
   roundUpCost(cost: any) {
     return BusinessLogicUtil.roundUpCost(cost);
+  }
+
+  isAutoApproveSteaming() {
+    return BusinessLogicUtil.isAutoApproveSteaming(this.selectedItem);
   }
 }

@@ -106,7 +106,7 @@
           </div>
           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
-              <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
+              <mat-label>{{translatedLangText.TYPE}}</mat-label>
               <mat-select #invTypeSelect formControlName="inv_type">
                 @for (codeValue of inventoryTypeCvList; track codeValue) {
                 @if (availableReportTypes.includes(codeValue.code_val ?? '')) {

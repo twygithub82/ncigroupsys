@@ -670,10 +670,7 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
       wsData.push([]);
       wsData.push([]);
     }
-    else 
-    {
-      continue;
-    }
+    
 
     // ==========================
     // RELEASED SECTION

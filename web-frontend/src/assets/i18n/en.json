@@ -1445,7 +1445,8 @@
     "NON-HANDLED": "Non-Handled",
     "DELETE-BILLING-BRANCH": "This billing branch will be permanently deleted. Do you want to continue?",
     "SELECT-TO": "--Select--To-",
-    "REQUIRED": "Required"
+    "REQUIRED": "Required",
+    "PREINSPECTION-S":"Pre-Ins"
 
   },
   "CLEAN-PROCEDURES": {

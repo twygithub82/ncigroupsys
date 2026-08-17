@@ -1166,12 +1166,17 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       return undefined;
     }
 
-    const allCompleteDatesValid = residue.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
+    const actionedResidue = residue.filter(item => item.status_cv !== 'NO_ACTION');
+    if (actionedResidue.length === 0) {
+      return undefined;
+    }
+
+    const allCompleteDatesValid = actionedResidue.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
     if (!allCompleteDatesValid) {
       return undefined;
     }
 
-    const earliestApproveDt = residue.reduce((latest, item) => {
+    const earliestApproveDt = actionedResidue.reduce((latest, item) => {
       if (item.complete_dt !== null && item.complete_dt !== undefined) {
         return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
       }

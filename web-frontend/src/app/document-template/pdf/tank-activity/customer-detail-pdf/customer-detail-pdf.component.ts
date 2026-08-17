@@ -1357,6 +1357,10 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
           },
         });
       }
+      else
+      {
+        lastTableFinalY = startPosY+5;
+      }
 
       if ((cust.released_storing_order_tank?.length || 0) > 0) {
         subTitleHeight = 10;

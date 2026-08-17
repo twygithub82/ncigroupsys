@@ -134,9 +134,20 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_APPROVAL;
+    this.dialogTitle = data.translatedLangText?.APPROVAL;
     this.sot = data.sot!;
     this.steamItem = data.steamItem!;
+    if (!BusinessLogicUtil.isAutoApproveSteaming(this.steamItem)) {
+      this.displayedColumns = [
+        'seq',
+        'desc',
+        'qty',
+        'hour',
+        'unit_price',
+        'cost',
+        'approve_part'
+      ];
+    }
     this.spList = this.steamItem.steaming_part?.map(x => ({ ...x })) ?? [];
     this.packageLabourItem = data.packageLabourItem!;
     this.igItem = data.ig!;
@@ -157,7 +168,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
       billing_to: [{ value: getBillingCustomer, disabled: !this.canEdit() }],
       overwrite_remarks: [{ value: this.steamItem.overwrite_remarks, disabled: !this.canEdit() }]
     });
-    
+
     this.labourHour = this.steamItem?.est_hour || 1;
     if (BusinessLogicUtil.isEstimateApproved(this.steamItem!)) {
       this.labourHour = this.steamItem?.total_hour || 1;
@@ -372,7 +383,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   getResultTable_HourText(): string {
-    var retval = `${this.data.translatedLangText.HOUR_RATE}`;
+    var retval = `${this.data.translatedLangText.HOURLY}`;
     if (this.isSteamRepair) {
       retval = `${this.data.translatedLangText.HOUR}`;
     }

@@ -1250,7 +1250,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       disableClose: true,
       width: '600px',
       data: {
-        tankNote: this.sot?.tank_note,
+        tankNote: this.sot?.tank_note || this.ig?.remarks,
         releaseNote: this.sot?.release_note,
         action: 'edit',
         translatedLangText: this.translatedLangText,
@@ -2030,7 +2030,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '56vw',
+      width: '60vw',
       maxHeight: '90vh',
       data: {
         sot: this.sot,
