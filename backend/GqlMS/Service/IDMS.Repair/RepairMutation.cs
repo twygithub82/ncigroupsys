@@ -608,6 +608,7 @@ namespace IDMS.Repair.GqlTypes
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
                                 part.approve_part = null;
+                                context.Entry(part).Property(e => e.approve_part).IsModified = true;
                                 part.approve_cost = part.material_cost;
                                 part.approve_hour = part.hour;
                                 part.approve_qty = part.quantity;

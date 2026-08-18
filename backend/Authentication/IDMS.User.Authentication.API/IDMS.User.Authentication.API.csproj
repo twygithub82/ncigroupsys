@@ -30,4 +30,8 @@
     <ProjectReference Include="..\IDMS.User.Authentication.Service\IDMS.User.Authentication.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="publish\" />
+  </ItemGroup>
+
 </Project>
