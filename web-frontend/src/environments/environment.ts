@@ -50,7 +50,7 @@ export const modulePackage: string = "growth";
 
 export const maxTankCount: number = 5;
 
-export const systemCurrencyCode: string = "SGD";
+export const systemCurrencyCode: string = "USD";
 
 export const defaultDiscountThreshold: number = 25;
 
