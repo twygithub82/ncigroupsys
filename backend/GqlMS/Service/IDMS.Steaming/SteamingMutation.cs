@@ -384,6 +384,7 @@ namespace IDMS.Steaming.GqlTypes
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
                                 part.approve_part = null;
+                                context.Entry(part).Property(e => e.approve_part).IsModified = true;
                                 part.approve_cost = part.cost;
                                 part.approve_labour = part.labour;
                                 part.approve_qty = part.quantity;

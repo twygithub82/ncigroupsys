@@ -622,6 +622,30 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     return headerRow;
   }
 
+   GetReportColumnsHeader_r1(): any{
+    const headerRow: any[] = [
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 1, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.GATE_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    ];
+
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+        { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        
+      );
+    }
+    headerRow.push( { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } });
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+         { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+        
+      );
+    }
+    headerRow.push({ content: this.translatedLangText.IN_SERVICE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } });
+    headerRow.push( { content: this.translatedLangText.OFFHIRE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } });
+    return headerRow;
+  }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -670,7 +694,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
     // ]];
 
-    const headers = [this.GetReportColumnsHeader(),
+    const headers = [this.GetReportColumnsHeader_r1(),
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
       NoTankTitle, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
@@ -748,11 +772,22 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
         if(!this.modulePackageService.isStarterPackage()){
           row.push(
             (itm?.steam_count)||"",Utility.formatNumberDisplay(itm?.steam_cost),
+            // (itm?.residue_count)||"",Utility.formatNumberDisplay(itm?.residue_cost),
+          )
+        } 
+         row.push(
+          (itm?.clean_count)||"",Utility.formatNumberDisplay(itm?.clean_cost),
+         );
+
+          if(!this.modulePackageService.isStarterPackage()){
+          row.push(
+            // (itm?.steam_count)||"",Utility.formatNumberDisplay(itm?.steam_cost),
             (itm?.residue_count)||"",Utility.formatNumberDisplay(itm?.residue_cost),
           )
-        }  
+        } 
+
         row.push(
-          (itm?.clean_count)||"",Utility.formatNumberDisplay(itm?.clean_cost),
+          
           (itm?.in_service_count)||"",Utility.formatNumberDisplay(itm?.in_service_cost),
           (itm?.offhire_count)||"",Utility.formatNumberDisplay(itm?.offhire_cost)
         )
@@ -763,11 +798,23 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     if(!this.modulePackageService.isStarterPackage()){
       lastRow.push(
       (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
-      (this.repData?.total_residue_count)||"",Utility.formatNumberDisplay(this.repData?.total_residue_cost),
+      // (this.repData?.total_residue_count)||"",Utility.formatNumberDisplay(this.repData?.total_residue_cost),
       )
+    
     };
+
     lastRow.push(
       (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
+    );
+    if(!this.modulePackageService.isStarterPackage()){
+      lastRow.push(
+      // (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
+      (this.repData?.total_residue_count)||"",Utility.formatNumberDisplay(this.repData?.total_residue_cost),
+      )
+    
+    };
+    lastRow.push(
+      // (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
       (this.repData?.total_in_service_count)||"",Utility.formatNumberDisplay(this.repData?.total_in_service_cost),
       (this.repData?.total_offhire_count)||"",Utility.formatNumberDisplay(this.repData?.total_offhire_cost)
     )
