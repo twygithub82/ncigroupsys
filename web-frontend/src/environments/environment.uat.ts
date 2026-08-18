@@ -3,10 +3,10 @@ export const environment = {
   title: 'IDMS',
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
-  apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
-  graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
+  apiUrl: 'https://lct-idms-userlogin-e3bsbuaga5bkd2c2.koreacentral-01.azurewebsites.net',
+  fileManagerURL: 'https://lct-idms-filemanagement-f3hcd6chf5f3cgam.koreacentral-01.azurewebsites.net',
+  graphQLUrl: 'https://lct-idms-gateway-gff4cmb0asgzexb8.koreacentral-01.azurewebsites.net/graphql',
+  graphqlWsUrl: 'wss://lct-idms-notification-e4cuevamfzejdgbz.koreacentral-01.azurewebsites.net/graphql',
   topicSubscribe: '/idms/all/*'
 };
 
@@ -44,7 +44,7 @@ export const modulePackage: string = "customized"; // ng serve --configuration=u
 
 export const maxTankCount: number = 5;
 
-export const systemCurrencyCode: string = "SGD";
+export const systemCurrencyCode: string = "USD";
 
 export const defaultDiscountThreshold: number = 25;
 

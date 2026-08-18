@@ -3,10 +3,10 @@ export const environment = {
   title: 'IDMS',
   companyNameShort: 'NCI Global',
   companyName: 'NCI GLOBAL PTE LTD',
-  apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagement-app-b6aga4fcfwhbggd7.southeastasia-01.azurewebsites.net',
-  graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
+  apiUrl: 'https://lct-idms-userlogin-e3bsbuaga5bkd2c2.koreacentral-01.azurewebsites.net',
+  fileManagerURL: 'https://lct-idms-filemanagement-f3hcd6chf5f3cgam.koreacentral-01.azurewebsites.net',
+  graphQLUrl: 'https://lct-idms-gateway-gff4cmb0asgzexb8.koreacentral-01.azurewebsites.net/graphql',
+  graphqlWsUrl: 'wss://lct-idms-notification-e4cuevamfzejdgbz.koreacentral-01.azurewebsites.net/graphql',
   topicSubscribe: '/idms/all/*'
 };
 
@@ -45,7 +45,7 @@ export const modulePackage: string = "growth";
 
 export const maxTankCount: number = 5;
 
-export const systemCurrencyCode: string = "SGD";
+export const systemCurrencyCode: string = "USD";
 
 export const defaultDiscountThreshold: number = 25;
 
@@ -142,7 +142,7 @@ export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
   },
   {
     // text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
-    text:`This certificate confirms that the tank met the required cleanliness standards at the time and place of inspection. It applies solely to the condition of the tank at the time of inspection.`,
+    text: `This certificate confirms that the tank met the required cleanliness standards at the time and place of inspection. It applies solely to the condition of the tank at the time of inspection.`,
     style: { size: fzSize },
     marginTop: 15
   },
