@@ -322,7 +322,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
     this.eirPdf = data.eirPdf;
-    this.toDownload = data.toDownload || true;
+    this.toDownload = data.toDownload ?? true;
     this.toUpload = data.toUpload || false;
 
     this.cells = Array(this.rowSize * this.colSize).fill(0);
