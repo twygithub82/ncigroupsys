@@ -1802,7 +1802,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         .email(this.in_gate?.tank?.tank_no!, igs_guid!, this.getEmails(), 'IN_GATE')
         .subscribe({
           next: (res) => {
-            if (residue_guid && !this.isMobile) {
+            if (residue_guid) {
               this.onDownloadResidue(residue_guid);
             } else {
               console.log('[Submit] 100% - Complete.');
@@ -1830,7 +1830,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       height: '80vh',
       data: {
         residue_guid: residue_guid,
-        toUpload: true
+        toUpload: true,
+        toDownload: !this.isMobile
       },
       direction: tempDirection
     });

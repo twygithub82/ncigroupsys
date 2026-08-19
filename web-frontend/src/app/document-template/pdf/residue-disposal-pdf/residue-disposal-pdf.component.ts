@@ -44,6 +44,7 @@ export interface DialogData {
   estimate_no?: string;
   retrieveFile: boolean;
   toUpload?: boolean;
+  toDownload?: boolean;
 }
 
 @Component({
@@ -213,6 +214,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   generatingPdfProgress = 0;
   isEstimateApproved: boolean = false;
   toUpload = false;
+  toDownload = true;
   constructor(
     public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -231,6 +233,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     this.cvDS = new CodeValuesDS(this.apollo);
     this.residue_guid = data.residue_guid;
     this.toUpload = data.toUpload || false;
+    this.toDownload = data.toDownload ?? true;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)
@@ -918,7 +921,9 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     if (this.toUpload) {
       await lastValueFrom(this.uploadResidue(this.residue_guid!, pdfBlob));
     }
-    this.downloadFile(pdfBlob, this.getPdfFileName());
+    if (this.toDownload) {
+      this.downloadFile(pdfBlob, this.getPdfFileName());
+    }
     this.dialogRef.close();
   }
 
