@@ -148,7 +148,7 @@ namespace IDMS.Survey.GqlTypes
                         if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
                             && (ingateSurvey.residue != null && ingateSurvey.residue > 0.0))
                         {
-                          (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue);
+                          (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue, config);
                           _logger.LogInformation("Residue added during AddInGateSurvey (residueGuid: {ResidueGuid}, result: {Result})", retResidueGuid, retResiueVal);
                         }
                     }
@@ -325,6 +325,11 @@ namespace IDMS.Survey.GqlTypes
            [Service] IHttpContextAccessor httpContextAccessor, string sot_guid)
         {
             int retval = 0;
+
+
+            AddResidue(context, null, 12314, 10, config);
+
+
             try
             {
 
@@ -506,7 +511,7 @@ namespace IDMS.Survey.GqlTypes
                 if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
                     && (inGateRequest?.in_gate_survey?.residue != null && inGateRequest?.in_gate_survey?.residue > 0.0))
                 {
-                    (retResidueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.residue);
+                    (retResidueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.residue, config);
                     _logger.LogInformation("Residue added during PublishIngateSurvey (residueGuid: {ResidueGuid}, result: {Result})", retResidueGuid, retResidueVal);
                 }
 
@@ -712,14 +717,14 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<(int, string)> AddResidue(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, float? residueQty)
+        private async Task<(int, string)> AddResidue(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, float? residueQty, IConfiguration config)
         {
             int retval = 0;
             string retGuid = "";
             try
             {
                 _logger.LogInformation("AddResidue started for SOT {SotGuid} (qty: {Qty})", sot?.guid, residueQty);
-                string desc = "Per Kg";
+                string desc = config["DefaultAutoResidueDesc"] ?? "Per Kg";
                 string user = "system";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
@@ -742,7 +747,7 @@ namespace IDMS.Survey.GqlTypes
                 if (string.IsNullOrEmpty(tariffResiudeGuid))
                 {
                     _logger.LogWarning("AddResidue: tariff residue GUID not found (description: {Desc})", desc);
-                    throw new GraphQLException(new Error($"Tariff residue GUID not found", "ERROR"));
+                    throw new GraphQLException(new Error($"Tariff residue GUID not found (description: {desc})", "ERROR"));
                 }
 
 
