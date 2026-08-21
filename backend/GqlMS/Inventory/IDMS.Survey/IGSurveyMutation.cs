@@ -269,8 +269,17 @@ namespace IDMS.Survey.GqlTypes
                     }
 
                     var tank = inGateRequest.tank;
-                    storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
-                    context.storing_order_tank.Attach(sot);
+                    //storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
+                    //context.storing_order_tank.Attach(sot);
+                    storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                                                    .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                    if (sot == null || string.IsNullOrEmpty(sot.tank_no))
+                    {
+                        _logger.LogWarning("AddInGateSurvey: storing order tank not found (tankGuid: {TankGuid})", tank?.guid);
+                        throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
+                    }
+
                     sot.unit_type_guid = tank.unit_type_guid;
                     sot.owner_guid = tank.owner_guid;
                     sot.tank_no = string.IsNullOrEmpty(tank.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tank.tank_no;
