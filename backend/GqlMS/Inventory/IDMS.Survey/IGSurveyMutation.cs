@@ -480,7 +480,7 @@ namespace IDMS.Survey.GqlTypes
             try
             {
 
-                var suAdmin = "suAdmin";
+                //var suAdmin = "suAdmin";
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 _logger.LogInformation($"Rollback published invoked by {user} for sot_Guid {sot_guid}");
                 //string user = "admin";
@@ -490,7 +490,7 @@ namespace IDMS.Survey.GqlTypes
                 if (cleaning != null)
                 {
                     cleaning.delete_dt = currentDateTime;
-                    cleaning.update_by = suAdmin;
+                    cleaning.update_by = user;
                     cleaning.update_dt = currentDateTime;
                     _logger.LogInformation($"cleaning soft-deleted sot {sot_guid}");
                 }
@@ -499,7 +499,7 @@ namespace IDMS.Survey.GqlTypes
                 if (residue != null)
                 {
                     residue.delete_dt = currentDateTime;
-                    residue.update_by = suAdmin;
+                    residue.update_by = user;
                     residue.update_dt = currentDateTime;
                     _logger.LogInformation($"residue soft-deleted sot {sot_guid}");
                 }
@@ -519,7 +519,7 @@ namespace IDMS.Survey.GqlTypes
                     //    _logger.LogInformation($"steaming_part soft-deleted for steaming {steaming.guid} related to sot {sot_guid}");
                     //}
                     steaming.delete_dt = currentDateTime;
-                    steaming.update_by = suAdmin;
+                    steaming.update_by = user;
                     steaming.update_dt = currentDateTime;
                     _logger.LogInformation($"steaming soft-deleted for sot {sot_guid}");
                 }
@@ -528,7 +528,7 @@ namespace IDMS.Survey.GqlTypes
                 if (repair != null)
                 {
                     repair.delete_dt = currentDateTime;
-                    repair.update_by = suAdmin;
+                    repair.update_by = user;
                     repair.update_dt = currentDateTime;
                     _logger.LogInformation($"repair soft-deleted for sot {sot_guid}");
                 }

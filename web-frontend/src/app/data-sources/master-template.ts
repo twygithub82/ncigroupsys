@@ -488,6 +488,7 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
   }
 
   AddMasterTemplate(newTemplateEstimate: any): Observable<any> {
+    this.loadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_MASTER_TEMPLATE_ESTIMATION,
       variables: {
@@ -498,10 +499,12 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
         console.error('GraphQL Error:', error);
         return of(0); // Return an empty array on error
       }),
+      finalize(() => this.loadingSubject.next(false)),
     );
   }
 
   UpdateMasterTemplate(editTemplateEstimate: any): Observable<any> {
+    this.loadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_MASTER_TEMPLATE_ESTIMATION,
       variables: {
@@ -512,6 +515,7 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
         console.error('GraphQL Error:', error);
         return of(0); // Return an empty array on error
       }),
+      finalize(() => this.loadingSubject.next(false)),
     );
   }
 

@@ -521,11 +521,11 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canEdit() && isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)||!isDirty">
+                  <button mat-flat-button color="primary" [disabled]="(estTempDS.loading$ | async)||!isDirty">
                     <mat-icon>
-                      @if (!(soDS.loading$ | async)) {
+                      @if (!(estTempDS.loading$ | async)) {
                       save
-                      } @else if ((soDS.loading$ | async)) {
+                      } @else if ((estTempDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
