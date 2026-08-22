@@ -473,13 +473,8 @@ namespace IDMS.Survey.GqlTypes
         {
             int retval = 0;
 
-
-            AddResidue(context, null, 12314, 10, config);
-
-
             try
             {
-
                 //var suAdmin = "suAdmin";
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 _logger.LogInformation($"Rollback published invoked by {user} for sot_Guid {sot_guid}");
