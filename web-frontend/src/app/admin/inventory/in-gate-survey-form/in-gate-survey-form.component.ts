@@ -1647,22 +1647,27 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       console.log('[Submit] 10% - Saving survey...');
 
       if (igs.guid) {
+        const wantPublish = toPublish && ig?.eir_status_cv !== "PUBLISHED";
+        if (wantPublish) {
+          igs.action = "published";
+        }
         this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
-          if (result?.data?.updateInGateSurvey) {
+          const record = result?.data?.record;
+          if (record?.affected) {
             console.log('[Submit] 40% - Survey saved, uploading images...');
-            const wantPublish = toPublish && ig?.eir_status_cv !== "PUBLISHED";
-            this.uploadImages(igs.guid!, !wantPublish, wantPublish ? () => this.onPublish() : undefined);
+            this.uploadImages(igs.guid!, !wantPublish, wantPublish ? () => this.onDownload(igs.guid!, record.residue_guid) : undefined);
           }
         });
       } else {
-        if (toPublish && ig?.eir_status_cv !== "PUBLISHED") {
+        const wantPublish = toPublish && ig?.eir_status_cv !== "PUBLISHED";
+        if (wantPublish) {
           igs.action = "published";
         }
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           const record = result.data.record
           if (record?.affected) {
             console.log('[Submit] 40% - Survey saved, uploading images...');
-            this.uploadImages(record.guid[0], false, () => this.onDownload(record.guid[0], record.residue_guid));
+            this.uploadImages(record.guid[0], !wantPublish, wantPublish ? () => this.onDownload(record.guid[0], record.residue_guid) : undefined);
           }
         });
       }
