@@ -1,0 +1,199 @@
+export const environment = {
+  production: false,
+  title: 'IDMS',
+  companyNameShort: 'NCI Global',
+  companyName: 'NCI GLOBAL PTE LTD',
+  apiUrl: 'https://lct-idms-userlogin-e3bsbuaga5bkd2c2.koreacentral-01.azurewebsites.net',
+  fileManagerURL: 'https://lct-idms-filemanagement-f3hcd6chf5f3cgam.koreacentral-01.azurewebsites.net',
+  graphQLUrl: 'https://lct-idms-gateway-gff4cmb0asgzexb8.koreacentral-01.azurewebsites.net/graphql',
+  graphqlWsUrl: 'wss://lct-idms-notification-e4cuevamfzejdgbz.koreacentral-01.azurewebsites.net/graphql',
+  topicSubscribe: '/idms/all/*'
+};
+
+export const testTypeMapping: any = {
+  "5": "2.5",
+  "2.5": "5"
+}
+
+export const customerInfo = {
+  companyName: 'Lime Cleantech',
+  companyAbb: 'Lime Cleantech',
+  companyAddress: '78, Namui-ro 43beon-gil, Jinhae-gu, Changwon-si, Gyeongsangnam-do, Republic of Korea (51613)',
+  companyPhone: '+82-055-716-0758',
+  companyFax: '',
+  companyEmail: 'enquiry@limecleantech.com',
+  companyWebsite: 'limecleantech.com',
+  companyUen: '202335130H',
+  companyGST: '[GST Reg No]',
+  eirDisclaimerNote: 'Notwithstanding that {companyName} (UEN:{companyUen}; hereinafter known as \"{companyAbb}\") will at its best-effort basis ensure that the above tank serviced is in good condition on the service job requisite by above-named customer and accepted by {companyAbb}. {companyAbb} will not in any way, guarantee nor accept liability for damage or claim due to the condition of tank, or of any other nature whatsoever arises upon tank released. Customer is however, at all times advised to appoint a third party class surveyor to conduct a post inspection, verify and certify that the tank is in good condition prior it is released from {companyAbb}\'s Depot, at own costs and discretion.',
+  eirDisclaimerVer: 'VER-2412-210206',
+  companyReportLogo: 'assets/images/report-logo-lime.png'
+};
+
+export const reportPreviewWindowDimension = {
+  portrait_maxWidth: '1100px',
+  portrait_width_rate: '70vw',
+  landscape_maxWidth: '1400px',
+  landscape_width_rate: '85vw',
+  report_maxHeight: '85vh'
+};
+
+export const refreshTokenWithin: number = 1200000;
+
+export const modulePackage: string = "customized"; // ng serve --configuration=uat, ng serve --configuration=development, ng serve --build
+
+export const maxTankCount: number = 5;
+
+export const systemCurrencyCode: string = "USD";
+
+export const defaultDiscountThreshold: number = 25;
+
+export const isDirty: boolean = true;
+
+
+export const UploadImageResolution = 0.6; //0.1 to 1.2 MP - previously is 1.2
+
+export interface cleanlinessReportTextBlock {
+  text?: string | ((data: any) => string);
+  type?: 'text' | 'line';   // 👈 NEW
+  x?: number;
+  y?: number;
+  maxWidth?: number;
+  inline?: boolean; 
+  style?: {
+    font?: 'normal' | 'bold' | 'italic';
+    size?: number;
+    align?: 'left' | 'center' | 'right';
+    lineWidth?: number;     // 👈 for horizontal line
+    underline?: boolean;
+  };
+  marginTop?: number;
+}
+
+
+const fzSize=11;
+export const CLEANLINESS_COMMENT_CONFIG: cleanlinessReportTextBlock[] = [
+  // {
+  //   text: 'Comments',
+  //   style: { font: 'bold', size: 16, align: 'left' },
+  //   marginTop: 10
+  // },
+  // {
+  //   text: 'Summary',
+  //   style: { size: fzSize, font: 'bold' },
+  //   marginTop: 5
+  // },
+  // {
+  //   text: 'This certificate confirms that the tank identified in this document has successfully completed cleaning and inspection at our depot and meets the required cleanliness standards at the time of inspection.',
+  //   style: { size: fzSize },
+  //   marginTop: 5
+  // },
+  // {
+  //   type: 'line',
+  //   marginTop: 3,
+  //   style: {
+  //     lineWidth: 0.3
+  //   }
+  // },
+  {
+    text: 'Dear Sir / Madam,',
+    style: { size: fzSize },
+    marginTop: 5
+  },
+  {
+    // text: `We hereby certify that the above-mentioned tank has completed cleaning at our depot.`,
+    text: `We hereby certify that the above-mentioned tank has undergone cleaning at our depot and was inspected upon completion.`,
+    style: { size: fzSize },
+    marginTop: 5
+  },
+  {
+    text: `At the time of inspection, the tank and all associated valves were found to be `,
+    style: { size: fzSize },
+    inline: true,
+    marginTop: 5
+  },
+  {
+    text: `dry, odorless, residue-free and`,
+    style: { font: 'bold', size: fzSize },
+    inline: true
+  },
+  {
+    text: `visually clean`,
+    style: { font: 'bold', size: fzSize },
+    marginTop: 5,
+    inline: true
+  },
+  // {
+  //   text: ' at the time of inspection.',
+  //   style: { size: fzSize },
+  //   inline: true
+  // },
+  {
+    text: (data) => `Seal No.: `,
+    style: { font: 'bold', size: fzSize },
+    inline: true,
+    marginTop: 15
+  },
+  {
+    text: (data) => `${data.sealNo || ''}`,
+    style: { font: 'bold', size: fzSize, underline: true },
+    inline: true
+
+  },
+  {
+    // text: `This report refers only to the condition of the above-mentioned tank at the time and place of inspection.`,
+    text:`This certificate confirms that the tank met the required cleanliness standards at the time and place of inspection. It applies solely to the condition of the tank at the time of inspection.`,
+    style: { size: fzSize },
+    marginTop: 15
+  },
+  // {
+  //   type: 'line',
+  //   marginTop: 3,
+  //   style: {
+  //     lineWidth: 0.3
+  //   }
+  // },
+  // {
+  //   text: 'Remark:',
+  //   style: { size: fzSize, font: 'bold' },
+  //   marginTop: 5
+  // },
+  // {
+  //   text: (data) => `${data.remark || ''}`,
+  //   style: { size: fzSize },
+  //   marginTop: 5
+  // },
+  {
+    type: 'line',
+    marginTop: 108,
+    style: {
+      lineWidth: 0.3
+    }
+  },
+  {
+    text: `Generated By:`,
+    style: { font: 'normal', size: fzSize - 0.5 },
+    marginTop: 2,
+    inline: true
+  },
+  {
+    text: (data) => `${data.generatedBy || ''}`,
+    style: { font: 'bold', size: fzSize - 0.5 },
+    inline: true
+  },
+  {
+    text: `                                                                      Generated Date & Time:`,
+    style: { font: 'normal', size: fzSize - 0.5 },
+    inline: true
+  },
+  {
+    text: (data) => `${data.generatedDate || ''}`,
+    style: { font: 'bold', size: fzSize - 0.5 },
+    inline: true
+  },
+  {
+    text: `This is a computer generated document, no signature is required.`,
+    style: { size: fzSize - 2.5, align: 'center' },
+    marginTop: 15
+  }
+];

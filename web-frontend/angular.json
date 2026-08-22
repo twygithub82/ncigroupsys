@@ -118,6 +118,21 @@
                 }
               ]
             },
+            "uat-lct": {
+              "outputHashing": "all",
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.uat-lct.ts"
+                }
+              ]
+            },
             "dev": {
               "buildOptimizer": false,
               "optimization": false,
@@ -131,7 +146,7 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
-            },
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -146,6 +161,9 @@
             },
             "uat": {
               "buildTarget": "idms:build:uat"
+            },
+            "uat-lct": {
+              "buildTarget": "idms:build:uat-lct"
             }
           },
           "defaultConfiguration": "development",

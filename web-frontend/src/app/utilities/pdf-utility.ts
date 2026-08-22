@@ -1246,9 +1246,9 @@ export class PDFUtility {
 
     // const bufferX = 135;
     // const posX1_img = leftMargin + bufferX;
-    const posY1_img = topMargin;
+    const posY1_img = topMargin+this.CompanyLogoTopBuffer();
     const aspectRatio = height / width;
-    const w = 55;
+    const w = 58;
     const h = aspectRatio * w;
     const posX1_img = pageWidth - rightMargin - w;
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
@@ -1258,14 +1258,15 @@ export class PDFUtility {
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    var yPos = topMargin + 21;
+    let posY = topMargin + 10;
+    let posX = leftMargin;
+    var yPosCmpInfo =await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+
+    // var yPos = topMargin + 21;
+    var yPos = yPosCmpInfo +2;
     // Draw top line
     pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
-
-    let posX = leftMargin;
-    let posY = topMargin + 10;
-
-    await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+    
   }
 
   static async ReportHeader_CompanyInfo_Portrait_r2(pdf: jsPDF,
@@ -1317,13 +1318,17 @@ export class PDFUtility {
     posY += bufferGap;
     this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
 
-
+     if(customerInfo.companyAddress.length>this.CompanyAddressMaxLengthPerLine())
+    {
+      posY+=bufferGap+0.5;
+    }
     // Add phone, fax
     nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
     nextLine += this.addSpaces(3);
     nextLine += `${translatedLangText.W}: ${customerInfo.companyWebsite}`;
     posY += bufferGap;
     this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+    return posY;
   }
 
   static async addHeaderWithCompanyLogo_Landscape_r2(
@@ -1358,9 +1363,9 @@ export class PDFUtility {
 
     // const bufferX = 135;
 
-    const posY1_img = topMargin;
+    const posY1_img = topMargin + this.CompanyLogoTopBuffer();
     const aspectRatio = height / width;
-    const w = 55;
+    const w = 58;
     const h = aspectRatio * w;
     const posX1_img = pageWidth - rightMargin - w;
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
@@ -1370,14 +1375,16 @@ export class PDFUtility {
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    var yPos = topMargin + 21;
+     let posX = leftMargin;
+    let posY = topMargin + 10;
+
+     var yPosCmpInfo =await this.ReportHeader_CompanyInfo_Landscape_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+    var yPos = yPosCmpInfo +2;
+    // var yPos = topMargin + 21;
     // Draw top line
     pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
 
-    let posX = leftMargin;
-    let posY = topMargin + 10;
-
-    await this.ReportHeader_CompanyInfo_Landscape_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+   
 
 
   }
@@ -1437,13 +1444,18 @@ export class PDFUtility {
     this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
 
 
+    if(customerInfo.companyAddress.length>this.CompanyAddressMaxLengthPerLine())
+    {
+      posY+=bufferGap+0.5;
+    }
+
     // Add phone, fax
     nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
     nextLine += this.addSpaces(3);
     nextLine += `${translatedLangText.W}: ${customerInfo.companyWebsite}`;
     posY += bufferGap;
     this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-
+    return posY;
 
 
 
@@ -1592,6 +1604,17 @@ export class PDFUtility {
   static TableStartTopBuffer(): number {
     const gap = 2
     return gap;
+  }
+
+  static CompanyLogoTopBuffer(): number {
+    const val = 3
+    return val;
+  }
+
+
+  static CompanyAddressMaxLengthPerLine(): number {
+    const val = 50
+    return val;
   }
 
   static async ReportFooter_CompanyInfo_portrait(pdf: jsPDF,
