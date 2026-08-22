@@ -46,7 +46,7 @@ namespace IDMS.Survey.GqlTypes
             List<string> retGuids = new List<string>();
             Record record = new();
 
-            using (var transaction = await context.Database.BeginTransactionAsync())
+            await using (var transaction = await context.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -148,7 +148,7 @@ namespace IDMS.Survey.GqlTypes
                         if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
                             && (ingateSurvey.residue != null && ingateSurvey.residue > 0.0))
                         {
-                          (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue);
+                          (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue, config);
                           _logger.LogInformation("Residue added during AddInGateSurvey (residueGuid: {ResidueGuid}, result: {Result})", retResidueGuid, retResiueVal);
                         }
                     }
@@ -191,101 +191,248 @@ namespace IDMS.Survey.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<Record> UpdateInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, in_gate inGateRequest)
         {
             int retval = 0;
+            bool needPublish = false;
+            string currentTankMovement = "";
+            string retResidueGuid = "";
+            int retResiueVal;
+            List<string> retGuids = new List<string>();
+            Record record = new();
 
-            try
+
+            await using (var transaction = await context.Database.BeginTransactionAsync())
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                _logger.LogInformation("UpdateInGateSurvey invoked by {User} (surveyGuid: {SurveyGuid}, inGateGuid: {InGateGuid})", user, inGateSurveyRequest?.guid, inGateRequest?.guid);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
-                                                                                 (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
-                if (ingateSurvey == null)
+                try
                 {
-                    _logger.LogWarning("UpdateInGateSurvey: ingate survey not found (guid: {SurveyGuid})", inGateSurveyRequest?.guid);
-                    throw new GraphQLException(new Error("Ingate survey object cannot be null or empty.", "ERROR"));
-                }
+                    var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    _logger.LogInformation("UpdateInGateSurvey invoked by {User} (surveyGuid: {SurveyGuid}, inGateGuid: {InGateGuid})", user, inGateSurveyRequest?.guid, inGateRequest?.guid);
+                    long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (ingateSurvey.in_gate_guid == null)
+                    in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
+                                                                                     (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
+                    if (ingateSurvey == null)
+                    {
+                        _logger.LogWarning("UpdateInGateSurvey: ingate survey not found (guid: {SurveyGuid})", inGateSurveyRequest?.guid);
+                        throw new GraphQLException(new Error("Ingate survey object cannot be null or empty.", "ERROR"));
+                    }
+
+                    if (ingateSurvey.in_gate_guid == null)
+                    {
+                        _logger.LogWarning("UpdateInGateSurvey: ingateSurvey.in_gate_guid is null (surveyGuid: {SurveyGuid})", inGateSurveyRequest?.guid);
+                        throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
+                    }
+
+
+                    mapper.Map(inGateSurveyRequest, ingateSurvey);
+
+                    if (string.IsNullOrEmpty(inGateSurveyRequest.guid))
+                    {
+                        ingateSurvey.guid = Util.GenerateGUID();
+                        ingateSurvey.create_by = user;
+                        ingateSurvey.create_dt = currentDateTime;
+                        context.in_gate_survey.Add(ingateSurvey);
+                    }
+                    else
+                    {
+                        ingateSurvey.update_by = user;
+                        ingateSurvey.update_dt = currentDateTime;
+                    }
+
+                    //var igWithTank = inGateRequest;
+                    var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
+                    if (ingate != null)
+                    {
+                        ingate.remarks = inGateRequest.remarks;
+                        ingate.vehicle_no = inGateRequest.vehicle_no;
+                        ingate.driver_name = inGateRequest.driver_name;
+                        ingate.haulier = inGateRequest.haulier;
+                        //yet to survey --> pending
+                        ingate.eir_status_cv = string.IsNullOrEmpty(inGateRequest.eir_status_cv) ? EirStatus.PENDING : inGateRequest.eir_status_cv;
+                        ingate.update_by = user;
+                        ingate.update_dt = currentDateTime;
+
+                        //-------------------------------------------------------
+                        //Newly added code request by Daniel
+                        if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
+                            && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+                        {
+                            needPublish = true;
+                            ingate.eir_status_cv = EirStatus.PUBLISHED;
+                            ingate.publish_by = user;
+                            ingate.publish_dt = currentDateTime;
+                        }
+                        //--------------------------------------------------------
+                    }
+
+                    var tank = inGateRequest.tank;
+                    //storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
+                    //context.storing_order_tank.Attach(sot);
+                    storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                                                    .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                    if (sot == null || string.IsNullOrEmpty(sot.tank_no))
+                    {
+                        _logger.LogWarning("AddInGateSurvey: storing order tank not found (tankGuid: {TankGuid})", tank?.guid);
+                        throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
+                    }
+
+                    sot.unit_type_guid = tank.unit_type_guid;
+                    sot.owner_guid = tank.owner_guid;
+                    sot.tank_no = string.IsNullOrEmpty(tank.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tank.tank_no;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+
+                    //----------------------------------------------------------------------
+                    //Newly added code request by Daniel
+                    //----------------------------------------------------------------------
+                    if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
+                         && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+                    {
+                        needPublish = true;
+                        if (sot.purpose_steam ?? false)
+                        {
+                            sot.tank_status_cv = TankMovementStatus.STEAM;
+                            await AddSteaming(context, sot, ingate.create_dt, config);
+                            currentTankMovement = TankMovementStatus.STEAM;
+                        }
+                        else if (sot.purpose_cleaning ?? false)
+                        {
+                            sot.tank_status_cv = TankMovementStatus.CLEANING;
+                            await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                            currentTankMovement = TankMovementStatus.CLEANING;
+                        }
+                        else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+                        {
+                            sot.tank_status_cv = TankMovementStatus.REPAIR;
+                            currentTankMovement = TankMovementStatus.REPAIR;
+                        }
+                        else
+                        {
+                            sot.tank_status_cv = TankMovementStatus.STORAGE;
+                            currentTankMovement = TankMovementStatus.STORAGE;
+                        }
+
+                        //Newly added logic
+                        if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
+                            && (ingateSurvey.residue != null && ingateSurvey.residue > 0.0))
+                        {
+                            (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue, config);
+                            _logger.LogInformation("Residue added during AddInGateSurvey (residueGuid: {ResidueGuid}, result: {Result})", retResidueGuid, retResiueVal);
+                        }
+                    }
+                    //----------------------------------------------------------------------------
+
+                    retval = await context.SaveChangesAsync();
+                    retGuids.Add(inGateSurveyRequest?.guid ?? "");
+
+                    _logger.LogInformation("UpdateInGateSurvey saved changes: {Count} (surveyGuid: {SurveyGuid})", retval, inGateSurveyRequest?.guid);
+
+                    //TODO
+                    //string evtId = EventId.NEW_INGATE;
+                    //string evtName = EventName.NEW_INGATE;
+                    //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+                    //Tank info handling
+                    await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "", inGateRequest.eir_no ?? "");
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+                    _logger.LogInformation("UpdateInGateSurvey transaction committed (ingateSurveyGuid: {SurveyGuid})", ingateSurvey.guid);
+
+                    //Notification Handling
+                    if (needPublish)
+                    {
+                        string evtId = Models.EventId.PUBLISH_EIR;
+                        await NotificationHandling(context, config, evtId);
+                        _logger.LogInformation("NotificationHandling invoked for event {EventId}", evtId);
+                    }
+                    //Bundle the retVal and retGuid return as record object
+                    record = new Record() { affected = retval, guid = retGuids, residue_guid = retResidueGuid };
+
+                }
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("UpdateInGateSurvey: ingateSurvey.in_gate_guid is null (surveyGuid: {SurveyGuid})", inGateSurveyRequest?.guid);
-                    throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
+
+                    _logger.LogError(ex, "UpdateInGateSurvey failed (surveyGuid: {SurveyGuid})", inGateSurveyRequest?.guid);
+                    throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
                 }
-
-
-                mapper.Map(inGateSurveyRequest, ingateSurvey);
-
-                if (string.IsNullOrEmpty(inGateSurveyRequest.guid))
-                {
-                    ingateSurvey.guid = Util.GenerateGUID();
-                    ingateSurvey.create_by = user;
-                    ingateSurvey.create_dt = currentDateTime;
-                    context.in_gate_survey.Add(ingateSurvey);
-                }
-                else
-                {
-                    ingateSurvey.update_by = user;
-                    ingateSurvey.update_dt = currentDateTime;
-                }
-
-                //var igWithTank = inGateRequest;
-                var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
-                if (ingate != null)
-                {
-                    ingate.remarks = inGateRequest.remarks;
-                    ingate.vehicle_no = inGateRequest.vehicle_no;
-                    ingate.driver_name = inGateRequest.driver_name;
-                    ingate.haulier = inGateRequest.haulier;
-                    //yet to survey --> pending
-                    ingate.eir_status_cv = string.IsNullOrEmpty(inGateRequest.eir_status_cv) ? EirStatus.PENDING : inGateRequest.eir_status_cv; //EirStatus.PENDING;
-                    ingate.update_by = user;
-                    ingate.update_dt = currentDateTime;
-                }
-
-                var tank = inGateRequest.tank;
-                storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
-                context.storing_order_tank.Attach(sot);
-                sot.unit_type_guid = tank.unit_type_guid;
-                sot.owner_guid = tank.owner_guid;
-                sot.tank_no = string.IsNullOrEmpty(tank.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tank.tank_no;
-                sot.update_by = user;
-                sot.update_dt = currentDateTime;
-
-                //will not happend tank movement status changes
-                //if (tank.purpose_steam ?? false)
-                //    sot.tank_status_cv = TankMovementStatus.STEAM;
-                //else if (tank.purpose_cleaning ?? false)
-                //    sot.tank_status_cv = TankMovementStatus.CLEANING;
-                //else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
-                //    sot.tank_status_cv = TankMovementStatus.REPAIR;
-                //else
-                //    sot.tank_status_cv = TankMovementStatus.STORAGE;
-
-                retval = await context.SaveChangesAsync();
-
-                _logger.LogInformation("UpdateInGateSurvey saved changes: {Count} (surveyGuid: {SurveyGuid})", retval, inGateSurveyRequest?.guid);
-
-                //TODO
-                //string evtId = EventId.NEW_INGATE;
-                //string evtName = EventName.NEW_INGATE;
-                //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-
-
-                //Tank info handling
-                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "", inGateRequest.eir_no ?? "");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "UpdateInGateSurvey failed (surveyGuid: {SurveyGuid})", inGateSurveyRequest?.guid);
-                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
-            }
-            return retval;
+
+            return record;
         }
+
+        //private async Task<TankMovementStatus> ProcessPublishedInGateSurveyAsync(ApplicationInventoryDBContext context, storing_order_tank sot, in_gate ingate, in_gate_survey ingateSurvey,
+        //                                                                             InGateSurveyRequest inGateSurveyRequest, IConfiguration config)
+        //{
+        //    if (string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
+        //        || !inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+        //    {
+        //        return null;
+        //    }
+
+        //    string currentTankMovement = "";
+        //    if (sot.purpose_steam ?? false)
+        //    {
+        //        sot.tank_status_cv = TankMovementStatus.STEAM;
+
+        //        await AddSteaming(
+        //            context,
+        //            sot,
+        //            ingate.create_dt,
+        //            config);
+
+        //        currentTankMovement = TankMovementStatus.STEAM;
+        //    }
+        //    else if (sot.purpose_cleaning ?? false)
+        //    {
+        //        sot.tank_status_cv = TankMovementStatus.CLEANING;
+
+        //        await AddCleaning(
+        //            context,
+        //            sot,
+        //            ingate.create_dt,
+        //            ingateSurvey.tank_comp_guid);
+
+        //        currentTankMovement = TankMovementStatus.CLEANING;
+        //    }
+        //    else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+        //    {
+        //        sot.tank_status_cv = TankMovementStatus.REPAIR;
+        //        currentTankMovement = TankMovementStatus.REPAIR;
+        //    }
+        //    else
+        //    {
+        //        sot.tank_status_cv = TankMovementStatus.STORAGE;
+        //        currentTankMovement = TankMovementStatus.STORAGE;
+        //    }
+
+        //    if (!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM)
+        //        && ingateSurvey.residue != null
+        //        && ingateSurvey.residue > 0.0)
+        //    {
+        //        (retResiueVal, retResidueGuid) = await AddResidue(
+        //            context,
+        //            sot,
+        //            ingate.create_dt,
+        //            ingateSurvey.residue,
+        //            config);
+
+        //        _logger.LogInformation(
+        //            "Residue added during AddInGateSurvey " +
+        //            "(residueGuid: {ResidueGuid}, result: {Result})",
+        //            retResidueGuid,
+        //            retResiueVal);
+        //    }
+
+        //    return currentTankMovement;
+        //}
+
 
         public async Task<int> DeleteInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string IGSurvey_guid)
@@ -328,7 +475,7 @@ namespace IDMS.Survey.GqlTypes
             try
             {
 
-                var suAdmin = "suAdmin";
+                //var suAdmin = "suAdmin";
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 _logger.LogInformation($"Rollback published invoked by {user} for sot_Guid {sot_guid}");
                 //string user = "admin";
@@ -338,7 +485,7 @@ namespace IDMS.Survey.GqlTypes
                 if (cleaning != null)
                 {
                     cleaning.delete_dt = currentDateTime;
-                    cleaning.update_by = suAdmin;
+                    cleaning.update_by = user;
                     cleaning.update_dt = currentDateTime;
                     _logger.LogInformation($"cleaning soft-deleted sot {sot_guid}");
                 }
@@ -347,7 +494,7 @@ namespace IDMS.Survey.GqlTypes
                 if (residue != null)
                 {
                     residue.delete_dt = currentDateTime;
-                    residue.update_by = suAdmin;
+                    residue.update_by = user;
                     residue.update_dt = currentDateTime;
                     _logger.LogInformation($"residue soft-deleted sot {sot_guid}");
                 }
@@ -367,7 +514,7 @@ namespace IDMS.Survey.GqlTypes
                     //    _logger.LogInformation($"steaming_part soft-deleted for steaming {steaming.guid} related to sot {sot_guid}");
                     //}
                     steaming.delete_dt = currentDateTime;
-                    steaming.update_by = suAdmin;
+                    steaming.update_by = user;
                     steaming.update_dt = currentDateTime;
                     _logger.LogInformation($"steaming soft-deleted for sot {sot_guid}");
                 }
@@ -376,7 +523,7 @@ namespace IDMS.Survey.GqlTypes
                 if (repair != null)
                 {
                     repair.delete_dt = currentDateTime;
-                    repair.update_by = suAdmin;
+                    repair.update_by = user;
                     repair.update_dt = currentDateTime;
                     _logger.LogInformation($"repair soft-deleted for sot {sot_guid}");
                 }
@@ -390,9 +537,6 @@ namespace IDMS.Survey.GqlTypes
             }
             return retval;
         }
-
-
-
 
         //private async Task<int> PublishIngateSurveyOld(ApplicationInventoryDBContext context, [Service] IConfiguration config,
         //        [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
@@ -506,7 +650,7 @@ namespace IDMS.Survey.GqlTypes
                 if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
                     && (inGateRequest?.in_gate_survey?.residue != null && inGateRequest?.in_gate_survey?.residue > 0.0))
                 {
-                    (retResidueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.residue);
+                    (retResidueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.residue, config);
                     _logger.LogInformation("Residue added during PublishIngateSurvey (residueGuid: {ResidueGuid}, result: {Result})", retResidueGuid, retResidueVal);
                 }
 
@@ -712,14 +856,14 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<(int, string)> AddResidue(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, float? residueQty)
+        private async Task<(int, string)> AddResidue(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, float? residueQty, IConfiguration config)
         {
             int retval = 0;
             string retGuid = "";
             try
             {
                 _logger.LogInformation("AddResidue started for SOT {SotGuid} (qty: {Qty})", sot?.guid, residueQty);
-                string desc = "Per Kg";
+                string desc = config["DefaultAutoResidueDesc"] ?? "Per Kg";
                 string user = "system";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
@@ -742,7 +886,7 @@ namespace IDMS.Survey.GqlTypes
                 if (string.IsNullOrEmpty(tariffResiudeGuid))
                 {
                     _logger.LogWarning("AddResidue: tariff residue GUID not found (description: {Desc})", desc);
-                    throw new GraphQLException(new Error($"Tariff residue GUID not found", "ERROR"));
+                    throw new GraphQLException(new Error($"Tariff residue GUID not found (description: {desc})", "ERROR"));
                 }
 
 
