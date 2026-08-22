@@ -665,7 +665,11 @@ export const ADD_IN_GATE_SURVEY = gql`
 
 export const UPDATE_IN_GATE_SURVEY = gql`
   mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gateInput!) {
-    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate)
+    record: updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate) {
+      affected
+      guid
+      residue_guid
+    }
   }
 `;
 
