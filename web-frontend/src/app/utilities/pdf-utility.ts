@@ -6,6 +6,7 @@ import { Utility } from "./utility";
 import html2canvas from "html2canvas";
 import { CustomerCompanyItem } from "app/data-sources/customer-company";
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
+import { KoreanFontHelper } from "./korean-font-helper";
 
 
 interface BoxTextOptions {
@@ -27,7 +28,7 @@ interface BoxTextOptions {
   paddingX?: number;
   paddingY?: number;
   radius?: number; // for rounded rectangle
-  lineWidth?:number;
+  lineWidth?: number;
 }
 
 
@@ -58,7 +59,7 @@ export class PDFUtility {
   //   }
 
 
- 
+
   //   pdf.restoreGraphicsState();
   //   return crtY + fontSize * 0.3528; // return next Y (bottom of printed text)
   // }
@@ -66,52 +67,52 @@ export class PDFUtility {
 
 
   static addText(
-  pdf: jsPDF,
-  content: string,
-  topPos: number,
-  leftPos: number,
-  fontSize: number,
-  bold: boolean = false,
-  fontFamily: string = 'helvetica',
-  wrap: boolean = false,
-  maxWidth: number = 0,
-  underline: boolean = false,
-  textColor: string = '#000000'
-): number {
-  let crtY = topPos;
- // pdf.saveGraphicsState();
+    pdf: jsPDF,
+    content: string,
+    topPos: number,
+    leftPos: number,
+    fontSize: number,
+    bold: boolean = false,
+    fontFamily: string = 'helvetica',
+    wrap: boolean = false,
+    maxWidth: number = 0,
+    underline: boolean = false,
+    textColor: string = '#000000'
+  ): number {
+    let crtY = topPos;
+    // pdf.saveGraphicsState();
 
-  const fontStyle = bold ? 'bold' : 'normal';
-  pdf.setFont(fontFamily, fontStyle);
-  pdf.setFontSize(fontSize);
-  pdf.setTextColor(textColor);
+    const fontStyle = bold ? 'bold' : 'normal';
+    pdf.setFont(fontFamily, fontStyle);
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor(textColor);
 
-  // Handle wrapping
-  let lines: string[] = [content];
-  if (wrap && maxWidth > 0) {
-    lines = pdf.splitTextToSize(content, maxWidth);
+    // Handle wrapping
+    let lines: string[] = [content];
+    if (wrap && maxWidth > 0) {
+      lines = pdf.splitTextToSize(content, maxWidth);
+    }
+
+    // Print the text line(s)
+    pdf.text(lines, leftPos, crtY);
+
+    // Calculate total text height
+    const lineHeight = fontSize * 0.3528 * 1.2; // 1.2 is line spacing multiplier
+    const totalHeight = lines.length * lineHeight;
+
+    // Handle underline for all lines
+    if (underline) {
+      lines.forEach((line, index) => {
+        const textWidth = pdf.getStringUnitWidth(line) * fontSize / pdf.internal.scaleFactor;
+        const underlineY = crtY + (index * lineHeight) + 0.8;
+        pdf.setLineWidth(0.1);
+        pdf.line(leftPos, underlineY, leftPos + textWidth, underlineY);
+      });
+    }
+
+    // pdf.restoreGraphicsState();
+    return crtY + totalHeight; // Return Y position after printed text
   }
-
-  // Print the text line(s)
-  pdf.text(lines, leftPos, crtY);
-
-  // Calculate total text height
-  const lineHeight = fontSize * 0.3528 * 1.2; // 1.2 is line spacing multiplier
-  const totalHeight = lines.length * lineHeight;
-
-  // Handle underline for all lines
-  if (underline) {
-    lines.forEach((line, index) => {
-      const textWidth = pdf.getStringUnitWidth(line) * fontSize / pdf.internal.scaleFactor;
-      const underlineY = crtY + (index * lineHeight) + 0.8;
-      pdf.setLineWidth(0.1);
-      pdf.line(leftPos, underlineY, leftPos + textWidth, underlineY);
-    });
-  }
-
- // pdf.restoreGraphicsState();
-  return crtY + totalHeight; // Return Y position after printed text
-}
 
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
@@ -196,8 +197,8 @@ export class PDFUtility {
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
-  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, 
-    topPosition: number, fontSize: number,fontFamily: string = 'helvetica', bold: boolean = false) {
+  static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number,
+    topPosition: number, fontSize: number, fontFamily: string = 'helvetica', bold: boolean = false) {
     pdf.setFont(fontFamily, bold ? "bold" : "normal");
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -293,7 +294,7 @@ export class PDFUtility {
     var startY = topMargin;
     await this.addHeaderWithCompanyLogo_Portriat_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
     if (title != null && title != '') {
-      title=title.toUpperCase();
+      title = title.toUpperCase();
       startY = this.addReportTitle_Portrait(pdf, title, pageWidth, leftMargin, rightMargin);
     }
 
@@ -308,7 +309,7 @@ export class PDFUtility {
     let startY = 0;
     var titleFontSize = this.TitleFontSize();
     startY = this.TitlePositionY_Portrait();
-    title=title.toUpperCase();
+    title = title.toUpperCase();
     this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize);
     return startY;
   }
@@ -591,7 +592,7 @@ export class PDFUtility {
       // var titleFontSize = this.TitleFontSize();
       // startY = this.TitlePositionY_Landscape();
       // this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize); 
-      title=title.toUpperCase();
+      title = title.toUpperCase();
       startY = this.addReportTitle_Landscape(pdf, title, pageWidth, leftMargin, rightMargin);
 
     }
@@ -610,7 +611,7 @@ export class PDFUtility {
     let startY = 0;
     var titleFontSize = this.TitleFontSize();
     startY = this.TitlePositionY_Landscape();
-    title=title.toUpperCase();
+    title = title.toUpperCase();
     this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize);
     return startY;
   }
@@ -1246,7 +1247,7 @@ export class PDFUtility {
 
     // const bufferX = 135;
     // const posX1_img = leftMargin + bufferX;
-    const posY1_img = topMargin+this.CompanyLogoTopBuffer();
+    const posY1_img = topMargin + this.CompanyLogoTopBuffer();
     const aspectRatio = height / width;
     const w = 58;
     const h = aspectRatio * w;
@@ -1260,16 +1261,121 @@ export class PDFUtility {
 
     let posY = topMargin + 10;
     let posX = leftMargin;
-    var yPosCmpInfo =await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+    var yPosCmpInfo = await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
 
     // var yPos = topMargin + 21;
-    var yPos = yPosCmpInfo +2;
+    var yPos = yPosCmpInfo + 2;
     // Draw top line
     pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
-    
+
   }
 
-  static async ReportHeader_CompanyInfo_Portrait_r2(pdf: jsPDF,
+  static async ReportHeader_CompanyInfo_Portrait_r2(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService
+  ) {
+    // KoreanFontHelper.testKoreanFontStandalone(pdf);
+    // Initialize Korean font
+    const koreanAvailable = KoreanFontHelper.initialize(pdf);
+    if (!koreanAvailable) {
+      console.warn('⚠️ Korean font not available - Korean characters will not display');
+    }
+
+    // const koreanAvailable=false;
+    const translatedLangText: any = {};
+    var posX = leftMargin;
+    var posY = topMargin;
+
+    const langText = {
+      PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+      T: 'COMMON-FORM.T',
+      W: 'COMMON-FORM.W',
+    };
+
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+    topMargin -= 5.5;
+    var fontSize = 9;
+    var textColor = '#000000';
+    var maxWidth = 95;
+    posY = topMargin;
+    var bufferGap = 3.5;
+
+    // 1. Company Name
+    this.addTextWithFont(pdf, customerInfo.companyName, posY, leftMargin, fontSize, 'helvetica');
+    posY += bufferGap;
+
+    // 2. CRN
+    let nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    this.addTextWithFont(pdf, nextLine, posY, leftMargin, fontSize, 'helvetica');
+    posY += bufferGap;
+
+    // 3. ADDRESS - Parse and render properly
+    const parsedAddress = KoreanFontHelper.parseAddress(customerInfo.companyAddress);
+
+    // Render English part first
+    if (parsedAddress.englishPart) {
+      const wrappedLines = pdf.splitTextToSize(parsedAddress.englishPart, this.CompanyDisplayAddressMaxLength_portrait());
+      for (const line of wrappedLines) {
+        pdf.setFont('helvetica');
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(textColor);
+        pdf.text(line, leftMargin, posY);
+        posY += bufferGap + 0.5;
+      }
+    }
+
+    // When rendering Korean text, just use the font name directly
+    if (parsedAddress.hasKorean && parsedAddress.koreanPart) {
+      if (koreanAvailable) {
+        // The font is already registered, just set it
+        var koreanFontName = KoreanFontHelper.getFontName();
+        pdf.setFont(koreanFontName);
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(textColor);
+
+        const koreanLines = pdf.splitTextToSize(parsedAddress.koreanPart, this.CompanyDisplayAddressMaxLength_portrait());
+        for (const line of koreanLines) {
+          pdf.text(line, leftMargin, posY);
+          posY += bufferGap + 0.5;
+        }
+      } else {
+        // Fallback
+        pdf.setFont('helvetica');
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(textColor);
+        pdf.text('[Korean text - font not available]', leftMargin, posY);
+        posY += bufferGap + 0.5;
+      }
+    }
+
+    // 4. Phone and Website
+    nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
+    nextLine += this.addSpaces(3);
+    nextLine += `${translatedLangText.W}: ${customerInfo.companyWebsite}`;
+    this.addTextWithFont(pdf, nextLine, posY, leftMargin, fontSize, 'helvetica');
+
+    return posY;
+  }
+
+
+  static async ReportHeader_CompanyInfo_Portrait_r3(pdf: jsPDF,
     pageWidth: number, topMargin: number,
     bottomMargin: number, leftMargin: number,
     rightMargin: number, translateService: TranslateService) {
@@ -1316,11 +1422,10 @@ export class PDFUtility {
 
     // Add company address
     posY += bufferGap;
-    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, this.CompanyDisplayAddressMaxLength(), false, textColor);
 
-     if(customerInfo.companyAddress.length>this.CompanyAddressMaxLengthPerLine())
-    {
-      posY+=bufferGap+0.5;
+    if (customerInfo.companyAddress.length > this.CompanyAddressMaxLengthPerLine()) {
+      posY += bufferGap + 0.5;
     }
     // Add phone, fax
     nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
@@ -1375,21 +1480,21 @@ export class PDFUtility {
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-     let posX = leftMargin;
+    let posX = leftMargin;
     let posY = topMargin + 10;
 
-     var yPosCmpInfo =await this.ReportHeader_CompanyInfo_Landscape_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
-    var yPos = yPosCmpInfo +2;
+    var yPosCmpInfo = await this.ReportHeader_CompanyInfo_Landscape_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+    var yPos = yPosCmpInfo + 2;
     // var yPos = topMargin + 21;
     // Draw top line
     pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
 
-   
+
 
 
   }
 
-  static async ReportHeader_CompanyInfo_Landscape_r2(pdf: jsPDF,
+  static async ReportHeader_CompanyInfo_Landscape_r3(pdf: jsPDF,
     pageWidth: number, topMargin: number,
     bottomMargin: number, leftMargin: number,
     rightMargin: number, translateService: TranslateService) {
@@ -1441,12 +1546,11 @@ export class PDFUtility {
 
     // Add company address
     posY += bufferGap;
-    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, this.CompanyDisplayAddressMaxLength(), false, textColor);
 
 
-    if(customerInfo.companyAddress.length>this.CompanyAddressMaxLengthPerLine())
-    {
-      posY+=bufferGap+0.5;
+    if (customerInfo.companyAddress.length > this.CompanyAddressMaxLengthPerLine()) {
+      posY += bufferGap + 0.5;
     }
 
     // Add phone, fax
@@ -1459,6 +1563,124 @@ export class PDFUtility {
 
 
 
+  }
+
+  static async ReportHeader_CompanyInfo_Landscape_r2(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService
+  ) {
+
+
+    const koreanAvailable = KoreanFontHelper.initialize(pdf);
+    if (!koreanAvailable) {
+      console.warn('⚠️ Korean font not available - Korean characters will not display');
+    }
+    // KoreanFontHelper.initialize(pdf);
+    // const koreanLoaded = this.initializeKoreanFont(pdf);
+    // if (!koreanLoaded) {
+    //   console.warn('⚠️ Korean font not loaded - Korean characters may not display correctly');
+    // }
+
+
+    const translatedLangText: any = {};
+    var posX = leftMargin;
+    var posY = topMargin;
+
+    const langText = {
+      // GST_REG: 'COMMON-FORM.GST-REG',
+      // PHONE: 'COMMON-FORM.PHONE',
+      PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+      T: 'COMMON-FORM.T',
+      W: 'COMMON-FORM.W',
+
+
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+
+    topMargin -= 5.5;
+    const fontSize = 9;
+    posY = topMargin;
+    const bufferGap = 3.5;
+    const maxWidth = 95;
+    const textColor = '#000000';
+    const leftX = leftMargin;
+
+    // 1. Company Name (usually English)
+    this.setFontForText(pdf, customerInfo.companyName, fontSize);
+    this.addText(pdf, customerInfo.companyName, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+
+    // 2. CRN
+    posY += bufferGap;
+    const crnText = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    this.setFontForText(pdf, crnText, fontSize);
+    this.addText(pdf, crnText, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+
+    posY += bufferGap;
+
+    // 3. ADDRESS - Parse and render properly
+    const parsedAddress = KoreanFontHelper.parseAddress(customerInfo.companyAddress);
+
+    // Render English part first
+    if (parsedAddress.englishPart) {
+      // Split English address into multiple lines if needed
+      const wrappedLines = pdf.splitTextToSize(parsedAddress.englishPart, maxWidth);
+      for (const line of wrappedLines) {
+        pdf.setFont('helvetica');
+        pdf.setFontSize(fontSize);
+        pdf.text(line, leftX, posY);
+        posY += bufferGap + 0.5;
+      }
+    }
+
+    // Render Korean part with Korean font
+    if (parsedAddress.hasKorean && parsedAddress.koreanPart) {
+      // Use Korean font for the entire Korean address
+        if (koreanAvailable) {
+        // The font is already registered, just set it
+        var koreanFontName = KoreanFontHelper.getFontName();
+        pdf.setFont(koreanFontName);
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(textColor);
+
+        const koreanLines = pdf.splitTextToSize(parsedAddress.koreanPart, this.CompanyDisplayAddressMaxLength());
+        for (const line of koreanLines) {
+          pdf.text(line, leftMargin, posY);
+          posY += bufferGap + 0.5;
+        }
+      } else {
+        // Fallback
+        pdf.setFont('helvetica');
+        pdf.setFontSize(fontSize);
+        pdf.setTextColor(textColor);
+        pdf.text('[Korean text - font not available]', leftMargin, posY);
+        posY += bufferGap + 0.5;
+      }
+    }
+
+    // 4. Phone and Website
+    const contactText = `${translatedLangText.T}: ${customerInfo.companyPhone}` +
+      this.addSpaces(3) +
+      `${translatedLangText.W}: ${customerInfo.companyWebsite}`;
+    this.addTextWithFont(pdf, contactText, posY, leftX, fontSize, 'helvetica');
+
+    return posY;
   }
 
   static addSpaces(count: number): string {
@@ -1555,7 +1777,7 @@ export class PDFUtility {
     return 8
   }
 
-   static SubTitleFontSize_Portrait_enlarge(): number {
+  static SubTitleFontSize_Portrait_enlarge(): number {
     return 10;
   }
 
@@ -1613,7 +1835,17 @@ export class PDFUtility {
 
 
   static CompanyAddressMaxLengthPerLine(): number {
-    const val = 50
+    const val = 50;
+    return val;
+  }
+
+  static CompanyDisplayAddressMaxLength(): number {
+    const val = 105;
+    return val;
+  }
+
+  static CompanyDisplayAddressMaxLength_portrait(): number {
+    const val = 95;
     return val;
   }
 
@@ -1723,57 +1955,294 @@ export class PDFUtility {
   }
 
   static drawBoxWithText(
-  doc: jsPDF,
-  options: BoxTextOptions
-) {
-  const {
-    x,
-    y,
-    width,
-    height,
-    text,
-    borderColor = [240, 240, 240],
-    fillColor= [240, 240, 240],
-    textColor = [0, 0, 0],
-    font = 'helvetica',
-    fontStyle = 'normal',
-    fontSize = 13,
-    paddingY = -6,
-    paddingX = 7,
-    radius = 1.5,
-    lineWidth=0
-  } = options;
+    doc: jsPDF,
+    options: BoxTextOptions
+  ) {
+    const {
+      x,
+      y,
+      width,
+      height,
+      text,
+      borderColor = [240, 240, 240],
+      fillColor = [240, 240, 240],
+      textColor = [0, 0, 0],
+      font = 'helvetica',
+      fontStyle = 'normal',
+      fontSize = 13,
+      paddingY = -6,
+      paddingX = 7,
+      radius = 1.5,
+      lineWidth = 0
+    } = options;
 
-  // Border
-  doc.setDrawColor(...borderColor);
-  doc.setLineWidth(lineWidth);
+    // Border
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(lineWidth);
 
-  // Fill (optional)
-  if (fillColor) {
-    doc.setFillColor(...fillColor);
+    // Fill (optional)
+    if (fillColor) {
+      doc.setFillColor(...fillColor);
+    }
+
+    const drawMode = fillColor ? 'FD' : 'S';
+
+    // Rectangle
+    if (radius > 0) {
+      doc.roundedRect(x, y, width, height, radius, radius, drawMode);
+    } else {
+      doc.rect(x, y, width, height, drawMode);
+    }
+
+    // Text
+    doc.setTextColor(...textColor);
+    doc.setFont(font, fontStyle);
+    doc.setFontSize(fontSize);
+
+    const lines = Array.isArray(text) ? text : [text];
+
+    let textY = y + paddingY + fontSize;
+
+    lines.forEach(line => {
+      doc.text(line, x + paddingX, textY);
+      textY += fontSize + 2;
+    });
   }
 
-  const drawMode = fillColor ? 'FD' : 'S';
+  // static registerKoreanFont(
+  //   doc: jsPDF,
+  //   fontName: string = 'SourceHanSans-Normal'
+  // ): jsPDF {
+  //   try {
+  //     // Check if font data is available globally
+  //     const fontData = (window as any).FontSourceHanSansNormal;
 
-  // Rectangle
-  if (radius > 0) {
-    doc.roundedRect(x, y, width, height, radius, radius, drawMode);
-  } else {
-    doc.rect(x, y, width, height, drawMode);
+  //     if (!fontData) {
+  //       console.error('Font data not found. Make sure source-han-sans-normal.js is loaded.');
+  //       return doc;
+  //     }
+
+  //     // Register the font file in VFS (Virtual File System)
+  //     doc.addFileToVFS(`${fontName}.ttf`, fontData);
+
+  //     // Add the font to jsPDF
+  //     doc.addFont(`${fontName}.ttf`, fontName, 'normal');
+
+  //     // Set the font as current
+  //     doc.setFont(fontName);
+
+  //     console.log('Korean font registered successfully');
+  //     return doc;
+  //   } catch (error) {
+  //     console.error('Error registering Korean font:', error);
+  //     return doc;
+  //   }
+  // }
+
+  // // Helper function to check if text contains Korean characters
+  // static containsKorean(text: string): boolean {
+  //   // Korean Unicode range: AC00-D7AF (Hangul syllables)
+  //   const koreanRegex = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]/g;
+  //   return koreanRegex.test(text);
+  // }
+
+  // // Function to split address into English and Korean parts
+  // static splitAddressByLanguage(address: string): { english: string, korean: string } {
+  //   // This regex matches Korean characters and common Korean punctuation
+  //   const koreanRegex = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s,.()\-]+/g;
+
+  //   const koreanPart = address.match(koreanRegex)?.join('') || '';
+  //   const englishPart = address.replace(koreanRegex, '').trim();
+
+  //   return { english: englishPart, korean: koreanPart };
+  // }
+  // private static koreanFontRegistered = false;
+
+  // static initializeKoreanFont(doc: jsPDF): boolean {
+  //   try {
+  //     const fontData = (window as any).FontSourceHanSansNormal;
+
+  //     if (fontData && !this.koreanFontRegistered) {
+  //       doc.addFileToVFS('SourceHanSans-Normal.ttf', fontData);
+  //       doc.addFont('SourceHanSans-Normal.ttf', 'SourceHanSans-Normal', 'normal');
+  //       this.koreanFontRegistered = true;
+  //       console.log('✅ Korean font registered successfully');
+  //       return true;
+  //     }
+  //     return this.koreanFontRegistered;
+  //   } catch (error) {
+  //     console.error('❌ Failed to register Korean font:', error);
+  //     return false;
+  //   }
+  // }
+
+  // // Helper to set font based on text content
+
+
+  // static cleanAddress(address: string): string {
+  //   // Remove any corrupted/weird characters
+  //   // Keep only valid Unicode characters
+  //   return address
+  //     .replace(/[^\x20-\x7E\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s,.-]/g, '')
+  //     .trim();
+  // }
+
+  // static splitAddressForDisplay(address: string): string[] {
+  //   // Check if address contains Korean
+  //   if (!this.containsKorean(address)) {
+  //     // If no Korean, just wrap by length
+  //     return this.wrapText(address, this.CompanyDisplayAddressMaxLength());
+  //   }
+
+  //   // Split by common separators and Korean/English segments
+  //   const segments: string[] = [];
+  //   const koreanRegex = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]+/;
+
+  //   // Try to split English and Korean parts
+  //   const parts = address.split(',').map(p => p.trim());
+
+  //   let currentLine = '';
+  //   const maxLineLength = this.CompanyDisplayAddressMaxLength();
+
+  //   for (const part of parts) {
+  //     // If this part contains Korean and is long, keep it separate
+  //     if (koreanRegex.test(part) && part.length > 10) {
+  //       if (currentLine) {
+  //         segments.push(currentLine);
+  //         currentLine = '';
+  //       }
+  //       segments.push(part);
+  //     } else {
+  //       // Combine with previous parts
+  //       const testLine = currentLine ? `${currentLine}, ${part}` : part;
+  //       if (testLine.length <= maxLineLength) {
+  //         currentLine = testLine;
+  //       } else {
+  //         if (currentLine) segments.push(currentLine);
+  //         currentLine = part;
+  //       }
+  //     }
+  //   }
+
+  //   if (currentLine) {
+  //     segments.push(currentLine);
+  //   }
+
+  //   // Ensure we don't have empty lines
+  //   return segments.filter(s => s.length > 0);
+  // }
+
+  // static wrapText(text: string, maxWidth: number): string[] {
+  //   const words = text.split(' ');
+  //   const lines: string[] = [];
+  //   let currentLine = '';
+
+  //   for (const word of words) {
+  //     const testLine = currentLine ? `${currentLine} ${word}` : word;
+  //     if (testLine.length <= maxWidth) {
+  //       currentLine = testLine;
+  //     } else {
+  //       if (currentLine) lines.push(currentLine);
+  //       currentLine = word;
+  //     }
+  //   }
+
+  //   if (currentLine) lines.push(currentLine);
+  //   return lines;
+  // }
+
+  // Split address into language-specific segments
+  static splitAddressByLanguage(address: string): Array<{ text: string, isKorean: boolean }> {
+    const segments: Array<{ text: string, isKorean: boolean }> = [];
+    let currentSegment = '';
+    let currentIsKorean = false;
+
+    for (const char of address) {
+      const isKorean = KoreanFontHelper.hasKorean(char);
+
+      // If language changes, save current segment
+      if (currentSegment && isKorean !== currentIsKorean) {
+        segments.push({ text: currentSegment.trim(), isKorean: currentIsKorean });
+        currentSegment = '';
+      }
+
+      currentIsKorean = isKorean;
+      currentSegment += char;
+    }
+
+    // Save last segment
+    if (currentSegment) {
+      segments.push({ text: currentSegment.trim(), isKorean: currentIsKorean });
+    }
+
+    return segments.filter(s => s.text.length > 0);
   }
 
-  // Text
-  doc.setTextColor(...textColor);
-  doc.setFont(font, fontStyle);
-  doc.setFontSize(fontSize);
+  static setFontForText(pdf: jsPDF, text: string, baseFontSize: number = 9) {
+    if (KoreanFontHelper.hasKorean(text)) {
+      pdf.setFont('SourceHanSans-Normal');
+    } else {
+      pdf.setFont('helvetica');
+    }
+    pdf.setFontSize(baseFontSize);
+  }
 
-  const lines = Array.isArray(text) ? text : [text];
+  // Render text with mixed languages properly
+  static renderMixedText(pdf: jsPDF, text: string, y: number, x: number, fontSize: number) {
+    const segments = this.splitAddressByLanguage(text);
+    let currentX = x;
 
-  let textY = y +paddingY+  fontSize;
+    for (const segment of segments) {
+      // Set the correct font
+      const fontName = segment.isKorean ? 'SourceHanSans-Normal' : 'helvetica';
+      pdf.setFont(fontName);
+      pdf.setFontSize(fontSize);
 
-  lines.forEach(line => {
-    doc.text(line, x+paddingX , textY);
-    textY += fontSize + 2;
-  });
-}
+      // Calculate position for this segment
+      const textWidth = pdf.getStringUnitWidth(segment.text) * fontSize / pdf.internal.scaleFactor;
+
+      // Draw the text
+      pdf.text(segment.text, currentX, y);
+
+      // Move X position for next segment
+      currentX += textWidth;
+    }
+  }
+
+  static addTextWithFont(
+    pdf: jsPDF,
+    text: string,
+    y: number,
+    x: number,
+    fontSize: number,
+    fontName: string
+  ) {
+    pdf.setFont(fontName);
+    pdf.setFontSize(fontSize);
+    pdf.text(text, x, y);
+  }
+
+  static wrapAddressLines(address: string, maxWidth: number): string[] {
+    const lines: string[] = [];
+    let currentLine = '';
+    const segments = this.splitAddressByLanguage(address);
+
+    for (const segment of segments) {
+      const testLine = currentLine ? `${currentLine} ${segment.text}` : segment.text;
+
+      if (testLine.length > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = segment.text;
+      } else {
+        currentLine = testLine;
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines;
+  }
+
 }

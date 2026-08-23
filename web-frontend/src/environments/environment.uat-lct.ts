@@ -18,7 +18,7 @@ export const testTypeMapping: any = {
 export const customerInfo = {
   companyName: 'Lime Cleantech',
   companyAbb: 'Lime Cleantech',
-  companyAddress: '78, Namui-ro 43beon-gil, Jinhae-gu, Changwon-si, Gyeongsangnam-do, Republic of Korea (51613)',
+  companyAddress: '78, Namui-ro 43beon-gil, Jinhae-gu, Changwon-si, Gyeongsangnam-do, Republic of Korea, 주소 경상남도 창원시 진해구 남의로43번길 78 (51613)',
   companyPhone: '+82-055-716-0758',
   companyFax: '',
   companyEmail: 'enquiry@limecleantech.com',
