@@ -472,9 +472,9 @@ namespace IDMS.Survey.GqlTypes
            [Service] IHttpContextAccessor httpContextAccessor, string sot_guid)
         {
             int retval = 0;
+
             try
             {
-
                 //var suAdmin = "suAdmin";
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 _logger.LogInformation($"Rollback published invoked by {user} for sot_Guid {sot_guid}");
