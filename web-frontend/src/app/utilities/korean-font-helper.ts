@@ -8,7 +8,7 @@ export class KoreanFontHelper {
   static initialize(pdf: jsPDF): boolean {
     try {
       // Get the font data from window
-      const fontData = (window as any).FontSourceHanSansNormal;
+      const fontData = (window as any).FontNotoSansKR;
       
       if (!fontData) {
         console.error('❌ Korean font data not found on window');

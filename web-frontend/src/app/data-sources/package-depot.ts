@@ -317,7 +317,8 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt == 0 || clean.delete_dt == null);
       if (sotItem?.cleaning?.[0]?.complete_dt) {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
-        const createDate = new Date(createDtInSeconds * 1000);
+       const createDate = new Date(createDtInSeconds * 1000);
+        createDate.setDate(createDate.getDate() + 1);
         return createDate;
       }
       else {

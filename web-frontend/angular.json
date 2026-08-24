@@ -71,7 +71,7 @@
               "./node_modules/moment/min/moment.min.js",
               "./node_modules/apexcharts/dist/apexcharts.min.js",
               "./node_modules/html2canvas/dist/html2canvas.min.js",
-              "src/assets/fonts/korea/source-han-sans-normal.js"
+              "src/assets/fonts/korea/notosanskr-regular.js"
             ]
           },
           "configurations": {
