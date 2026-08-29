@@ -906,7 +906,11 @@ namespace IDMS.Survey.GqlTypes
                 residueParts.tariff_residue_guid = tariffResiudeGuid;
                 residueParts.description = desc;
                 residueParts.quantity = (int?)residueQty;
-                residueParts.qty_unit_type_cv = "KG";
+
+                var splitParts = desc?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var unitType = splitParts?.Length > 1 ? splitParts[1] : "KG";
+
+                residueParts.qty_unit_type_cv = unitType;
                 residueParts.cost = cost;
                 await context.Set<residue_part>().AddAsync(residueParts);
                

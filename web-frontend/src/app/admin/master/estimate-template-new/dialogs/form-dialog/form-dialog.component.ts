@@ -34,6 +34,7 @@ import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dia
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface DialogData {
   action?: string;
@@ -68,7 +69,8 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     PreventNonNumericDirective,
-    NumericTextDirective
+    NumericTextDirective,
+    MatProgressSpinnerModule,
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
