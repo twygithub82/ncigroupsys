@@ -210,6 +210,7 @@ export class SearchFormDialogComponent {
     this.trDS.SearchTariffRepair(where).subscribe(data => {
       if (data.length) {
         this.tariffRepairList = data;
+        this.tariffRepairFilteredList = [...this.tariffRepairList];
       }
     });
   }
