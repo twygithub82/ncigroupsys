@@ -1077,7 +1077,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = addDefaultSelectOption(data, "NA");
+      this.testClassCvList = data; // celest wanted to remove NA addDefaultSelectOption(data, "NA");
       if (data.length) {
         this.last_test_desc = this.getLastTest();
         this.next_test_desc = this.getNextTest();
