@@ -5,8 +5,9 @@
     "ng": "ng",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve",
     "start-uat": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve --configuration=uat",
-    "start-uat-lct": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve --configuration=uat-lct",
+    "start-production": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng serve --configuration=production",
     "build-production": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng build --configuration=production",
+    "build-uat": "cross-env NODE_OPTIONS=--max-old-space-size=8192 ng build --configuration=uat",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint"
