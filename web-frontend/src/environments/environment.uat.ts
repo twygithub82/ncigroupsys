@@ -16,18 +16,18 @@ export const testTypeMapping: any = {
 }
 
 export const customerInfo = {
-  companyName: 'NCI GLOBAL PTE LTD',
-  companyAbb: 'NCI Global',
-  companyAddress: '10G Enterprise Road, Enterprise 10, Singapore 629833',
-  companyPhone: '+65 6517 9848',
-  companyFax: '+65 6517 9848',
-  companyEmail: 'enquiry@nci.com.sg',
-  companyWebsite: 'nci.com.sg',
-  companyUen: '202335130H',
+  companyName: 'Lime Cleantech',
+  companyAbb: 'Lime Cleantech',
+  companyAddress: '78, Namui-ro 43beon-gil, Jinhae-gu, Changwon-si, Gyeongsangnam-do, Republic of Korea, 주소 경상남도 창원시 진해구 남의로43번길 78 (51613)',
+  companyPhone: '+82-055-716-0758',
+  companyFax: '+82 055-716-0759',
+  companyEmail: 'ops@limecleantech.com',
+  companyWebsite: 'limecleantech.com',
+  companyUen: '699-81-03636',
   companyGST: '[GST Reg No]',
   eirDisclaimerNote: 'Notwithstanding that {companyName} (UEN:{companyUen}; hereinafter known as \"{companyAbb}\") will at its best-effort basis ensure that the above tank serviced is in good condition on the service job requisite by above-named customer and accepted by {companyAbb}. {companyAbb} will not in any way, guarantee nor accept liability for damage or claim due to the condition of tank, or of any other nature whatsoever arises upon tank released. Customer is however, at all times advised to appoint a third party class surveyor to conduct a post inspection, verify and certify that the tank is in good condition prior it is released from {companyAbb}\'s Depot, at own costs and discretion.',
   eirDisclaimerVer: 'VER-2412-210206',
-  companyReportLogo: 'assets/images/report-logo.png'
+  companyReportLogo: 'assets/images/report-logo-lime.png'
 };
 
 export const reportPreviewWindowDimension = {
