@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
-using System.Data.SqlClient;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -40,11 +39,20 @@ namespace IDMS.Service.GqlTypes
 
                 using var transaction = context.Database.BeginTransaction();
                 try
-                {
+                {   
                     foreach (var item in jobOrderRequest)
                     {
                         if (string.IsNullOrEmpty(item.guid))
                         {
+                            if (item.job_type_cv.ToUpper() == "CLEANING" || item.job_type_cv.ToUpper() == "STEAM")
+                            {
+                                if (await IsBayOccupied(context, item.team_guid, item.job_type_cv.ToUpper()))
+                                {
+                                    _logger.LogError("AssignJobOrder transaction failed, same bay already been used");
+                                    throw new GraphQLException(new Error("This bay is already occupied.", "BAY_OCCUPIED"));
+                                }
+                            }
+                           
                             var newJobOrder = new job_order();
                             newJobOrder.guid = Util.GenerateGUID();
                             currentJobOrderGuid = newJobOrder.guid;
@@ -91,6 +99,10 @@ namespace IDMS.Service.GqlTypes
                     //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                     return res;
                 }
+                catch (GraphQLException)
+                {
+                    throw;
+                }
                 catch (Exception txEx)
                 {
                     // Rollback in case of an error
@@ -105,6 +117,7 @@ namespace IDMS.Service.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
         public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
         {
@@ -410,6 +423,20 @@ namespace IDMS.Service.GqlTypes
                 _logger.LogError(ex, "StopJobTimer failed");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
+        }
+
+        private async Task<bool> IsBayOccupied(ApplicationServiceDBContext context, string teamGuid, string process)
+        {
+            var jobTypes = new[] { process };
+            var statusCV = new[] { "JOB_IN_PROGRESS", "PENDING", "ASSIGNED" };
+            var res = await context.job_order
+                            .AnyAsync(x =>
+                                x.team_guid == teamGuid &&
+                                x.delete_dt == null &&
+                                statusCV.Contains(x.status_cv) &&
+                                jobTypes.Contains(x.job_type_cv)
+                            );
+            return res;
         }
 
         private async Task<int> AssignPartToJob_Bk(ApplicationServiceDBContext context, long currentDateTime, string user,

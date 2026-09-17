@@ -1685,21 +1685,47 @@ export class Utility {
   }
 
   static async convertToImage_html2canvas(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-    var imgScale = 3;
-    var imgQty = 1;
+    // Resolution (scale) drives sharpness - keep it high, customers have complained about blur at lower values.
+    // JPEG compression (quality) drives file size/memory with minimal visible impact - that's the safe lever instead.
+    var imgQty = 0.85;
     if (!element) throw new Error('Invalid element');
 
     // Ensure all fonts and images are loaded first
     await document.fonts.ready;
-    await Promise.all(Array.from(document.images).map(img =>
-      img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
-    ));
+    // Only wait on images inside this element (not the whole document), and
+    // give up after a timeout instead of waiting forever if one stalls.
+    const imagesToWait = Array.from(element.querySelectorAll('img'));
+    await Promise.race([
+      Promise.all(imagesToWait.map(img =>
+        img.complete ? Promise.resolve() : new Promise(resolve => { img.onload = img.onerror = resolve; })
+      )),
+      new Promise(resolve => setTimeout(resolve, 8000))
+    ]);
 
     await Promise.all([
       document.fonts.load('1em Material Icons'),
       // Add other fonts you're using
     ]);
-    var canvas = await html2canvas(element, { scale: imgScale });
+
+    // Try full resolution first (preserves the sharpness customers expect); if the device can't
+    // handle it (canvas/memory failure - common on constrained mobile browsers), degrade the
+    // scale step by step rather than failing the whole PDF generation outright.
+    const scaleAttempts = [3, 2, 1.5];
+    let canvas: HTMLCanvasElement | undefined;
+    let lastError: any;
+    for (const attemptScale of scaleAttempts) {
+      try {
+        canvas = await html2canvas(element, { scale: attemptScale });
+        break;
+      } catch (err) {
+        lastError = err;
+        console.warn(`html2canvas failed at scale ${attemptScale}, trying lower scale if available`, err);
+      }
+    }
+    if (!canvas) {
+      throw lastError || new Error('html2canvas failed at all attempted scales');
+    }
+
     var imgType = "image/jpeg";
     if (type === 'png') imgType = "image/png";
     return canvas.toDataURL(imgType, imgQty);
