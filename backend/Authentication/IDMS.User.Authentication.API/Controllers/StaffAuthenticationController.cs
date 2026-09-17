@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -333,17 +334,30 @@ namespace IDMS.User.Authentication.API.Controllers
         {
             try
             {
+                var sw = Stopwatch.StartNew();
+                var start = sw.ElapsedMilliseconds;
+
                 //checking the staff
                 var staff = await _userManager.FindByNameAsync(staffModel.Username);
                 if (staff == null)
                     return NotFound(new { username = staffModel.Username });
+                
+                //_logger.LogInformation("FindByNameAsync took {Elapsed} ms",sw.ElapsedMilliseconds - start);
+                //start = sw.ElapsedMilliseconds;
+
 
                 //validate the user password
                 if (!await _userManager.CheckPasswordAsync(staff, staffModel.Password))
                     return Unauthorized(new { message = "Invalid username/password" });
 
+                //_logger.LogInformation("CheckPasswordAsync took {Elapsed} ms",sw.ElapsedMilliseconds - start);
+                //start = sw.ElapsedMilliseconds;
+
                 if (string.IsNullOrEmpty(staff.Id))
                     staff = await _userManager.FindByNameAsync(staffModel.Username);
+                
+                //_logger.LogInformation("FindByNameAsync took {Elapsed} ms", sw.ElapsedMilliseconds - start);
+                //start = sw.ElapsedMilliseconds;
 
                 if (await _userManager.GetTwoFactorEnabledAsync(staff))
                 {
@@ -387,6 +401,8 @@ namespace IDMS.User.Authentication.API.Controllers
 
 
                 var authResult = await GenerateFullAccessTokenAsync(staff);
+                //_logger.LogInformation("GenerateFullAccessTokenAsync took {Elapsed} ms", sw.ElapsedMilliseconds - start);
+
                 return Ok(new
                 {
                     nextAction = "0",
@@ -394,32 +410,6 @@ namespace IDMS.User.Authentication.API.Controllers
                     expiration = authResult.Expiration,
                     refreshToken = authResult.RefreshToken
                 });
-
-                ////Continue to get actual user claims
-                //var staffRoles = await _userManager.GetRolesAsync(staff);
-                //staff.CurrentSessionId = Guid.NewGuid();
-                ////generate the token with the claims
-                ////var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-
-                //bool tokenNeverExpired = false;
-                //if (staff.CorporateID == 5)
-                //    tokenNeverExpired = true;
-
-                //UserType curUserType = UserType.Staff;
-                //if (!staff.isStaff)
-                //    curUserType = UserType.User;
-
-
-                //var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}", tokenNeverExpired); //Utilities.utils.GetToken(_configuration,authClaims);
-                //var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
-
-                //_refreshTokenStore.AddToken(refreshToken);
-                //await _userManager.UpdateAsync(staff);
-
-                ////await _dbContext.SaveChangesAsync();
-                ////returning the token
-                //return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
-
             }
             catch (SecurityTokenException se)
             {
@@ -1025,12 +1015,16 @@ namespace IDMS.User.Authentication.API.Controllers
 
         private async Task<AuthResult> GenerateFullAccessTokenAsync(ApplicationUser staff)
         {
+            var sw = Stopwatch.StartNew();
+            var start = sw.ElapsedMilliseconds;
+
+
             var staffRoles = await _userManager.GetRolesAsync(staff);
+            //_logger.LogInformation("GetRolesAsync took {Elapsed} ms", sw.ElapsedMilliseconds - start);
+            //start = sw.ElapsedMilliseconds;
 
             staff.CurrentSessionId = Guid.NewGuid();
-
             bool tokenNeverExpired = staff.CorporateID == 5;
-
             UserType curUserType = staff.isStaff ? UserType.Staff : UserType.User;
 
             var jwtToken = _jwtTokenService.GetToken(
@@ -1043,6 +1037,9 @@ namespace IDMS.User.Authentication.API.Controllers
                 tokenNeverExpired
             );
 
+            //_logger.LogInformation("GetToken took {Elapsed} ms", sw.ElapsedMilliseconds - start);
+            //start = sw.ElapsedMilliseconds;
+
             var refreshToken = new RefreshToken
             {
                 ExpiryDate = jwtToken.ValidTo,
@@ -1052,6 +1049,9 @@ namespace IDMS.User.Authentication.API.Controllers
 
             _refreshTokenStore.AddToken(refreshToken);
             await _userManager.UpdateAsync(staff);
+
+            //_logger.LogInformation("UpdateAsync took {Elapsed} ms", sw.ElapsedMilliseconds - start);
+            //start = sw.ElapsedMilliseconds;
 
             return new AuthResult
             {
