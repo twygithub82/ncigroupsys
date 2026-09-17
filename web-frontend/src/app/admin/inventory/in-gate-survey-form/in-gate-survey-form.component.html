@@ -645,8 +645,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsLeft[index], 'disabled-cell': isDisabledRect(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledRect(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
@@ -679,8 +678,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsRear[index], 'disabled-cell': isDisabledSquare(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledSquare(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledSquare(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledSquare(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
@@ -713,8 +711,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsRight[index], 'disabled-cell': isDisabledRect(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledRect(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
@@ -751,8 +748,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsTop[index], 'disabled-cell': isDisabledRect(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledRect(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
@@ -776,8 +772,7 @@
                                         (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
                                         @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                                         <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
-                                          }" [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                          (touchstart)="$event.preventDefault()"></div>
+                                          }" [attr.data-index]="index" (mousedown)="$event.preventDefault()"></div>
                                         }
                                       </div>
 
@@ -792,8 +787,7 @@
                                         @for (cell of cellsInnerMiddle; track cell; let index = $index) {
                                         <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index],
                                           'disabled-cell': isDisabled(index)}" [attr.data-index]="index"
-                                          (mousedown)="!isDisabled(index) && $event.preventDefault()"
-                                          (touchstart)="!isDisabled(index) && $event.preventDefault()"></div>
+                                          (mousedown)="!isDisabled(index) && $event.preventDefault()"></div>
                                         }
                                       </div>
 
@@ -808,8 +802,7 @@
                                         @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                                         <div class="grid-cell"
                                           [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
-                                          [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                          (touchstart)="$event.preventDefault()"></div>
+                                          [attr.data-index]="index" (mousedown)="$event.preventDefault()"></div>
                                         }
                                       </div>
                                     </div>
@@ -850,8 +843,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsFront[index], 'disabled-cell': isDisabledSquare(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledSquare(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledSquare(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledSquare(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
@@ -884,8 +876,7 @@
                                 <div
                                   [ngClass]="{ highlighted: highlightedCellsBottom[index], 'disabled-cell': isDisabledRect(index) }"
                                   [attr.data-index]="index"
-                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()"
-                                  (touchstart)="!isDisabledRect(index) && $event.preventDefault()">
+                                  (mousedown)="!isDisabledRect(index) && $event.preventDefault()">
                                 </div>
                                 }
                               </div>
