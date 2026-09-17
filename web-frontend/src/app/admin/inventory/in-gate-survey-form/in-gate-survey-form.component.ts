@@ -353,6 +353,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   isDrawing = false;
   isMarkDmg = false;
   toggleState = true; // State to track whether to highlight or unhighlight
+  // Touch-only long-press-to-draw: a quick tap/swipe on the grid is left alone (so the page can still
+  // be scrolled through the grid area) and only a held-and-steady touch is interpreted as "start drawing".
+  private readonly LONG_PRESS_MS = 400;
+  private readonly TOUCH_MOVE_CANCEL_PX = 10;
+  private pendingTouchStart: any = null;
+  private touchStartX = 0;
+  private touchStartY = 0;
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
@@ -1938,8 +1945,27 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    event.preventDefault(); // Prevent default dragging behavior
     if (!this.canEdit()) return;
+    if (event instanceof TouchEvent) {
+      // Don't claim the gesture yet - a quick tap/swipe should still be free to scroll the page.
+      // Only commit to "drawing" (and start blocking scroll, in draw() below) once the finger has
+      // been held roughly in place for LONG_PRESS_MS.
+      const touch = event.touches[0];
+      if (!touch) return;
+      this.touchStartX = touch.clientX;
+      this.touchStartY = touch.clientY;
+      this.clearPendingTouchStart();
+      this.pendingTouchStart = setTimeout(() => {
+        this.pendingTouchStart = null;
+        this.beginDrawing(highlightedCells, event);
+      }, this.LONG_PRESS_MS);
+      return;
+    }
+    event.preventDefault(); // Prevent default dragging behavior
+    this.beginDrawing(highlightedCells, event);
+  }
+
+  private beginDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     this.isDrawing = true;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
@@ -1952,7 +1978,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     if (this.isDrawing) {
+      if (event instanceof TouchEvent) event.preventDefault(); // long-press confirmed - now block scroll
       this.highlightCell(highlightedCells, event);
+      return;
+    }
+    // Long-press not confirmed yet - if the finger has traveled, this is a scroll, not a draw; give up.
+    if (this.pendingTouchStart && event instanceof TouchEvent) {
+      const touch = event.touches[0];
+      if (touch) {
+        const dx = touch.clientX - this.touchStartX;
+        const dy = touch.clientY - this.touchStartY;
+        if (Math.sqrt(dx * dx + dy * dy) > this.TOUCH_MOVE_CANCEL_PX) {
+          this.clearPendingTouchStart();
+        }
+      }
     }
   }
 
@@ -1963,7 +2002,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   stopDrawing(): void {
+    this.clearPendingTouchStart();
     this.isDrawing = false;
+  }
+
+  private clearPendingTouchStart(): void {
+    if (this.pendingTouchStart) {
+      clearTimeout(this.pendingTouchStart);
+      this.pendingTouchStart = null;
+    }
   }
 
   highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
