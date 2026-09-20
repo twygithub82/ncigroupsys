@@ -315,7 +315,8 @@ export class PDFUtility {
 
   static addReportSubTitle_Portrait(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number, subTitlePos: number = 0): number {
     let startY = 0;
-    var subTitleFontSize = this.SubTitleFontSize_Portrait_enlarge();
+    // var subTitleFontSize = this.SubTitleFontSize_Portrait_enlarge();
+    var subTitleFontSize = this.SubTitleFontSize_Portrait();
     startY = this.SubTitlePositionY_Portrait();
     if (subTitlePos == 0) {
       this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);

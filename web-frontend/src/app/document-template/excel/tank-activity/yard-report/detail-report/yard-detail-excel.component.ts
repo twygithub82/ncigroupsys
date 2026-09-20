@@ -1520,7 +1520,8 @@ export class YardDetailExcelComponent extends UnsubscribeOnDestroyAdapter implem
                 "",
                 "",
                 "",
-                this.DisplayCurrentStatus(itm) || "",
+                "",
+                // this.DisplayCurrentStatus(itm) || "",
                 "",
                 ""
               ]);
