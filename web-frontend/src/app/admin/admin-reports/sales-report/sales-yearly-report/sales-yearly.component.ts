@@ -219,7 +219,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   monthList: string[] = [];
   repData: any;
 //  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
-  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
+  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STEAMING",  "CLEANING","RESIDUE",  "REPAIR"]
 
   constructor(
     public httpClient: HttpClient,
@@ -308,13 +308,14 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
         this.invTypes =this.invTypes.filter(c=>c != "RESIDUE" && c != "STEAMING");
       }
       this.costTypeCvList = addDefaultSelectOption(data, 'All', "ALL");
-       this.costTypeCvList.sort((a, b) => {
-        const indexA = this.invTypes.indexOf(a.code_val!);
-        const indexB = this.invTypes.indexOf(b.code_val!);
+       this.costTypeCvList = Utility.SortCodeValues(this.costTypeCvList, this.invTypes);
+      //  this.costTypeCvList.sort((a, b) => {
+      //   const indexA = this.invTypes.indexOf(a.code_val!);
+      //   const indexB = this.invTypes.indexOf(b.code_val!);
 
-        // Put missing values at the end
-        return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-      });
+      //   // Put missing values at the end
+      //   return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+      // });
       var allType = this.costTypeCvList.find(c => c.code_val == 'ALL');
       this.searchForm?.patchValue({
         cost_type: allType
@@ -837,7 +838,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
       // }
          if (data) {
         retval = ((data.cleaning_yearly_sales?.average_cost||0) == 0) &&
-          // ((data.g?.average_cost||0) == 0) &&
+          ((data.gate_yearly_sales?.average_cost||0) == 0) &&
           ((data.lolo_yearly_sales?.average_cost||0) == 0) &&
           ((data.preinspection_yearly_sales?.average_cost||0) == 0) &&
           ((data.repair_yearly_sales?.average_cost||0) == 0) &&

@@ -618,7 +618,8 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
                    "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "", ""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -713,7 +714,8 @@ export class TankActivityReportExcelComponent extends UnsubscribeOnDestroyAdapte
                    "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "","", "", "", ""
+                  //  this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }

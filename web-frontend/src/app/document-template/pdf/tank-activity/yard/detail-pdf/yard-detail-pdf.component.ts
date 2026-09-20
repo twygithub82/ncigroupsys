@@ -1017,7 +1017,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
                       data.push([
                         "", "","","","", "","","",
                         rp.estimate_no|| "", this.displayDate(rp.create_dt) || "", "",
-                        "","","","","",this.DisplayCurrentStatus(itm)  || "","", ""
+                        "","","","","","","",""
+                        // this.DisplayCurrentStatus(itm)  || "","", ""
                       ]);
                     }
                   }
