@@ -1,0 +1,1 @@
+UPDATE `idms`.`code_values` SET `code_val` = 'IN_OUT' WHERE (`guid` = '610');
