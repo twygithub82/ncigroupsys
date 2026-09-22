@@ -61,10 +61,10 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="material_cost">
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2 justify-content-center'">
                   {{data.translatedLangText.MATERIAL_COST}} $
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2 justify-content-center'">
                   <span class="mobile-label">{{data.translatedLangText.MATERIAL_COST}}:</span>
                   <!-- <div class="cost-label jutify-content-center"> -->
                     <!--<span>$</span><span>{{row.material_cost | number: '1.2-2'}}</span>-->
