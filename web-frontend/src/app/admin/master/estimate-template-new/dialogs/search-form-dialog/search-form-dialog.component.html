@@ -32,23 +32,23 @@
                 <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                   {{data.translatedLangText.PART_NAME}}
                 </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" class="">
+                <mat-cell mat-cell *matCellDef="let row"  [ngClass]="''">
                   <span class="mobile-label">{{data.translatedLangText.PART_NAME}}:</span>{{row.part_name}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="dimension">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_75'">
                   {{data.translatedLangText.DIMENSION}}
                 </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" class="">
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_75'">
                   <span class="mobile-label">{{data.translatedLangText.DIMENSION}}:</span>{{row.dimension}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="length" >
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25 justify-content-center'">
                   {{data.translatedLangText.LENGTH}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25 justify-content-center'">
                   <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.length}}{{getUnitTypeDescription(row.length_unit_cv)}}
                 </mat-cell>
               </ng-container>
