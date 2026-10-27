@@ -2046,7 +2046,7 @@ export class Utility {
     purposes.push("SE: Steam");
     // purposes.push("RE: Residue");
     purposes.push("C: Cleaning");
-    purposes.push("R|I: Repair");
+    purposes.push("R: Repair");
     purposes.push("S: Storage");
     purposes.push("RL: Released");
     // purposes.push("RO: RO Generated");

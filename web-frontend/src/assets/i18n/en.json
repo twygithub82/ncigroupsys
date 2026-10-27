@@ -917,6 +917,7 @@
     "NEW-TRANSFER-DETAILS": "New Transfer Details",
     "TRANSFER-LOCATION": "Transfer Location",
     "TRANSFER-IN": "Transfer In",
+    "TRANSFER-OUT": "Transfer Out",
     "DELIVERY-COURIER": "Delivery Courier",
     "CONFIRM-CANCEL": "Cancel?",
     "CONFIRM-ROLLBACK": "Rollback?",

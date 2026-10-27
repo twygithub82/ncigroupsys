@@ -1268,7 +1268,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                    "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "",  this.DisplayProcessApprovalRef(rp), "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -1288,7 +1289,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                   "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -1308,7 +1310,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                    "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "",  this.DisplayProcessApprovalRef(st),  "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -1424,7 +1427,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                    "", "", "", "", rp.estimate_no || "", this.DisplayProcessEstimateDate(rp) || "", this.DisplayProcessApprovalRef(rp),  "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -1444,7 +1448,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                   "", "", "", "", rs.estimate_no || "", this.DisplayProcessEstimateDate(rs) || "",  this.DisplayProcessApprovalRef(rs),  "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -1464,7 +1469,8 @@ async exportToPDF_r2(fileName: string = 'document.pdf') {
                    "", "", "", "", st.estimate_no || "", this.DisplayProcessEstimateDate(st) || "", this.DisplayProcessApprovalRef(st), "",
 
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  "", "", "", "", "", "", "",""
+                  // this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
