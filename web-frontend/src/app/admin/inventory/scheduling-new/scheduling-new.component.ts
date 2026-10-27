@@ -1047,6 +1047,11 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
         })),
         scheduling_sot: item.scheduling_sot?.filter(b => b.delete_dt === null)
           .map(b => ({
+             guid : b.guid,
+            sot_guid :  b.sot_guid,
+            scheduling_guid : b.scheduling_guid,
+            reference : b.reference,
+            scheduling_dt : b.scheduling_dt,
             scheduling: b.scheduling && b.scheduling.delete_dt === null
               ? {
                 ...b.scheduling,
