@@ -14,6 +14,7 @@ export class SchedulingGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  
 
   constructor(item: Partial<SchedulingGO> = {}) {
     this.guid = item.guid;
@@ -24,6 +25,7 @@ export class SchedulingGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    
   }
 }
 
