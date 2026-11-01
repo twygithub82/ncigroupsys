@@ -134,7 +134,18 @@
                               </div>
                               <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                                 <div class="value-display-info">
-                                  {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                                  {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
+                              </div>
+                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                <div class="value-display-info">
+                                  {{storingOrderTankItem?.customer_company?.name}}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -146,6 +157,16 @@
                               <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                                 <span
                                   [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
+                              </div>
+                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                <span [class]="'font-bold'">
+                                  {{displayDateTime(igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_dt) || "-"}}
+                                </span>
                               </div>
                             </div>
                             <div class="row right-align-display">
@@ -170,6 +191,26 @@
                             </div>
                             <div class="row right-align-display">
                               <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
+                              </div>
+                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                <span class="value-display-info">
+                                  {{last_test_desc || '-'}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
+                              </div>
+                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                <span class="value-display-info">
+                                  {{next_test_desc || '-'}}
+                                </span>
+                              </div>
+                            </div>
+                            <!-- <div class="row right-align-display">
+                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.CURRENT_LOCATION}}:</span>
                               </div>
                               <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
@@ -179,7 +220,7 @@
                                     || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
                                 </div>
                               </div>
-                            </div>
+                            </div> -->
                           </div>
                         </div>
                       </mat-card-content>
@@ -463,7 +504,7 @@
                                     [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     {{translatedLangText.UPDATE_BY}}
                                   </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"  
+                                  <mat-cell mat-cell *matCellDef="let row"
                                     [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                     <span
                                       class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by
