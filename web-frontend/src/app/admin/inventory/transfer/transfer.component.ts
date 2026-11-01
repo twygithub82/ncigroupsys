@@ -163,7 +163,6 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     'CLEANING',
     'REPAIR',
     'STORAGE',
-    'RO_GENERATED',
   ]
 
   constructor(
@@ -371,6 +370,15 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+    }
+
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      const statusValue = this.searchForm!.get('tank_status_cv')?.value;
+
+      if (this.availableProcessStatus.includes('STORAGE') && (statusValue === 'ALL' || statusValue === 'STORAGE')) {
+        const currentIn = where.tank_status_cv.in || [statusValue];
+        where.tank_status_cv = { in: [...currentIn, 'RO_GENERATED'] };
+      }
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
