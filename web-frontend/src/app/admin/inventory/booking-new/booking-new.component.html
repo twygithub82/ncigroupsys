@@ -492,12 +492,13 @@
                 <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
                   [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
+                
                 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                   <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-green badge-fixed-size">{{translatedLangText.BOOKED}}</span>
+                    <span class="badge badge-solid-green">{{translatedLangText.BOOKED}}</span>
                   </div>
                   <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-orange badge-fixed-size ms-1">{{translatedLangText.SCHEDULED}}</span>
+                    <span class="badge badge-solid-orange ms-1">{{translatedLangText.SCHEDULED}}</span>
                   </div>
                 </div>
               </div>
