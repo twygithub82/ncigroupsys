@@ -208,7 +208,7 @@ namespace IDMS.Booking.GqlTypes
 
                     if (SOTankAction.ROLLBACK.EqualsIgnore(roSOT?.action))
                     {
-                        var valid_status_cv = new List<string>{"RO_GENERATED","OUT_GATE","OUT_SURVEY"};
+                        var valid_status_cv = new List<string>{"RO_GENERATED","OUT_GATE","OUT_SURVEY", "STORAGE" };
 
                         //If rollback condition eligible
                         if ((roSOT.status_cv == SOTankStatus.CANCELED || roSOT.status_cv == SOTankStatus.ACCEPTED) && (valid_status_cv.Contains(sot.tank_status_cv ?? "")))
