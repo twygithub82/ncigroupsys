@@ -212,7 +212,7 @@
                             <div class="d-flex align-items-center">
                               <span [ngClass]="{'value-display-info': true}"
                                 [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">
-                                {{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}
+                                {{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv || '')}}
                               </span>
                             </div>
                           </div>
