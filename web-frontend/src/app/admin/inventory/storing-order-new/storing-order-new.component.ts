@@ -784,7 +784,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   rollbackItem(event: Event, row: StoringOrderTankItem) {
-    // this.id = row.id;
     if (this.sotSelection.hasValue()) {
       this.rollbackSelectedRows(this.sotSelection.selected)
     } else {
