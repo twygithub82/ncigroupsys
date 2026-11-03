@@ -279,7 +279,8 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
   }
 
   canRollbackStatus(status_cv: any): boolean {
-    return status_cv === 'CANCELED';
+    // return status_cv === 'CANCELED';
+    return status_cv === 'CANCELED' || status_cv === 'ACCEPTED';
   }
 
   canEdit(status_cv: any): boolean {
