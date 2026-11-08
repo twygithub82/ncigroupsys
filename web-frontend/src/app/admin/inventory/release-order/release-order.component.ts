@@ -142,6 +142,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     DELETE: 'COMMON-FORM.DELETE',
     OUTSTANDING: 'COMMON-FORM.OUTSTANDING',
     RO_NOTES: 'COMMON-FORM.RO-NOTES',
+    NOTES: 'COMMON-FORM.NOTES',
   }
 
   searchForm?: UntypedFormGroup;

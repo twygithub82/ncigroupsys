@@ -336,7 +336,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
   sortSurveyDetail(surveyDetail?: SurveyDetailItem[]): SurveyDetailItem[] {
     if (!surveyDetail?.length) return [];
 
-    return [...surveyDetail].sort((a, b) => (b.survey_dt ?? 0) - (a.survey_dt ?? 0));
+    return [...surveyDetail].sort((a, b) => (a.survey_dt ?? 0) - (b.survey_dt ?? 0));
   }
 
 
