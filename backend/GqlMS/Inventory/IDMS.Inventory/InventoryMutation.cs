@@ -599,10 +599,14 @@ namespace IDMS.Inventory.GqlTypes
                 tank.last_cargo_guid = sot.last_cargo_guid;
                 tank.last_cargo_remarks = sot.last_cargo_remarks;
 
-                if (sot.cleaning == null || !sot.cleaning.Any())
+                if(sot.purpose_cleaning ?? false)
                 {
-                    _logger.LogError("Cleaning object cannot be null or empty.");
-                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+                    if (sot.cleaning == null || !sot.cleaning.Any())
+                    {
+                        _logger.LogError("Cleaning object cannot be null or empty.");
+                        throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+                    }
+
                 }
 
                 if (sot.tariff_cleaning == null || string.IsNullOrEmpty(sot.tariff_cleaning.cleaning_category_guid))

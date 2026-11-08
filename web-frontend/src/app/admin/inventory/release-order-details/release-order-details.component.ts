@@ -165,6 +165,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SAVE: "COMMON-FORM.SAVE",
     NO_OF_TANKS: "COMMON-FORM.NO-OF-TANKS",
     PROCESS: "COMMON-FORM.PROCESS",
+    REINSTATE: "COMMON-FORM.REINSTATE",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -394,7 +395,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (actionsControl) {
           const actions = actionsControl.value as string[];
 
-          if (!actions.includes('new') && !actions.includes('cancel')) {
+          if (!actions.includes('new') && !actions.includes('cancel') && !actions.includes('rollback')) {
             actionControl?.setValue('edit')
             actions.push('edit');
             actionsControl.setValue(actions);
@@ -525,7 +526,55 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  rollbackSelectedRows(row: StoringOrderTankItem[]) {
+  rollbackSelectedRows(row: UntypedFormControl[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const toRollback = row.map((tank) => new ReleaseOrderSotItem({ guid: tank.get('guid')?.value, remarks: tank.get('remarks')?.value, storing_order_tank: new StoringOrderTankItem({ tank_no: tank.get('tank_no')?.value }) }));
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
+      width: "380px",
+      data: {
+        action: "rollback",
+        item: [...toRollback],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const roSotList = this.getReleaseOrderSotArray();
+        result.item.forEach((newItem: ReleaseOrderSotItem) => {
+          // Find the index of the FormGroup in the FormArray with the same guid
+          const index = roSotList.controls.findIndex((control: AbstractControl) => {
+            const formGroup = control as UntypedFormGroup;
+            return formGroup.get('guid')?.value === newItem.guid;
+          });
+
+          // If the FormGroup is found, update the remarks
+          if (index !== -1) {
+            const formGroup = roSotList.at(index) as UntypedFormGroup;
+            const actionsControl = formGroup.get('actions');
+
+            if (actionsControl) {
+              const actions = actionsControl.value as string[];
+
+              actions.push('rollback');
+              // Update the remarks field
+              formGroup.patchValue({
+                remarks: newItem.remarks,
+                action: 'rollback',
+                actions: actions
+              });
+              this.updateEditableField(formGroup)
+            }
+          }
+        });
+      }
+    });
   }
 
   undoTempAction(row: UntypedFormControl[], actionToBeRemove: string) {
@@ -676,12 +725,11 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   rollbackItem(event: Event, row: any) {
-    // this.id = row.id;
-    // if (this.sotSelection.hasValue()) {
-    //   this.rollbackSelectedRows(this.sotSelection.selected)
-    // } else {
-    //   this.rollbackSelectedRows([row])
-    // }
+    if (this.roSotSelection.hasValue()) {
+      this.rollbackSelectedRows(this.roSotSelection.selected)
+    } else {
+      this.rollbackSelectedRows([row])
+    }
   }
 
   undoAction(event: Event, row: any, action: string) {
@@ -789,14 +837,23 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
 
-  canRollback(status_cv: string, sot_guid: string): boolean {
-    return false;
-    return this.roSotDS.canRollbackStatus(status_cv) && !this.activeRoSotList.some(item => item.sot_guid === sot_guid);
+  canRollback(status_cv: string, tank_status_cv: string, sot_guid: string): boolean {
+    // return false;
+
+    // this rollback affect cross 
+    const canRollbackTankStatus_cv = [
+      "STORAGE",
+      "RO_GENERATED",
+      "OUT_GATE",
+      "OUT_SURVEY"
+    ];
+
+    return this.roSotDS.canRollbackStatus(status_cv) && canRollbackTankStatus_cv.includes(tank_status_cv) && !this.activeRoSotList.some(item => item.sot_guid === sot_guid);
   }
 
   checkMenuItems(row: any): boolean {
     return (this.roDS.canAddTank(this.releaseOrderItem) && !row.get('actions')?.value.includes('cancel') && this.roSotDS.canCancelStatus(row.get('status_cv')?.value)) ||
-      (this.roDS.canAddTank(this.releaseOrderItem) && !row.get('actions')?.value.includes('rollback') && this.canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) ||
+      (this.roDS.canAddTank(this.releaseOrderItem) && !row.get('actions')?.value.includes('rollback') && this.canRollback(row.get('status_cv')?.value, row.get('tank_status_cv')?.value, row.get('sot_guid')?.value)) ||
       row.get('action')?.value === 'new' ||
       row.get('actions')?.value.includes('cancel');
   }

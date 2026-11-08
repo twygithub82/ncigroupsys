@@ -163,6 +163,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DATE: 'COMMON-FORM.DATE',
     TYPE: 'COMMON-FORM.TYPE',
     EXTERNAL_SURVEY: 'COMMON-FORM.EXTERNAL-SURVEY',
+    EDIT: 'COMMON-FORM.EDIT',
   }
 
   sotDS: StoringOrderTankDS;

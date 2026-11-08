@@ -203,10 +203,10 @@
                             }
                             @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback')
                             &&
-                            canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
+                            canRollback(row.get('status_cv')?.value, row.get('tank_status_cv')?.value, row.get('sot_guid')?.value)) {
                             <button mat-menu-item (click)="rollbackItem($event, row)">
                               <mat-icon>undo</mat-icon>
-                              <span>{{translatedLangText.ROLLBACK_STATUS}}</span>
+                              <span>{{translatedLangText.REINSTATE}}</span>
                             </button>
                             }
                             @if (row.get('action')?.value === 'new') {
@@ -341,13 +341,16 @@
               }
               <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded mt-2">
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
-                  <span class="badge badge-solid-green badge-fixed-size">NEW</span>
+                  <span class="badge badge-solid-green badge-fixed-size">{{translatedLangText.NEW}}</span>
                 </div>
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
-                  <span class="badge badge-solid-cyan badge-fixed-size">EDIT</span>
+                  <span class="badge badge-solid-cyan badge-fixed-size">{{translatedLangText.EDIT}}</span>
                 </div>
                 <div class="legend-item d-flex align-items-center me-4 mb-0">
-                  <span class="badge badge-solid-orange badge-fixed-size">CANCEL</span>
+                  <span class="badge badge-solid-blue badge-fixed-size">{{translatedLangText.REINSTATE}}</span>
+                </div>
+                <div class="legend-item d-flex align-items-center me-4 mb-0">
+                  <span class="badge badge-solid-orange badge-fixed-size">{{translatedLangText.CANCEL}}</span>
                 </div>
               </div>
               <div class="row m-t-10">

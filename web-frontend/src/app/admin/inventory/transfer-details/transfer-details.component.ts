@@ -45,6 +45,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 
 @Component({
   selector: 'app-transfer-details',
@@ -185,9 +187,11 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
     UPDATE: 'COMMON-FORM.UPDATE',
-    CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
+    CONFIRM_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     COMPLETE: "COMMON-FORM.COMPLETE",
+    LAST_TEST: "COMMON-FORM.LAST-TEST",
+    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
   }
 
   storingOrderTankItem?: StoringOrderTankItem;
@@ -206,10 +210,16 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
   ownerControl = new UntypedFormControl();
   ownerList?: CustomerCompanyItem[];
   customerBranch?: CustomerCompanyItem;
+  igs?: InGateSurveyItem;
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   transferList: TransferItem[] = [];
+  testTypeCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
+
+  last_test_desc?: string = "";
+  next_test_desc?: string = "";
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -265,6 +275,8 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
           }
           this.tiDS.getTankInfoForMovement(this.storingOrderTankItem?.tank_no!).subscribe(data => {
             this.tiItem = data[0];
+            this.last_test_desc = this.getLastTest();
+            this.next_test_desc = this.getNextTest();
           });
           this.ccDS.getCustomerBranch(this.storingOrderTankItem!.storing_order!.customer_company!.guid!).subscribe(cc => {
             if (cc.length > 0) {
@@ -281,6 +293,8 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -291,6 +305,15 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
+    });
+    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+      this.testTypeCvList = data;
+      this.last_test_desc = this.getLastTest();
+      this.next_test_desc = this.getNextTest();
+    });
+    this.cvDS.connectAlias('testClassCv').subscribe(data => {
+      this.testClassCvList = data;
+      this.last_test_desc = this.getLastTest();
     });
   }
 
@@ -385,6 +408,66 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
 
   getCleaningConditionBadgeClass(status: string | undefined): string {
     return Utility.getCleaningConditionBadgeClass(status);
+  }
+
+  getLastTest(): string | undefined {
+    return this.getLastTestTI() || this.getLastTestIGS();
+  }
+
+  getNextTest(): string | undefined {
+    return this.getNextTestTI() || this.getNextTestIGS();
+  }
+
+  getLastTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.igs) return "";
+
+    const igs = this.igs
+    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
+    }
+    return "";
+  }
+
+  getLastTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.tiItem) return "";
+
+    if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
+      const test_type = this.tiItem.last_test_cv;
+      const test_class = this.tiItem.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + test_class;
+    }
+    return "";
+  }
+
+  getNextTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.igs) return "";
+
+    const igs = this.igs
+    if (!igs?.test_dt || !igs?.last_test_cv) return "-";
+    const test_type = igs?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+    const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getNextTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.tiItem) return "";
+
+    if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
+    const test_type = this.tiItem?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+    const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }
 
   handleSaveSuccess(count: any) {
