@@ -5,15 +5,17 @@ using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 using IDMS.Booking.GqlTypes.LocaModel;
 using IDMS.Inventory.GqlTypes;
+using IDMS.Inventory.GqlTypes.LocalModel;
 using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics.Metrics;
-using System;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics.Metrics;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -118,15 +120,25 @@ namespace IDMS.Booking.GqlTypes
                     throw new GraphQLException(new Error($"release_order_guid is compulsory field", "ERROR"));
                 }
 
+                List<string>? rollbackSOTGuids = new List<string>();
                 IList<release_order_sot> newRoSotList = new List<release_order_sot>();
                 foreach (var roSOT in ro_SotList)
                 {
                     if (string.IsNullOrEmpty(roSOT?.action))
                         continue;
 
-                    storing_order_tank sot = new() { guid = roSOT.storing_order_tank.guid };
-                    //Start add the entity into EF for tracking
-                    context.storing_order_tank.Attach(sot);
+                    //storing_order_tank sot = new() { guid = roSOT.storing_order_tank.guid };
+                    
+                    ////Start add the entity into EF for tracking
+                    //context.storing_order_tank.Attach(sot);
+
+
+                    storing_order_tank? sot = await context.storing_order_tank.FindAsync(roSOT.sot_guid);
+                    if(sot == null)
+                    {
+                        _logger.LogWarning("UpdateReleaseOrder failed: storing_order_tank not found for guid {Guid}", roSOT.sot_guid);
+                        throw new GraphQLException(new Error($"Storing order tank not found for guid {roSOT.sot_guid}", "ERROR"));
+                    }
 
                     if (SOTankAction.NEW.EqualsIgnore(roSOT?.action))
                     {
@@ -152,7 +164,7 @@ namespace IDMS.Booking.GqlTypes
                         isSendNotification = true;
                         isSOTChanges = true;
 
-                        _logger.LogDebug("Added new release_order_sot guid={RosotGuid} for roGuid={RoGuid}", newROSOT.guid, releaseOrder.guid);
+                        _logger.LogInformation("Added new release_order_sot guid={RosotGuid} for roGuid={RoGuid}", newROSOT.guid, releaseOrder.guid);
                         continue;
                     }
 
@@ -170,7 +182,7 @@ namespace IDMS.Booking.GqlTypes
                         sot.update_dt = currentDateTime;
                         isSOTChanges = true;
 
-                        _logger.LogDebug("Edited release_order_sot guid={RosotGuid} status={Status}", roSOT.guid, roSOT.status_cv);
+                        _logger.LogInformation("Edited release_order_sot guid={RosotGuid} status={Status}", roSOT.guid, roSOT.status_cv);
                         continue;
                     }
 
@@ -190,9 +202,39 @@ namespace IDMS.Booking.GqlTypes
                         isSendNotification = true;
                         isSOTChanges = true;
 
-                        _logger.LogDebug("Canceled release_order_sot guid={RosotGuid} and reset SOT tank_status to STORAGE", roSOT.guid);
+                        _logger.LogInformation("Canceled release_order_sot guid={RosotGuid} and reset SOT tank_status to STORAGE", roSOT.guid);
                         continue;
                     }
+
+                    if (SOTankAction.ROLLBACK.EqualsIgnore(roSOT?.action))
+                    {
+                        var valid_status_cv = new List<string>{"RO_GENERATED","OUT_GATE","OUT_SURVEY", "STORAGE" };
+
+                        //If rollback condition eligible
+                        if ((roSOT.status_cv == SOTankStatus.CANCELED || roSOT.status_cv == SOTankStatus.ACCEPTED) && (valid_status_cv.Contains(sot.tank_status_cv ?? "")))
+                        {
+                            var extROSot = new release_order_sot() { guid = roSOT.guid };
+                            context.release_order_sot.Attach(extROSot);
+                            extROSot.status_cv = SOTankStatus.WAITING;
+                            extROSot.remarks = roSOT.remarks;
+                            extROSot.update_by = user;
+                            extROSot.update_dt = currentDateTime;
+
+                            sot.tank_status_cv = TankMovementStatus.RO;
+                            sot.update_by = user;
+                            sot.update_dt = currentDateTime;
+
+                            isSendNotification = true;
+                            isSOTChanges = true;
+                            rollbackSOTGuids.Add(sot.guid);
+                            continue;
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"Rollback check failed for tank_no = {sot.tank_no} roSOTGuid={roSOT.guid}");
+                            throw new GraphQLException(new Error("Tank rollback condition failed", "Error"));
+                        }
+                    }   
                 }
 
                 //TODO
@@ -235,6 +277,10 @@ namespace IDMS.Booking.GqlTypes
                 }
 
                 res = res + await context.SaveChangesAsync();
+
+                if (rollbackSOTGuids.Any())
+                    await VoidOutGateEIR(rollbackSOTGuids, user, currentDateTime, context);
+
                 return res;
             }
             catch (Exception ex)
@@ -295,6 +341,19 @@ namespace IDMS.Booking.GqlTypes
                 _logger.LogError(ex, "Error in CancelReleaseOrder");
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
+        }
+
+
+        private async Task VoidOutGateEIR(List<string>? sotGuids, string user, long currentDateTime, ApplicationInventoryDBContext context)
+        {
+            var OutGate = context.out_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
+            foreach (var og in OutGate)
+            {
+                og.update_dt = currentDateTime;
+                og.update_by = user;
+                og.delete_dt = currentDateTime;
+            }
+            //await context.SaveChangesAsync();
         }
     }
 }

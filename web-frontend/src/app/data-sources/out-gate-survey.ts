@@ -409,7 +409,7 @@ export const QUERY_OUT_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
                 name
               }
             }
-            release_order_sot(where: { guid: { eq: $roSotGuid }, status_cv: { eq: "ACCEPTED" } }) {
+            release_order_sot(where: { status_cv: { eq: "ACCEPTED" } }) {
               create_by
               create_dt
               delete_dt
