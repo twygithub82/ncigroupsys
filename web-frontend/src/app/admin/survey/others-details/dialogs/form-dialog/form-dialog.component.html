@@ -18,7 +18,7 @@
             <mat-label>{{data.translatedLangText.TYPE}}</mat-label>
             <mat-select formControlName="survey_type_cv" required>
               @for (codeValue of data.populateData.surveyTypeCvList; track codeValue) {
-              @if (codeValue.code_val !== "PERIODIC_TEST") {
+              @if (codeValue.code_val !== "PERIODIC_TEST" && codeValue.code_val !== "5_PERIODIC_TEST" && codeValue.code_val !== "2.5_PERIODIC_TEST") {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
